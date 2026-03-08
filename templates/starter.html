@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #06060b;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #a78bfa, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        button {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.15s, opacity 0.15s;
+        }
+
+        button:hover { opacity: 0.9; transform: translateY(-1px); }
+        button:active { transform: translateY(0); }
+
+        .status {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>My App</h1>
+        <p class="subtitle">Built on Inclawbate</p>
+
+        <div class="card">
+            <p>Your app content goes here.</p>
+            <br>
+            <button onclick="handleClick()">Do Something</button>
+            <p class="status" id="status"></p>
+        </div>
+    </div>
+
+    <script>
+        const statusEl = document.getElementById('status');
+
+        function handleClick() {
+            statusEl.textContent = 'Button clicked!';
+        }
+
+        // ── SDK Examples (uncomment what you need) ──
+
+        // -- AppDB: Save & load user data --
+        // async function loadData() {
+        //     if (!window.AppDB) return;
+        //     const saved = await window.AppDB.get('my_data');
+        //     if (saved) console.log('Loaded:', saved);
+        // }
+        // async function saveData(data) {
+        //     if (!window.AppDB) return;
+        //     await window.AppDB.set('my_data', data);
+        // }
+
+        // -- AppDB: Global leaderboard --
+        // async function saveScore(name, score) {
+        //     if (!window.AppDB) return;
+        //     const board = (await window.AppDB.getGlobal('leaderboard')) || [];
+        //     board.push({ name, score, time: Date.now() });
+        //     board.sort((a, b) => b.score - a.score);
+        //     await window.AppDB.setGlobal('leaderboard', board.slice(0, 50));
+        // }
+
+        // -- CLAWS: Tip the creator --
+        // async function tipMe() {
+        //     if (!window.CLAWS) return alert('Wallet not available');
+        //     try {
+        //         const tx = await window.CLAWS.tipCreator(100);
+        //         alert('Thanks for the tip! TX: ' + tx);
+        //     } catch (e) {
+        //         alert('Tip failed: ' + e.message);
+        //     }
+        // }
+
+        // -- Realtime: Multiplayer --
+        // async function startMultiplayer() {
+        //     if (!window.Realtime) return;
+        //     await window.Realtime.connect('game-room');
+        //     window.Realtime.on('move', (data, from) => {
+        //         console.log(from, 'moved to', data.x, data.y);
+        //     });
+        //     window.Realtime.onJoin(p => console.log('Player joined:', p.id));
+        //     window.Realtime.onLeave(p => console.log('Player left:', p.id));
+        // }
+    </script>
+</body>
+</html>

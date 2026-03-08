@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello World</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #06060b;
+            color: #e2e8f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .hero {
+            text-align: center;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #a78bfa, #6366f1, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tagline {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+
+        .counter-card {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .count {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #a78bfa;
+            line-height: 1;
+            margin-bottom: 16px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        button {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 28px;
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.15s, opacity 0.15s;
+        }
+
+        button:hover { opacity: 0.9; transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid rgba(99, 102, 241, 0.5);
+        }
+
+        .save-status {
+            color: #22c55e;
+            font-size: 0.85rem;
+            margin-top: 16px;
+            min-height: 20px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .save-status.show { opacity: 1; }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <h1>Hello World</h1>
+        <p class="tagline">Your first Inclawbate app with AppDB</p>
+
+        <div class="counter-card">
+            <div class="count" id="count">0</div>
+            <div class="buttons">
+                <button class="btn-outline" onclick="change(-1)">-</button>
+                <button onclick="change(1)">+</button>
+            </div>
+            <p class="save-status" id="save-status">Saved!</p>
+        </div>
+    </div>
+
+    <script>
+        let count = 0;
+        const countEl = document.getElementById('count');
+        const statusEl = document.getElementById('save-status');
+
+        function change(delta) {
+            count += delta;
+            countEl.textContent = count;
+            save();
+        }
+
+        async function save() {
+            if (!window.AppDB) return;
+            await window.AppDB.set('counter', count);
+            statusEl.classList.add('show');
+            setTimeout(() => statusEl.classList.remove('show'), 1500);
+        }
+
+        async function load() {
+            if (!window.AppDB) return;
+            const saved = await window.AppDB.get('counter');
+            if (saved !== null && saved !== undefined) {
+                count = saved;
+                countEl.textContent = count;
+            }
+        }
+
+        // Load saved data when SDK is ready
+        const t = setInterval(() => {
+            if (window.AppDB) { clearInterval(t); load(); }
+        }, 100);
+        setTimeout(() => clearInterval(t), 5000);
+    </script>
+</body>
+</html>
