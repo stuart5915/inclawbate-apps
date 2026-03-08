@@ -16,7 +16,7 @@ const https = require('https');
 // ── Defaults ──
 const CREATOR_WALLET = '0x18b18E245122f4bDA5F2ee4F25c702E05C241D49';
 const CREATOR_X_HANDLE = 'itsEvilDuck';
-const PUBLISHER_EMAIL = 'evilduck@inclawbate.com';
+const PUBLISHER_EMAIL = 'w_18b18e245122@inclawbate.com';
 const API_URL = 'https://www.inclawbate.com/api/publish-site';
 
 // ── Parse CLI args ──
