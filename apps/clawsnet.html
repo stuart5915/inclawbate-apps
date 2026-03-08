@@ -1,159 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script>
-(function(){
-  var errs=[];
-  window.onerror=function(msg,src,line,col,err){
-    errs.push({message:msg,line:line,col:col,stack:err&&err.stack||""});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  };
-  window.addEventListener("unhandledrejection",function(e){
-    errs.push({message:String(e.reason),line:0});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  });
-  window.addEventListener("load",function(){
-    setTimeout(function(){
-      if(errs.length>0&&window.parent!==window){
-        window.parent.postMessage({type:"studio-error",errors:errs},"*");
-      }
-      // Blank page detection: check if body has visible content
-      var body=document.body;
-      if(body&&window.parent!==window){
-        var text=(body.innerText||"").trim();
-        var hasCanvas=body.querySelector("canvas,svg,img,video,iframe");
-        var h=body.scrollHeight;
-        if(!text&&!hasCanvas&&h<50){
-          window.parent.postMessage({type:"studio-error",errors:[{message:"Page appears blank — no visible content rendered",line:0,blank:true}]},"*");
-        }
-      }
-    },2000);
-  });
-})();
-</script><script>
-(function(){
-  var errs=[];
-  window.onerror=function(msg,src,line,col,err){
-    errs.push({message:msg,line:line,col:col,stack:err&&err.stack||""});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  };
-  window.addEventListener("unhandledrejection",function(e){
-    errs.push({message:String(e.reason),line:0});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  });
-  window.addEventListener("load",function(){
-    setTimeout(function(){
-      if(errs.length>0&&window.parent!==window){
-        window.parent.postMessage({type:"studio-error",errors:errs},"*");
-      }
-      // Blank page detection: check if body has visible content
-      var body=document.body;
-      if(body&&window.parent!==window){
-        var text=(body.innerText||"").trim();
-        var hasCanvas=body.querySelector("canvas,svg,img,video,iframe");
-        var h=body.scrollHeight;
-        if(!text&&!hasCanvas&&h<50){
-          window.parent.postMessage({type:"studio-error",errors:[{message:"Page appears blank — no visible content rendered",line:0,blank:true}]},"*");
-        }
-      }
-    },2000);
-  });
-})();
-</script><script>
-(function(){
-  var errs=[];
-  window.onerror=function(msg,src,line,col,err){
-    errs.push({message:msg,line:line,col:col,stack:err&&err.stack||""});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  };
-  window.addEventListener("unhandledrejection",function(e){
-    errs.push({message:String(e.reason),line:0});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  });
-  window.addEventListener("load",function(){
-    setTimeout(function(){
-      if(errs.length>0&&window.parent!==window){
-        window.parent.postMessage({type:"studio-error",errors:errs},"*");
-      }
-      // Blank page detection: check if body has visible content
-      var body=document.body;
-      if(body&&window.parent!==window){
-        var text=(body.innerText||"").trim();
-        var hasCanvas=body.querySelector("canvas,svg,img,video,iframe");
-        var h=body.scrollHeight;
-        if(!text&&!hasCanvas&&h<50){
-          window.parent.postMessage({type:"studio-error",errors:[{message:"Page appears blank — no visible content rendered",line:0,blank:true}]},"*");
-        }
-      }
-    },2000);
-  });
-})();
-</script><script>
-(function(){
-  var errs=[];
-  window.onerror=function(msg,src,line,col,err){
-    errs.push({message:msg,line:line,col:col,stack:err&&err.stack||""});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  };
-  window.addEventListener("unhandledrejection",function(e){
-    errs.push({message:String(e.reason),line:0});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  });
-  window.addEventListener("load",function(){
-    setTimeout(function(){
-      if(errs.length>0&&window.parent!==window){
-        window.parent.postMessage({type:"studio-error",errors:errs},"*");
-      }
-      // Blank page detection: check if body has visible content
-      var body=document.body;
-      if(body&&window.parent!==window){
-        var text=(body.innerText||"").trim();
-        var hasCanvas=body.querySelector("canvas,svg,img,video,iframe");
-        var h=body.scrollHeight;
-        if(!text&&!hasCanvas&&h<50){
-          window.parent.postMessage({type:"studio-error",errors:[{message:"Page appears blank — no visible content rendered",line:0,blank:true}]},"*");
-        }
-      }
-    },2000);
-  });
-})();
-</script><script>
-(function(){
-  var errs=[];
-  window.onerror=function(msg,src,line,col,err){
-    errs.push({message:msg,line:line,col:col,stack:err&&err.stack||""});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  };
-  window.addEventListener("unhandledrejection",function(e){
-    errs.push({message:String(e.reason),line:0});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  });
-  window.addEventListener("load",function(){
-    setTimeout(function(){
-      if(errs.length>0&&window.parent!==window){
-        window.parent.postMessage({type:"studio-error",errors:errs},"*");
-      }
-      // Blank page detection: check if body has visible content
-      var body=document.body;
-      if(body&&window.parent!==window){
-        var text=(body.innerText||"").trim();
-        var hasCanvas=body.querySelector("canvas,svg,img,video,iframe");
-        var h=body.scrollHeight;
-        if(!text&&!hasCanvas&&h<50){
-          window.parent.postMessage({type:"studio-error",errors:[{message:"Page appears blank — no visible content rendered",line:0,blank:true}]},"*");
-        }
-      }
-    },2000);
-  });
-})();
-</script>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ClawsNet</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --bg: #07050f;
+      --bg: #06060b;
       --surface: #0f0a1e;
       --surface2: #16102b;
       --surface3: #1e1838;
@@ -165,9 +20,8 @@
       --cyan: #00e5ff;
       --cyan-dim: rgba(0,229,255,0.7);
       --yellow: #ffd700;
-      --orange: #ff8c00;
       --green: #00ffb3;
-      --text: #f0eeff;
+      --text: #e2e8f0;
       --text-muted: #8875aa;
       --text-dim: #5a4875;
       --success: #00ffb3;
@@ -179,13 +33,10 @@
       --glow-cyan: 0 0 8px #00e5ff, 0 0 20px rgba(0,229,255,0.4), 0 0 40px rgba(0,229,255,0.2);
       --glow-cyan-sm: 0 0 6px rgba(0,229,255,0.5), 0 0 12px rgba(0,229,255,0.25);
       --glow-green: 0 0 8px #00ffb3, 0 0 16px rgba(0,255,179,0.3);
-      --glow-yellow: 0 0 8px #ffd700, 0 0 16px rgba(255,215,0,0.3);
-      --font-display: 'Space Grotesk', sans-serif;
-      --font-body: 'Inter', sans-serif;
     }
 
     body {
-      font-family: var(--font-body);
+      font-family: 'Nunito', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
@@ -217,17 +68,11 @@
       inset: 0;
       background-image:
         radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.7) 0%, transparent 100%),
-        radial-gradient(1px 1px at 25% 8%, rgba(255,255,255,0.5) 0%, transparent 100%),
         radial-gradient(1px 1px at 40% 20%, rgba(255,255,255,0.8) 0%, transparent 100%),
         radial-gradient(1px 1px at 60% 5%, rgba(255,255,255,0.6) 0%, transparent 100%),
         radial-gradient(1px 1px at 75% 12%, rgba(255,255,255,0.7) 0%, transparent 100%),
-        radial-gradient(1px 1px at 85% 25%, rgba(255,255,255,0.4) 0%, transparent 100%),
-        radial-gradient(1px 1px at 90% 8%, rgba(255,255,255,0.8) 0%, transparent 100%),
         radial-gradient(1.5px 1.5px at 15% 35%, rgba(138,43,226,0.7) 0%, transparent 100%),
-        radial-gradient(1.5px 1.5px at 55% 30%, rgba(0,229,255,0.6) 0%, transparent 100%),
-        radial-gradient(1.5px 1.5px at 80% 40%, rgba(138,43,226,0.5) 0%, transparent 100%),
-        radial-gradient(1px 1px at 33% 18%, rgba(255,255,255,0.5) 0%, transparent 100%),
-        radial-gradient(1px 1px at 68% 22%, rgba(255,255,255,0.6) 0%, transparent 100%);
+        radial-gradient(1.5px 1.5px at 55% 30%, rgba(0,229,255,0.6) 0%, transparent 100%);
       pointer-events: none;
       z-index: 0;
     }
@@ -265,7 +110,7 @@
       border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
     .auth-card::after {
-      content: '●';
+      content: '\25CF';
       position: absolute;
       top: 12px; right: 16px;
       color: var(--purple-bright);
@@ -288,7 +133,6 @@
       50% { transform: translateY(-8px); filter: drop-shadow(0 0 18px rgba(0,229,255,0.6)) drop-shadow(0 0 36px rgba(0,229,255,0.3)); }
     }
     .auth-logo h1 {
-      font-family: var(--font-display);
       font-size: 2.2rem;
       font-weight: 800;
       color: #fff;
@@ -300,28 +144,24 @@
       color: var(--text-muted);
       font-size: 0.82rem;
       margin-top: 6px;
-      font-family: var(--font-body);
       letter-spacing: 0.12em;
       text-transform: uppercase;
-      font-weight: 500;
+      font-weight: 600;
     }
 
     .auth-title {
-      font-family: var(--font-display);
       font-size: 1.1rem;
       font-weight: 700;
       margin-bottom: 28px;
       color: var(--cyan);
-      letter-spacing: -0.01em;
       text-shadow: var(--glow-cyan-sm);
     }
 
     .form-group { margin-bottom: 20px; }
     .form-label {
       display: block;
-      font-family: var(--font-body);
       font-size: 0.72rem;
-      font-weight: 600;
+      font-weight: 700;
       color: var(--purple-bright);
       margin-bottom: 8px;
       text-transform: uppercase;
@@ -335,11 +175,10 @@
       border-radius: var(--radius);
       color: var(--text);
       font-size: 0.95rem;
-      font-family: var(--font-body);
+      font-family: 'Nunito', sans-serif;
       font-weight: 400;
       outline: none;
       transition: all 0.25s;
-      letter-spacing: 0.01em;
     }
     .form-input:focus {
       border-color: var(--cyan);
@@ -361,7 +200,7 @@
       color: var(--purple-bright);
       outline: none;
       transition: all 0.25s;
-      font-family: var(--font-display);
+      font-family: 'Nunito', sans-serif;
     }
     .pin-box:focus {
       border-color: var(--cyan);
@@ -377,9 +216,9 @@
       border-radius: var(--radius);
       border: 1px solid rgba(138,43,226,0.5);
       font-size: 0.88rem;
-      font-weight: 600;
+      font-weight: 700;
       cursor: pointer;
-      font-family: var(--font-body);
+      font-family: 'Nunito', sans-serif;
       transition: all 0.25s;
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -422,7 +261,7 @@
     .auth-switch span {
       color: var(--cyan);
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
       transition: all 0.2s;
       text-shadow: var(--glow-cyan-sm);
       text-decoration: underline;
@@ -461,7 +300,6 @@
       gap: 10px;
       padding: 24px 20px 20px;
       border-bottom: 1px solid rgba(138,43,226,0.15);
-      font-family: var(--font-display);
       font-size: 1.15rem;
       font-weight: 800;
       color: #fff;
@@ -508,7 +346,7 @@
       border-radius: 50%;
     }
     .sidebar-avatar:hover::after {
-      content: '📷';
+      content: '\1F4F7';
       position: absolute;
       inset: 0;
       background: rgba(0,0,0,0.55);
@@ -523,17 +361,14 @@
       50% { box-shadow: var(--glow-cyan-sm); border-color: rgba(138,43,226,0.5); }
     }
     .sidebar-uname {
-      font-family: var(--font-display);
       font-size: 0.85rem;
       font-weight: 700;
       color: #fff;
-      letter-spacing: -0.01em;
     }
     .sidebar-uid {
       font-size: 0.75rem;
       color: var(--cyan);
-      font-family: var(--font-body);
-      font-weight: 500;
+      font-weight: 600;
       background: rgba(0,229,255,0.05);
       padding: 4px 10px;
       border-radius: 20px;
@@ -548,9 +383,8 @@
 
     nav { flex: 1; padding: 10px 0; }
     .nav-group-label {
-      font-family: var(--font-body);
       font-size: 0.68rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--text-dim);
       text-transform: uppercase;
       letter-spacing: 0.14em;
@@ -565,8 +399,7 @@
       cursor: pointer;
       transition: all 0.2s;
       font-size: 0.9rem;
-      font-family: var(--font-body);
-      font-weight: 500;
+      font-weight: 600;
       user-select: none;
       border-left: 2px solid transparent;
     }
@@ -577,8 +410,7 @@
     .main { margin-left: 260px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
     .topbar {
-      background: rgba(7,5,15,0.95);
-      backdrop-filter: blur(20px);
+      background: rgba(6,6,11,0.95);
       border-bottom: 1px solid rgba(138,43,226,0.2);
       padding: 12px 28px;
       display: flex;
@@ -611,7 +443,7 @@
       transition: all 0.25s;
     }
     .search-wrap:focus-within { border-color: var(--cyan); box-shadow: var(--glow-cyan-sm); }
-    .search-wrap input { background: none; border: none; outline: none; color: var(--text); font-family: var(--font-body); font-size: 0.88rem; width: 100%; }
+    .search-wrap input { background: none; border: none; outline: none; color: var(--text); font-family: 'Nunito', sans-serif; font-size: 0.88rem; width: 100%; }
     .search-wrap input::placeholder { color: var(--text-dim); }
     .topbar-right { display: flex; gap: 10px; margin-left: auto; }
     .icon-btn {
@@ -630,19 +462,14 @@
       flex-shrink: 0;
     }
     .icon-btn:hover { background: rgba(138,43,226,0.2); border-color: var(--purple-bright); box-shadow: var(--glow-purple-sm); }
-    .nbadge {
+    .notif-dot {
       position: absolute;
-      top: -5px; right: -5px;
-      width: 17px; height: 17px;
+      top: 4px; right: 4px;
+      width: 9px; height: 9px;
       background: var(--danger);
       border-radius: 50%;
-      font-size: 0.6rem;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       border: 2px solid var(--bg);
-      box-shadow: 0 0 8px rgba(255,51,102,0.5);
+      box-shadow: 0 0 6px rgba(255,51,102,0.6);
     }
 
     .content { flex: 1; padding: 28px 32px; }
@@ -652,6 +479,41 @@
 
     /* ========== FEED ========== */
     .feed-wrap { max-width: 600px; margin: 0 auto; }
+    .feed-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 16px;
+      background: var(--surface);
+      border: 1px solid rgba(138,43,226,0.2);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .feed-tab {
+      flex: 1;
+      padding: 12px 16px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .feed-tab:hover { color: var(--text); background: rgba(138,43,226,0.05); }
+    .feed-tab.active {
+      color: var(--cyan);
+      background: rgba(0,229,255,0.05);
+    }
+    .feed-tab.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 20%; right: 20%;
+      height: 2px;
+      background: var(--cyan);
+      border-radius: 2px;
+    }
 
     .composer {
       background: var(--surface);
@@ -667,9 +529,8 @@
       top: -10px; left: 20px;
       background: var(--surface);
       padding: 0 10px;
-      font-family: var(--font-body);
       font-size: 0.65rem;
-      font-weight: 700;
+      font-weight: 800;
       color: var(--purple-bright);
       letter-spacing: 0.12em;
       text-transform: uppercase;
@@ -686,6 +547,7 @@
       flex-shrink: 0;
       box-shadow: var(--glow-purple-sm);
       border: 2px solid rgba(0,229,255,0.25);
+      overflow: hidden;
     }
     .composer-fake {
       flex: 1;
@@ -696,7 +558,6 @@
       color: var(--text-dim);
       cursor: pointer;
       font-size: 0.9rem;
-      font-family: var(--font-body);
       transition: all 0.2s;
       display: flex;
       align-items: center;
@@ -741,10 +602,11 @@
       font-size: 1rem;
       flex-shrink: 0;
       border: 1px solid rgba(138,43,226,0.4);
+      overflow: hidden;
     }
     .post-meta { flex: 1; min-width: 0; }
-    .post-uname { font-family: var(--font-display); font-weight: 700; font-size: 0.9rem; color: #fff; letter-spacing: -0.01em; }
-    .post-uid { font-size: 0.78rem; color: var(--cyan); font-family: var(--font-body); font-weight: 500; }
+    .post-uname { font-weight: 700; font-size: 0.9rem; color: #fff; }
+    .post-uid { font-size: 0.78rem; color: var(--cyan); font-weight: 600; }
     .post-time { font-size: 0.75rem; color: var(--text-dim); white-space: nowrap; }
     .post-body { padding: 16px 18px; }
     .post-text { font-size: 0.95rem; line-height: 1.65; margin-bottom: 12px; white-space: pre-wrap; word-break: break-word; color: var(--text); }
@@ -761,8 +623,7 @@
       cursor: pointer;
       transition: all 0.2s;
       font-size: 0.84rem;
-      font-family: var(--font-body);
-      font-weight: 500;
+      font-weight: 600;
       user-select: none;
       border-right: 1px solid rgba(138,43,226,0.08);
     }
@@ -776,7 +637,7 @@
     .empty-state .es-icon { font-size: 3.5rem; margin-bottom: 16px; filter: drop-shadow(0 0 16px rgba(138,43,226,0.5)); }
     .empty-state p { font-size: 0.95rem; }
 
-    .section-title { font-family: var(--font-display); font-size: 1rem; font-weight: 700; margin-bottom: 20px; color: var(--purple-bright); }
+    .section-title { font-size: 1rem; font-weight: 700; margin-bottom: 20px; color: var(--purple-bright); }
 
     /* ========== PROFILE ========== */
     .profile-hero {
@@ -815,7 +676,7 @@
       border-radius: 50%;
     }
     .profile-av:hover::after {
-      content: '📷 Change Photo';
+      content: 'Change Photo';
       position: absolute;
       inset: 0;
       background: rgba(0,0,0,0.6);
@@ -823,24 +684,18 @@
       align-items: center;
       justify-content: center;
       font-size: 0.75rem;
-      font-weight: 600;
+      font-weight: 700;
       color: #fff;
-      font-family: var(--font-body);
       border-radius: 50%;
       text-align: center;
       padding: 8px;
     }
-    .avatar-upload-hint {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      margin-top: 6px;
-      position: relative; z-index: 1;
-    }
-    .profile-name { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; color: #fff; position: relative; z-index: 1; }
+    .profile-name { font-size: 1.6rem; font-weight: 800; color: #fff; position: relative; z-index: 1; }
     .profile-handle { font-size: 0.88rem; color: var(--cyan); margin-top: 4px; position: relative; z-index: 1; }
+    .profile-bio { font-size: 0.88rem; color: var(--text-muted); margin-top: 12px; line-height: 1.6; max-width: 400px; margin-left: auto; margin-right: auto; position: relative; z-index: 1; }
     .profile-fid {
       display: inline-block;
-      font-size: 0.82rem; font-weight: 600;
+      font-size: 0.82rem; font-weight: 700;
       background: rgba(0,0,0,0.4);
       padding: 6px 16px;
       border-radius: 20px;
@@ -854,15 +709,14 @@
     .profile-fid:hover { border-color: var(--cyan); color: var(--cyan); }
 
     .pstats { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 22px; padding-top: 22px; border-top: 1px solid rgba(138,43,226,0.15); position: relative; z-index: 1; }
-    .pstat-v { font-family: var(--font-display); font-size: 1.5rem; font-weight: 800; color: var(--cyan); }
-    .pstat-l { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+    .pstat-v { font-size: 1.5rem; font-weight: 800; color: var(--cyan); }
+    .pstat-l { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 700; }
 
     /* ========== MODAL ========== */
     .modal-overlay {
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.75);
-      backdrop-filter: blur(8px);
       z-index: 200;
       display: none;
       align-items: center;
@@ -895,7 +749,6 @@
       border-radius: var(--radius-lg) var(--radius-lg) 0 0;
     }
     .modal-title {
-      font-family: var(--font-display);
       font-size: 1.15rem;
       font-weight: 800;
       color: #fff;
@@ -929,27 +782,10 @@
       box-shadow: var(--glow-purple-sm);
       animation: toastIn 0.3s ease;
       max-width: 300px;
-      font-family: var(--font-body);
     }
     .toast.success { border-color: rgba(0,255,179,0.4); box-shadow: var(--glow-green); }
     .toast.error { border-color: rgba(255,51,102,0.4); box-shadow: 0 0 12px rgba(255,51,102,0.3); }
     @keyframes toastIn { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
-
-    /* ========== SIDEBAR OVERLAY ========== */
-    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 99; }
-
-    /* ========== RESPONSIVE ========== */
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); }
-      .sidebar.open { transform: translateX(0); }
-      .sidebar-overlay.open { display: block; }
-      .menu-btn { display: flex; }
-      .main { margin-left: 0; }
-      .content { padding: 16px; }
-      .topbar { padding: 10px 16px; }
-      .modal-box { padding: 24px 20px; }
-      .auth-card { padding: 36px 24px; }
-    }
 
     /* ========== USER CARDS ========== */
     .user-card {
@@ -986,11 +822,12 @@
       flex-shrink: 0;
       border: 2px solid rgba(138,43,226,0.4);
       box-shadow: var(--glow-purple-sm);
+      overflow: hidden;
     }
     .user-card-info { flex: 1; min-width: 0; }
-    .user-card-name { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; color: #fff; margin-bottom: 3px; }
-    .user-card-handle { font-size: 0.8rem; color: var(--cyan); font-weight: 500; margin-bottom: 3px; }
-    .user-card-id { font-size: 0.72rem; color: var(--text-dim); font-family: var(--font-body); letter-spacing: 0.04em; }
+    .user-card-name { font-weight: 700; font-size: 0.95rem; color: #fff; margin-bottom: 3px; }
+    .user-card-handle { font-size: 0.8rem; color: var(--cyan); font-weight: 600; margin-bottom: 3px; }
+    .user-card-id { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 0.04em; }
     .user-card-bio { font-size: 0.82rem; color: var(--text-muted); margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .user-card-stats { display: flex; gap: 14px; margin-top: 6px; }
     .user-card-stat { font-size: 0.75rem; color: var(--text-muted); }
@@ -1000,8 +837,8 @@
       padding: 7px 16px;
       border-radius: 20px;
       font-size: 0.78rem;
-      font-weight: 600;
-      font-family: var(--font-body);
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
       cursor: pointer;
       transition: all 0.2s;
       white-space: nowrap;
@@ -1017,8 +854,8 @@
       padding: 7px 16px;
       border-radius: 20px;
       font-size: 0.78rem;
-      font-weight: 600;
-      font-family: var(--font-body);
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
       cursor: pointer;
       transition: all 0.2s;
       white-space: nowrap;
@@ -1029,15 +866,29 @@
     }
     .msg-btn:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,229,255,0.05); }
 
-    /* User profile modal */
+    /* User profile page */
+    .up-back-btn {
+      background: none;
+      border: 1px solid rgba(138,43,226,0.3);
+      color: var(--purple-bright);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 20px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: all 0.2s;
+    }
+    .up-back-btn:hover { border-color: var(--cyan); color: var(--cyan); }
     .up-hero {
       text-align: center;
-      padding: 10px 0 24px;
+      padding: 20px 0 28px;
       border-bottom: 1px solid rgba(138,43,226,0.15);
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
     .up-av {
-      width: 80px; height: 80px;
+      width: 100px; height: 100px;
       border-radius: 50%;
       background: linear-gradient(135deg, var(--purple), var(--purple-deep));
       display: flex; align-items: center; justify-content: center;
@@ -1045,8 +896,9 @@
       margin: 0 auto 12px;
       border: 2px solid rgba(0,229,255,0.4);
       box-shadow: var(--glow-cyan-sm);
+      overflow: hidden;
     }
-    .up-name { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: #fff; }
+    .up-name { font-size: 1.3rem; font-weight: 800; color: #fff; }
     .up-handle { font-size: 0.85rem; color: var(--cyan); margin-top: 4px; }
     .up-id {
       display: inline-block;
@@ -1064,11 +916,11 @@
     .up-bio { font-size: 0.88rem; color: var(--text-muted); margin-top: 10px; line-height: 1.6; }
     .up-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 16px 0; }
     .up-stat { text-align: center; }
-    .up-stat-v { font-family: var(--font-display); font-size: 1.3rem; font-weight: 800; color: var(--cyan); }
+    .up-stat-v { font-size: 1.3rem; font-weight: 800; color: var(--cyan); }
     .up-stat-l { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 2px; }
     .up-action-row { display: flex; gap: 10px; margin-top: 16px; }
     .up-action-row .btn { margin: 0; }
-    .up-posts-title { font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; color: var(--purple-bright); margin: 20px 0 12px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .up-posts-title { font-size: 0.85rem; font-weight: 700; color: var(--purple-bright); margin: 20px 0 12px; text-transform: uppercase; letter-spacing: 0.08em; }
     .up-post-item {
       background: rgba(0,0,0,0.25);
       border: 1px solid rgba(138,43,226,0.12);
@@ -1083,10 +935,7 @@
     .up-post-time { font-size: 0.72rem; color: var(--text-dim); margin-top: 6px; }
 
     /* ========== MESSAGES ========== */
-    .dm-modal-box {
-      max-width: 480px;
-      width: 100%;
-    }
+    .dm-modal-box { max-width: 480px; width: 100%; }
     .dm-messages {
       max-height: 320px;
       overflow-y: auto;
@@ -1096,11 +945,7 @@
       gap: 10px;
       padding: 4px 0;
     }
-    .dm-msg {
-      display: flex;
-      flex-direction: column;
-      max-width: 80%;
-    }
+    .dm-msg { display: flex; flex-direction: column; max-width: 80%; }
     .dm-msg.mine { align-self: flex-end; align-items: flex-end; }
     .dm-msg.theirs { align-self: flex-start; align-items: flex-start; }
     .dm-bubble {
@@ -1121,7 +966,7 @@
       border: 1px solid rgba(138,43,226,0.25);
       border-radius: 24px;
       color: var(--text);
-      font-family: var(--font-body);
+      font-family: 'Nunito', sans-serif;
       font-size: 0.88rem;
       outline: none;
       transition: all 0.2s;
@@ -1143,7 +988,6 @@
     .dm-send-btn:hover { background: var(--purple); color: #fff; box-shadow: var(--glow-purple-sm); }
     .dm-empty { text-align: center; padding: 30px; color: var(--text-dim); font-size: 0.88rem; }
 
-    /* Messages nav item badge */
     .nav-badge {
       background: var(--danger);
       color: #fff;
@@ -1155,7 +999,7 @@
       box-shadow: 0 0 8px rgba(255,51,102,0.4);
     }
 
-    /* Media upload styles */
+    /* Media upload */
     .post-media-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -1219,11 +1063,7 @@
       transition: all 0.2s;
     }
     .media-preview-remove:hover { background: var(--danger); color: #fff; }
-    .upload-btn-row {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
+    .upload-btn-row { display: flex; gap: 10px; margin-bottom: 10px; }
     .upload-label {
       flex: 1;
       display: flex;
@@ -1235,10 +1075,9 @@
       border-radius: var(--radius);
       color: var(--text-muted);
       font-size: 0.83rem;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
-      font-family: var(--font-body);
       background: transparent;
     }
     .upload-label:hover { border-color: var(--purple-bright); color: var(--purple-bright); background: rgba(138,43,226,0.05); }
@@ -1254,10 +1093,10 @@
       border-radius: var(--radius);
       color: var(--text-muted);
       font-size: 0.83rem;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
-      font-family: var(--font-body);
+      font-family: 'Nunito', sans-serif;
       background: transparent;
     }
     .url-toggle-btn:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(0,229,255,0.04); }
@@ -1275,7 +1114,7 @@
       border: 1px solid rgba(138,43,226,0.3);
       border-radius: var(--radius);
       color: var(--text);
-      font-family: var(--font-body);
+      font-family: 'Nunito', sans-serif;
       font-size: 0.85rem;
       outline: none;
       transition: all 0.2s;
@@ -1290,18 +1129,493 @@
       border-radius: var(--radius);
       cursor: pointer;
       font-size: 0.83rem;
-      font-weight: 600;
-      font-family: var(--font-body);
+      font-weight: 700;
+      font-family: 'Nunito', sans-serif;
       white-space: nowrap;
       transition: all 0.2s;
     }
     .url-add-row button:hover { background: rgba(0,229,255,0.15); }
+
+    /* Settings page */
+    .settings-wrap { max-width: 500px; margin: 0 auto; }
+    .settings-card {
+      background: var(--surface);
+      border: 1px solid rgba(138,43,226,0.2);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .settings-danger {
+      background: var(--surface);
+      border: 1px solid rgba(255,51,102,0.2);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+    .settings-avatar-preview {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--purple-deep));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem;
+      margin: 0 auto 10px;
+      border: 2px solid rgba(0,229,255,0.4);
+      box-shadow: var(--glow-cyan-sm);
+      cursor: pointer;
+      overflow: hidden;
+      position: relative;
+    }
+    .settings-avatar-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 4px;
+    }
+    .avatar-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border: 1px dashed rgba(138,43,226,0.4);
+      border-radius: var(--radius);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Nunito', sans-serif;
+      transition: all 0.2s;
+      background: transparent;
+    }
+    .avatar-action-btn:hover { color: var(--purple-bright); border-color: var(--purple-bright); }
+    .avatar-action-btn.url-btn { border-color: rgba(0,229,255,0.25); }
+    .avatar-action-btn.url-btn:hover { color: var(--cyan); border-color: var(--cyan); }
+    .avatar-action-btn.remove-btn { border-color: rgba(255,51,102,0.25); }
+    .avatar-action-btn.remove-btn:hover { color: var(--danger); border-color: var(--danger); }
+    .avatar-action-btn input[type="file"] { display: none; }
+    .avatar-hint { font-size: 0.72rem; color: var(--text-dim); margin-top: 8px; }
+
+    /* Discover page */
+    .discover-wrap { max-width: 640px; margin: 0 auto; }
+    .discover-header { margin-bottom: 24px; }
+    .discover-title { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .discover-subtitle { color: var(--text-muted); font-size: 0.88rem; }
+    .discover-search {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .discover-search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1rem;
+      pointer-events: none;
+    }
+    .discover-search .form-input { padding-left: 44px; font-size: 0.95rem; }
+
+    /* Messages page */
+    .messages-wrap { max-width: 640px; margin: 0 auto; }
+    .messages-title { font-size: 1.4rem; font-weight: 800; color: #fff; margin-bottom: 6px; }
+    .messages-subtitle { color: var(--text-muted); font-size: 0.88rem; margin-bottom: 24px; }
+
+    .dm-unread-badge {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      background: var(--danger);
+      color: #fff;
+      font-size: 0.7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 0 8px rgba(255,51,102,0.4);
+    }
+
+    .you-badge { font-size: 0.7rem; color: var(--purple-bright); font-weight: 700; }
+
+    /* ========== COMMENTS ========== */
+    .comments-section {
+      border-top: 1px solid rgba(138,43,226,0.1);
+      padding: 14px 18px;
+      display: none;
+    }
+    .comments-section.open { display: block; }
+    .comment-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .comment-av {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--purple-deep));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      flex-shrink: 0;
+      border: 1px solid rgba(138,43,226,0.3);
+      overflow: hidden;
+    }
+    .comment-body { flex: 1; min-width: 0; }
+    .comment-header {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+    .comment-author { font-size: 0.8rem; font-weight: 700; color: #fff; }
+    .comment-time { font-size: 0.68rem; color: var(--text-dim); }
+    .comment-text { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; word-break: break-word; }
+    .comment-input-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-top: 10px;
+    }
+    .comment-input-row input {
+      flex: 1;
+      padding: 8px 14px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(138,43,226,0.2);
+      border-radius: 20px;
+      color: var(--text);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .comment-input-row input:focus { border-color: var(--cyan); box-shadow: var(--glow-cyan-sm); }
+    .comment-input-row input::placeholder { color: var(--text-dim); }
+    .comment-send-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(138,43,226,0.15);
+      border: 1px solid rgba(138,43,226,0.3);
+      color: var(--purple-bright);
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .comment-send-btn:hover { background: var(--purple); color: #fff; box-shadow: var(--glow-purple-sm); }
+    .no-comments { font-size: 0.82rem; color: var(--text-dim); padding: 8px 0; }
+
+    /* ========== DM MEDIA ========== */
+    .dm-media-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .dm-media-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(138,43,226,0.1);
+      border: 1px solid rgba(138,43,226,0.25);
+      color: var(--purple-bright);
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+    }
+    .dm-media-btn:hover { background: rgba(138,43,226,0.2); border-color: var(--purple-bright); }
+    .dm-media-btn input[type="file"] { display: none; }
+    .dm-media-preview {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .dm-media-preview-item {
+      position: relative;
+      width: 60px; height: 60px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid rgba(138,43,226,0.25);
+    }
+    .dm-media-preview-item img,
+    .dm-media-preview-item video {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .dm-media-preview-item button {
+      position: absolute;
+      top: 2px; right: 2px;
+      width: 18px; height: 18px;
+      background: rgba(0,0,0,0.7);
+      border: none;
+      border-radius: 50%;
+      color: var(--danger);
+      cursor: pointer;
+      font-size: 0.75rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dm-bubble-media {
+      margin-top: 6px;
+      max-width: 240px;
+    }
+    .dm-bubble-media img,
+    .dm-bubble-media video {
+      width: 100%;
+      border-radius: var(--radius);
+      border: 1px solid rgba(138,43,226,0.2);
+      display: block;
+    }
+
+    /* ========== NOTIFICATIONS ========== */
+    .notif-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 14px 16px;
+      background: var(--surface);
+      border: 1px solid rgba(138,43,226,0.15);
+      border-radius: var(--radius-lg);
+      margin-bottom: 8px;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .notif-item:hover { border-color: rgba(138,43,226,0.4); background: var(--surface2); }
+    .notif-item.unread { border-left: 3px solid var(--cyan); }
+    .notif-av {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--purple), var(--purple-deep));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; flex-shrink: 0;
+      border: 1px solid rgba(138,43,226,0.4);
+      overflow: hidden;
+    }
+    .notif-av img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+    .notif-body { flex: 1; min-width: 0; }
+    .notif-text { font-size: 0.88rem; line-height: 1.4; color: var(--text); }
+    .notif-text strong { color: #fff; font-weight: 700; }
+    .notif-time { font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; }
+    .notif-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 2px; }
+
+    /* ========== SIDEBAR OVERLAY ========== */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 99;
+    }
+    .sidebar-overlay.open { display: block; }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        font-size: 1.5rem;
+        -webkit-tap-highlight-color: transparent;
+        touch-action: manipulation;
+      }
+      .main { margin-left: 0; }
+      .content { padding: 12px; }
+      .topbar { padding: 8px 12px; gap: 8px; }
+      .topbar-right { gap: 6px; }
+      .icon-btn { width: 44px; height: 44px; min-width: 44px; font-size: 1.1rem; }
+      .search-wrap { padding: 8px 12px; max-width: none; }
+      .search-wrap input { font-size: 16px; }
+      .modal-box { padding: 20px 16px; max-width: 95vw; max-height: 90vh; }
+      .auth-card { padding: 28px 18px; margin: 12px; }
+      .nav-item { padding: 14px 20px; font-size: 1rem; min-height: 48px; }
+      .sidebar-logo { padding: 18px 16px 14px; }
+      .sidebar-user { margin: 10px; padding: 14px; }
+      .post { padding: 16px; }
+      .post-actions { gap: 4px; }
+      .post-actions button { min-height: 40px; padding: 6px 10px; }
+      .form-input, .form-textarea { font-size: 16px; }
+      .composer textarea { font-size: 16px; }
+      .dm-input { font-size: 16px; }
+      .profile-header { padding: 20px 16px; }
+      .profile-stats { gap: 16px; }
+      .dm-bubble { max-width: 85%; }
+      .user-card { padding: 14px; }
+    }
+    @media (max-width: 400px) {
+      .content { padding: 8px; }
+      .topbar { padding: 6px 8px; }
+      .post { padding: 12px; }
+      .auth-card { padding: 24px 14px; }
+      .profile-stats { gap: 10px; flex-wrap: wrap; }
+    }
+    /* ========== INTRO SPLASH ========== */
+    #introSplash {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: #06060b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #introSplash.dismissed {
+      animation: introFadeOut 0.6s ease forwards;
+      pointer-events: none;
+    }
+    @keyframes introFadeOut {
+      to { opacity: 0; visibility: hidden; }
+    }
+    .intro-claws {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    .intro-claw {
+      position: absolute;
+      width: 50%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .intro-claw-left {
+      left: 0;
+      justify-content: flex-end;
+      animation: clawOpenLeft 3s cubic-bezier(0.4, 0, 0.2, 1) 1.5s forwards;
+      will-change: transform, opacity;
+    }
+    .intro-claw-right {
+      right: 0;
+      justify-content: flex-start;
+      animation: clawOpenRight 3s cubic-bezier(0.4, 0, 0.2, 1) 1.5s forwards;
+      will-change: transform, opacity;
+    }
+    .intro-claw svg {
+      width: 280px;
+      height: auto;
+      filter: drop-shadow(0 0 20px rgba(220,38,38,0.5));
+      animation: clawGlow 1.5s ease-in-out infinite alternate;
+    }
+    @media (max-width: 768px) {
+      .intro-claw svg { width: 180px; }
+      .intro-title h1 { font-size: 2.2rem; }
+      .intro-title p { font-size: 0.75rem; }
+    }
+    .intro-claw-left svg {
+      margin-right: -20px;
+    }
+    .intro-claw-right svg {
+      margin-left: -20px;
+      transform: scaleX(-1);
+    }
+    @keyframes clawGlow {
+      0% { filter: drop-shadow(0 0 15px rgba(220,38,38,0.5)); }
+      100% { filter: drop-shadow(0 0 25px rgba(255,80,50,0.6)); }
+    }
+    @keyframes clawOpenLeft {
+      0% { transform: translateX(0); opacity: 1; }
+      60% { transform: translateX(-60%); opacity: 1; }
+      100% { transform: translateX(-110%); opacity: 0; }
+    }
+    @keyframes clawOpenRight {
+      0% { transform: translateX(0); opacity: 1; }
+      60% { transform: translateX(60%); opacity: 1; }
+      100% { transform: translateX(110%); opacity: 0; }
+    }
+    .intro-title {
+      position: absolute;
+      text-align: center;
+      z-index: 2;
+      opacity: 0;
+      animation: introTitleIn 1s ease 0.3s forwards;
+    }
+    .intro-title h1 {
+      font-size: 3rem;
+      font-weight: 900;
+      color: #fff;
+      text-shadow: 0 0 20px rgba(138,43,226,0.7), 0 0 40px rgba(138,43,226,0.4);
+      letter-spacing: -0.02em;
+    }
+    .intro-title h1 span { color: var(--purple-bright); }
+    .intro-title p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    @keyframes introTitleIn {
+      0% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .intro-particles {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .intro-particle {
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      opacity: 0;
+      animation: particleDrift 3s ease-out forwards;
+      will-change: transform, opacity;
+    }
+    @keyframes particleDrift {
+      0% { opacity: 0; transform: translate(0, 0) scale(1); }
+      20% { opacity: 1; }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+    }
   </style>
 </head>
 <body>
 
-<!-- SIDEBAR OVERLAY -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<!-- INTRO SPLASH -->
+<div id="introSplash">
+  <div class="intro-claws">
+    <div class="intro-claw intro-claw-left">
+      <svg viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M180 150 C180 100, 150 60, 120 30 C110 18, 95 10, 85 25 C75 40, 90 55, 100 65 C115 80, 130 100, 130 130" stroke="#dc2626" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M180 150 C180 200, 150 240, 120 270 C110 282, 95 290, 85 275 C75 260, 90 245, 100 235 C115 220, 130 200, 130 170" stroke="#dc2626" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M130 130 C140 135, 145 142, 145 150 C145 158, 140 165, 130 170" stroke="#ef4444" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M180 150 C160 148, 145 149, 130 150" stroke="#b91c1c" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <circle cx="155" cy="140" r="4" fill="#fbbf24" opacity="0.9"/>
+        <circle cx="155" cy="160" r="4" fill="#fbbf24" opacity="0.9"/>
+        <path d="M120 30 C135 15, 155 20, 160 40" stroke="#991b1b" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.7"/>
+        <path d="M120 270 C135 285, 155 280, 160 260" stroke="#991b1b" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.7"/>
+        <path d="M85 25 C70 20, 55 35, 65 50" stroke="#7f1d1d" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <path d="M85 275 C70 280, 55 265, 65 250" stroke="#7f1d1d" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="intro-claw intro-claw-right">
+      <svg viewBox="0 0 200 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M180 150 C180 100, 150 60, 120 30 C110 18, 95 10, 85 25 C75 40, 90 55, 100 65 C115 80, 130 100, 130 130" stroke="#dc2626" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M180 150 C180 200, 150 240, 120 270 C110 282, 95 290, 85 275 C75 260, 90 245, 100 235 C115 220, 130 200, 130 170" stroke="#dc2626" stroke-width="8" stroke-linecap="round" fill="none"/>
+        <path d="M130 130 C140 135, 145 142, 145 150 C145 158, 140 165, 130 170" stroke="#ef4444" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <path d="M180 150 C160 148, 145 149, 130 150" stroke="#b91c1c" stroke-width="10" stroke-linecap="round" fill="none"/>
+        <circle cx="155" cy="140" r="4" fill="#fbbf24" opacity="0.9"/>
+        <circle cx="155" cy="160" r="4" fill="#fbbf24" opacity="0.9"/>
+        <path d="M120 30 C135 15, 155 20, 160 40" stroke="#991b1b" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.7"/>
+        <path d="M120 270 C135 285, 155 280, 160 260" stroke="#991b1b" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.7"/>
+        <path d="M85 25 C70 20, 55 35, 65 50" stroke="#7f1d1d" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <path d="M85 275 C70 280, 55 265, 65 250" stroke="#7f1d1d" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="intro-title">
+      <h1>Claws<span>Net</span></h1>
+      <p>The Decentralized Social Network</p>
+    </div>
+  </div>
+  <div class="intro-particles" id="introParticles"></div>
+</div>
 
 <!-- AUTH SCREEN -->
 <div id="authScreen">
@@ -1317,20 +1631,20 @@
       <div class="auth-title">// Access the Network</div>
       <div class="form-group">
         <label class="form-label">Username</label>
-        <input class="form-input" type="text" id="loginName" placeholder="your_handle" autocomplete="off" />
+        <input class="form-input" type="text" id="loginName" placeholder="your_handle" autocomplete="off">
       </div>
       <div class="form-group">
         <label class="form-label">PIN Code</label>
         <div class="pin-row">
-          <input class="pin-box" type="password" maxlength="1" id="p0" inputmode="numeric" />
-          <input class="pin-box" type="password" maxlength="1" id="p1" inputmode="numeric" />
-          <input class="pin-box" type="password" maxlength="1" id="p2" inputmode="numeric" />
-          <input class="pin-box" type="password" maxlength="1" id="p3" inputmode="numeric" />
-          <input class="pin-box" type="password" maxlength="1" id="p4" inputmode="numeric" />
-          <input class="pin-box" type="password" maxlength="1" id="p5" inputmode="numeric" />
+          <input class="pin-box" type="password" maxlength="1" id="p0" inputmode="numeric">
+          <input class="pin-box" type="password" maxlength="1" id="p1" inputmode="numeric">
+          <input class="pin-box" type="password" maxlength="1" id="p2" inputmode="numeric">
+          <input class="pin-box" type="password" maxlength="1" id="p3" inputmode="numeric">
+          <input class="pin-box" type="password" maxlength="1" id="p4" inputmode="numeric">
+          <input class="pin-box" type="password" maxlength="1" id="p5" inputmode="numeric">
         </div>
       </div>
-      <button class="btn btn-primary" onclick="doLogin()">Connect →</button>
+      <button class="btn btn-primary" onclick="doLogin()">Connect &rarr;</button>
       <div class="auth-switch">No account? <span onclick="showRegister()">Register here</span></div>
     </div>
 
@@ -1339,29 +1653,29 @@
       <div class="auth-title">// Create Identity</div>
       <div class="form-group">
         <label class="form-label">Display Name</label>
-        <input class="form-input" type="text" id="regName" placeholder="Your Name" />
+        <input class="form-input" type="text" id="regName" placeholder="Your Name">
       </div>
       <div class="form-group">
         <label class="form-label">Username / Handle</label>
-        <input class="form-input" type="text" id="regHandle" placeholder="@handle" />
+        <input class="form-input" type="text" id="regHandle" placeholder="@handle">
       </div>
       <div class="form-group">
         <label class="form-label">Choose an Avatar</label>
         <div id="emojiPicker" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;"></div>
-        <input class="form-input" type="text" id="regEmoji" placeholder="Or type an emoji" style="margin-top:10px;" maxlength="4" />
+        <input class="form-input" type="text" id="regEmoji" placeholder="Or type an emoji" style="margin-top:10px;" maxlength="4">
       </div>
       <div class="form-group">
         <label class="form-label">Set PIN (6 digits)</label>
         <div class="pin-row">
-          <input class="pin-box" type="password" maxlength="1" id="r0" inputmode="numeric" />
-          <input class="pin-box" type="password" maxlength="1" id="r1" inputmode="numeric" />
-          <input class="pin-box" type="password" maxlength="1" id="r2" inputmode="numeric" />
-          <input class="pin-box" type="password" maxlength="1" id="r3" inputmode="numeric" />
-          <input class="pin-box" type="password" maxlength="1" id="r4" inputmode="numeric" />
-          <input class="pin-box" type="password" maxlength="1" id="r5" inputmode="numeric" />
+          <input class="pin-box" type="password" maxlength="1" id="r0" inputmode="numeric">
+          <input class="pin-box" type="password" maxlength="1" id="r1" inputmode="numeric">
+          <input class="pin-box" type="password" maxlength="1" id="r2" inputmode="numeric">
+          <input class="pin-box" type="password" maxlength="1" id="r3" inputmode="numeric">
+          <input class="pin-box" type="password" maxlength="1" id="r4" inputmode="numeric">
+          <input class="pin-box" type="password" maxlength="1" id="r5" inputmode="numeric">
         </div>
       </div>
-      <button class="btn btn-primary" onclick="doRegister()">Create Account →</button>
+      <button class="btn btn-primary" onclick="doRegister()">Create Account &rarr;</button>
       <div class="auth-switch">Have an account? <span onclick="showLogin()">Login here</span></div>
     </div>
   </div>
@@ -1386,6 +1700,7 @@
       <div class="nav-group-label">You</div>
       <div class="nav-item" onclick="showPage('profile')"><span class="ni">👤</span> Profile</div>
       <div class="nav-item" onclick="showPage('settings')"><span class="ni">⚙️</span> Settings</div>
+      <div class="nav-item" onclick="showPage('users')"><span class="ni">👥</span> Users</div>
       <div class="nav-group-label">Network</div>
       <div class="nav-item" onclick="showPage('messages')"><span class="ni">💬</span> Messages <span class="nav-badge hidden" id="msgBadge">0</span></div>
       <div class="nav-item" onclick="openModal('postModal')"><span class="ni">✍️</span> New Post</div>
@@ -1393,16 +1708,20 @@
     </nav>
   </aside>
 
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
   <!-- MAIN -->
   <div class="main">
     <div class="topbar">
       <button class="menu-btn" onclick="toggleSidebar()">☰</button>
       <div class="search-wrap">
         <span>🔍</span>
-        <input type="text" placeholder="Search posts, people…" id="topbarSearch" oninput="handleTopbarSearch()" />
+        <input type="text" placeholder="Search by name, friend code, posts..." id="topbarSearch" oninput="handleTopbarSearch()">
       </div>
       <div class="topbar-right">
         <button class="icon-btn" onclick="openModal('postModal')" title="New Post">✍️</button>
+        <button class="icon-btn" onclick="showPage('notifications')" title="Notifications" id="notifBtn">🔔<span class="notif-dot hidden" id="notifDot"></span></button>
         <button class="icon-btn" onclick="showPage('profile')" title="Profile">👤</button>
       </div>
     </div>
@@ -1412,10 +1731,14 @@
       <!-- FEED PAGE -->
       <div class="page active" id="page-feed">
         <div class="feed-wrap">
+          <div class="feed-tabs">
+            <button class="feed-tab active" id="feedTabFollowing" onclick="switchFeedTab('following')">Following</button>
+            <button class="feed-tab" id="feedTabAll" onclick="switchFeedTab('all')">All Posts</button>
+          </div>
           <div class="composer">
             <div class="composer-top">
               <div class="composer-avatar" id="compAvatar"></div>
-              <div class="composer-fake" onclick="openModal('postModal')">What's on your mind? Broadcast to the network…</div>
+              <div class="composer-fake" onclick="openModal('postModal')">What's on your mind? Broadcast to the network...</div>
             </div>
           </div>
           <div id="feedList"></div>
@@ -1424,46 +1747,37 @@
 
       <!-- SEARCH PAGE -->
       <div class="page" id="page-search">
-        <div style="max-width:640px;margin:0 auto;">
-          <div style="margin-bottom:24px;">
-            <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:800;color:#fff;margin-bottom:6px;">// Discover</div>
-            <div style="color:var(--text-muted);font-size:0.88rem;">Search by name, handle or Friend ID to connect</div>
+        <div class="discover-wrap">
+          <div class="discover-header">
+            <div class="discover-title">// Discover</div>
+            <div class="discover-subtitle">Search by name, handle or Friend ID to connect</div>
           </div>
-
-          <!-- Search bar -->
-          <div style="position:relative;margin-bottom:24px;">
-            <span style="position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:1rem;pointer-events:none;">🔍</span>
+          <div class="discover-search">
+            <span class="discover-search-icon">🔍</span>
             <input class="form-input" type="text" id="searchIdInput"
-              placeholder="Search name, @handle or CLW-XXXXXX…"
-              oninput="searchUsers()"
-              style="padding-left:44px;font-size:0.95rem;" />
+              placeholder="Search by name, @handle, CLW-XXXXXX, or post content..."
+              oninput="searchUsers()">
           </div>
-
-          <!-- Search results -->
           <div id="searchResults"></div>
-
-          <!-- All users -->
           <div class="section-title" style="margin-top:8px;">All Users</div>
           <div id="allUsersList"></div>
         </div>
       </div>
 
       <!-- USER PROFILE MODAL -->
-      <div class="modal-overlay" id="userProfileModal">
-        <div class="modal-box" style="max-width:480px;">
-          <div class="modal-title">
-            <span id="upModalTitle">User Profile</span>
-            <button class="modal-close-btn" onclick="closeModal('userProfileModal')">✕</button>
-          </div>
+      <!-- USER PROFILE PAGE -->
+      <div class="page" id="page-userprofile">
+        <div class="feed-wrap">
+          <button class="up-back-btn" onclick="goBackFromProfile()">← Back</button>
           <div id="userProfileContent"></div>
         </div>
       </div>
 
       <!-- MESSAGES PAGE -->
       <div class="page" id="page-messages">
-        <div style="max-width:640px;margin:0 auto;">
-          <div style="font-family:var(--font-display);font-size:1.4rem;font-weight:800;color:#fff;margin-bottom:6px;">// Messages</div>
-          <div style="color:var(--text-muted);font-size:0.88rem;margin-bottom:24px;">Your direct message conversations</div>
+        <div class="messages-wrap">
+          <div class="messages-title">// Messages</div>
+          <div class="messages-subtitle">Your direct message conversations</div>
           <div id="dmThreadList"></div>
         </div>
       </div>
@@ -1476,8 +1790,14 @@
             <button class="modal-close-btn" onclick="closeModal('dmModal')">✕</button>
           </div>
           <div class="dm-messages" id="dmMessages"></div>
+          <div class="dm-media-preview" id="dmMediaPreview"></div>
           <div class="dm-input-row">
-            <input type="text" id="dmInput" placeholder="Type a message…" onkeydown="if(event.key==='Enter')sendDM()" />
+            <label class="dm-media-btn" title="Send image/video">
+              📎
+              <input type="file" accept="image/*,video/*" multiple onchange="handleDMFiles(this.files)">
+            </label>
+            <button class="dm-media-btn" onclick="handleDMMediaUrl()" title="Send media URL">🔗</button>
+            <input type="text" id="dmInput" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendDM()">
             <button class="dm-send-btn" onclick="sendDM()">➤</button>
           </div>
         </div>
@@ -1498,110 +1818,88 @@
           <div class="profile-name" id="profileName"></div>
           <div class="profile-handle" id="profileHandle"></div>
           <div class="profile-fid" id="profileFid" onclick="copyUID()"></div>
-          <div id="profileBio" style="
-            font-size:0.88rem;
-            color:var(--text-muted);
-            margin-top:12px;
-            line-height:1.6;
-            max-width:400px;
-            margin-left:auto;
-            margin-right:auto;
-            position:relative;
-            z-index:1;
-          "></div>
+          <div class="profile-bio" id="profileBio"></div>
           <div class="pstats">
             <div><div class="pstat-v" id="statPosts">0</div><div class="pstat-l">Posts</div></div>
             <div><div class="pstat-v" id="statLikes">0</div><div class="pstat-l">Likes Given</div></div>
             <div><div class="pstat-v" id="statSaved">0</div><div class="pstat-l">Saved</div></div>
           </div>
         </div>
-        <div class="profile-posts-wrap">
-          <div class="section-title">// My Posts</div>
-          <div id="profilePostsList"></div>
+        <div class="section-title">// My Posts</div>
+        <div id="profilePostsList"></div>
+      </div>
+
+      <!-- USERS PAGE -->
+      <div class="page" id="page-users">
+        <div class="discover-wrap">
+          <div class="discover-header">
+            <div class="discover-title">// Registered Users</div>
+            <div class="discover-subtitle">Browse all members on the network</div>
+          </div>
+          <div class="discover-search">
+            <span class="discover-search-icon">🔍</span>
+            <input class="form-input" type="text" id="usersSearchInput"
+              placeholder="Search by name, @handle, or CLW-XXXXXX..."
+              oninput="searchRegisteredUsers()">
+          </div>
+          <div id="usersSearchResults"></div>
+          <div id="registeredUsersList"></div>
+          <div id="usersCount" style="font-size:0.75rem;color:var(--text-dim);margin-top:16px;text-align:center;"></div>
+          <div id="dbStatus" style="font-size:0.7rem;color:var(--text-dim);margin-top:8px;text-align:center;"></div>
         </div>
       </div>
 
       <!-- SETTINGS PAGE -->
       <div class="page" id="page-settings">
-        <div style="max-width:500px;margin:0 auto;">
+        <div class="settings-wrap">
           <div class="section-title">// Settings</div>
-          <div style="background:var(--surface);border:1px solid rgba(138,43,226,0.2);border-radius:var(--radius-lg);padding:28px;margin-bottom:20px;">
-
-            <!-- Profile picture upload -->
+          <div class="settings-card">
             <div class="form-group" style="text-align:center;">
-              <label class="form-label" style="text-align:left;display:block;">Profile Picture</label>
-              <div style="position:relative;display:inline-block;">
-                <div id="settingsAvatarPreview" onclick="document.getElementById('avatarFileInput').click()" style="
-                  width:90px;height:90px;border-radius:50%;
-                  background:linear-gradient(135deg,var(--purple),var(--purple-deep));
-                  display:flex;align-items:center;justify-content:center;
-                  font-size:2.5rem;margin:0 auto 10px;
-                  border:2px solid rgba(0,229,255,0.4);
-                  box-shadow:var(--glow-cyan-sm);
-                  cursor:pointer;overflow:hidden;position:relative;
-                "></div>
-                <input type="file" id="avatarFileInput" accept="image/*" style="display:none" onchange="handleAvatarUpload(this.files[0])" />
-              </div>
-              <div style="display:flex;gap:10px;justify-content:center;margin-top:4px;">
-                <label style="
-                  display:inline-flex;align-items:center;gap:6px;
-                  padding:8px 16px;border:1px dashed rgba(138,43,226,0.4);
-                  border-radius:var(--radius);color:var(--text-muted);
-                  font-size:0.8rem;font-weight:500;cursor:pointer;
-                  font-family:var(--font-body);transition:all 0.2s;
-                " onmouseover="this.style.borderColor='var(--purple-bright)';this.style.color='var(--purple-bright)'"
-                   onmouseout="this.style.borderColor='rgba(138,43,226,0.4)';this.style.color='var(--text-muted)'">
+              <label class="form-label" style="text-align:left;">Profile Picture</label>
+              <div class="settings-avatar-preview" id="settingsAvatarPreview" onclick="document.getElementById('avatarFileInput').click()"></div>
+              <input type="file" id="avatarFileInput" accept="image/*" style="display:none" onchange="handleAvatarUpload(this.files[0])">
+              <div class="settings-avatar-actions">
+                <label class="avatar-action-btn">
                   📁 Upload Photo
-                  <input type="file" accept="image/*" style="display:none" onchange="handleAvatarUpload(this.files[0])" />
+                  <input type="file" accept="image/*" style="display:none" onchange="handleAvatarUpload(this.files[0])">
                 </label>
-                <button onclick="handleAvatarUrl()" style="
-                  display:inline-flex;align-items:center;gap:6px;
-                  padding:8px 16px;border:1px dashed rgba(0,229,255,0.25);
-                  border-radius:var(--radius);color:var(--text-muted);
-                  font-size:0.8rem;font-weight:500;cursor:pointer;
-                  font-family:var(--font-body);background:transparent;transition:all 0.2s;
-                " onmouseover="this.style.borderColor='var(--cyan)';this.style.color='var(--cyan)'"
-                   onmouseout="this.style.borderColor='rgba(0,229,255,0.25)';this.style.color='var(--text-muted)'">
-                  🔗 Use URL
-                </button>
-                <button onclick="removeAvatar()" style="
-                  display:inline-flex;align-items:center;gap:6px;
-                  padding:8px 16px;border:1px dashed rgba(255,51,102,0.25);
-                  border-radius:var(--radius);color:var(--text-muted);
-                  font-size:0.8rem;font-weight:500;cursor:pointer;
-                  font-family:var(--font-body);background:transparent;transition:all 0.2s;
-                " onmouseover="this.style.borderColor='var(--danger)';this.style.color='var(--danger)'"
-                   onmouseout="this.style.borderColor='rgba(255,51,102,0.25)';this.style.color='var(--text-muted)'">
-                  🗑️ Remove
-                </button>
+                <button class="avatar-action-btn url-btn" onclick="handleAvatarUrl()">🔗 Use URL</button>
+                <button class="avatar-action-btn remove-btn" onclick="removeAvatar()">🗑️ Remove</button>
               </div>
-              <div style="font-size:0.72rem;color:var(--text-dim);margin-top:8px;">Max 5MB · JPG, PNG, GIF, WebP</div>
+              <div class="avatar-hint">Max 5MB · JPG, PNG, GIF, WebP</div>
             </div>
-
             <div class="form-group">
               <label class="form-label">Display Name</label>
-              <input class="form-input" type="text" id="settingsName" />
+              <input class="form-input" type="text" id="settingsName">
             </div>
             <div class="form-group">
               <label class="form-label">Avatar Emoji <span style="color:var(--text-dim);font-size:0.7rem;font-weight:400;">(used if no photo set)</span></label>
-              <input class="form-input" type="text" id="settingsEmoji" maxlength="4" />
+              <input class="form-input" type="text" id="settingsEmoji" maxlength="4">
             </div>
             <div class="form-group">
               <label class="form-label">Bio</label>
-              <textarea class="form-input" id="settingsBio" rows="3" placeholder="Tell the network about yourself…"></textarea>
+              <textarea class="form-input" id="settingsBio" rows="3" placeholder="Tell the network about yourself..."></textarea>
             </div>
             <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
           </div>
-          <div style="background:var(--surface);border:1px solid rgba(255,51,102,0.2);border-radius:var(--radius-lg);padding:28px;">
+          <div class="settings-danger">
             <div class="section-title" style="color:var(--danger);">// Danger Zone</div>
             <button class="btn btn-danger" onclick="doLogout()">Logout</button>
           </div>
         </div>
       </div>
 
-    </div><!-- /content -->
-  </div><!-- /main -->
-</div><!-- /appScreen -->
+      <!-- NOTIFICATIONS PAGE -->
+      <div class="page" id="page-notifications">
+        <div class="feed-wrap">
+          <div class="section-title">// Notifications</div>
+          <div id="notifList"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <!-- POST MODAL -->
 <div class="modal-overlay" id="postModal">
@@ -1610,30 +1908,22 @@
       Create Post
       <button class="modal-close-btn" onclick="closeModal('postModal')">✕</button>
     </div>
-
     <div class="form-group">
       <label class="form-label">What's happening?</label>
-      <textarea id="postText" class="form-input" rows="4" placeholder="Share something with the network…"></textarea>
+      <textarea id="postText" class="form-input" rows="4" placeholder="Share something with the network..."></textarea>
     </div>
-
-    <!-- Media preview -->
     <div id="postMediaPreview" class="media-preview-grid" style="display:none;"></div>
-
-    <!-- Upload buttons -->
     <div class="upload-btn-row">
       <label class="upload-label">
         📁 Upload File
-        <input type="file" id="postFileInput" accept="image/*,video/*" multiple onchange="handlePostFiles(this.files)" />
+        <input type="file" id="postFileInput" accept="image/*,video/*" multiple onchange="handlePostFiles(this.files)">
       </label>
       <button type="button" class="url-toggle-btn" onclick="togglePostUrlRow()">🔗 Add URL</button>
     </div>
-
-    <!-- URL input row -->
     <div class="url-add-row" id="postUrlRow">
-      <input type="url" id="postUrlInput" placeholder="Paste image or video URL…" onkeydown="if(event.key==='Enter')addPostUrl()" />
+      <input type="url" id="postUrlInput" placeholder="Paste image or video URL..." onkeydown="if(event.key==='Enter')addPostUrl()">
       <button onclick="addPostUrl()">Add</button>
     </div>
-
     <div class="modal-btns">
       <button class="btn btn-outline" onclick="closeModal('postModal');resetPostModal()">Cancel</button>
       <button class="btn btn-primary" onclick="submitPost()">Post 🦞</button>
@@ -1645,20 +1935,450 @@
 <div class="toast-wrap" id="toastWrap"></div>
 
 <script>
-  // ─────────────────────────────────────────────
-  // POST MODAL MEDIA STATE — single declaration
-  // ─────────────────────────────────────────────
+  // ── Data Layer with AppDB (global persistence) + localStorage fallback ──
+  var currentUser = null;
   var postModalMedia = [];
+  var activeDMThread = null;
+  var activeDMUser = null;
+  var _cache = { users: null, posts: null };
+  var _syncInterval = null;
 
+  async function waitForAppDB() {
+    if (window.AppDB) return true;
+    return new Promise(function(resolve) {
+      var t = setInterval(function() {
+        if (window.AppDB) { clearInterval(t); resolve(true); }
+      }, 50);
+      setTimeout(function() { clearInterval(t); resolve(false); }, 5000);
+    });
+  }
+
+  var hasAppDB = false;
+
+  // Global data: users, posts, DMs — shared across all users via AppDB.setGlobal/getGlobal
+  // Users stored in a lightweight registry (cn_registry) + individual keys (cn_user_<handle>)
+  // Registry contains only handle/name/emoji/id/joined — no avatars or PINs (stays under 100KB)
+
+  function makeRegistryEntry(u) {
+    return { name: u.name, handle: u.handle, emoji: u.emoji, id: u.id, joined: u.joined };
+  }
+
+  async function getUsers() {
+    var users = {};
+    try { users = JSON.parse(localStorage.getItem('cn_users') || '{}'); } catch(e) {}
+    if (hasAppDB) {
+      try {
+        // Method 1: Read the lightweight registry
+        var registry = await window.AppDB.getGlobal('cn_registry');
+        if (registry && typeof registry === 'object') {
+          var handles = Object.keys(registry);
+          for (var i = 0; i < handles.length; i++) {
+            // Try to get full user data from individual key
+            try {
+              var full = await window.AppDB.getGlobal('cn_user_' + handles[i]);
+              if (full && typeof full === 'object') {
+                users[handles[i]] = full;
+              } else {
+                // Fall back to registry entry
+                users[handles[i]] = registry[handles[i]];
+              }
+            } catch(e2) {
+              users[handles[i]] = registry[handles[i]];
+            }
+          }
+        }
+        // Method 2: Also try listGlobal as backup
+        try {
+          var all = await window.AppDB.listGlobal();
+          if (all && all.length) {
+            for (var i = 0; i < all.length; i++) {
+              if (all[i].key && all[i].key.indexOf('cn_user_') === 0) {
+                var handle = all[i].key.substring(8);
+                if (all[i].value && typeof all[i].value === 'object' && !users[handle]) {
+                  users[handle] = all[i].value;
+                }
+              }
+            }
+          }
+        } catch(e) {}
+        _cache.users = users;
+        localStorage.setItem('cn_users', JSON.stringify(users));
+        return users;
+      } catch(e) {
+        console.warn('[ClawsNet] getUsers error:', e);
+      }
+    }
+    if (_cache.users && Object.keys(_cache.users).length) return _cache.users;
+    _cache.users = users;
+    return users;
+  }
+
+  async function saveUsers(u) {
+    _cache.users = u;
+    localStorage.setItem('cn_users', JSON.stringify(u));
+    if (hasAppDB) {
+      // Update registry and individual keys
+      try {
+        var registry = {};
+        try { var r = await window.AppDB.getGlobal('cn_registry'); if (r) registry = r; } catch(e) {}
+        var handles = Object.keys(u);
+        for (var i = 0; i < handles.length; i++) {
+          registry[handles[i]] = makeRegistryEntry(u[handles[i]]);
+          try { await window.AppDB.setGlobal('cn_user_' + handles[i], u[handles[i]]); } catch(e) {}
+        }
+        await window.AppDB.setGlobal('cn_registry', registry);
+      } catch(e) {
+        console.warn('[ClawsNet] saveUsers error:', e);
+      }
+    }
+  }
+
+  // Save a single user efficiently
+  async function saveOneUser(handle, userData) {
+    if (!_cache.users) _cache.users = {};
+    _cache.users[handle] = userData;
+    var local = {};
+    try { local = JSON.parse(localStorage.getItem('cn_users') || '{}'); } catch(e) {}
+    local[handle] = userData;
+    localStorage.setItem('cn_users', JSON.stringify(local));
+    if (hasAppDB) {
+      try {
+        await window.AppDB.setGlobal('cn_user_' + handle, userData);
+      } catch(e) {
+        console.warn('[ClawsNet] Failed to save user ' + handle + ':', e);
+      }
+      // Update the lightweight registry
+      try {
+        var registry = {};
+        try { var r = await window.AppDB.getGlobal('cn_registry'); if (r) registry = r; } catch(e) {}
+        registry[handle] = makeRegistryEntry(userData);
+        await window.AppDB.setGlobal('cn_registry', registry);
+      } catch(e) {
+        console.warn('[ClawsNet] Failed to update registry:', e);
+      }
+    }
+  }
+
+  async function getPosts() {
+    var local = [];
+    try { local = JSON.parse(localStorage.getItem('cn_posts') || '[]'); } catch(e) {}
+    if (hasAppDB) {
+      try {
+        // Read post index to know which posts exist
+        var index = await window.AppDB.getGlobal('cn_post_index');
+        if (index && index.length) {
+          var posts = [];
+          for (var i = 0; i < index.length; i++) {
+            try {
+              var post = await window.AppDB.getGlobal('cn_post_' + index[i]);
+              if (post) posts.push(post);
+            } catch(e2) {}
+          }
+          // Merge any local-only posts
+          var cloudIds = posts.map(function(p) { return p.id; });
+          local.forEach(function(lp) {
+            if (cloudIds.indexOf(lp.id) === -1) posts.push(lp);
+          });
+          posts.sort(function(a, b) { return (b.time || 0) - (a.time || 0); });
+          _cache.posts = posts;
+          localStorage.setItem('cn_posts', JSON.stringify(posts));
+          return posts;
+        }
+        // Also try old single-key format for migration
+        var oldData = await window.AppDB.getGlobal('cn_posts');
+        if (oldData && oldData.length) {
+          _cache.posts = oldData;
+          return oldData;
+        }
+      } catch(e) {
+        console.warn('[ClawsNet] getPosts error:', e);
+      }
+    }
+    if (_cache.posts && _cache.posts.length) return _cache.posts;
+    _cache.posts = local;
+    return local;
+  }
+
+  async function savePosts(p) {
+    _cache.posts = p;
+    localStorage.setItem('cn_posts', JSON.stringify(p));
+    if (hasAppDB) {
+      try {
+        // Save each post individually and update the index
+        var index = [];
+        for (var i = 0; i < p.length; i++) {
+          index.push(p[i].id);
+          try {
+            await window.AppDB.setGlobal('cn_post_' + p[i].id, p[i]);
+          } catch(e2) {
+            console.warn('[ClawsNet] Failed to save post ' + p[i].id + ':', e2);
+          }
+        }
+        await window.AppDB.setGlobal('cn_post_index', index);
+      } catch(e) {
+        console.warn('[ClawsNet] savePosts error:', e);
+      }
+    }
+  }
+
+  // Save a single post efficiently
+  async function saveOnePost(post, allPosts) {
+    _cache.posts = allPosts;
+    localStorage.setItem('cn_posts', JSON.stringify(allPosts));
+    if (hasAppDB) {
+      try {
+        await window.AppDB.setGlobal('cn_post_' + post.id, post);
+        // Update the index
+        var index = allPosts.map(function(p) { return p.id; });
+        await window.AppDB.setGlobal('cn_post_index', index);
+      } catch(e) {
+        console.warn('[ClawsNet] saveOnePost error:', e);
+      }
+    }
+  }
+
+  async function getDMs(threadId) {
+    if (hasAppDB) {
+      try {
+        var data = await window.AppDB.getGlobal('cn_dm_' + threadId);
+        if (data) return data;
+      } catch(e) {}
+    }
+    try { return JSON.parse(localStorage.getItem('cn_dm_' + threadId) || '[]'); } catch(e) { return []; }
+  }
+
+  async function saveDMs(threadId, msgs) {
+    localStorage.setItem('cn_dm_' + threadId, JSON.stringify(msgs));
+    if (hasAppDB) {
+      try { await window.AppDB.setGlobal('cn_dm_' + threadId, msgs); } catch(e) {}
+    }
+  }
+
+  // User-scoped data: session, following — private per user via AppDB.set/get
+  async function loadSession() {
+    if (hasAppDB) {
+      try {
+        var s = await window.AppDB.get('cn_session');
+        if (s) { currentUser = s; return; }
+      } catch(e) {}
+    }
+    try { var s = localStorage.getItem('cn_session'); if (s) currentUser = JSON.parse(s); }
+    catch(e) { currentUser = null; }
+  }
+
+  async function saveSession() {
+    localStorage.setItem('cn_session', JSON.stringify(currentUser));
+    if (hasAppDB) {
+      try { await window.AppDB.set('cn_session', currentUser); } catch(e) {}
+    }
+  }
+
+  async function clearSession() {
+    localStorage.removeItem('cn_session');
+    if (hasAppDB) {
+      try { await window.AppDB.delete('cn_session'); } catch(e) {}
+    }
+  }
+
+  async function getFollowing() {
+    if (hasAppDB) {
+      try {
+        var data = await window.AppDB.get('cn_following');
+        if (data) return data;
+      } catch(e) {}
+    }
+    try { return JSON.parse(localStorage.getItem('cn_following_' + currentUser.id) || '[]'); } catch(e) { return []; }
+  }
+
+  async function saveFollowing(arr) {
+    localStorage.setItem('cn_following_' + currentUser.id, JSON.stringify(arr));
+    if (hasAppDB) {
+      try { await window.AppDB.set('cn_following', arr); } catch(e) {}
+    }
+  }
+
+  // Sync: periodically pull fresh data from AppDB so users see each other
+  async function syncFromCloud() {
+    if (!hasAppDB || !currentUser) return;
+    try {
+      _cache.users = null;
+      _cache.posts = null;
+      await getUsers();
+      await getPosts();
+      renderFeed();
+      renderAllUsers();
+      renderRegisteredUsers();
+      updateMsgBadge();
+      updateNotifBadge();
+    } catch(e) {}
+  }
+
+  function startSync() {
+    if (_syncInterval) clearInterval(_syncInterval);
+    _syncInterval = setInterval(syncFromCloud, 15000);
+  }
+
+  // ── Utils ──
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function formatTime(ts) {
+    if (!ts) return '';
+    var diff = Date.now() - ts;
+    if (diff < 60000) return 'just now';
+    if (diff < 3600000) return Math.floor(diff / 60000) + 'm ago';
+    if (diff < 86400000) return Math.floor(diff / 3600000) + 'h ago';
+    return Math.floor(diff / 86400000) + 'd ago';
+  }
+
+  function showToast(msg, type) {
+    var wrap = document.getElementById('toastWrap');
+    var t = document.createElement('div');
+    t.className = 'toast' + (type ? ' ' + type : '');
+    t.textContent = msg;
+    wrap.appendChild(t);
+    setTimeout(function() { t.remove(); }, 3500);
+  }
+
+  function copyUID() {
+    if (!currentUser) return;
+    navigator.clipboard.writeText(currentUser.id).then(function() {
+      showToast('ID copied to clipboard!', 'success');
+    }).catch(function() {
+      showToast('Could not copy ID');
+    });
+  }
+
+  function renderAvatarContent(user) {
+    if (user.avatar) {
+      return '<img src="' + escHtml(user.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent=\'' + escHtml(user.emoji || '🦞') + '\'">';
+    }
+    return user.emoji || '🦞';
+  }
+
+  // ── Auth ──
+  function showRegister() {
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('registerForm').classList.remove('hidden');
+  }
+  function showLogin() {
+    document.getElementById('registerForm').classList.add('hidden');
+    document.getElementById('loginForm').classList.remove('hidden');
+  }
+
+  function getPin(prefix) {
+    return [0,1,2,3,4,5].map(function(i) { return document.getElementById(prefix + i).value; }).join('');
+  }
+
+  async function doLogin() {
+    var name = document.getElementById('loginName').value.trim().toLowerCase();
+    var pin = getPin('p');
+    if (!name || pin.length < 6) { showToast('Enter username and 6-digit PIN', 'error'); return; }
+    var users = await getUsers();
+    if (!users[name]) { showToast('User not found', 'error'); return; }
+    if (users[name].pin !== pin) { showToast('Wrong PIN', 'error'); return; }
+    currentUser = users[name];
+    await saveSession();
+    await bootApp();
+  }
+
+  async function doRegister() {
+    var name = document.getElementById('regName').value.trim();
+    var handle = document.getElementById('regHandle').value.trim().toLowerCase().replace(/[^a-z0-9_]/g, '');
+    var emoji = document.getElementById('regEmoji').value.trim() || '🦞';
+    var pin = getPin('r');
+    if (!name || !handle) { showToast('Fill in name and handle', 'error'); return; }
+    if (pin.length < 6) { showToast('Set a 6-digit PIN', 'error'); return; }
+    var users = await getUsers();
+    if (users[handle]) { showToast('Handle taken!', 'error'); return; }
+    var uid = 'CLW-' + Math.random().toString(36).substr(2, 8).toUpperCase();
+    currentUser = { id: uid, name: name, handle: handle, emoji: emoji, pin: pin, bio: '', joined: Date.now() };
+    await saveOneUser(handle, currentUser);
+    await saveSession();
+    await bootApp();
+  }
+
+  async function doLogout() {
+    await clearSession();
+    currentUser = null;
+    if (_syncInterval) clearInterval(_syncInterval);
+    document.getElementById('appScreen').classList.add('hidden');
+    document.getElementById('authScreen').style.display = 'flex';
+    showToast('Logged out');
+  }
+
+  // ── Boot ──
+  async function bootApp() {
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('appScreen').classList.remove('hidden');
+    // Ensure current user is in the global users list
+    if (currentUser) {
+      await saveOneUser(currentUser.handle, currentUser);
+    }
+    updateSidebar();
+    updateAvatarUI();
+    await renderFeed();
+    await renderProfile();
+    await renderSaved();
+    await renderAllUsers();
+    await renderRegisteredUsers();
+    await renderDMThreadList();
+    await updateMsgBadge();
+    await updateNotifBadge();
+    showPage('feed');
+    startSync();
+  }
+
+  function updateSidebar() {
+    document.getElementById('sidebarName').textContent = currentUser.name;
+    document.getElementById('sidebarUid').textContent = currentUser.id;
+  }
+
+  // ── Navigation ──
+  function showPage(page) {
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+    var el = document.getElementById('page-' + page);
+    if (el) el.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(function(n) {
+      if (n.textContent.toLowerCase().includes(page === 'feed' ? 'feed' : page)) n.classList.add('active');
+    });
+    if (page === 'profile') renderProfile();
+    if (page === 'saved') renderSaved();
+    if (page === 'search') { renderAllUsers(); document.getElementById('searchResults').innerHTML = ''; }
+    if (page === 'messages') { renderDMThreadList(); updateMsgBadge(); }
+    if (page === 'settings') updateAvatarUI();
+    if (page === 'users') { renderRegisteredUsers(); document.getElementById('usersSearchInput').value = ''; document.getElementById('usersSearchResults').innerHTML = ''; }
+    if (page === 'notifications') renderNotifications();
+    closeSidebar();
+  }
+
+  function toggleSidebar() {
+    var sidebar = document.getElementById('sidebar');
+    var overlay = document.getElementById('sidebarOverlay');
+    sidebar.classList.toggle('open');
+    overlay.classList.toggle('open');
+    document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+  }
+  function closeSidebar() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  // ── Modals ──
+  function openModal(id) { document.getElementById(id).classList.add('open'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+  // ── Post Modal Media ──
   function handlePostFiles(files) {
     Array.from(files).forEach(function(file) {
       if (file.size > 25 * 1024 * 1024) { showToast('File too large (max 25MB)', 'error'); return; }
       var reader = new FileReader();
       reader.onload = function(ev) {
-        postModalMedia.push({
-          type: file.type.startsWith('video') ? 'video' : 'image',
-          src: ev.target.result
-        });
+        postModalMedia.push({ type: file.type.startsWith('video') ? 'video' : 'image', src: ev.target.result });
         renderPostModalPreview();
       };
       reader.readAsDataURL(file);
@@ -1668,13 +2388,8 @@
 
   function togglePostUrlRow() {
     var row = document.getElementById('postUrlRow');
-    var isOpen = row.classList.contains('open');
-    if (isOpen) {
-      row.classList.remove('open');
-    } else {
-      row.classList.add('open');
-      document.getElementById('postUrlInput').focus();
-    }
+    row.classList.toggle('open');
+    if (row.classList.contains('open')) document.getElementById('postUrlInput').focus();
   }
 
   function addPostUrl() {
@@ -1695,184 +2410,34 @@
 
   function renderPostModalPreview() {
     var wrap = document.getElementById('postMediaPreview');
-    if (!postModalMedia.length) {
-      wrap.style.display = 'none';
-      wrap.innerHTML = '';
-      return;
-    }
+    if (!postModalMedia.length) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
     wrap.style.display = 'grid';
     wrap.innerHTML = postModalMedia.map(function(m, i) {
-      return '<div class="media-preview-item">' +
-        (m.type === 'image'
-          ? '<img src="' + m.src + '" alt="preview" />'
-          : '<video src="' + m.src + '" muted playsinline></video>') +
+      var el = m.type === 'image'
+        ? '<img src="' + escHtml(m.src) + '" alt="preview">'
+        : '<video src="' + escHtml(m.src) + '" muted playsinline></video>';
+      return '<div class="media-preview-item">' + el +
         '<span class="media-preview-badge">' + m.type + '</span>' +
-        '<button class="media-preview-remove" onclick="removePostMedia(' + i + ')">×</button>' +
-        '</div>';
+        '<button class="media-preview-remove" onclick="removePostMedia(' + i + ')">×</button></div>';
     }).join('');
   }
 
   function resetPostModal() {
     postModalMedia = [];
-    var wrap = document.getElementById('postMediaPreview');
-    if (wrap) { wrap.style.display = 'none'; wrap.innerHTML = ''; }
-    var urlRow = document.getElementById('postUrlRow');
-    if (urlRow) urlRow.classList.remove('open');
-    var urlInput = document.getElementById('postUrlInput');
-    if (urlInput) urlInput.value = '';
-    var postText = document.getElementById('postText');
-    if (postText) postText.value = '';
-    var fileInput = document.getElementById('postFileInput');
-    if (fileInput) fileInput.value = '';
+    document.getElementById('postMediaPreview').style.display = 'none';
+    document.getElementById('postMediaPreview').innerHTML = '';
+    document.getElementById('postUrlRow').classList.remove('open');
+    document.getElementById('postUrlInput').value = '';
+    document.getElementById('postText').value = '';
+    document.getElementById('postFileInput').value = '';
   }
 
-  // ─────────────────────────────────────────────
-  // DATA LAYER
-  // ─────────────────────────────────────────────
-  function getUsers() { try { return JSON.parse(localStorage.getItem('cn_users') || '{}'); } catch(e) { return {}; } }
-  function saveUsers(u) { localStorage.setItem('cn_users', JSON.stringify(u)); }
-  function getPosts() { try { return JSON.parse(localStorage.getItem('cn_posts') || '[]'); } catch(e) { return []; } }
-  function savePosts(p) { localStorage.setItem('cn_posts', JSON.stringify(p)); }
-
-  var currentUser = null;
-
-  function loadSession() {
-    try {
-      var s = localStorage.getItem('cn_session');
-      if (s) currentUser = JSON.parse(s);
-    } catch(e) { currentUser = null; }
-  }
-  function saveSession() { localStorage.setItem('cn_session', JSON.stringify(currentUser)); }
-  function clearSession() { localStorage.removeItem('cn_session'); }
-
-  // ─────────────────────────────────────────────
-  // AUTH
-  // ─────────────────────────────────────────────
-  function showRegister() {
-    document.getElementById('loginForm').classList.add('hidden');
-    document.getElementById('registerForm').classList.remove('hidden');
-  }
-  function showLogin() {
-    document.getElementById('registerForm').classList.add('hidden');
-    document.getElementById('loginForm').classList.remove('hidden');
-  }
-
-  function getPin(prefix) {
-    return ['0','1','2','3','4','5'].map(function(i) {
-      return document.getElementById(prefix + i).value;
-    }).join('');
-  }
-
-  function doLogin() {
-    var name = document.getElementById('loginName').value.trim().toLowerCase();
-    var pin = getPin('p');
-    if (!name || pin.length < 6) { showToast('Enter username and 6-digit PIN', 'error'); return; }
-    var users = getUsers();
-    if (!users[name]) { showToast('User not found', 'error'); return; }
-    if (users[name].pin !== pin) { showToast('Wrong PIN', 'error'); return; }
-    currentUser = users[name];
-    saveSession();
-    bootApp();
-  }
-
-  function doRegister() {
-    var name = document.getElementById('regName').value.trim();
-    var handle = document.getElementById('regHandle').value.trim().toLowerCase().replace(/[^a-z0-9_]/g,'');
-    var emoji = document.getElementById('regEmoji').value.trim() || '🦞';
-    var pin = getPin('r');
-    if (!name || !handle) { showToast('Fill in name and handle', 'error'); return; }
-    if (pin.length < 6) { showToast('Set a 6-digit PIN', 'error'); return; }
-    var users = getUsers();
-    if (users[handle]) { showToast('Handle taken!', 'error'); return; }
-    var uid = 'CLW-' + Math.random().toString(36).substr(2,8).toUpperCase();
-    var user = { id: uid, name: name, handle: handle, emoji: emoji, pin: pin, bio: '', joined: Date.now() };
-    users[handle] = user;
-    saveUsers(users);
-    currentUser = user;
-    saveSession();
-    bootApp();
-  }
-
-  function doLogout() {
-    clearSession();
-    currentUser = null;
-    document.getElementById('appScreen').classList.add('hidden');
-    document.getElementById('authScreen').style.display = 'flex';
-    showToast('Logged out');
-  }
-
-  // ─────────────────────────────────────────────
-  // BOOT
-  // ─────────────────────────────────────────────
-  function bootApp() {
-    document.getElementById('authScreen').style.display = 'none';
-    document.getElementById('appScreen').classList.remove('hidden');
-    updateSidebar();
-    updateAvatarUI();
-    renderFeed();
-    renderProfile();
-    renderSaved();
-    renderAllUsers();
-    renderDMThreadList();
-    updateMsgBadge();
-    showPage('feed');
-  }
-
-  function updateSidebar() {
-    document.getElementById('sidebarName').textContent = currentUser.name;
-    document.getElementById('sidebarUid').textContent = currentUser.id;
-    updateAvatarUI();
-  }
-
-  // ─────────────────────────────────────────────
-  // NAVIGATION
-  // ─────────────────────────────────────────────
-  function showPage(page) {
-    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
-    document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
-    var el = document.getElementById('page-' + page);
-    if (el) el.classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(function(n) {
-      if (n.textContent.toLowerCase().includes(page === 'feed' ? 'feed' : page)) n.classList.add('active');
-    });
-    if (page === 'profile') renderProfile();
-    if (page === 'saved') renderSaved();
-    if (page === 'search') { renderAllUsers(); document.getElementById('searchResults').innerHTML = ''; }
-    if (page === 'messages') { renderDMThreadList(); updateMsgBadge(); }
-    if (page === 'settings') { updateAvatarUI(); }
-    closeSidebar();
-  }
-
-  function toggleSidebar() {
-    document.getElementById('sidebar').classList.toggle('open');
-    document.getElementById('sidebarOverlay').classList.toggle('open');
-  }
-  function closeSidebar() {
-    document.getElementById('sidebar').classList.remove('open');
-    document.getElementById('sidebarOverlay').classList.remove('open');
-  }
-
-  // ─────────────────────────────────────────────
-  // MODALS
-  // ─────────────────────────────────────────────
-  function openModal(id) {
-    document.getElementById(id).classList.add('open');
-  }
-  function closeModal(id) {
-    document.getElementById(id).classList.remove('open');
-  }
-
-  // ─────────────────────────────────────────────
-  // SUBMIT POST
-  // ─────────────────────────────────────────────
-  function submitPost() {
+  // ── Submit Post ──
+  async function submitPost() {
     var text = document.getElementById('postText').value.trim();
-    if (!text && postModalMedia.length === 0) {
-      showToast('Write something or add media first!', 'error');
-      return;
-    }
-    var posts = getPosts();
-    var post = {
+    if (!text && !postModalMedia.length) { showToast('Write something or add media first!', 'error'); return; }
+    var posts = await getPosts();
+    var newPost = {
       id: Date.now().toString(),
       uid: currentUser.id,
       handle: currentUser.handle,
@@ -1881,148 +2446,275 @@
       avatar: currentUser.avatar || null,
       text: text,
       media: postModalMedia.slice(),
-      img: postModalMedia.length > 0 ? postModalMedia[0].src : null,
       likes: [],
       saves: [],
       comments: [],
       time: Date.now()
     };
-    posts.unshift(post);
-    savePosts(posts);
+    posts.unshift(newPost);
+    await saveOnePost(newPost, posts);
     closeModal('postModal');
     resetPostModal();
-    renderFeed();
-    renderProfile();
+    await renderFeed();
+    await renderProfile();
     showToast('Post broadcasted! 🦞', 'success');
   }
 
-  // ─────────────────────────────────────────────
-  // RENDER FEED
-  // ─────────────────────────────────────────────
-  function renderFeed() {
-    var posts = getPosts();
-    var list = document.getElementById('feedList');
-    if (!posts.length) {
-      list.innerHTML = '<div class="empty-state"><div class="es-icon">📡</div><p>No posts yet. Be the first to broadcast!</p></div>';
-      return;
-    }
-    list.innerHTML = posts.map(function(p) { return renderPostCard(p, false); }).join('');
+  // ── Render Feed ──
+  var currentFeedTab = 'following';
+
+  function switchFeedTab(tab) {
+    currentFeedTab = tab;
+    document.getElementById('feedTabFollowing').className = 'feed-tab' + (tab === 'following' ? ' active' : '');
+    document.getElementById('feedTabAll').className = 'feed-tab' + (tab === 'all' ? ' active' : '');
+    renderFeed();
   }
 
-  function renderPostCard(p, isOwnerView) {
+  async function renderFeed() {
+    var posts = await getPosts();
+    var list = document.getElementById('feedList');
+
+    if (currentFeedTab === 'following') {
+      var following = await getFollowing();
+      var filtered = posts.filter(function(p) {
+        return p.uid === currentUser.id || following.indexOf(p.uid) > -1;
+      });
+      if (!filtered.length) {
+        if (!following.length) {
+          list.innerHTML = '<div class="empty-state"><div class="es-icon">👥</div>' +
+            '<p>Follow people to see their posts here!</p>' +
+            '<button class="btn btn-primary" style="margin-top:12px;" onclick="showPage(\'search\')">Discover People</button>' +
+            '</div>';
+        } else {
+          list.innerHTML = '<div class="empty-state"><div class="es-icon">📡</div><p>No posts from people you follow yet.</p></div>';
+        }
+        return;
+      }
+      list.innerHTML = filtered.map(function(p) { return renderPostCard(p); }).join('');
+    } else {
+      if (!posts.length) {
+        list.innerHTML = '<div class="empty-state"><div class="es-icon">📡</div><p>No posts yet. Be the first to broadcast!</p></div>';
+        return;
+      }
+      list.innerHTML = posts.map(function(p) { return renderPostCard(p); }).join('');
+    }
+  }
+
+  function renderPostCard(p) {
     var liked = p.likes && p.likes.indexOf(currentUser.id) > -1;
     var saved = p.saves && p.saves.indexOf(currentUser.id) > -1;
     var isOwner = p.uid === currentUser.id;
-    var timeStr = formatTime(p.time);
 
     var mediaHtml = '';
-    if (p.media && p.media.length > 0) {
-      mediaHtml = '<div class="post-media-grid">' +
-        p.media.map(function(m) {
-          if (m.type === 'video') {
-            return '<video src="' + m.src + '" controls></video>';
-          } else {
-            return '<img src="' + m.src + '" alt="" />';
-          }
-        }).join('') +
-        '</div>';
-    } else if (p.img) {
-      mediaHtml = '<img class="post-img" src="' + p.img + '" alt="" />';
+    if (p.media && p.media.length) {
+      mediaHtml = '<div class="post-media-grid">' + p.media.map(function(m) {
+        return m.type === 'video'
+          ? '<video src="' + escHtml(m.src) + '" controls></video>'
+          : '<img src="' + escHtml(m.src) + '" alt="">';
+      }).join('') + '</div>';
     }
 
     return '<div class="post-card" id="post-' + p.id + '">' +
       '<div class="post-top">' +
-        '<div class="post-av" style="overflow:hidden;">' +
-        (p.avatar
-          ? '<img src="' + escHtml(p.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display=\'none\'" />'
-          : (p.emoji || '🦞')) +
-      '</div>' +
+        '<div class="post-av">' +
+          (p.avatar
+            ? '<img src="' + escHtml(p.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent=\'' + escHtml(p.emoji || '🦞') + '\'">'
+            : (p.emoji || '🦞')) +
+        '</div>' +
         '<div class="post-meta">' +
           '<div class="post-uname">' + escHtml(p.uname) + '</div>' +
-          '<div class="post-uid">@' + escHtml(p.handle || p.uid) + '</div>' +
+          '<div class="post-uid">@' + escHtml(p.handle) + '</div>' +
         '</div>' +
-        '<div class="post-time">' + timeStr + '</div>' +
+        '<div class="post-time">' + formatTime(p.time) + '</div>' +
       '</div>' +
       '<div class="post-body">' +
         (p.text ? '<div class="post-text">' + escHtml(p.text) + '</div>' : '') +
         mediaHtml +
       '</div>' +
       '<div class="post-actions">' +
-        '<div class="p-action' + (liked ? ' liked' : '') + '" onclick="likePost(\'' + p.id + '\')">' +
-          '💜 ' + (p.likes ? p.likes.length : 0) +
-        '</div>' +
-        '<div class="p-action' + (saved ? ' saved-act' : '') + '" onclick="savePost(\'' + p.id + '\')">' +
-          '🔖 ' + (saved ? 'Saved' : 'Save') +
-        '</div>' +
+        '<div class="p-action' + (liked ? ' liked' : '') + '" onclick="likePost(\'' + p.id + '\')">💜 ' + (p.likes ? p.likes.length : 0) + '</div>' +
+        '<div class="p-action" onclick="toggleComments(\'' + p.id + '\')">💬 ' + (p.comments ? p.comments.length : 0) + '</div>' +
+        '<div class="p-action' + (saved ? ' saved-act' : '') + '" onclick="savePost(\'' + p.id + '\')">' + (saved ? '🔖 Saved' : '🔖 Save') + '</div>' +
+        (!isOwner ? '<div class="p-action" onclick="openDM(\'' + escHtml(p.handle) + '\')">✉️ Msg</div>' : '') +
         (isOwner ? '<div class="p-action p-action-delete" onclick="deletePost(\'' + p.id + '\')">🗑️ Delete</div>' : '') +
+      '</div>' +
+      '<div class="comments-section" id="comments-' + p.id + '">' +
+        renderComments(p) +
       '</div>' +
     '</div>';
   }
 
-  // ─────────────────────────────────────────────
-  // POST ACTIONS
-  // ─────────────────────────────────────────────
-  function likePost(id) {
-    var posts = getPosts();
+  // ── Post Actions ──
+  async function likePost(id) {
+    var posts = await getPosts();
     var post = posts.find(function(p) { return p.id === id; });
     if (!post) return;
     if (!post.likes) post.likes = [];
     var idx = post.likes.indexOf(currentUser.id);
-    if (idx > -1) { post.likes.splice(idx, 1); }
-    else { post.likes.push(currentUser.id); }
-    savePosts(posts);
-    renderFeed();
-    renderSaved();
-    renderProfile();
+    if (idx > -1) post.likes.splice(idx, 1);
+    else post.likes.push(currentUser.id);
+    await savePosts(posts);
+    await renderFeed();
+    await renderSaved();
+    await renderProfile();
   }
 
-  function savePost(id) {
-    var posts = getPosts();
+  async function savePost(id) {
+    var posts = await getPosts();
     var post = posts.find(function(p) { return p.id === id; });
     if (!post) return;
     if (!post.saves) post.saves = [];
     var idx = post.saves.indexOf(currentUser.id);
     if (idx > -1) { post.saves.splice(idx, 1); showToast('Removed from saved'); }
     else { post.saves.push(currentUser.id); showToast('Post saved! 🔖', 'success'); }
-    savePosts(posts);
-    renderFeed();
-    renderSaved();
-    renderProfile();
+    await savePosts(posts);
+    await renderFeed();
+    await renderSaved();
+    await renderProfile();
   }
 
-  function deletePost(id) {
-    var posts = getPosts();
+  async function deletePost(id) {
+    var posts = await getPosts();
     var idx = posts.findIndex(function(p) { return p.id === id; });
-    if (idx === -1) return;
-    if (posts[idx].uid !== currentUser.id) return;
+    if (idx === -1 || posts[idx].uid !== currentUser.id) return;
     posts.splice(idx, 1);
-    savePosts(posts);
-    renderFeed();
-    renderProfile();
-    renderSaved();
+    await savePosts(posts);
+    await renderFeed();
+    await renderProfile();
+    await renderSaved();
     showToast('Post deleted');
   }
 
-  // ─────────────────────────────────────────────
-  // RENDER PROFILE
-  // ─────────────────────────────────────────────
-  function renderProfile() {
+  // ── Comments ──
+  function renderComments(p) {
+    var comments = p.comments || [];
+    var html = '';
+    if (!comments.length) {
+      html += '<div class="no-comments">No comments yet.</div>';
+    } else {
+      html += comments.map(function(c) {
+        return '<div class="comment-item">' +
+          '<div class="comment-av">' +
+            (c.avatar
+              ? '<img src="' + escHtml(c.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentElement.textContent=\'' + escHtml(c.emoji || '🦞') + '\'">'
+              : (c.emoji || '🦞')) +
+          '</div>' +
+          '<div class="comment-body">' +
+            '<div class="comment-header">' +
+              '<span class="comment-author">' + escHtml(c.uname) + '</span>' +
+              '<span class="comment-time">' + formatTime(c.time) + '</span>' +
+            '</div>' +
+            '<div class="comment-text">' + escHtml(c.text) + '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+    html += '<div class="comment-input-row">' +
+      '<input type="text" id="ci-' + p.id + '" placeholder="Write a comment..." onkeydown="if(event.key===\'Enter\')addComment(\'' + p.id + '\')">' +
+      '<button class="comment-send-btn" onclick="addComment(\'' + p.id + '\')">➤</button>' +
+    '</div>';
+    return html;
+  }
+
+  function toggleComments(postId) {
+    var el = document.getElementById('comments-' + postId);
+    if (el) el.classList.toggle('open');
+  }
+
+  async function addComment(postId) {
+    var input = document.getElementById('ci-' + postId);
+    var text = input.value.trim();
+    if (!text) return;
+    var posts = await getPosts();
+    var post = posts.find(function(p) { return p.id === postId; });
+    if (!post) return;
+    if (!post.comments) post.comments = [];
+    post.comments.push({
+      uid: currentUser.id,
+      handle: currentUser.handle,
+      uname: currentUser.name,
+      emoji: currentUser.emoji || '🦞',
+      avatar: currentUser.avatar || null,
+      text: text,
+      time: Date.now()
+    });
+    await savePosts(posts);
+    // Re-render just the comments section to keep it open
+    var section = document.getElementById('comments-' + postId);
+    if (section) {
+      section.innerHTML = renderComments(post);
+      section.classList.add('open');
+    }
+    // Update comment count in post actions
+    await renderFeed();
+    await renderProfile();
+    await renderSaved();
+    // Re-open comments section after re-render
+    var sectionAfter = document.getElementById('comments-' + postId);
+    if (sectionAfter) sectionAfter.classList.add('open');
+  }
+
+  // ── DM Media ──
+  var dmPendingMedia = [];
+
+  function handleDMFiles(files) {
+    Array.from(files).forEach(function(file) {
+      if (file.size > 10 * 1024 * 1024) { showToast('File too large (max 10MB)', 'error'); return; }
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        dmPendingMedia.push({ type: file.type.startsWith('video') ? 'video' : 'image', src: ev.target.result });
+        renderDMMediaPreview();
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function handleDMMediaUrl() {
+    var url = prompt('Enter image or video URL:');
+    if (!url || !url.trim()) return;
+    url = url.trim();
+    if (!url.startsWith('http')) { showToast('Please enter a valid URL', 'error'); return; }
+    var isVideo = /\.(mp4|webm|mov|ogg|avi)(\?.*)?$/i.test(url);
+    dmPendingMedia.push({ type: isVideo ? 'video' : 'image', src: url });
+    renderDMMediaPreview();
+  }
+
+  function removeDMMedia(idx) {
+    dmPendingMedia.splice(idx, 1);
+    renderDMMediaPreview();
+  }
+
+  function renderDMMediaPreview() {
+    var wrap = document.getElementById('dmMediaPreview');
+    if (!dmPendingMedia.length) { wrap.innerHTML = ''; return; }
+    wrap.innerHTML = dmPendingMedia.map(function(m, i) {
+      return '<div class="dm-media-preview-item">' +
+        (m.type === 'image'
+          ? '<img src="' + escHtml(m.src) + '" alt="">'
+          : '<video src="' + escHtml(m.src) + '" muted></video>') +
+        '<button onclick="removeDMMedia(' + i + ')">×</button>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ── Render Profile ──
+  async function renderProfile() {
     if (!currentUser) return;
-    document.getElementById('profileAv').textContent = currentUser.emoji || '🦞';
+    var profileAv = document.getElementById('profileAv');
+    profileAv.innerHTML = renderAvatarContent(currentUser);
     document.getElementById('profileName').textContent = currentUser.name;
-    document.getElementById('profileHandle').textContent = '@' + (currentUser.handle || currentUser.id);
+    document.getElementById('profileHandle').textContent = '@' + currentUser.handle;
     document.getElementById('profileFid').textContent = currentUser.id;
+
     var bioEl = document.getElementById('profileBio');
-    if (bioEl) {
-      if (currentUser.bio && currentUser.bio.trim()) {
-        bioEl.textContent = currentUser.bio;
-        bioEl.style.display = 'block';
-      } else {
-        bioEl.style.display = 'none';
-      }
+    if (currentUser.bio && currentUser.bio.trim()) {
+      bioEl.textContent = currentUser.bio;
+      bioEl.style.display = 'block';
+    } else {
+      bioEl.style.display = 'none';
     }
 
-    var posts = getPosts();
+    var posts = await getPosts();
     var myPosts = posts.filter(function(p) { return p.uid === currentUser.id; });
     var likedCount = posts.filter(function(p) { return p.likes && p.likes.indexOf(currentUser.id) > -1; }).length;
     var savedCount = posts.filter(function(p) { return p.saves && p.saves.indexOf(currentUser.id) > -1; }).length;
@@ -2035,168 +2727,312 @@
     if (!myPosts.length) {
       list.innerHTML = '<div class="empty-state"><div class="es-icon">✍️</div><p>No posts yet.</p></div>';
     } else {
-      list.innerHTML = myPosts.map(function(p) { return renderPostCard(p, true); }).join('');
+      list.innerHTML = myPosts.map(function(p) { return renderPostCard(p); }).join('');
     }
 
-    // Settings
     document.getElementById('settingsName').value = currentUser.name || '';
     document.getElementById('settingsEmoji').value = currentUser.emoji || '';
     document.getElementById('settingsBio').value = currentUser.bio || '';
   }
 
-  // ─────────────────────────────────────────────
-  // RENDER SAVED
-  // ─────────────────────────────────────────────
-  function renderSaved() {
-    var posts = getPosts();
+  // ── Render Saved ──
+  async function renderSaved() {
+    var posts = await getPosts();
     var saved = posts.filter(function(p) { return p.saves && p.saves.indexOf(currentUser.id) > -1; });
     var list = document.getElementById('savedList');
     if (!saved.length) {
       list.innerHTML = '<div class="empty-state"><div class="es-icon">🔖</div><p>Nothing saved yet.</p></div>';
     } else {
-      list.innerHTML = saved.map(function(p) { return renderPostCard(p, false); }).join('');
+      list.innerHTML = saved.map(function(p) { return renderPostCard(p); }).join('');
     }
   }
 
-  // ─────────────────────────────────────────────
-  // SEARCH / USERS
-  // ─────────────────────────────────────────────
-  // ── Follow helpers ──
-  function getFollowing() {
-    try { return JSON.parse(localStorage.getItem('cn_following_' + currentUser.id) || '[]'); } catch(e) { return []; }
-  }
-  function saveFollowing(arr) { localStorage.setItem('cn_following_' + currentUser.id, JSON.stringify(arr)); }
-  function isFollowing(uid) { return getFollowing().indexOf(uid) > -1; }
-  function toggleFollow(uid) {
-    var f = getFollowing();
-    var idx = f.indexOf(uid);
-    if (idx > -1) { f.splice(idx, 1); } else { f.push(uid); }
-    saveFollowing(f);
+  // ── Notifications ──
+  async function getNotifications() {
+    var posts = await getPosts();
+    var users = await getUsers();
+    var notifs = [];
+
+    // Find likes, comments, and saves on YOUR posts by OTHER users
+    posts.forEach(function(p) {
+      if (p.uid !== currentUser.id) return;
+      // Likes
+      if (p.likes) {
+        p.likes.forEach(function(uid) {
+          if (uid === currentUser.id) return;
+          var liker = findUserById(users, uid);
+          notifs.push({
+            type: 'like',
+            icon: '💜',
+            user: liker,
+            postId: p.id,
+            postText: p.text,
+            time: p.time
+          });
+        });
+      }
+      // Comments
+      if (p.comments) {
+        p.comments.forEach(function(c) {
+          if (c.uid === currentUser.id) return;
+          var commenter = findUserById(users, c.uid);
+          notifs.push({
+            type: 'comment',
+            icon: '💬',
+            user: commenter || { name: c.uname, emoji: c.emoji },
+            postId: p.id,
+            postText: p.text,
+            commentText: c.text,
+            time: c.time || p.time
+          });
+        });
+      }
+      // Saves
+      if (p.saves) {
+        p.saves.forEach(function(uid) {
+          if (uid === currentUser.id) return;
+          var saver = findUserById(users, uid);
+          notifs.push({
+            type: 'save',
+            icon: '🔖',
+            user: saver,
+            postId: p.id,
+            postText: p.text,
+            time: p.time
+          });
+        });
+      }
+    });
+
+    // Sort newest first
+    notifs.sort(function(a, b) { return (b.time || 0) - (a.time || 0); });
+    return notifs;
   }
 
-  // ── DM helpers ──
-  function getDMs(threadId) {
-    try { return JSON.parse(localStorage.getItem('cn_dm_' + threadId) || '[]'); } catch(e) { return []; }
+  function findUserById(users, uid) {
+    var handles = Object.keys(users);
+    for (var i = 0; i < handles.length; i++) {
+      if (users[handles[i]].id === uid) return users[handles[i]];
+    }
+    return null;
   }
-  function saveDMs(threadId, msgs) { localStorage.setItem('cn_dm_' + threadId, JSON.stringify(msgs)); }
-  function getThreadId(uidA, uidB) { return [uidA, uidB].sort().join('__'); }
-  function getMyThreads() {
+
+  async function renderNotifications() {
+    var notifs = await getNotifications();
+    var list = document.getElementById('notifList');
+    var lastSeen = 0;
+    try { lastSeen = parseInt(localStorage.getItem('cn_notif_seen_' + currentUser.id) || '0'); } catch(e) {}
+
+    if (!notifs.length) {
+      list.innerHTML = '<div class="empty-state"><div class="es-icon">🔔</div><p>No notifications yet.</p></div>';
+      return;
+    }
+
+    list.innerHTML = notifs.slice(0, 50).map(function(n) {
+      var userName = n.user ? escHtml(n.user.name) : 'Someone';
+      var avatarHtml = n.user ? renderAvatarContent(n.user) : '👤';
+      var isUnread = (n.time || 0) > lastSeen;
+      var text = '';
+      var preview = n.postText ? escHtml(n.postText.substring(0, 40)) + (n.postText.length > 40 ? '...' : '') : 'your post';
+
+      if (n.type === 'like') text = '<strong>' + userName + '</strong> liked ' + preview;
+      else if (n.type === 'comment') text = '<strong>' + userName + '</strong> commented on ' + preview;
+      else if (n.type === 'save') text = '<strong>' + userName + '</strong> saved ' + preview;
+
+      return '<div class="notif-item' + (isUnread ? ' unread' : '') + '" onclick="scrollToPost(\'' + n.postId + '\')">' +
+        '<div class="notif-av">' + avatarHtml + '</div>' +
+        '<div class="notif-body">' +
+          '<div class="notif-text">' + text + '</div>' +
+          (n.type === 'comment' && n.commentText ? '<div style="font-size:0.8rem;color:var(--text-muted);margin-top:2px;">"' + escHtml(n.commentText.substring(0, 60)) + '"</div>' : '') +
+          '<div class="notif-time">' + formatTime(n.time) + '</div>' +
+        '</div>' +
+        '<div class="notif-icon">' + n.icon + '</div>' +
+      '</div>';
+    }).join('');
+
+    // Mark as seen
+    localStorage.setItem('cn_notif_seen_' + currentUser.id, Date.now().toString());
+    document.getElementById('notifDot').classList.add('hidden');
+  }
+
+  async function updateNotifBadge() {
+    var lastSeen = 0;
+    try { lastSeen = parseInt(localStorage.getItem('cn_notif_seen_' + currentUser.id) || '0'); } catch(e) {}
+    var notifs = await getNotifications();
+    var unread = notifs.filter(function(n) { return (n.time || 0) > lastSeen; });
+    var dot = document.getElementById('notifDot');
+    if (unread.length > 0) dot.classList.remove('hidden');
+    else dot.classList.add('hidden');
+  }
+
+  function scrollToPost(postId) {
+    showPage('feed');
+    switchFeedTab('all');
+    setTimeout(function() {
+      var el = document.getElementById('post-' + postId);
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.style.boxShadow = 'var(--glow-cyan)';
+        setTimeout(function() { el.style.boxShadow = ''; }, 2000);
+      }
+    }, 300);
+  }
+
+  // ── Follow Helpers ──
+  async function isFollowing(uid) { return (await getFollowing()).indexOf(uid) > -1; }
+  async function toggleFollow(uid) {
+    var f = await getFollowing();
+    var idx = f.indexOf(uid);
+    if (idx > -1) f.splice(idx, 1);
+    else f.push(uid);
+    await saveFollowing(f);
+  }
+
+  // ── DM Helpers ──
+  function getThreadId(a, b) { return [a, b].sort().join('__'); }
+
+  async function getMyThreads() {
     var threads = [];
-    var users = getUsers();
-    Object.values(users).forEach(function(u) {
-      if (u.id === currentUser.id) return;
+    var users = await getUsers();
+    var userList = Object.values(users);
+    for (var i = 0; i < userList.length; i++) {
+      var u = userList[i];
+      if (u.id === currentUser.id) continue;
       var tid = getThreadId(currentUser.id, u.id);
-      var msgs = getDMs(tid);
-      if (msgs.length) threads.push({ user: u, threadId: tid, lastMsg: msgs[msgs.length - 1], unread: msgs.filter(function(m) { return !m.read && m.from !== currentUser.id; }).length });
-    });
-    threads.sort(function(a,b) { return (b.lastMsg ? b.lastMsg.time : 0) - (a.lastMsg ? a.lastMsg.time : 0); });
+      var msgs = await getDMs(tid);
+      if (msgs.length) {
+        threads.push({
+          user: u,
+          threadId: tid,
+          lastMsg: msgs[msgs.length - 1],
+          unread: msgs.filter(function(m) { return !m.read && m.from !== currentUser.id; }).length
+        });
+      }
+    }
+    threads.sort(function(a, b) { return (b.lastMsg ? b.lastMsg.time : 0) - (a.lastMsg ? a.lastMsg.time : 0); });
     return threads;
   }
-  function countUnread() {
-    var users = getUsers();
+
+  async function countUnread() {
+    var users = await getUsers();
     var total = 0;
-    Object.values(users).forEach(function(u) {
-      if (u.id === currentUser.id) return;
-      var tid = getThreadId(currentUser.id, u.id);
-      var msgs = getDMs(tid);
+    var userList = Object.values(users);
+    for (var i = 0; i < userList.length; i++) {
+      var u = userList[i];
+      if (u.id === currentUser.id) continue;
+      var msgs = await getDMs(getThreadId(currentUser.id, u.id));
       total += msgs.filter(function(m) { return !m.read && m.from !== currentUser.id; }).length;
-    });
+    }
     return total;
   }
-  function updateMsgBadge() {
+
+  async function updateMsgBadge() {
     var badge = document.getElementById('msgBadge');
-    var n = countUnread();
+    var n = await countUnread();
     if (n > 0) { badge.textContent = n; badge.classList.remove('hidden'); }
-    else { badge.classList.add('hidden'); }
+    else badge.classList.add('hidden');
   }
 
-  var activeDMThread = null;
-  var activeDMUser = null;
-
-  function openDM(handle) {
-    var users = getUsers();
+  async function openDM(handle) {
+    var users = await getUsers();
     var u = users[handle];
     if (!u) return;
     activeDMUser = u;
     activeDMThread = getThreadId(currentUser.id, u.id);
-    // mark as read
-    var msgs = getDMs(activeDMThread);
+    var msgs = await getDMs(activeDMThread);
     msgs.forEach(function(m) { if (m.from !== currentUser.id) m.read = true; });
-    saveDMs(activeDMThread, msgs);
-    updateMsgBadge();
-    document.getElementById('dmModalTitle').textContent = '💬 ' + u.emoji + ' ' + u.name;
-    renderDMMessages();
+    await saveDMs(activeDMThread, msgs);
+    await updateMsgBadge();
+    document.getElementById('dmModalTitle').textContent = '💬 ' + (u.emoji || '🦞') + ' ' + u.name;
+    dmPendingMedia = [];
+    renderDMMediaPreview();
+    await renderDMMessages();
     closeModal('userProfileModal');
     openModal('dmModal');
   }
 
-  function renderDMMessages() {
-    var msgs = getDMs(activeDMThread);
+  async function renderDMMessages() {
+    var msgs = await getDMs(activeDMThread);
     var wrap = document.getElementById('dmMessages');
-    if (!msgs.length) {
-      wrap.innerHTML = '<div class="dm-empty">No messages yet. Say hello! 👋</div>';
-      return;
-    }
+    if (!msgs.length) { wrap.innerHTML = '<div class="dm-empty">No messages yet. Say hello! 👋</div>'; return; }
     wrap.innerHTML = msgs.map(function(m) {
       var mine = m.from === currentUser.id;
+      var mediaHtml = '';
+      if (m.media && m.media.length) {
+        mediaHtml = '<div class="dm-bubble-media">' + m.media.map(function(md) {
+          return md.type === 'video'
+            ? '<video src="' + escHtml(md.src) + '" controls></video>'
+            : '<img src="' + escHtml(md.src) + '" alt="" onclick="window.open(this.src)">';
+        }).join('') + '</div>';
+      }
       return '<div class="dm-msg ' + (mine ? 'mine' : 'theirs') + '">' +
-        '<div class="dm-bubble">' + escHtml(m.text) + '</div>' +
+        (m.text ? '<div class="dm-bubble">' + escHtml(m.text) + '</div>' : '') +
+        mediaHtml +
         '<div class="dm-meta">' + (mine ? 'You' : escHtml(activeDMUser.name)) + ' · ' + formatTime(m.time) + '</div>' +
       '</div>';
     }).join('');
     wrap.scrollTop = wrap.scrollHeight;
   }
 
-  function sendDM() {
+  async function sendDM() {
     var input = document.getElementById('dmInput');
     var text = input.value.trim();
-    if (!text || !activeDMThread) return;
-    var msgs = getDMs(activeDMThread);
-    msgs.push({ from: currentUser.id, text: text, time: Date.now(), read: false });
-    saveDMs(activeDMThread, msgs);
+    if (!text && !dmPendingMedia.length) return;
+    if (!activeDMThread) return;
+    var msgs = await getDMs(activeDMThread);
+    var msg = { from: currentUser.id, text: text, time: Date.now(), read: false };
+    if (dmPendingMedia.length) {
+      msg.media = dmPendingMedia.slice();
+    }
+    msgs.push(msg);
+    await saveDMs(activeDMThread, msgs);
     input.value = '';
-    renderDMMessages();
-    renderDMThreadList();
-    updateMsgBadge();
+    dmPendingMedia = [];
+    renderDMMediaPreview();
+    await renderDMMessages();
+    await renderDMThreadList();
+    await updateMsgBadge();
   }
 
-  function renderDMThreadList() {
-    var threads = getMyThreads();
+  async function renderDMThreadList() {
+    var threads = await getMyThreads();
     var list = document.getElementById('dmThreadList');
     if (!threads.length) {
       list.innerHTML = '<div class="empty-state"><div class="es-icon">💬</div><p>No conversations yet.<br>Find someone in Discover to message!</p></div>';
       return;
     }
     list.innerHTML = threads.map(function(t) {
-      return '<div class="user-card" onclick="openDM(\'' + t.user.handle + '\')">' +
+      return '<div class="user-card" onclick="openDM(\'' + escHtml(t.user.handle) + '\')">' +
         '<div class="user-card-av">' + (t.user.emoji || '🦞') + '</div>' +
         '<div class="user-card-info">' +
           '<div class="user-card-name">' + escHtml(t.user.name) + '</div>' +
           '<div class="user-card-handle">@' + escHtml(t.user.handle) + '</div>' +
-          '<div class="user-card-bio">' + (t.lastMsg ? escHtml(t.lastMsg.text) : '') + '</div>' +
+          '<div class="user-card-bio">' + (t.lastMsg ? (t.lastMsg.text ? escHtml(t.lastMsg.text) : (t.lastMsg.media ? '📎 Media' : '')) : '') + '</div>' +
         '</div>' +
-        (t.unread > 0 ? '<div style="width:20px;height:20px;border-radius:50%;background:var(--danger);color:#fff;font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 8px rgba(255,51,102,0.4);">' + t.unread + '</div>' : '') +
+        (t.unread > 0 ? '<div class="dm-unread-badge">' + t.unread + '</div>' : '') +
       '</div>';
     }).join('');
   }
 
-  function openUserProfile(handle) {
-    var users = getUsers();
+  // ── User Profiles ──
+  var _prevPage = 'feed';
+
+  async function openUserProfile(handle) {
+    var users = await getUsers();
     var u = users[handle];
     if (!u || u.id === currentUser.id) return;
-    var posts = getPosts();
+    var posts = await getPosts();
     var userPosts = posts.filter(function(p) { return p.uid === u.id; });
-    var following = isFollowing(u.id);
+    var following = await isFollowing(u.id);
     var totalLikes = userPosts.reduce(function(sum, p) { return sum + (p.likes ? p.likes.length : 0); }, 0);
 
-    document.getElementById('upModalTitle').textContent = u.name + '\'s Profile';
+    // Remember which page we came from
+    var activePage = document.querySelector('.page.active');
+    if (activePage) _prevPage = activePage.id.replace('page-', '');
+
     document.getElementById('userProfileContent').innerHTML =
       '<div class="up-hero">' +
-        '<div class="up-av" style="overflow:hidden;">' +
-          (u.avatar
-            ? '<img src="' + escHtml(u.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display=\'none\'" />'
-            : (u.emoji || '🦞')) +
-        '</div>' +
+        '<div class="up-av">' + renderAvatarContent(u) + '</div>' +
         '<div class="up-name">' + escHtml(u.name) + '</div>' +
         '<div class="up-handle">@' + escHtml(u.handle) + '</div>' +
         '<div class="up-id" onclick="navigator.clipboard.writeText(\'' + escHtml(u.id) + '\').then(function(){showToast(\'ID copied!\',\'success\')})">' + escHtml(u.id) + ' 📋</div>' +
@@ -2204,224 +3040,330 @@
         '<div class="up-stats">' +
           '<div class="up-stat"><div class="up-stat-v">' + userPosts.length + '</div><div class="up-stat-l">Posts</div></div>' +
           '<div class="up-stat"><div class="up-stat-v">' + totalLikes + '</div><div class="up-stat-l">Likes</div></div>' +
-          '<div class="up-stat"><div class="up-stat-v">' + (u.joined ? Math.floor((Date.now()-u.joined)/86400000) : '?') + 'd</div><div class="up-stat-l">Member</div></div>' +
+          '<div class="up-stat"><div class="up-stat-v">' + (u.joined ? Math.floor((Date.now() - u.joined) / 86400000) : '?') + 'd</div><div class="up-stat-l">Member</div></div>' +
         '</div>' +
         '<div class="up-action-row">' +
-          '<button class="btn ' + (following ? 'btn-outline' : 'btn-primary') + ' btn-sm" id="upFollowBtn" onclick="toggleFollowFromModal(\'' + handle + '\')">' +
+          '<button class="btn ' + (following ? 'btn-outline' : 'btn-primary') + ' btn-sm" id="upFollowBtn" onclick="toggleFollowFromProfile(\'' + escHtml(handle) + '\')">' +
             (following ? '✓ Following' : '+ Follow') +
           '</button>' +
-          '<button class="btn btn-outline btn-sm" onclick="openDM(\'' + handle + '\')">💬 Message</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="openDM(\'' + escHtml(handle) + '\')">💬 Message</button>' +
         '</div>' +
       '</div>' +
-      (userPosts.length ? '<div class="up-posts-title">Recent Posts</div>' +
-        userPosts.slice(0,5).map(function(p) {
-          return '<div class="up-post-item">' +
-            (p.text ? escHtml(p.text) : '<em>[ media post ]</em>') +
-            '<div class="up-post-time">' + formatTime(p.time) + ' · 💜 ' + (p.likes ? p.likes.length : 0) + '</div>' +
-          '</div>';
-        }).join('') : '<div class="dm-empty">No posts yet.</div>');
+      (userPosts.length
+        ? '<div class="up-posts-title">Posts</div>' +
+          userPosts.map(function(p) { return renderPostCard(p); }).join('')
+        : '<div class="empty-state"><div class="es-icon">✍️</div><p>No posts yet.</p></div>');
 
-    openModal('userProfileModal');
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    document.getElementById('page-userprofile').classList.add('active');
+    window.scrollTo(0, 0);
   }
 
-  function toggleFollowFromModal(handle) {
-    var users = getUsers();
+  function goBackFromProfile() {
+    showPage(_prevPage || 'feed');
+  }
+
+  async function toggleFollowFromProfile(handle) {
+    var users = await getUsers();
     var u = users[handle];
     if (!u) return;
-    toggleFollow(u.id);
+    await toggleFollow(u.id);
+    var nowFollowing = await isFollowing(u.id);
     var btn = document.getElementById('upFollowBtn');
-    var nowFollowing = isFollowing(u.id);
     btn.textContent = nowFollowing ? '✓ Following' : '+ Follow';
     btn.className = 'btn ' + (nowFollowing ? 'btn-outline' : 'btn-primary') + ' btn-sm';
-    renderAllUsers();
+    await renderAllUsers();
+    await renderFeed();
     showToast(nowFollowing ? 'Following ' + u.name + '!' : 'Unfollowed ' + u.name, nowFollowing ? 'success' : '');
   }
 
-  function renderUserCard(u) {
-    var posts = getPosts();
+  async function renderUserCard(u) {
+    var posts = await getPosts();
     var userPosts = posts.filter(function(p) { return p.uid === u.id; });
-    var following = isFollowing(u.id);
+    var following = await isFollowing(u.id);
     var isMe = u.id === currentUser.id;
-    return '<div class="user-card" onclick="' + (isMe ? '' : 'openUserProfile(\'' + u.handle + '\')') + '">' +
-      '<div class="user-card-av" style="overflow:hidden;">' +
-        (u.avatar
-          ? '<img src="' + escHtml(u.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display=\'none\'" />'
-          : (u.emoji || '🦞')) +
-      '</div>' +
+    return '<div class="user-card"' + (isMe ? '' : ' onclick="openUserProfile(\'' + escHtml(u.handle) + '\')"') + '>' +
+      '<div class="user-card-av">' + renderAvatarContent(u) + '</div>' +
       '<div class="user-card-info">' +
-        '<div class="user-card-name">' + escHtml(u.name) + (isMe ? ' <span style="font-size:0.7rem;color:var(--purple-bright);font-weight:600;">(You)</span>' : '') + '</div>' +
+        '<div class="user-card-name">' + escHtml(u.name) + (isMe ? ' <span class="you-badge">(You)</span>' : '') + '</div>' +
         '<div class="user-card-handle">@' + escHtml(u.handle) + '</div>' +
         '<div class="user-card-id">' + escHtml(u.id) + '</div>' +
         (u.bio ? '<div class="user-card-bio">' + escHtml(u.bio) + '</div>' : '') +
-        '<div class="user-card-stats">' +
-          '<span class="user-card-stat"><strong>' + userPosts.length + '</strong> posts</span>' +
-        '</div>' +
+        '<div class="user-card-stats"><span class="user-card-stat"><strong>' + userPosts.length + '</strong> posts</span></div>' +
       '</div>' +
-      (!isMe ? '<div class="user-card-actions">' +
-        '<button class="follow-btn ' + (following ? 'following' : '') + '" onclick="event.stopPropagation();handleFollowClick(\'' + u.handle + '\',this)">' +
-          (following ? '✓ Following' : '+ Follow') +
-        '</button>' +
-        '<button class="msg-btn" onclick="event.stopPropagation();openDM(\'' + u.handle + '\')">💬 Msg</button>' +
-      '</div>' : '') +
+      (!isMe
+        ? '<div class="user-card-actions">' +
+            '<button class="follow-btn ' + (following ? 'following' : '') + '" onclick="event.stopPropagation();handleFollowClick(\'' + escHtml(u.handle) + '\',this)">' +
+              (following ? '✓ Following' : '+ Follow') +
+            '</button>' +
+            '<button class="msg-btn" onclick="event.stopPropagation();openDM(\'' + escHtml(u.handle) + '\')">💬 Msg</button>' +
+          '</div>'
+        : '') +
     '</div>';
   }
 
-  function handleFollowClick(handle, btn) {
-    var users = getUsers();
+  async function handleFollowClick(handle, btn) {
+    var users = await getUsers();
     var u = users[handle];
     if (!u) return;
-    toggleFollow(u.id);
-    var nowFollowing = isFollowing(u.id);
+    await toggleFollow(u.id);
+    var nowFollowing = await isFollowing(u.id);
     btn.textContent = nowFollowing ? '✓ Following' : '+ Follow';
     btn.className = 'follow-btn ' + (nowFollowing ? 'following' : '');
+    renderFeed();
     showToast(nowFollowing ? 'Following ' + u.name + '!' : 'Unfollowed ' + u.name, nowFollowing ? 'success' : '');
   }
 
-  function renderAllUsers() {
-    var users = getUsers();
+  async function renderAllUsers() {
+    var users = await getUsers();
     var list = document.getElementById('allUsersList');
     var keys = Object.keys(users);
     if (!keys.length) {
       list.innerHTML = '<div class="empty-state"><div class="es-icon">👥</div><p>No users yet.</p></div>';
       return;
     }
-    list.innerHTML = keys.map(function(k) { return renderUserCard(users[k]); }).join('');
+    var cards = [];
+    for (var i = 0; i < keys.length; i++) {
+      cards.push(await renderUserCard(users[keys[i]]));
+    }
+    list.innerHTML = cards.join('');
   }
 
-  function searchUsers() {
-    var q = document.getElementById('searchIdInput').value.trim().toLowerCase();
-    var results = document.getElementById('searchResults');
-    if (!q) { results.innerHTML = ''; renderAllUsers(); return; }
-    var users = getUsers();
+  // ── Registered Users Page ──
+  async function renderRegisteredUsers() {
+    var users = await getUsers();
+    var list = document.getElementById('registeredUsersList');
+    var countEl = document.getElementById('usersCount');
+    var keys = Object.keys(users);
+    if (!keys.length) {
+      list.innerHTML = '<div class="empty-state"><div class="es-icon">👥</div><p>No registered users yet.</p></div>';
+      countEl.textContent = '';
+      return;
+    }
+    // Sort: newest first by joined date
+    var sorted = keys.map(function(k) { return users[k]; }).sort(function(a, b) {
+      return (b.joined || 0) - (a.joined || 0);
+    });
+    var cards = [];
+    for (var i = 0; i < sorted.length; i++) {
+      cards.push(await renderUserCard(sorted[i]));
+    }
+    list.innerHTML = cards.join('');
+    countEl.textContent = sorted.length + ' registered user' + (sorted.length !== 1 ? 's' : '');
+    var dbEl = document.getElementById('dbStatus');
+    if (dbEl) dbEl.textContent = hasAppDB ? 'Cloud: connected' : 'Cloud: offline (local only)';
+  }
+
+  async function searchRegisteredUsers() {
+    var q = document.getElementById('usersSearchInput').value.trim().toLowerCase();
+    var results = document.getElementById('usersSearchResults');
+    var list = document.getElementById('registeredUsersList');
+    var countEl = document.getElementById('usersCount');
+    if (!q) { results.innerHTML = ''; await renderRegisteredUsers(); return; }
+
+    var users = await getUsers();
     var matches = Object.values(users).filter(function(u) {
       return u.name.toLowerCase().includes(q) ||
              u.handle.toLowerCase().includes(q) ||
              u.id.toLowerCase().includes(q) ||
              (u.bio && u.bio.toLowerCase().includes(q));
     });
+
     if (!matches.length) {
-      results.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);">🔍 No users found for "<strong style=\'color:var(--purple-bright);\'>' + escHtml(q) + '</strong>"</div>';
+      results.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);">🔍 No users found for "<strong style="color:var(--purple-bright);">' + escHtml(q) + '</strong>"</div>';
+      list.innerHTML = '';
+      countEl.textContent = '';
+      return;
+    }
+
+    var cards = [];
+    for (var i = 0; i < matches.length; i++) {
+      cards.push(await renderUserCard(matches[i]));
+    }
+    results.innerHTML = '<div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;">' +
+      matches.length + ' result' + (matches.length !== 1 ? 's' : '') + '</div>' + cards.join('');
+    list.innerHTML = '';
+    countEl.textContent = '';
+  }
+
+  // ── Search: unified search for users AND posts by display name, friend code, handle, post content ──
+  async function searchUsers() {
+    var q = document.getElementById('searchIdInput').value.trim().toLowerCase();
+    var results = document.getElementById('searchResults');
+    if (!q) { results.innerHTML = ''; await renderAllUsers(); return; }
+
+    var users = await getUsers();
+    var posts = await getPosts();
+
+    // Search users by display name, handle, friend code (CLW-XXXXX), bio
+    var userMatches = Object.values(users).filter(function(u) {
+      return u.name.toLowerCase().includes(q) ||
+             u.handle.toLowerCase().includes(q) ||
+             u.id.toLowerCase().includes(q) ||
+             (u.bio && u.bio.toLowerCase().includes(q));
+    });
+
+    // Search posts by text content, author display name, author handle, author friend code
+    var postMatches = posts.filter(function(p) {
+      return (p.text && p.text.toLowerCase().includes(q)) ||
+             (p.uname && p.uname.toLowerCase().includes(q)) ||
+             (p.handle && p.handle.toLowerCase().includes(q)) ||
+             (p.uid && p.uid.toLowerCase().includes(q));
+    });
+
+    var html = '';
+    var totalResults = userMatches.length + postMatches.length;
+
+    if (!totalResults) {
+      results.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text-muted);">🔍 No results for "<strong style="color:var(--purple-bright);">' + escHtml(q) + '</strong>"</div>';
       document.getElementById('allUsersList').innerHTML = '';
       return;
     }
-    results.innerHTML = '<div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.1em;font-weight:600;">' + matches.length + ' result' + (matches.length !== 1 ? 's' : '') + '</div>' +
-      matches.map(function(u) { return renderUserCard(u); }).join('');
+
+    html += '<div style="font-size:0.78rem;color:var(--text-dim);margin-bottom:12px;text-transform:uppercase;letter-spacing:0.1em;font-weight:700;">' +
+      totalResults + ' result' + (totalResults !== 1 ? 's' : '') + '</div>';
+
+    // User results
+    if (userMatches.length) {
+      html += '<div class="section-title" style="font-size:0.85rem;margin-bottom:12px;">👥 People</div>';
+      for (var i = 0; i < userMatches.length; i++) {
+        html += await renderUserCard(userMatches[i]);
+      }
+    }
+
+    // Post results
+    if (postMatches.length) {
+      html += '<div class="section-title" style="font-size:0.85rem;margin-top:20px;margin-bottom:12px;">📝 Posts</div>';
+      html += '<div class="feed-wrap" style="max-width:100%;">';
+      html += postMatches.slice(0, 20).map(function(p) { return renderPostCard(p); }).join('');
+      html += '</div>';
+    }
+
+    results.innerHTML = html;
     document.getElementById('allUsersList').innerHTML = '';
   }
 
-  function handleTopbarSearch() {
+  // Topbar search: searches BOTH posts AND people, shows combined results in feed area
+  async function handleTopbarSearch() {
     var q = document.getElementById('topbarSearch').value.trim().toLowerCase();
-    if (!q) { renderFeed(); return; }
-    var posts = getPosts();
-    var filtered = posts.filter(function(p) {
+    if (!q) { await renderFeed(); return; }
+
+    var posts = await getPosts();
+    var users = await getUsers();
+
+    // Filter posts by content, author name, handle, or friend code
+    var filteredPosts = posts.filter(function(p) {
       return (p.text && p.text.toLowerCase().includes(q)) ||
              (p.uname && p.uname.toLowerCase().includes(q)) ||
-             (p.handle && p.handle.toLowerCase().includes(q));
+             (p.handle && p.handle.toLowerCase().includes(q)) ||
+             (p.uid && p.uid.toLowerCase().includes(q));
     });
+
+    // Filter users by name, handle, friend code, bio
+    var filteredUsers = Object.values(users).filter(function(u) {
+      return u.name.toLowerCase().includes(q) ||
+             u.handle.toLowerCase().includes(q) ||
+             u.id.toLowerCase().includes(q) ||
+             (u.bio && u.bio.toLowerCase().includes(q));
+    });
+
     var list = document.getElementById('feedList');
-    if (!filtered.length) {
+    var html = '';
+
+    if (!filteredPosts.length && !filteredUsers.length) {
       list.innerHTML = '<div class="empty-state"><div class="es-icon">🔍</div><p>No results for "' + escHtml(q) + '"</p></div>';
-    } else {
-      list.innerHTML = filtered.map(function(p) { return renderPostCard(p, false); }).join('');
+      return;
     }
+
+    // Show matching people first
+    if (filteredUsers.length) {
+      html += '<div class="section-title" style="font-size:0.85rem;margin-bottom:12px;">👥 People matching "' + escHtml(q) + '"</div>';
+      for (var i = 0; i < filteredUsers.length; i++) {
+        html += await renderUserCard(filteredUsers[i]);
+      }
+    }
+
+    // Then matching posts
+    if (filteredPosts.length) {
+      if (filteredUsers.length) html += '<div class="section-title" style="font-size:0.85rem;margin-top:24px;margin-bottom:12px;">📝 Posts matching "' + escHtml(q) + '"</div>';
+      html += filteredPosts.map(function(p) { return renderPostCard(p); }).join('');
+    }
+
+    list.innerHTML = html;
   }
 
-  // ─────────────────────────────────────────────
-  // SETTINGS
-  // ─────────────────────────────────────────────
+  // ── Settings / Avatar ──
+  function compressAvatar(dataUrl, maxSize) {
+    maxSize = maxSize || 80;
+    return new Promise(function(resolve) {
+      var img = new Image();
+      img.onload = function() {
+        var canvas = document.createElement('canvas');
+        var size = Math.min(img.width, img.height, 200);
+        canvas.width = size;
+        canvas.height = size;
+        var ctx = canvas.getContext('2d');
+        var sx = (img.width - size) / 2;
+        var sy = (img.height - size) / 2;
+        ctx.drawImage(img, sx, sy, size, size, 0, 0, size, size);
+        var result = canvas.toDataURL('image/jpeg', 0.6);
+        resolve(result);
+      };
+      img.onerror = function() { resolve(dataUrl); };
+      img.src = dataUrl;
+    });
+  }
+
   function handleAvatarUpload(file) {
     if (!file) return;
     if (file.size > 5 * 1024 * 1024) { showToast('Image too large (max 5MB)', 'error'); return; }
     var reader = new FileReader();
-    reader.onload = function(ev) {
-      currentUser.avatar = ev.target.result;
-      var users = getUsers();
-      users[currentUser.handle] = currentUser;
-      saveUsers(users);
-      saveSession();
-      updateAvatarUI();
+    reader.onload = async function(ev) {
+      currentUser.avatar = await compressAvatar(ev.target.result);
+      await saveUserAndRefresh();
       showToast('Profile picture updated! 📷', 'success');
     };
     reader.readAsDataURL(file);
   }
 
-  function handleAvatarUrl() {
+  async function handleAvatarUrl() {
     var url = prompt('Enter image URL:');
     if (!url || !url.trim()) return;
     url = url.trim();
-    // Quick validate it looks like a URL
     if (!url.startsWith('http')) { showToast('Please enter a valid URL', 'error'); return; }
     currentUser.avatar = url;
-    var users = getUsers();
-    users[currentUser.handle] = currentUser;
-    saveUsers(users);
-    saveSession();
-    updateAvatarUI();
+    await saveUserAndRefresh();
     showToast('Profile picture updated! 📷', 'success');
   }
 
-  function removeAvatar() {
+  async function removeAvatar() {
     currentUser.avatar = null;
-    var users = getUsers();
-    users[currentUser.handle] = currentUser;
-    saveUsers(users);
-    saveSession();
-    updateAvatarUI();
+    await saveUserAndRefresh();
     showToast('Profile picture removed');
   }
 
-  function getAvatarHTML(user, size) {
-    // size: 'sm' (sidebar/post), 'md' (user card), 'lg' (profile)
-    var fontSize = size === 'lg' ? '3rem' : size === 'md' ? '1.5rem' : '1.3rem';
-    var wh = size === 'lg' ? '100px' : size === 'md' ? '52px' : '40px';
-    if (user.avatar) {
-      return '<img src="' + escHtml(user.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display=\'none\'" />';
-    }
-    return user.emoji || '🦞';
+  async function saveUserAndRefresh() {
+    await saveOneUser(currentUser.handle, currentUser);
+    await saveSession();
+    updateAvatarUI();
   }
 
   function updateAvatarUI() {
-    // Sidebar avatar
-    var sidebarAv = document.getElementById('sidebarAvatar');
-    if (sidebarAv) {
-      if (currentUser.avatar) {
-        sidebarAv.innerHTML = '<img src="' + escHtml(currentUser.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.innerHTML=\'' + (currentUser.emoji||'🦞') + '\'" />';
-      } else {
-        sidebarAv.textContent = currentUser.emoji || '🦞';
-      }
-    }
-    // Composer avatar
-    var compAv = document.getElementById('compAvatar');
-    if (compAv) {
-      if (currentUser.avatar) {
-        compAv.innerHTML = '<img src="' + escHtml(currentUser.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
-      } else {
-        compAv.textContent = currentUser.emoji || '🦞';
-      }
-    }
-    // Profile page avatar
-    var profileAv = document.getElementById('profileAv');
-    if (profileAv) {
-      if (currentUser.avatar) {
-        profileAv.innerHTML = '<img src="' + escHtml(currentUser.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
-      } else {
-        profileAv.textContent = currentUser.emoji || '🦞';
-      }
-    }
-    // Settings preview
-    var settingsPreview = document.getElementById('settingsAvatarPreview');
-    if (settingsPreview) {
-      if (currentUser.avatar) {
-        settingsPreview.innerHTML = '<img src="' + escHtml(currentUser.avatar) + '" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />';
-      } else {
-        settingsPreview.textContent = currentUser.emoji || '🦞';
-      }
-    }
+    var avatarEls = {
+      sidebarAvatar: document.getElementById('sidebarAvatar'),
+      compAvatar: document.getElementById('compAvatar'),
+      profileAv: document.getElementById('profileAv'),
+      settingsAvatarPreview: document.getElementById('settingsAvatarPreview')
+    };
+    var html = renderAvatarContent(currentUser);
+    Object.keys(avatarEls).forEach(function(key) {
+      if (avatarEls[key]) avatarEls[key].innerHTML = html;
+    });
     renderFeed();
     renderProfile();
   }
 
-  function saveSettings() {
+  async function saveSettings() {
     var name = document.getElementById('settingsName').value.trim();
     var emoji = document.getElementById('settingsEmoji').value.trim();
     var bio = document.getElementById('settingsBio').value.trim();
@@ -2429,60 +3371,13 @@
     currentUser.name = name;
     currentUser.emoji = emoji || currentUser.emoji;
     currentUser.bio = bio;
-    var users = getUsers();
-    users[currentUser.handle] = currentUser;
-    saveUsers(users);
-    saveSession();
+    await saveUserAndRefresh();
     updateSidebar();
-    updateAvatarUI();
-    renderProfile();
+    await renderProfile();
     showToast('Settings saved! ✨', 'success');
   }
 
-  // ─────────────────────────────────────────────
-  // UTILS
-  // ─────────────────────────────────────────────
-  function copyUID() {
-    if (!currentUser) return;
-    navigator.clipboard.writeText(currentUser.id).then(function() {
-      showToast('ID copied to clipboard!', 'success');
-    }).catch(function() {
-      showToast('Could not copy ID');
-    });
-  }
-
-  function escHtml(str) {
-    if (!str) return '';
-    return String(str)
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;');
-  }
-
-  function formatTime(ts) {
-    if (!ts) return '';
-    var now = Date.now();
-    var diff = now - ts;
-    if (diff < 60000) return 'just now';
-    if (diff < 3600000) return Math.floor(diff/60000) + 'm ago';
-    if (diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
-    return Math.floor(diff/86400000) + 'd ago';
-  }
-
-  function showToast(msg, type) {
-    var wrap = document.getElementById('toastWrap');
-    var t = document.createElement('div');
-    t.className = 'toast' + (type ? ' ' + type : '');
-    t.textContent = msg;
-    wrap.appendChild(t);
-    setTimeout(function() { t.remove(); }, 3500);
-  }
-
-  // ─────────────────────────────────────────────
-  // EMOJI PICKER
-  // ─────────────────────────────────────────────
-  // Emoji picker — explicitly split into array to preserve multi-byte emojis
+  // ── Emoji Picker ──
   var emojiList = ['🦞','🐱','🦊','🐺','🦁','🐯','🐻','🐼','🦝','🐸','🐙','🦈','🦋','🐉','🌙','⭐','🔮','🎭','🐬','🦄','🐧','🦅','🐲','👾','🤖','💀','👻','🌸'];
   var picker = document.getElementById('emojiPicker');
   picker.innerHTML = emojiList.map(function(em) {
@@ -2492,47 +3387,146 @@
       'onclick="selectEmoji(\'' + em + '\')">' + em + '</span>';
   }).join('');
 
-  window.selectEmoji = function(em) {
+  function selectEmoji(em) {
     document.getElementById('regEmoji').value = em;
-    // highlight selected
     picker.querySelectorAll('span').forEach(function(s) {
-      s.style.background = s.textContent === em ? 'rgba(138,43,226,0.3)' : 'transparent';
-      s.style.borderColor = s.textContent === em ? 'rgba(138,43,226,0.6)' : 'transparent';
+      var isSelected = s.textContent === em;
+      s.style.background = isSelected ? 'rgba(138,43,226,0.3)' : 'transparent';
+      s.style.borderColor = isSelected ? 'rgba(138,43,226,0.6)' : 'transparent';
     });
-  };
+  }
 
-  // PIN box auto-advance — 6 digits for both login and register
-  var loginPins = ['p0','p1','p2','p3','p4','p5'];
-  var regPins   = ['r0','r1','r2','r3','r4','r5'];
-
-  function setupPinBoxes(arr) {
-    arr.forEach(function(id, i) {
+  // ── PIN Box Auto-Advance ──
+  function setupPinBoxes(ids) {
+    ids.forEach(function(id, i) {
       var el = document.getElementById(id);
       if (!el) return;
       el.addEventListener('input', function() {
-        this.value = this.value.replace(/[^0-9]/g,'');
-        if (this.value && i < arr.length - 1) {
-          document.getElementById(arr[i+1]).focus();
-        }
+        this.value = this.value.replace(/[^0-9]/g, '');
+        if (this.value && i < ids.length - 1) document.getElementById(ids[i + 1]).focus();
       });
       el.addEventListener('keydown', function(e) {
         if (e.key === 'Backspace' && !this.value && i > 0) {
-          var prev = document.getElementById(arr[i-1]);
+          var prev = document.getElementById(ids[i - 1]);
           if (prev) { prev.value = ''; prev.focus(); }
         }
       });
     });
   }
-  setupPinBoxes(loginPins);
-  setupPinBoxes(regPins);
+  setupPinBoxes(['p0','p1','p2','p3','p4','p5']);
+  setupPinBoxes(['r0','r1','r2','r3','r4','r5']);
 
-  // ─────────────────────────────────────────────
-  // INIT
-  // ─────────────────────────────────────────────
-  loadSession();
-  if (currentUser) {
-    bootApp();
+  // ── Intro Splash ──
+  function initIntroParticles() {
+    var container = document.getElementById('introParticles');
+    if (!container) return;
+    var colors = ['#dc2626', '#ef4444', '#b91c1c', '#ff6b3d', '#fbbf24', '#a855f7', '#fff'];
+    for (var i = 0; i < 15; i++) {
+      var p = document.createElement('div');
+      p.className = 'intro-particle';
+      var cx = 50 + (Math.random() - 0.5) * 20;
+      var cy = 50 + (Math.random() - 0.5) * 20;
+      var dx = (Math.random() - 0.5) * 350;
+      var dy = (Math.random() - 0.5) * 350;
+      p.style.left = cx + '%';
+      p.style.top = cy + '%';
+      p.style.setProperty('--dx', dx + 'px');
+      p.style.setProperty('--dy', dy + 'px');
+      p.style.background = colors[Math.floor(Math.random() * colors.length)];
+      p.style.width = (3 + Math.random() * 5) + 'px';
+      p.style.height = p.style.width;
+      p.style.animationDelay = (1.5 + Math.random() * 2) + 's';
+      p.style.animationDuration = (1.5 + Math.random() * 2) + 's';
+      container.appendChild(p);
+    }
   }
+
+  function dismissIntro() {
+    var splash = document.getElementById('introSplash');
+    if (splash) {
+      splash.classList.add('dismissed');
+      setTimeout(function() { splash.remove(); }, 600);
+    }
+  }
+
+  // ── Init ──
+  (async function() {
+    // Start intro
+    initIntroParticles();
+    setTimeout(dismissIntro, 5000);
+
+    hasAppDB = await waitForAppDB();
+    if (hasAppDB) {
+      console.log('[ClawsNet] AppDB connected — data will persist globally');
+      // Migrate old cn_users key to individual keys + registry
+      try {
+        var oldData = await window.AppDB.getGlobal('cn_users');
+        if (oldData && typeof oldData === 'object' && Object.keys(oldData).length) {
+          var registry = {};
+          try { var r = await window.AppDB.getGlobal('cn_registry'); if (r) registry = r; } catch(e) {}
+          var handles = Object.keys(oldData);
+          for (var i = 0; i < handles.length; i++) {
+            await window.AppDB.setGlobal('cn_user_' + handles[i], oldData[handles[i]]);
+            registry[handles[i]] = makeRegistryEntry(oldData[handles[i]]);
+          }
+          await window.AppDB.setGlobal('cn_registry', registry);
+          await window.AppDB.deleteGlobal('cn_users');
+          console.log('[ClawsNet] Migrated ' + handles.length + ' users to registry');
+        }
+      } catch(e) { console.warn('[ClawsNet] Migration:', e); }
+      // Also migrate any localStorage users into AppDB
+      try {
+        var localUsers = JSON.parse(localStorage.getItem('cn_users') || '{}');
+        var localHandles = Object.keys(localUsers);
+        if (localHandles.length) {
+          var registry = {};
+          try { var r = await window.AppDB.getGlobal('cn_registry'); if (r) registry = r; } catch(e) {}
+          for (var i = 0; i < localHandles.length; i++) {
+            if (!registry[localHandles[i]]) {
+              await window.AppDB.setGlobal('cn_user_' + localHandles[i], localUsers[localHandles[i]]);
+              registry[localHandles[i]] = makeRegistryEntry(localUsers[localHandles[i]]);
+            }
+          }
+          await window.AppDB.setGlobal('cn_registry', registry);
+        }
+      } catch(e) { console.warn('[ClawsNet] Local migration:', e); }
+      // Migrate old cn_posts single key to individual post keys
+      try {
+        var oldPosts = await window.AppDB.getGlobal('cn_posts');
+        if (oldPosts && oldPosts.length) {
+          var postIndex = [];
+          for (var i = 0; i < oldPosts.length; i++) {
+            postIndex.push(oldPosts[i].id);
+            await window.AppDB.setGlobal('cn_post_' + oldPosts[i].id, oldPosts[i]);
+          }
+          await window.AppDB.setGlobal('cn_post_index', postIndex);
+          await window.AppDB.deleteGlobal('cn_posts');
+          console.log('[ClawsNet] Migrated ' + oldPosts.length + ' posts to individual keys');
+        }
+      } catch(e) { console.warn('[ClawsNet] Post migration:', e); }
+      // Migrate localStorage posts to AppDB
+      try {
+        var localPosts = JSON.parse(localStorage.getItem('cn_posts') || '[]');
+        if (localPosts.length) {
+          var existingIndex = [];
+          try { var idx = await window.AppDB.getGlobal('cn_post_index'); if (idx) existingIndex = idx; } catch(e) {}
+          var changed = false;
+          for (var i = 0; i < localPosts.length; i++) {
+            if (existingIndex.indexOf(localPosts[i].id) === -1) {
+              await window.AppDB.setGlobal('cn_post_' + localPosts[i].id, localPosts[i]);
+              existingIndex.unshift(localPosts[i].id);
+              changed = true;
+            }
+          }
+          if (changed) await window.AppDB.setGlobal('cn_post_index', existingIndex);
+        }
+      } catch(e) { console.warn('[ClawsNet] Local post migration:', e); }
+    } else {
+      console.log('[ClawsNet] Running locally — using localStorage fallback');
+    }
+    await loadSession();
+    if (currentUser) await bootApp();
+  })();
 </script>
 </body>
 </html>

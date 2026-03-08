@@ -1,83 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><script>
-(function(){
-  var errs=[];
-  window.onerror=function(msg,src,line,col,err){
-    errs.push({message:msg,line:line,col:col,stack:err&&err.stack||""});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  };
-  window.addEventListener("unhandledrejection",function(e){
-    errs.push({message:String(e.reason),line:0});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  });
-  window.addEventListener("load",function(){
-    setTimeout(function(){
-      if(errs.length>0&&window.parent!==window){
-        window.parent.postMessage({type:"studio-error",errors:errs},"*");
-      }
-      // Blank page detection: check if body has visible content
-      var body=document.body;
-      if(body&&window.parent!==window){
-        var text=(body.innerText||"").trim();
-        var hasCanvas=body.querySelector("canvas,svg,img,video,iframe");
-        var h=body.scrollHeight;
-        if(!text&&!hasCanvas&&h<50){
-          window.parent.postMessage({type:"studio-error",errors:[{message:"Page appears blank — no visible content rendered",line:0,blank:true}]},"*");
-        }
-      }
-    },2000);
-  });
-})();
-</script><script>
-(function(){
-  var errs=[];
-  window.onerror=function(msg,src,line,col,err){
-    errs.push({message:msg,line:line,col:col,stack:err&&err.stack||""});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  };
-  window.addEventListener("unhandledrejection",function(e){
-    errs.push({message:String(e.reason),line:0});
-    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
-  });
-  window.addEventListener("load",function(){
-    setTimeout(function(){
-      if(errs.length>0&&window.parent!==window){
-        window.parent.postMessage({type:"studio-error",errors:errs},"*");
-      }
-      // Blank page detection: check if body has visible content
-      var body=document.body;
-      if(body&&window.parent!==window){
-        var text=(body.innerText||"").trim();
-        var hasCanvas=body.querySelector("canvas,svg,img,video,iframe");
-        var h=body.scrollHeight;
-        if(!text&&!hasCanvas&&h<50){
-          window.parent.postMessage({type:"studio-error",errors:[{message:"Page appears blank — no visible content rendered",line:0,blank:true}]},"*");
-        }
-      }
-    },2000);
-  });
-})();
-</script>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Token Tracker - Real-time Crypto Monitoring</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             width: 100%; height: 100%;
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0014 0%, #1a0033 100%);
+            font-family: 'Nunito', sans-serif;
+            background: #06060b;
             color: #e2e8f0; overflow-x: hidden;
         }
         body { background-attachment: fixed; }
         header {
-            background: rgba(10,0,20,0.9); backdrop-filter: blur(10px);
+            background: rgba(6,6,11,0.92); backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(168,85,247,0.2);
             padding: 1rem 2rem; position: sticky; top: 0; z-index: 100;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.6);
         }
         .header-content {
             max-width: 1400px; margin: 0 auto;
@@ -101,7 +43,7 @@
         .btn {
             padding: 0.6rem 1.1rem; border: none; border-radius: 0.5rem;
             font-size: 0.9rem; font-weight: 700; cursor: pointer;
-            transition: all 0.3s ease; font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease; font-family: 'Nunito', sans-serif;
         }
         .btn-primary {
             background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
@@ -121,7 +63,7 @@
         }
         .btn-icon:hover { background: rgba(168,85,247,0.2); }
         .btn-small {
-            padding: 0.4rem 0.65rem; font-size: 0.78rem; font-family: 'Inter', sans-serif;
+            padding: 0.4rem 0.65rem; font-size: 0.78rem; font-family: 'Nunito', sans-serif;
             background: rgba(168,85,247,0.1); color: #c084fc;
             border: 1px solid rgba(168,85,247,0.2); border-radius: 0.4rem;
             cursor: pointer; transition: all 0.2s ease; text-decoration: none; display: inline-block;
@@ -165,6 +107,7 @@
         }
         .token-item:hover { background: rgba(10,0,20,0.7); border-color: rgba(168,85,247,0.25); transform: translateX(3px); }
         .token-item.expanded { flex-wrap: wrap; align-items: flex-start; }
+        .token-item.token-hidden { opacity: 0.45; border-style: dashed; }
         .token-info { flex: 1; min-width: 0; }
         .token-name { font-weight: 700; color: #f1f5f9; font-size: 0.95rem; margin-bottom: 0.2rem; }
         .token-fullname { font-size: 0.72rem; color: #a78bfa; margin-bottom: 0.15rem; }
@@ -188,7 +131,7 @@
             width: 100%; padding: 0.65rem 0.9rem;
             background: rgba(10,0,20,0.5); border: 1px solid rgba(168,85,247,0.2);
             border-radius: 0.5rem; color: #f1f5f9;
-            font-family: 'Inter', sans-serif; font-size: 0.9rem; transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif; font-size: 0.9rem; transition: all 0.3s ease;
         }
         input:focus {
             outline: none; border-color: #a855f7;
@@ -240,7 +183,7 @@
             width: 100%; padding: 0.7rem 1rem;
             background: rgba(10,0,20,0.5); border: 1px solid rgba(168,85,247,0.2);
             border-radius: 0.5rem; color: #f1f5f9;
-            font-family: 'Inter', sans-serif; font-size: 0.9rem; transition: all 0.3s ease;
+            font-family: 'Nunito', sans-serif; font-size: 0.9rem; transition: all 0.3s ease;
         }
         .token-search-input:focus {
             outline: none; border-color: #a855f7;
@@ -271,7 +214,7 @@
         }
         #loginScreen {
             position: fixed; inset: 0;
-            background: linear-gradient(135deg, #0a0014 0%, #1a0033 100%);
+            background: #06060b;
             z-index: 9999; display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             padding: 2rem; overflow-y: auto;
@@ -311,6 +254,26 @@
             display: inline-block; font-size: 0.67rem; padding: 0.12rem 0.38rem;
             border-radius: 0.25rem; background: rgba(10,0,20,0.6); font-weight: 600;
         }
+        .login-branding { text-align: center; margin-bottom: 2rem; }
+        .login-icon { font-size: 2.8rem; margin-bottom: 0.6rem; }
+        .login-title {
+            font-size: 1.9rem; font-weight: 900;
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; letter-spacing: -0.5px;
+        }
+        .login-subtitle { color: #94a3b8; font-size: 0.9rem; margin-top: 0.5rem; }
+        .login-wrapper { width: 100%; max-width: 420px; }
+        .login-profile-list { display: flex; flex-direction: column; gap: 0.8rem; margin-bottom: 1.5rem; }
+        .login-create-box {
+            background: rgba(26,0,51,0.7); border: 1px solid rgba(168,85,247,0.22);
+            border-radius: 1rem; padding: 1.35rem; backdrop-filter: blur(20px);
+        }
+        .login-create-toggle {
+            display: flex; align-items: center; gap: 0.6rem;
+            cursor: pointer; color: #c084fc; font-weight: 700; font-size: 0.95rem; user-select: none;
+        }
+        .login-footer { color: #475569; font-size: 0.75rem; margin-top: 1.75rem; text-align: center; }
         .login-fade-out { animation: loginFadeOut 0.38s ease forwards; }
         @keyframes loginFadeOut { to { opacity: 0; transform: scale(1.03); pointer-events: none; } }
         .slide-in { animation: loginFadeIn 0.4s ease forwards; }
@@ -342,20 +305,15 @@
 
 <!-- LOGIN SCREEN -->
 <div id="loginScreen">
-    <div style="text-align:center; margin-bottom:2rem;">
-        <div style="font-size:2.8rem; margin-bottom:0.6rem;">⚡</div>
-        <div style="font-size:1.9rem; font-weight:900;
-            background:linear-gradient(135deg,#c084fc,#a855f7);
-            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-            background-clip:text; letter-spacing:-0.5px;">Token Tracker</div>
-        <div style="color:#94a3b8; font-size:0.9rem; margin-top:0.5rem;">Select your profile to continue</div>
+    <div class="login-branding">
+        <div class="login-icon">⚡</div>
+        <div class="login-title">Token Tracker</div>
+        <div class="login-subtitle">Select your profile to continue</div>
     </div>
-    <div style="width:100%; max-width:420px;">
-        <div id="loginProfileList" style="display:flex; flex-direction:column; gap:0.8rem; margin-bottom:1.5rem;"></div>
-        <div style="background:rgba(26,0,51,0.7); border:1px solid rgba(168,85,247,0.22);
-            border-radius:1rem; padding:1.35rem; backdrop-filter:blur(20px);">
-            <div onclick="toggleLoginCreate()" style="display:flex; align-items:center; gap:0.6rem;
-                cursor:pointer; color:#c084fc; font-weight:700; font-size:0.95rem; user-select:none;">
+    <div class="login-wrapper">
+        <div id="loginProfileList" class="login-profile-list"></div>
+        <div class="login-create-box">
+            <div onclick="toggleLoginCreate()" class="login-create-toggle">
                 <span id="loginCreateArrow" style="transition:transform 0.2s;">▶</span>
                 Create New Profile
             </div>
@@ -373,13 +331,11 @@
                     </div>
                     <input type="text" id="loginNewAvatar" placeholder="Or type any emoji" style="margin-top:0.45rem;" maxlength="4">
                 </div>
-                <button class="btn btn-primary" id="loginCreateBtn" style="width:100%; margin-top:0.25rem;">✨ Create &amp; Enter</button>
+                <button class="btn btn-primary" id="loginCreateBtn" style="width:100%;">Create &amp; Enter</button>
             </div>
         </div>
     </div>
-    <div style="color:#475569; font-size:0.75rem; margin-top:1.75rem; text-align:center;">
-        Each profile saves its own tokens, wallet &amp; settings
-    </div>
+    <div class="login-footer">Each profile saves its own tokens, wallet &amp; settings</div>
 </div>
 
 <!-- MAIN APP -->
@@ -404,8 +360,11 @@
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">Your Tokens</div>
-                    <div id="lastUpdate" style="font-size:0.75rem; color:#94a3b8; display:flex; align-items:center; gap:0.4rem;">
-                        <span class="loading-dot"></span> Live
+                    <div style="display:flex; align-items:center; gap:0.75rem;">
+                        <button class="btn-small" id="toggleHiddenBtn" style="font-size:0.72rem;"></button>
+                        <div id="lastUpdate" style="font-size:0.75rem; color:#94a3b8; display:flex; align-items:center; gap:0.4rem;">
+                            <span class="loading-dot"></span> Live
+                        </div>
                     </div>
                 </div>
                 <div class="token-list" id="tokenList"></div>
@@ -417,9 +376,10 @@
                 <div class="form-group">
                     <label>Wallet Address</label>
                     <input type="text" id="walletAddress" placeholder="0x...">
-                    <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.4rem;">Track your holdings across all tokens</div>
+                    <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.4rem;">Saves &amp; auto-imports all tokens from your wallet</div>
                 </div>
-                <button class="btn btn-primary" id="saveWalletBtn" style="width:100%;">Save Wallet</button>
+                <button class="btn btn-primary" id="saveWalletBtn" style="width:100%;">Save &amp; Scan Wallet</button>
+                <button class="btn btn-secondary" id="rescanWalletBtn" style="width:100%; margin-top:0.5rem; display:none;">Rescan Wallet</button>
             </div>
             <div class="card">
                 <div class="card-header"><div class="card-title">🔔 Notifications</div></div>
@@ -437,13 +397,14 @@
                 <button class="btn btn-primary" id="saveSettingsBtn" style="width:100%;">Save</button>
             </div>
             <div class="card">
-                <div class="card-header"><div class="card-title">ℹ️ Info</div></div>
-                <div style="font-size:0.85rem; color:#cbd5e1; line-height:1.8;">
-                    <p>📊 Real-time data via DexScreener</p>
-                    <p>🔔 Price-change push alerts</p>
+                <div class="card-header"><div class="card-title">ℹ️ How It Works</div></div>
+                <div style="font-size:0.85rem; color:#cbd5e1; line-height:1.9;">
+                    <p>📊 Real-time prices via DexScreener</p>
                     <p>📈 Click any token for chart &amp; details</p>
-                    <p>🔗 Links direct to DexScreener</p>
-                    <p>⚡ Auto-refreshes every 30 seconds</p>
+                    <p>🔔 Set price-change push alerts</p>
+                    <p>💼 Track holdings across wallets</p>
+                    <p>⚡ Auto-refreshes every 30s</p>
+                    <p>👥 Multiple profiles supported</p>
                 </div>
             </div>
         </div>
@@ -612,6 +573,7 @@ const DB = {
 // POPULAR TOKENS
 // ─────────────────────────────────────────────
 const POPULAR_TOKENS = [
+    { name:'CLAWS',           symbol:'CLAWS',address:'0x7ca47B141639B893C6782823C0b219f872056379', chainId:'base'   },
     { name:'Ethereum',        symbol:'ETH',  address:'0x4200000000000000000000000000000000000006', chainId:'base'   },
     { name:'USD Coin',        symbol:'USDC', address:'0x833589fcd6edb6e08f4c7c32d4f71b54bda02913', chainId:'base'   },
     { name:'DAI',             symbol:'DAI',  address:'0x50c5725949a6f0c72e6c4a641f24049a917db0cb', chainId:'base'   },
@@ -632,6 +594,8 @@ let appState = { tokens:[], wallet:'', notificationsEnabled:false, alertThreshol
 let refreshIntervalId = null;
 let tokenCharts       = {};
 let expandedTokenId   = null;
+let showHidden        = false;
+let walletScanning    = false;
 let _loginSelAvatar   = '🦊';
 let _modalSelAvatar   = '🦊';
 let _pendingLogo      = null;
@@ -898,6 +862,168 @@ async function dexFetchCandles(chainId, pairAddress, resolution) {
 }
 
 // ─────────────────────────────────────────────
+// WALLET SCANNING — auto-detect all tokens
+// ─────────────────────────────────────────────
+async function fetchWalletTokens(wallet) {
+    if (!wallet || walletScanning) return;
+    walletScanning = true;
+    showNotification('Scanning wallet for tokens...', 'info');
+    let added = 0, updated = 0;
+
+    try {
+        // 1. Get native ETH balance + price via Blockscout address endpoint
+        try {
+            const addrRes = await fetch('https://base.blockscout.com/api/v2/addresses/' + encodeURIComponent(wallet));
+            if (addrRes.ok) {
+                const addrData = await addrRes.json();
+                const rawCoin = addrData.coin_balance || '0';
+                let ethBal;
+                try { ethBal = Number(BigInt(rawCoin)) / 1e18; }
+                catch(e) { ethBal = parseFloat(rawCoin) / 1e18; }
+                const ethPrice = parseFloat(addrData.exchange_rate) || 0;
+                if (ethBal > 0) {
+                    const ethAddr = '0x4200000000000000000000000000000000000006';
+                    const existing = appState.tokens.find(t => t.address.toLowerCase() === ethAddr.toLowerCase());
+                    if (existing) {
+                        existing.amount = ethBal; updated++;
+                    } else {
+                        const tokId = 'tok_eth_' + Date.now();
+                        appState.tokens.push({
+                            id: tokId,
+                            name: 'Ethereum', symbol: 'ETH',
+                            address: ethAddr, amount: ethBal,
+                            chain: 'base', chainId: 'base', autoAdded: true
+                        });
+                        if (ethPrice > 0) {
+                            appState.prices[tokId] = {
+                                price: ethPrice, bsPrice: ethPrice,
+                                change24h: 0, change1h: 0, change5m: 0,
+                                volume24h: 0, volume1h: 0, liquidity: 0,
+                                marketCap: 0, buys24h: 0, sells24h: 0,
+                                history: [{ time: Date.now(), price: ethPrice }]
+                            };
+                        }
+                        added++;
+                    }
+                    // Update existing ETH price
+                    if (ethPrice > 0) {
+                        const ethTok = appState.tokens.find(t => t.address.toLowerCase() === ethAddr.toLowerCase());
+                        if (ethTok) {
+                            if (!appState.prices[ethTok.id]) appState.prices[ethTok.id] = {};
+                            appState.prices[ethTok.id].price = appState.prices[ethTok.id].price || ethPrice;
+                            appState.prices[ethTok.id].bsPrice = ethPrice;
+                        }
+                    }
+                }
+            }
+        } catch(e) { console.warn('ETH balance fetch failed:', e); }
+
+        // 2. Get ALL ERC-20 balances via Blockscout API (with pagination)
+        let allItems = [];
+        let url = 'https://base.blockscout.com/api/v2/addresses/' + encodeURIComponent(wallet) + '/tokens?type=ERC-20';
+        let page = 0;
+        while (url && page < 20) {
+            const res = await fetch(url);
+            if (!res.ok) { console.warn('Blockscout API returned', res.status); break; }
+            const data = await res.json();
+            const items = data.items || [];
+            allItems = allItems.concat(items);
+            // Handle pagination
+            if (data.next_page_params) {
+                const p = data.next_page_params;
+                const base = 'https://base.blockscout.com/api/v2/addresses/' + encodeURIComponent(wallet) + '/tokens?type=ERC-20';
+                url = base + '&id=' + p.id + '&value=' + p.value + '&items_count=' + p.items_count;
+                if (p.fiat_value !== undefined) url += '&fiat_value=' + p.fiat_value;
+            } else {
+                url = null;
+            }
+            page++;
+        }
+
+        console.log('Blockscout returned', allItems.length, 'tokens');
+
+        for (const item of allItems) {
+            // Blockscout uses address_hash for token address
+            const addr = item.token?.address_hash || item.token?.address;
+            if (!addr) continue;
+            const decimals = parseInt(item.token?.decimals) || 18;
+            const rawBal = item.value || '0';
+            let balance;
+            try {
+                balance = Number(BigInt(rawBal)) / (10 ** decimals);
+            } catch(e) {
+                balance = parseFloat(rawBal) / (10 ** decimals);
+            }
+            if (balance <= 0 || isNaN(balance)) continue;
+
+            // Get Blockscout price (exchange_rate is USD per token)
+            const bsPrice = parseFloat(item.token?.exchange_rate) || 0;
+
+            const existing = appState.tokens.find(
+                t => t.address.toLowerCase() === addr.toLowerCase()
+            );
+            if (existing) {
+                existing.amount = balance;
+                if (item.token?.icon_url && !existing.logoUrl) existing.logoUrl = item.token.icon_url;
+                // Set price from Blockscout immediately
+                if (bsPrice > 0) {
+                    if (!appState.prices[existing.id]) appState.prices[existing.id] = {};
+                    appState.prices[existing.id].price = appState.prices[existing.id].price || bsPrice;
+                    appState.prices[existing.id].bsPrice = bsPrice;
+                }
+                updated++;
+                continue;
+            }
+
+            const tokId = 'tok_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+            appState.tokens.push({
+                id: tokId,
+                name: item.token?.name || 'Unknown Token',
+                symbol: (item.token?.symbol || '???').toUpperCase(),
+                address: addr,
+                amount: balance,
+                chain: 'base', chainId: 'base',
+                logoUrl: item.token?.icon_url || null,
+                autoAdded: true
+            });
+            // Set price from Blockscout immediately so portfolio is accurate before DexScreener loads
+            if (bsPrice > 0) {
+                appState.prices[tokId] = {
+                    price: bsPrice,
+                    bsPrice: bsPrice,
+                    change24h: 0, change1h: 0, change5m: 0,
+                    volume24h: 0, volume1h: 0, liquidity: 0,
+                    marketCap: 0, buys24h: 0, sells24h: 0,
+                    history: [{ time: Date.now(), price: bsPrice }]
+                };
+            }
+            added++;
+        }
+
+        await saveState();
+        renderAll();
+        const msg = [];
+        if (added > 0) msg.push(added + ' new token' + (added > 1 ? 's' : '') + ' added');
+        if (updated > 0) msg.push(updated + ' balance' + (updated > 1 ? 's' : '') + ' updated');
+        showNotification(msg.length ? msg.join(', ') + '!' : 'No tokens found in wallet.', msg.length ? 'success' : 'info');
+        if (added > 0) fetchPrices();
+    } catch (e) {
+        console.warn('Wallet scan error:', e);
+        showNotification('Error scanning wallet: ' + e.message, 'error');
+    }
+    walletScanning = false;
+}
+
+function toggleTokenHidden(id) {
+    const t = appState.tokens.find(x => x.id === id);
+    if (t) {
+        t.hidden = !t.hidden;
+        saveState();
+        renderAll();
+    }
+}
+
+// ─────────────────────────────────────────────
 // PRICE FETCHING
 // ─────────────────────────────────────────────
 async function fetchPrices() {
@@ -963,35 +1089,51 @@ function renderAll() { renderStats(); renderTokenList(); renderPopularTokens(); 
 
 function renderStats() {
     let total = 0, wSum = 0, wChange = 0;
-    appState.tokens.forEach(t => {
+    appState.tokens.filter(t => !t.hidden).forEach(t => {
         const pd = appState.prices[t.id];
-        if (pd && t.amount) {
-            const v = pd.price * t.amount;
-            total += v; wSum += v; wChange += pd.change24h * v;
+        const price = pd?.price || pd?.bsPrice || 0;
+        if (price && t.amount) {
+            const v = price * t.amount;
+            total += v; wSum += v; wChange += (pd?.change24h || 0) * v;
         }
     });
     const avg = wSum > 0 ? wChange / wSum : 0;
+    const visCount = appState.tokens.filter(t => !t.hidden).length;
     document.getElementById('statsGrid').innerHTML = `
         <div class="stat-box"><div class="stat-label">Portfolio</div><div class="stat-value">${formatVal(total)}</div></div>
         <div class="stat-box"><div class="stat-label">24h Change</div><div class="stat-value ${posCss(avg)}">${avg >= 0 ? '+' : ''}${avg.toFixed(2)}%</div></div>
-        <div class="stat-box"><div class="stat-label">Tokens</div><div class="stat-value">${appState.tokens.length}</div></div>
+        <div class="stat-box"><div class="stat-label">Tokens</div><div class="stat-value">${visCount}</div></div>
         <div class="stat-box"><div class="stat-label">Wallet</div><div class="stat-value" style="font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${appState.wallet ? appState.wallet.slice(0,6)+'…'+appState.wallet.slice(-4) : '—'}</div></div>`;
 }
 
 function renderTokenList() {
     const list = document.getElementById('tokenList');
+    const hiddenCount = appState.tokens.filter(t => t.hidden).length;
+    const toggleBtn = document.getElementById('toggleHiddenBtn');
+    if (toggleBtn) {
+        toggleBtn.textContent = showHidden ? '👁 Hide hidden (' + hiddenCount + ')' : '👁 Show hidden (' + hiddenCount + ')';
+        toggleBtn.style.display = hiddenCount > 0 ? 'inline-block' : 'none';
+    }
+    const rescanBtn = document.getElementById('rescanWalletBtn');
+    if (rescanBtn) rescanBtn.style.display = appState.wallet ? 'block' : 'none';
+
+    const visible = appState.tokens.filter(t => showHidden || !t.hidden);
     if (!appState.tokens.length) {
-        list.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>No tokens yet</p><p style="font-size:0.82rem;color:#475569;">Click "+ Add Token" to start tracking</p></div>`;
+        list.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>No tokens yet</p><p style="font-size:0.82rem;color:#475569;">Click "+ Add Token" or save a wallet to start tracking</p></div>`;
+        return;
+    }
+    if (!visible.length) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-icon">👁</div><p>All tokens are hidden</p><p style="font-size:0.82rem;color:#475569;">Click "Show hidden" to see them</p></div>`;
         return;
     }
     list.innerHTML = '';
-    appState.tokens.forEach(token => {
+    visible.forEach(token => {
         const pd         = appState.prices[token.id];
-        const price      = pd?.price ?? null;
+        const price      = pd?.price || pd?.bsPrice || null;
         const isExpanded = expandedTokenId === token.id;
         const holdVal    = (price && token.amount) ? price * token.amount : null;
         const item       = document.createElement('div');
-        item.className   = 'token-item' + (isExpanded ? ' expanded' : '');
+        item.className   = 'token-item' + (isExpanded ? ' expanded' : '') + (token.hidden ? ' token-hidden' : '');
 
         const logo = token.logoUrl
             ? `<img src="${token.logoUrl}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">`
@@ -1014,7 +1156,7 @@ function renderTokenList() {
         ];
         const tfButtons = tfOptions.map(o => `
             <button onclick="event.stopPropagation();setChartTimeframe('${token.id}','${o.value}')"
-                style="padding:0.2rem 0.55rem;font-size:0.72rem;border-radius:0.3rem;cursor:pointer;font-family:Inter,sans-serif;font-weight:700;border:1px solid rgba(168,85,247,${tf===o.value?'0.7':'0.2'});background:${tf===o.value?'rgba(168,85,247,0.3)':'rgba(10,0,20,0.5)'};color:${tf===o.value?'#e2e8f0':'#94a3b8'};">
+                style="padding:0.2rem 0.55rem;font-size:0.72rem;border-radius:0.3rem;cursor:pointer;font-family:Nunito,sans-serif;font-weight:700;border:1px solid rgba(168,85,247,${tf===o.value?'0.7':'0.2'});background:${tf===o.value?'rgba(168,85,247,0.3)':'rgba(10,0,20,0.5)'};color:${tf===o.value?'#e2e8f0':'#94a3b8'};">
                 ${o.label}
             </button>`).join('');
 
@@ -1057,6 +1199,7 @@ function renderTokenList() {
                 ${holdVal ? `<div class="token-holdings">${token.amount} · ${formatVal(holdVal)}</div>` : (token.amount ? `<div class="token-holdings">${token.amount} tokens</div>` : '')}
             </div>
             <div class="token-actions" onclick="event.stopPropagation()">
+                <button class="btn-small" onclick="toggleTokenHidden('${token.id}')" title="${token.hidden ? 'Unhide' : 'Hide'}">${token.hidden ? '👁' : '👁‍🗨'}</button>
                 <button class="btn-small" onclick="openEditToken('${token.id}')">✏️</button>
                 <button class="btn-small" onclick="removeToken('${token.id}')" style="color:#ef4444;border-color:rgba(239,68,68,0.3);">🗑️</button>
             </div>
@@ -1454,6 +1597,17 @@ function setupSearch() {
 // EVENT WIRING — called once on init
 // ─────────────────────────────────────────────
 function setupEvents() {
+    // ── Toggle hidden tokens ──
+    document.getElementById('toggleHiddenBtn').addEventListener('click', () => {
+        showHidden = !showHidden;
+        renderAll();
+    });
+
+    // ── Rescan wallet ──
+    document.getElementById('rescanWalletBtn').addEventListener('click', () => {
+        if (appState.wallet) fetchWalletTokens(appState.wallet);
+    });
+
     // ── Header buttons ──
     document.getElementById('settingsBtn').addEventListener('click', () =>
         document.getElementById('settingsModal').classList.add('active'));
@@ -1503,10 +1657,12 @@ function setupEvents() {
     // ── Wallet save ──
     document.getElementById('saveWalletBtn').addEventListener('click', async () => {
         if (!currentProfileId) { showNotification('No active profile.', 'error'); return; }
-        appState.wallet = document.getElementById('walletAddress').value.trim();
+        const addr = document.getElementById('walletAddress').value.trim();
+        if (!addr) { showNotification('Enter a wallet address.', 'error'); return; }
+        appState.wallet = addr;
         await saveState();
         renderStats();
-        showNotification('Wallet saved!', 'success');
+        fetchWalletTokens(addr);
     });
 
     // ── Notifications toggle ──

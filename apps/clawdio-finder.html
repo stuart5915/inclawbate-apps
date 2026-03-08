@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clawdio Finder — Music Discovery</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #06060b;
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #a855f7; border-radius: 3px; }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #1a0a2e 0%, #0d0015 100%);
+            border-bottom: 1px solid rgba(168,85,247,0.2);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .app-title {
+            font-size: 22px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .service-badge {
+            background: rgba(168,85,247,0.15);
+            border: 1px solid rgba(168,85,247,0.3);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .service-badge:hover { background: rgba(168,85,247,0.25); }
+        .service-badge .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        /* ── Service Selection Screen ── */
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        .service-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            padding: 40px 20px;
+        }
+        .service-screen.active { display: flex; }
+        .service-screen h1 {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #c084fc, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .service-screen p {
+            color: #94a3b8;
+            margin-bottom: 36px;
+            font-size: 16px;
+        }
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            max-width: 700px;
+            width: 100%;
+        }
+        .service-card {
+            background: rgba(168,85,247,0.06);
+            border: 1px solid rgba(168,85,247,0.15);
+            border-radius: 16px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .service-card:hover {
+            background: rgba(168,85,247,0.12);
+            border-color: rgba(168,85,247,0.4);
+            transform: translateY(-2px);
+        }
+        .service-card .icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            margin: 0 auto 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+        }
+        .service-card .name {
+            font-weight: 800;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+        .service-card .sub {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        /* ── Main App ── */
+        .main-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* ── Search Tabs ── */
+        .search-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+        .search-tab {
+            background: rgba(168,85,247,0.08);
+            border: 1px solid rgba(168,85,247,0.15);
+            border-radius: 12px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .search-tab:hover { background: rgba(168,85,247,0.15); color: #e2e8f0; }
+        .search-tab.active {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        /* ── Search Bar ── */
+        .search-bar {
+            position: relative;
+            margin-bottom: 24px;
+        }
+        .search-bar input {
+            width: 100%;
+            background: rgba(168,85,247,0.06);
+            border: 1px solid rgba(168,85,247,0.2);
+            border-radius: 14px;
+            padding: 14px 20px 14px 48px;
+            font-size: 16px;
+            color: #e2e8f0;
+            font-family: inherit;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .search-bar input:focus { border-color: #a855f7; }
+        .search-bar input::placeholder { color: #64748b; }
+        .search-bar .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #64748b;
+        }
+
+        /* ── Genre/Mood Grid ── */
+        .pill-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 28px;
+        }
+        .pill {
+            background: rgba(168,85,247,0.08);
+            border: 1px solid rgba(168,85,247,0.15);
+            border-radius: 20px;
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            color: #c084fc;
+        }
+        .pill:hover, .pill.active {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        /* ── Section Title ── */
+        .section-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title .emoji { font-size: 20px; }
+
+        /* ── Results / Artist Cards ── */
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .artist-card {
+            background: rgba(168,85,247,0.06);
+            border: 1px solid rgba(168,85,247,0.12);
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        .artist-card:hover {
+            border-color: rgba(168,85,247,0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(168,85,247,0.15);
+        }
+        .artist-card img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            background: #1a0a2e;
+        }
+        .artist-card .info {
+            padding: 12px;
+        }
+        .artist-card .artist-name {
+            font-weight: 800;
+            font-size: 14px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .artist-card .artist-genre {
+            font-size: 11px;
+            color: #a855f7;
+            font-weight: 700;
+        }
+
+        /* ── Track List ── */
+        .track-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 32px;
+        }
+        .track-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            background: rgba(168,85,247,0.04);
+            border: 1px solid rgba(168,85,247,0.1);
+            border-radius: 14px;
+            padding: 10px 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .track-item:hover {
+            background: rgba(168,85,247,0.1);
+            border-color: rgba(168,85,247,0.3);
+        }
+        .track-item img {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #1a0a2e;
+            flex-shrink: 0;
+        }
+        .track-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .track-title {
+            font-weight: 700;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .track-artist {
+            font-size: 12px;
+            color: #94a3b8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .track-duration {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+        .track-open {
+            background: rgba(168,85,247,0.15);
+            border: none;
+            border-radius: 8px;
+            padding: 6px 12px;
+            color: #c084fc;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: inherit;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+        .track-open:hover { background: rgba(168,85,247,0.3); }
+
+        /* ── Preview Player ── */
+        .preview-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, #1a0a2e, #0d0015);
+            border-top: 1px solid rgba(168,85,247,0.3);
+            padding: 12px 20px;
+            display: none;
+            align-items: center;
+            gap: 14px;
+            z-index: 200;
+        }
+        .preview-bar.active { display: flex; }
+        .preview-bar img {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        .preview-bar .preview-info { flex: 1; min-width: 0; }
+        .preview-bar .preview-title {
+            font-weight: 700;
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .preview-bar .preview-artist {
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .preview-btn {
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 16px;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .preview-close {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        /* ── Loading ── */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid rgba(168,85,247,0.15);
+            border-top-color: #a855f7;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Empty State ── */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        .empty-state .big { font-size: 48px; margin-bottom: 12px; }
+        .empty-state p { font-size: 14px; }
+
+        /* ── Artist Detail Modal ── */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 300;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-sheet {
+            background: #0d0015;
+            border-top: 1px solid rgba(168,85,247,0.3);
+            border-radius: 24px 24px 0 0;
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 24px 20px;
+        }
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: rgba(168,85,247,0.3);
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+        .modal-artist-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .modal-artist-header img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(168,85,247,0.3);
+        }
+        .modal-artist-name {
+            font-size: 22px;
+            font-weight: 900;
+        }
+        .modal-artist-fans {
+            font-size: 13px;
+            color: #94a3b8;
+        }
+        .modal-listen-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #a855f7, #7c3aed);
+            border: none;
+            border-radius: 12px;
+            padding: 10px 22px;
+            color: #fff;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: inherit;
+            margin-top: 8px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 480px) {
+            .service-screen h1 { font-size: 24px; }
+            .service-grid { grid-template-columns: 1fr 1fr; }
+            .results-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+            .header { padding: 12px 16px; }
+            .app-title { font-size: 18px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Service Selection Screen -->
+    <div class="service-screen active" id="serviceScreen">
+        <h1>Clawdio Finder</h1>
+        <p>Pick your streaming service to start discovering</p>
+        <div class="service-grid" id="serviceGrid"></div>
+    </div>
+
+    <!-- Main App Screen -->
+    <div class="screen" id="appScreen">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">&#127925;</div>
+                <div class="app-title">Clawdio Finder</div>
+            </div>
+            <div class="service-badge" id="serviceBadge" onclick="showServicePicker()">
+                <span class="dot" id="badgeDot"></span>
+                <span id="badgeName"></span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Search Tabs -->
+            <div class="search-tabs">
+                <button class="search-tab active" data-tab="song" onclick="switchTab('song')">&#127926; Song</button>
+                <button class="search-tab" data-tab="genre" onclick="switchTab('genre')">&#127928; Genre</button>
+                <button class="search-tab" data-tab="mood" onclick="switchTab('mood')">&#127912; Mood</button>
+            </div>
+
+            <!-- Song Search -->
+            <div class="tab-panel active" id="panel-song">
+                <div class="search-bar">
+                    <span class="search-icon">&#128269;</span>
+                    <input type="text" id="songSearch" placeholder="Search for a song or artist..." oninput="debouncedSearch()" onkeydown="if(event.key==='Enter')searchSongs()">
+                </div>
+                <div id="songResults"></div>
+            </div>
+
+            <!-- Genre Search -->
+            <div class="tab-panel" id="panel-genre" style="display:none">
+                <div class="section-title"><span class="emoji">&#127928;</span> Pick a genre</div>
+                <div class="pill-grid" id="genreGrid"></div>
+                <div id="genreResults"></div>
+            </div>
+
+            <!-- Mood Search -->
+            <div class="tab-panel" id="panel-mood" style="display:none">
+                <div class="section-title"><span class="emoji">&#127912;</span> How are you feeling?</div>
+                <div class="pill-grid" id="moodGrid"></div>
+                <div id="moodResults"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Preview Bar -->
+    <div class="preview-bar" id="previewBar">
+        <img id="previewImg" src="" alt="">
+        <div class="preview-info">
+            <div class="preview-title" id="previewTitle"></div>
+            <div class="preview-artist" id="previewArtist"></div>
+        </div>
+        <button class="preview-btn" id="previewPlayBtn" onclick="togglePreview()">&#9654;</button>
+        <button class="preview-close" onclick="closePreview()">&times;</button>
+    </div>
+
+    <!-- Artist Modal -->
+    <div class="modal-overlay" id="artistModal" onclick="if(event.target===this)closeModal()">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-artist-header">
+                <img id="modalImg" src="" alt="">
+                <div>
+                    <div class="modal-artist-name" id="modalName"></div>
+                    <div class="modal-artist-fans" id="modalFans"></div>
+                    <button class="modal-listen-btn" id="modalListenBtn">
+                        &#9654; Listen on <span id="modalService"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="section-title"><span class="emoji">&#127925;</span> Top Tracks</div>
+            <div class="track-list" id="modalTracks"></div>
+        </div>
+    </div>
+
+    <script>
+        // ── Services ──
+        const SERVICES = {
+            spotify:    { name: 'Spotify',       color: '#1DB954', icon: '&#9899;', searchUrl: q => `https://open.spotify.com/search/${encodeURIComponent(q)}`, artistUrl: name => `https://open.spotify.com/search/${encodeURIComponent(name)}` },
+            apple:      { name: 'Apple Music',   color: '#FC3C44', icon: '&#127822;', searchUrl: q => `https://music.apple.com/search?term=${encodeURIComponent(q)}`, artistUrl: name => `https://music.apple.com/search?term=${encodeURIComponent(name)}` },
+            youtube:    { name: 'YouTube Music', color: '#FF0000', icon: '&#9654;', searchUrl: q => `https://music.youtube.com/search?q=${encodeURIComponent(q)}`, artistUrl: name => `https://music.youtube.com/search?q=${encodeURIComponent(name)}` },
+            amazon:     { name: 'Amazon Music',  color: '#25D1DA', icon: '&#127926;', searchUrl: q => `https://music.amazon.com/search/${encodeURIComponent(q)}`, artistUrl: name => `https://music.amazon.com/search/${encodeURIComponent(name)}` },
+            tidal:      { name: 'Tidal',         color: '#00FFFF', icon: '&#127754;', searchUrl: q => `https://listen.tidal.com/search?q=${encodeURIComponent(q)}`, artistUrl: name => `https://listen.tidal.com/search?q=${encodeURIComponent(name)}` },
+            pandora:    { name: 'Pandora',       color: '#3668FF', icon: '&#128266;', searchUrl: q => `https://www.pandora.com/search/${encodeURIComponent(q)}/all`, artistUrl: name => `https://www.pandora.com/search/${encodeURIComponent(name)}/all` },
+        };
+
+        const GENRES = [
+            'Pop', 'Hip-Hop', 'R&B', 'Rock', 'Indie', 'Electronic', 'Jazz', 'Classical',
+            'Country', 'Latin', 'Reggaeton', 'Metal', 'Punk', 'Soul', 'Funk', 'Blues',
+            'K-Pop', 'Afrobeats', 'Dancehall', 'Lo-Fi', 'Ambient', 'House', 'Techno', 'Drill'
+        ];
+
+        const MOODS = [
+            { name: 'Happy', query: 'happy upbeat feel good' },
+            { name: 'Sad', query: 'sad emotional heartbreak' },
+            { name: 'Chill', query: 'chill relax calm' },
+            { name: 'Hype', query: 'hype energy party turn up' },
+            { name: 'Romantic', query: 'love romantic slow' },
+            { name: 'Focus', query: 'focus study concentration instrumental' },
+            { name: 'Workout', query: 'workout gym motivation' },
+            { name: 'Angry', query: 'angry rage intense' },
+            { name: 'Nostalgic', query: 'throwback nostalgia classic old school' },
+            { name: 'Dreamy', query: 'dreamy ethereal floating' },
+            { name: 'Dark', query: 'dark moody atmospheric' },
+            { name: 'Uplifting', query: 'uplifting inspiring hope' },
+        ];
+
+        // ── State ──
+        let currentService = null;
+        let currentTab = 'song';
+        let activeGenre = null;
+        let activeMood = null;
+        let previewAudio = null;
+        let searchTimeout = null;
+
+        // ── DB Wrapper ──
+        const DB = {
+            async get(k) {
+                if (window.AppDB) return await window.AppDB.get(k);
+                try { return JSON.parse(localStorage.getItem('clawdio_' + k)); } catch { return null; }
+            },
+            async set(k, v) {
+                if (window.AppDB) return await window.AppDB.set(k, v);
+                localStorage.setItem('clawdio_' + k, JSON.stringify(v));
+            }
+        };
+
+        // ── Init ──
+        async function init() {
+            const saved = await DB.get('service');
+            if (saved && SERVICES[saved]) {
+                currentService = saved;
+                enterApp();
+            }
+            renderServiceGrid();
+            renderGenres();
+            renderMoods();
+        }
+
+        // ── Service Selection ──
+        function renderServiceGrid() {
+            const grid = document.getElementById('serviceGrid');
+            grid.innerHTML = Object.entries(SERVICES).map(([key, s]) => `
+                <div class="service-card" onclick="selectService('${key}')">
+                    <div class="icon" style="background:${s.color}20;color:${s.color}">${s.icon}</div>
+                    <div class="name">${s.name}</div>
+                    <div class="sub">Search & discover</div>
+                </div>
+            `).join('');
+        }
+
+        async function selectService(key) {
+            currentService = key;
+            await DB.set('service', key);
+            enterApp();
+        }
+
+        function enterApp() {
+            document.getElementById('serviceScreen').classList.remove('active');
+            document.getElementById('appScreen').classList.add('active');
+            const s = SERVICES[currentService];
+            document.getElementById('badgeDot').style.background = s.color;
+            document.getElementById('badgeName').textContent = s.name;
+        }
+
+        function showServicePicker() {
+            document.getElementById('appScreen').classList.remove('active');
+            document.getElementById('serviceScreen').classList.add('active');
+        }
+
+        // ── Tabs ──
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.search-tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+            document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+            document.getElementById('panel-' + tab).style.display = 'block';
+        }
+
+        // ── Deezer API (via CORS proxy) ──
+        const PROXY = 'https://corsproxy.io/?';
+
+        async function deezerFetch(endpoint) {
+            try {
+                const res = await fetch(PROXY + encodeURIComponent('https://api.deezer.com' + endpoint));
+                if (!res.ok) throw new Error('API error');
+                return await res.json();
+            } catch (err) {
+                console.error('Deezer fetch failed:', err);
+                return null;
+            }
+        }
+
+        // ── Song Search ──
+        function debouncedSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(searchSongs, 400);
+        }
+
+        async function searchSongs() {
+            const q = document.getElementById('songSearch').value.trim();
+            const container = document.getElementById('songResults');
+            if (!q) { container.innerHTML = ''; return; }
+
+            container.innerHTML = '<div class="loading"><div class="spinner"></div>Searching...</div>';
+            const data = await deezerFetch('/search?q=' + encodeURIComponent(q) + '&limit=30');
+
+            if (!data || !data.data || data.data.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="big">&#128269;</div><p>No results found. Try a different search.</p></div>';
+                return;
+            }
+
+            // Get unique artists from results
+            const seenArtists = new Set();
+            const artists = [];
+            const tracks = [];
+
+            data.data.forEach(t => {
+                tracks.push(t);
+                if (!seenArtists.has(t.artist.id)) {
+                    seenArtists.add(t.artist.id);
+                    artists.push(t.artist);
+                }
+            });
+
+            let html = '';
+
+            // Discover artists section
+            if (artists.length > 0) {
+                html += `<div class="section-title"><span class="emoji">&#128100;</span> Discover Artists</div>`;
+                html += '<div class="results-grid">';
+                artists.slice(0, 8).forEach(a => {
+                    html += `<div class="artist-card" onclick="openArtist(${a.id})">
+                        <img src="${a.picture_medium || a.picture || ''}" alt="${esc(a.name)}" onerror="this.style.background='#1a0a2e'">
+                        <div class="info">
+                            <div class="artist-name">${esc(a.name)}</div>
+                            <div class="artist-genre">Artist</div>
+                        </div>
+                    </div>`;
+                });
+                html += '</div>';
+            }
+
+            // Tracks section
+            html += `<div class="section-title"><span class="emoji">&#127925;</span> Tracks</div>`;
+            html += '<div class="track-list">';
+            tracks.forEach(t => {
+                html += renderTrack(t);
+            });
+            html += '</div>';
+
+            container.innerHTML = html;
+        }
+
+        // ── Genre Search ──
+        function renderGenres() {
+            document.getElementById('genreGrid').innerHTML = GENRES.map(g =>
+                `<button class="pill" onclick="searchGenre('${g}')">${g}</button>`
+            ).join('');
+        }
+
+        async function searchGenre(genre) {
+            activeGenre = genre;
+            document.querySelectorAll('#genreGrid .pill').forEach(p =>
+                p.classList.toggle('active', p.textContent === genre)
+            );
+
+            const container = document.getElementById('genreResults');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div>Finding ' + genre + ' artists...</div>';
+
+            const data = await deezerFetch('/search?q=' + encodeURIComponent(genre + ' new') + '&limit=40');
+
+            if (!data || !data.data || data.data.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="big">&#127928;</div><p>No artists found for this genre.</p></div>';
+                return;
+            }
+
+            const seenArtists = new Set();
+            const artists = [];
+            const tracks = [];
+
+            data.data.forEach(t => {
+                tracks.push(t);
+                if (!seenArtists.has(t.artist.id)) {
+                    seenArtists.add(t.artist.id);
+                    artists.push(t.artist);
+                }
+            });
+
+            let html = `<div class="section-title" style="margin-top:20px"><span class="emoji">&#128293;</span> ${genre} Artists to Discover</div>`;
+            html += '<div class="results-grid">';
+            artists.slice(0, 12).forEach(a => {
+                html += `<div class="artist-card" onclick="openArtist(${a.id})">
+                    <img src="${a.picture_medium || a.picture || ''}" alt="${esc(a.name)}" onerror="this.style.background='#1a0a2e'">
+                    <div class="info">
+                        <div class="artist-name">${esc(a.name)}</div>
+                        <div class="artist-genre">${genre}</div>
+                    </div>
+                </div>`;
+            });
+            html += '</div>';
+
+            html += `<div class="section-title"><span class="emoji">&#127925;</span> Fresh ${genre} Tracks</div>`;
+            html += '<div class="track-list">';
+            tracks.forEach(t => { html += renderTrack(t); });
+            html += '</div>';
+
+            container.innerHTML = html;
+        }
+
+        // ── Mood Search ──
+        function renderMoods() {
+            document.getElementById('moodGrid').innerHTML = MOODS.map(m =>
+                `<button class="pill" onclick="searchMood('${m.name}')">${m.name}</button>`
+            ).join('');
+        }
+
+        async function searchMood(moodName) {
+            activeMood = moodName;
+            const mood = MOODS.find(m => m.name === moodName);
+            if (!mood) return;
+
+            document.querySelectorAll('#moodGrid .pill').forEach(p =>
+                p.classList.toggle('active', p.textContent === moodName)
+            );
+
+            const container = document.getElementById('moodResults');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div>Finding ' + moodName.toLowerCase() + ' vibes...</div>';
+
+            const data = await deezerFetch('/search?q=' + encodeURIComponent(mood.query) + '&limit=40');
+
+            if (!data || !data.data || data.data.length === 0) {
+                container.innerHTML = '<div class="empty-state"><div class="big">&#127912;</div><p>No tracks found for this mood.</p></div>';
+                return;
+            }
+
+            const seenArtists = new Set();
+            const artists = [];
+            const tracks = data.data;
+
+            tracks.forEach(t => {
+                if (!seenArtists.has(t.artist.id)) {
+                    seenArtists.add(t.artist.id);
+                    artists.push(t.artist);
+                }
+            });
+
+            let html = `<div class="section-title" style="margin-top:20px"><span class="emoji">&#128100;</span> ${moodName} Artists</div>`;
+            html += '<div class="results-grid">';
+            artists.slice(0, 8).forEach(a => {
+                html += `<div class="artist-card" onclick="openArtist(${a.id})">
+                    <img src="${a.picture_medium || a.picture || ''}" alt="${esc(a.name)}" onerror="this.style.background='#1a0a2e'">
+                    <div class="info">
+                        <div class="artist-name">${esc(a.name)}</div>
+                        <div class="artist-genre">${moodName}</div>
+                    </div>
+                </div>`;
+            });
+            html += '</div>';
+
+            html += `<div class="section-title"><span class="emoji">&#127925;</span> ${moodName} Tracks</div>`;
+            html += '<div class="track-list">';
+            tracks.forEach(t => { html += renderTrack(t); });
+            html += '</div>';
+
+            container.innerHTML = html;
+        }
+
+        // ── Track Rendering ──
+        function renderTrack(t) {
+            const dur = Math.floor(t.duration / 60) + ':' + String(t.duration % 60).padStart(2, '0');
+            const preview = t.preview ? `onclick="playPreview('${t.preview}', '${esc(t.title)}', '${esc(t.artist.name)}', '${t.album?.cover_small || ''}')"` : '';
+            const svc = SERVICES[currentService];
+            return `<div class="track-item">
+                <img src="${t.album?.cover_small || t.album?.cover || ''}" alt="" onerror="this.style.background='#1a0a2e'">
+                <div class="track-info" ${preview} style="cursor:pointer">
+                    <div class="track-title">${esc(t.title)}</div>
+                    <div class="track-artist">${esc(t.artist.name)}</div>
+                </div>
+                <span class="track-duration">${dur}</span>
+                <button class="track-open" onclick="window.open('${svc.searchUrl(t.title + ' ' + t.artist.name)}','_blank')">Open</button>
+            </div>`;
+        }
+
+        // ── Artist Modal ──
+        async function openArtist(id) {
+            const modal = document.getElementById('artistModal');
+            modal.classList.add('active');
+            document.getElementById('modalTracks').innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+            const [artist, topTracks] = await Promise.all([
+                deezerFetch('/artist/' + id),
+                deezerFetch('/artist/' + id + '/top?limit=10')
+            ]);
+
+            if (!artist) { closeModal(); return; }
+
+            document.getElementById('modalImg').src = artist.picture_medium || artist.picture || '';
+            document.getElementById('modalName').textContent = artist.name;
+            document.getElementById('modalFans').textContent = artist.nb_fan ? artist.nb_fan.toLocaleString() + ' fans' : '';
+
+            const svc = SERVICES[currentService];
+            document.getElementById('modalService').textContent = svc.name;
+            document.getElementById('modalListenBtn').onclick = () => window.open(svc.artistUrl(artist.name), '_blank');
+
+            if (topTracks && topTracks.data) {
+                let html = '';
+                topTracks.data.forEach(t => { html += renderTrack(t); });
+                document.getElementById('modalTracks').innerHTML = html;
+            } else {
+                document.getElementById('modalTracks').innerHTML = '<div class="empty-state"><p>Could not load tracks</p></div>';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('artistModal').classList.remove('active');
+        }
+
+        // ── Preview Audio ──
+        function playPreview(url, title, artist, img) {
+            if (previewAudio) { previewAudio.pause(); }
+
+            previewAudio = new Audio(url);
+            previewAudio.volume = 0.7;
+            previewAudio.play();
+
+            document.getElementById('previewImg').src = img;
+            document.getElementById('previewTitle').textContent = title;
+            document.getElementById('previewArtist').textContent = artist;
+            document.getElementById('previewBar').classList.add('active');
+            document.getElementById('previewPlayBtn').innerHTML = '&#9646;&#9646;';
+
+            previewAudio.onended = () => {
+                document.getElementById('previewPlayBtn').innerHTML = '&#9654;';
+            };
+        }
+
+        function togglePreview() {
+            if (!previewAudio) return;
+            if (previewAudio.paused) {
+                previewAudio.play();
+                document.getElementById('previewPlayBtn').innerHTML = '&#9646;&#9646;';
+            } else {
+                previewAudio.pause();
+                document.getElementById('previewPlayBtn').innerHTML = '&#9654;';
+            }
+        }
+
+        function closePreview() {
+            if (previewAudio) { previewAudio.pause(); previewAudio = null; }
+            document.getElementById('previewBar').classList.remove('active');
+        }
+
+        // ── Util ──
+        function esc(s) {
+            if (!s) return '';
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+        }
+
+        // ── Start ──
+        init();
+    </script>
+</body>
+</html>

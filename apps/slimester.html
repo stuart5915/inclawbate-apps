@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Slimester</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Nunito',sans-serif; background:#06060b; color:#e2e8f0; overflow:hidden; width:100vw; height:100vh; }
+canvas { display:block; position:fixed; top:0; left:0; }
+#overlay { position:fixed; top:0; left:0; width:100%; height:100%; display:none; align-items:center; justify-content:center; z-index:10; }
+#overlay.visible { display:flex; }
+.panel { background:rgba(6,6,11,0.97); border:2px solid #44ff88; border-radius:16px; padding:32px; max-width:480px; width:90%; text-align:center; }
+.panel h2 { font-size:2rem; font-weight:900; color:#44ff88; margin-bottom:16px; text-shadow:0 0 12px #44ff88; }
+.panel input { width:100%; padding:12px 16px; background:rgba(255,255,255,0.07); border:1px solid #44ff88; border-radius:8px; color:#e2e8f0; font-family:'Nunito',sans-serif; font-size:1.1rem; margin-bottom:16px; outline:none; }
+.panel input:focus { border-color:#88ffcc; box-shadow:0 0 8px #44ff8844; }
+.btn { display:inline-block; padding:12px 28px; border:none; border-radius:8px; font-family:'Nunito',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; margin:6px; transition:all 0.15s; }
+.btn-green { background:#44ff88; color:#06060b; }
+.btn-green:hover { background:#88ffcc; box-shadow:0 0 16px #44ff88; }
+.btn-blue { background:#44aaff; color:#06060b; }
+.btn-blue:hover { background:#88ccff; box-shadow:0 0 16px #44aaff; }
+.btn-gray { background:#334; color:#e2e8f0; }
+.btn-gray:hover { background:#445; }
+.error-msg { color:#ff4444; font-size:0.9rem; margin-top:8px; min-height:1.2em; }
+#char-panel .classes { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin:16px 0; }
+.class-card { border:2px solid #334; border-radius:12px; padding:16px 12px; cursor:pointer; width:130px; transition:all 0.15s; }
+.class-card:hover { border-color:#888; }
+.class-card.selected { box-shadow:0 0 20px currentColor; }
+.class-card .class-icon { width:48px; height:48px; border-radius:50%; margin:0 auto 8px; }
+.class-card .class-name { font-weight:800; font-size:0.95rem; margin-bottom:4px; }
+.class-card .class-desc { font-size:0.72rem; color:#aaa; line-height:1.3; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="overlay">
+  <div id="auth-panel" class="panel">
+    <h2>SLIMESTER</h2>
+    <p style="color:#aaa;margin-bottom:20px;">Enter your slime name</p>
+    <input id="name-input" type="text" placeholder="Slime Name..." maxlength="20" autocomplete="off">
+    <div>
+      <button class="btn btn-green" onclick="tryNewPlayer()">New Player</button>
+      <button class="btn btn-blue" onclick="tryReturning()">Returning Player</button>
+    </div>
+    <div class="error-msg" id="auth-error"></div>
+  </div>
+  <div id="char-panel" class="panel" style="display:none;">
+    <h2>Choose Your Slime</h2>
+    <div class="classes">
+      <div class="class-card" id="card-acid" onclick="selectClass('acid')" style="color:#88ff00;border-color:#88ff00;">
+        <div class="class-icon" style="background:#88ff00;box-shadow:0 0 12px #88ff00;"></div>
+        <div class="class-name">Acid Slime</div>
+        <div class="class-desc">Dissolves armor. High ATK. Unique questline.</div>
+      </div>
+      <div class="class-card" id="card-crystal" onclick="selectClass('crystal')" style="color:#44aaff;border-color:#334;">
+        <div class="class-icon" style="background:#44aaff;box-shadow:0 0 12px #44aaff;"></div>
+        <div class="class-name">Crystal Slime</div>
+        <div class="class-desc">Crystalline armor. High DEF. Unique questline.</div>
+      </div>
+      <div class="class-card" id="card-shadow" onclick="selectClass('shadow')" style="color:#aa44ff;border-color:#334;">
+        <div class="class-icon" style="background:#aa44ff;box-shadow:0 0 12px #aa44ff;"></div>
+        <div class="class-name">Shadow Slime</div>
+        <div class="class-desc">Phase speed. High SPD. Unique questline.</div>
+      </div>
+    </div>
+    <button class="btn btn-green" onclick="beginJourney()">Begin Journey</button>
+    <div class="error-msg" id="char-error"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONSTANTS
+// ============================================================
+const TILE_SIZE = 32;
+const WORLD_W = 100, WORLD_H = 60;
+const MAX_MONSTERS = 6;
+const LAYERS = ['Surface','Cavern','Deep Cave','Magma Zone','The Core'];
+
+const T = {EMPTY:0,GRASS:1,DIRT:2,STONE:3,TREE:4,ROCK:5,STAIRS_D:6,STAIRS_U:7,
+  CAVE_STONE:8,CRYSTAL:9,MUSHROOM:10,POOL:11,DEEP_STONE:12,GEM:13,RUINS:14,ECHO:15,
+  MAGMA:16,LAVA:17,OBSIDIAN:18,VENT:19,CORE:20,ENERGY:21,VOID_T:22,ALTAR:23,WALL:24};
+
+const TILE_INFO = {
+  0:{color:'#06060b',solid:false},
+  1:{color:'#2d5a1b',solid:false,name:'Grass'},
+  2:{color:'#6b4423',solid:false,name:'Dirt',mine:true,hp:3,drop:'dirt'},
+  3:{color:'#7a7a8a',solid:true,name:'Stone',mine:true,hp:6,drop:'stone',need:0},
+  4:{color:'#1a6b2a',solid:true,name:'Tree',mine:true,hp:4,drop:'wood',need:0},
+  5:{color:'#5a5a6a',solid:true,name:'Rock',mine:true,hp:10,drop:'rock',need:1},
+  6:{color:'#996633',solid:false,name:'Stairs Down'},
+  7:{color:'#886622',solid:false,name:'Stairs Up'},
+  8:{color:'#4a4a5a',solid:true,name:'Cave Stone',mine:true,hp:8,drop:'stone',need:1},
+  9:{color:'#4488ff',solid:true,name:'Crystal',mine:true,hp:12,drop:'crystal',need:1},
+  10:{color:'#cc44aa',solid:false,name:'Mushroom',mine:false,drop:'mushroom'},
+  11:{color:'#224488',solid:false,name:'Pool',damage:1},
+  12:{color:'#332244',solid:true,name:'Deep Stone',mine:true,hp:16,drop:'deep_stone',need:2},
+  13:{color:'#ff44ff',solid:true,name:'Gem Node',mine:true,hp:20,drop:'gem',need:2},
+  14:{color:'#553333',solid:true,name:'Ruins',mine:false},
+  15:{color:'#44ffdd',solid:false,name:'Echo Crystal'},
+  16:{color:'#552211',solid:true,name:'Magma Rock',mine:true,hp:18,drop:'magma_stone',need:3},
+  17:{color:'#ff4400',solid:false,name:'Lava',damage:5},
+  18:{color:'#220033',solid:true,name:'Obsidian',mine:true,hp:25,drop:'obsidian',need:3},
+  19:{color:'#ff8800',solid:false,name:'Fire Vent',damage:3},
+  20:{color:'#224422',solid:true,name:'Core Matter',mine:true,hp:30,drop:'core_matter',need:4},
+  21:{color:'#00ffaa',solid:false,name:'Energy'},
+  22:{color:'#110022',solid:false,name:'Void'},
+  23:{color:'#aaff44',solid:false,name:'Altar'},
+  24:{color:'#334455',solid:true,name:'Wall',mine:true,hp:10,drop:'stone',need:0}
+};
+
+const CLASSES = {
+  acid:{name:'Acid Slime',color:'#88ff00',glowColor:'#aaff44',desc:'Dissolves armor. High damage.',
+    stats:{hp:80,maxHp:80,atk:15,def:5,spd:3},questline:'acid'},
+  crystal:{name:'Crystal Slime',color:'#44aaff',glowColor:'#88ddff',desc:'Crystalline armor. High defense.',
+    stats:{hp:120,maxHp:120,atk:8,def:18,spd:2},questline:'crystal'},
+  shadow:{name:'Shadow Slime',color:'#aa44ff',glowColor:'#cc88ff',desc:'Phase through. High speed.',
+    stats:{hp:70,maxHp:70,atk:12,def:8,spd:6},questline:'shadow'}
+};
+
+const MONSTER_DEFS = {
+  mud_golem:{name:'Mud Golem',layer:0,hp:40,atk:8,def:3,spd:1.2,color:'#664422',size:18,xp:15,
+    parts:[{id:'mud_arm',name:'Mud Arm',hp:15,color:'#885533',bonus:{atk:5},pos:'arm'},
+           {id:'mud_shell',name:'Mud Shell',hp:20,color:'#553311',bonus:{def:8},pos:'shell'},
+           {id:'golem_eye',name:'Golem Eye',hp:10,color:'#ffaa00',bonus:{maxHp:15},pos:'eye'}]},
+  slime_beetle:{name:'Slime Beetle',layer:0,hp:25,atk:6,def:2,spd:1.8,color:'#226644',size:13,xp:10,
+    parts:[{id:'beetle_shell',name:'Beetle Shell',hp:12,color:'#114433',bonus:{def:6},pos:'shell'},
+           {id:'antenna',name:'Antenna',hp:8,color:'#00ff88',bonus:{spd:2},pos:'head'},
+           {id:'mandibles',name:'Mandibles',hp:10,color:'#228855',bonus:{atk:4},pos:'arm'}]},
+  stone_spider:{name:'Stone Spider',layer:1,hp:55,atk:12,def:6,spd:2,color:'#556677',size:15,xp:25,
+    parts:[{id:'stone_leg',name:'Stone Leg',hp:15,color:'#778899',bonus:{spd:3},pos:'leg'},
+           {id:'silk_gland',name:'Silk Gland',hp:12,color:'#ccccaa',bonus:{def:5},pos:'body'},
+           {id:'stone_fang',name:'Stone Fang',hp:18,color:'#aabbcc',bonus:{atk:8},pos:'arm'}]},
+  cave_troll:{name:'Cave Troll',layer:1,hp:90,atk:18,def:10,spd:1,color:'#445533',size:22,xp:40,
+    parts:[{id:'troll_fist',name:'Troll Fist',hp:25,color:'#557744',bonus:{atk:12},pos:'arm'},
+           {id:'troll_hide',name:'Troll Hide',hp:30,color:'#334422',bonus:{def:14},pos:'shell'},
+           {id:'troll_eye',name:'Troll Eye',hp:15,color:'#ff8800',bonus:{maxHp:30},pos:'eye'}]},
+  crystal_wyrm:{name:'Crystal Wyrm',layer:2,hp:130,atk:22,def:15,spd:2.2,color:'#4466ff',size:20,xp:60,
+    parts:[{id:'wyrm_scale',name:'Wyrm Scale',hp:30,color:'#2244aa',bonus:{def:18},pos:'shell'},
+           {id:'crystal_horn',name:'Crystal Horn',hp:25,color:'#88aaff',bonus:{atk:16},pos:'head'},
+           {id:'wyrm_wing',name:'Wyrm Wing',hp:20,color:'#6688ff',bonus:{spd:4},pos:'wing'}]},
+  fire_salamander:{name:'Fire Salamander',layer:3,hp:160,atk:28,def:12,spd:2.8,color:'#ff6600',size:17,xp:80,
+    parts:[{id:'fire_gland',name:'Fire Gland',hp:28,color:'#ff4400',bonus:{atk:14},pos:'body'},
+           {id:'heat_scale',name:'Heat Scale',hp:32,color:'#cc5500',bonus:{def:12},pos:'shell'},
+           {id:'flame_tail',name:'Flame Tail',hp:20,color:'#ff8800',bonus:{spd:3,atk:5},pos:'leg'}]},
+  magma_beast:{name:'Magma Beast',layer:3,hp:220,atk:35,def:20,spd:1.5,color:'#aa2200',size:26,xp:120,
+    parts:[{id:'magma_core',name:'Magma Core',hp:40,color:'#ff2200',bonus:{atk:22},pos:'body'},
+           {id:'heat_armor',name:'Heat Armor',hp:50,color:'#882200',bonus:{def:25,maxHp:40},pos:'shell'},
+           {id:'lava_eye',name:'Lava Eye',hp:30,color:'#ffaa00',bonus:{atk:12},pos:'eye'}]},
+  core_guardian:{name:'Core Guardian',layer:4,hp:400,atk:50,def:30,spd:2,color:'#00ffaa',size:30,xp:250,
+    parts:[{id:'energy_blade',name:'Energy Blade',hp:60,color:'#00ffdd',bonus:{atk:30},pos:'arm'},
+           {id:'void_shield',name:'Void Shield',hp:80,color:'#004433',bonus:{def:35,maxHp:60},pos:'shell'},
+           {id:'core_heart',name:'Core Heart',hp:50,color:'#aaffdd',bonus:{maxHp:100,atk:20},pos:'body'}]}
+};
+
+const RECIPES = [
+  {id:'basic_pick',name:'Basic Pickaxe',ing:{stone:3,wood:2},minePower:2,icon:'⛏'},
+  {id:'stone_pick',name:'Stone Pickaxe',ing:{stone:5,rock:3},minePower:3,icon:'⛏'},
+  {id:'crystal_pick',name:'Crystal Pickaxe',ing:{crystal:3,stone:4},minePower:5,icon:'⛏'},
+  {id:'obsidian_pick',name:'Obsidian Pickaxe',ing:{obsidian:3,deep_stone:3},minePower:8,icon:'⛏'},
+  {id:'core_pick',name:'Core Pickaxe',ing:{core_matter:2,obsidian:2},minePower:12,icon:'⛏'},
+  {id:'health_pot',name:'Health Potion',ing:{mushroom:2,dirt:1},consumable:true,heal:30,icon:'🧪'},
+  {id:'mega_pot',name:'Mega Potion',ing:{crystal:1,mushroom:3},consumable:true,heal:80,icon:'🧪'}
+];
+
+const QUESTS = {
+  acid:[
+    {id:'a1',title:'The Corrosive Birth',desc:'Collect 3 Beetle Shells.',goal:{collect:'beetle_shell',count:3},xp:50,next:'a2'},
+    {id:'a2',title:'Acid Rain',desc:'Defeat 5 Mud Golems.',goal:{kill:'mud_golem',count:5},xp:80,next:'a3'},
+    {id:'a3',title:'The Ancient Vat',desc:'Reach the Cavern layer.',goal:{layer:1},xp:100,next:'a4'},
+    {id:'a4',title:'Corrosion Mastery',desc:'Collect a Crystal Horn.',goal:{collect:'crystal_horn',count:1},xp:150,next:'a5'},
+    {id:'a5',title:'The Acid Core',desc:'Defeat the Core Guardian.',goal:{kill:'core_guardian',count:1},xp:500,next:null}
+  ],
+  crystal:[
+    {id:'c1',title:'Crystal Clear',desc:'Mine 5 Crystal nodes.',goal:{collect:'crystal',count:5},xp:50,next:'c2'},
+    {id:'c2',title:'The Resonance',desc:'Defeat 3 Crystal Wyrms.',goal:{kill:'crystal_wyrm',count:3},xp:100,next:'c3'},
+    {id:'c3',title:'Cavern of Mirrors',desc:'Reach the Deep Cave.',goal:{layer:2},xp:120,next:'c4'},
+    {id:'c4',title:'Crystallization',desc:'Equip 3 parts.',goal:{equip:3},xp:180,next:'c5'},
+    {id:'c5',title:'The Crystal Heart',desc:'Defeat the Core Guardian.',goal:{kill:'core_guardian',count:1},xp:500,next:null}
+  ],
+  shadow:[
+    {id:'s1',title:'Into the Dark',desc:'Reach the Cavern layer.',goal:{layer:1},xp:50,next:'s2'},
+    {id:'s2',title:'Shadow Step',desc:'Defeat 5 Stone Spiders.',goal:{kill:'stone_spider',count:5},xp:80,next:'s3'},
+    {id:'s3',title:'The Void Whisper',desc:'Reach the Deep Cave.',goal:{layer:2},xp:100,next:'s4'},
+    {id:'s4',title:'Phase Walk',desc:'Collect a Wyrm Wing.',goal:{collect:'wyrm_wing',count:1},xp:150,next:'s5'},
+    {id:'s5',title:'Reclaim',desc:'Defeat the Core Guardian.',goal:{kill:'core_guardian',count:1},xp:500,next:null}
+  ]
+};
+
+const TALENT_TREE = {
+  combat:[
+    {id:'t_sharp',name:'Sharp Strike',desc:'+15% ATK',cost:1,bonus:{atk_pct:15}},
+    {id:'t_tough',name:'Tough Slime',desc:'+15% DEF',cost:1,bonus:{def_pct:15}},
+    {id:'t_absorb',name:'Quick Absorb',desc:'Mine 50% faster',cost:1,bonus:{mine_spd:1.5}},
+    {id:'t_combo',name:'Battle Combo',desc:'Every 3rd hit does 2x damage',cost:2,bonus:{combo:true}},
+    {id:'t_apex',name:'Apex Predator',desc:'+30% ATK and DEF',cost:3,bonus:{atk_pct:30,def_pct:30}}
+  ],
+  evolution:[
+    {id:'e_grow',name:'Rapid Growth',desc:'+25% max HP',cost:1,bonus:{hp_pct:25}},
+    {id:'e_slots',name:'Part Mastery',desc:'Equip 1 more part',cost:1,bonus:{slots:1}},
+    {id:'e_mutate',name:'Mutation Catalyst',desc:'Parts give 50% more bonus',cost:2,bonus:{part_mult:1.5}},
+    {id:'e_form',name:'Perfect Form',desc:'Unlock evolved appearance',cost:2,bonus:{evolved:true}},
+    {id:'e_trans',name:'Transcendence',desc:'All stats +20%, glow aura',cost:3,bonus:{all_pct:20,aura:true}}
+  ],
+  exploration:[
+    {id:'x_dig',name:'Deep Digger',desc:'+2 mining power',cost:1,bonus:{mine_power:2}},
+    {id:'x_sense',name:'Resource Sense',desc:'Ores glow through walls',cost:1,bonus:{ore_sense:true}},
+    {id:'x_swift',name:'Swift Traveler',desc:'+25% move speed',cost:1,bonus:{spd_pct:25}},
+    {id:'x_nav',name:'Layer Navigator',desc:'Access layers 1 level early',cost:2,bonus:{layer_early:1}},
+    {id:'x_shape',name:'World Shaper',desc:'Mine any tile regardless of tool',cost:3,bonus:{omni_mine:true}}
+  ]
+};
+
+// ============================================================
+// CANVAS SETUP
+// ============================================================
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;}
+resize();
+window.addEventListener('resize',resize);
+
+// ============================================================
+// STATE
+// ============================================================
+let screen='loading'; // loading,title,auth,charselect,game
+let loadProgress=0;
+let titleParticles=[];
+let selectedClass='acid';
+let openPanel=null; // null,inv,quest,talent,craft,menu
+
+let player={};
+let worlds=[null,null,null,null,null];
+let worldEdits={};
+let monsters=[];
+let groundItems=[];
+let particles=[];
+let floatNums=[];
+let otherPlayers={};
+
+let camX=0,camY=0;
+let keys={};
+let mouseX=0,mouseY=0;
+let mouseDown=false;
+let lastMouseDown=false;
+let clickPos=null;
+
+let attackCooldown=0;
+let hitCombo=0;
+let lastSaveTime=0;
+let tileHpMap={}; // 'L_X_Y' => remaining hp
+let mineTarget=null; // {x,y,layer}
+let mineProgress=0;
+let damageCooldown=0;
+let playerSpawnX=[50*TILE_SIZE+16, 30*TILE_SIZE+16, 40*TILE_SIZE+16, 70*TILE_SIZE+16, 50*TILE_SIZE+16];
+let playerSpawnY=[2*TILE_SIZE+16,  5*TILE_SIZE+16,  5*TILE_SIZE+16,  5*TILE_SIZE+16,  2*TILE_SIZE+16];
+
+// ============================================================
+// SEEDED RNG
+// ============================================================
+function mkRng(s){return()=>{s=Math.imul(48271,s)|0;return(s&0x7fffffff)/0x7fffffff;}}
+
+// ============================================================
+// WORLD GENERATION
+// ============================================================
+function genWorld(layer){
+  const arr=new Uint8Array(WORLD_W*WORLD_H);
+  const rng=mkRng(layer*7919+12345);
+  const set=(x,y,t)=>{if(x>=0&&x<WORLD_W&&y>=0&&y<WORLD_H)arr[y*WORLD_W+x]=t;};
+  const get=(x,y)=>{if(x<0||x>=WORLD_W||y<0||y>=WORLD_H)return T.WALL;return arr[y*WORLD_W+x];};
+
+  if(layer===0){
+    for(let i=0;i<arr.length;i++)arr[i]=T.GRASS;
+    // dirt patches
+    for(let n=0;n<80;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H),r=Math.floor(rng()*4)+2;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)if(dx*dx+dy*dy<=r*r)set(x+dx,y+dy,T.DIRT);}
+    // stone outcrops
+    for(let n=0;n<40;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H),r=Math.floor(rng()*3)+1;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)if(dx*dx+dy*dy<=r*r)set(x+dx,y+dy,T.STONE);}
+    // rocks
+    for(let n=0;n<25;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H);set(x,y,T.ROCK);set(x+1,y,T.ROCK);set(x,y+1,T.ROCK);}
+    // trees
+    for(let n=0;n<60;n++){let x=Math.floor(rng()*(WORLD_W-2))+1,y=Math.floor(rng()*(WORLD_H-2))+1;set(x,y,T.TREE);}
+    // border walls
+    for(let x=0;x<WORLD_W;x++){set(x,0,T.WALL);set(x,WORLD_H-1,T.WALL);}
+    for(let y=0;y<WORLD_H;y++){set(0,y,T.WALL);set(WORLD_W-1,y,T.WALL);}
+    // stairs down
+    set(50,55,T.STAIRS_D);
+  } else if(layer===1){
+    for(let i=0;i<arr.length;i++)arr[i]=T.CAVE_STONE;
+    // carve open areas
+    for(let n=0;n<50;n++){let cx=Math.floor(rng()*WORLD_W),cy=Math.floor(rng()*WORLD_H),r=Math.floor(rng()*8)+4;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)if(dx*dx+dy*dy<=r*r)set(cx+dx,cy+dy,T.EMPTY);}
+    // corridors
+    for(let n=0;n<30;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H),len=Math.floor(rng()*20)+5,dir=rng()<0.5;for(let i=0;i<len;i++)dir?set(x+i,y,T.EMPTY):set(x,y+i,T.EMPTY);}
+    // crystals
+    for(let n=0;n<30;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H);if(get(x,y)===T.CAVE_STONE)set(x,y,T.CRYSTAL);}
+    // mushrooms
+    for(let n=0;n<40;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H);if(get(x,y)===T.EMPTY)set(x,y,T.MUSHROOM);}
+    // pools
+    for(let n=0;n<15;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H),r=Math.floor(rng()*3)+1;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)if(dx*dx+dy*dy<=r*r&&get(x+dx,y+dy)===T.EMPTY)set(x+dx,y+dy,T.POOL);}
+    for(let x=0;x<WORLD_W;x++){set(x,0,T.WALL);set(x,WORLD_H-1,T.WALL);}
+    for(let y=0;y<WORLD_H;y++){set(0,y,T.WALL);set(WORLD_W-1,y,T.WALL);}
+    set(50,58,T.STAIRS_D); set(30,5,T.STAIRS_U);
+  } else if(layer===2){
+    for(let i=0;i<arr.length;i++)arr[i]=T.DEEP_STONE;
+    for(let n=0;n<40;n++){let cx=Math.floor(rng()*WORLD_W),cy=Math.floor(rng()*WORLD_H),r=Math.floor(rng()*7)+3;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)if(dx*dx+dy*dy<=r*r)set(cx+dx,cy+dy,T.EMPTY);}
+    for(let n=0;n<25;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H);if(get(x,y)===T.DEEP_STONE)set(x,y,T.GEM);}
+    // ruins structures
+    for(let n=0;n<10;n++){let rx=Math.floor(rng()*WORLD_W),ry=Math.floor(rng()*WORLD_H),rw=Math.floor(rng()*6)+4,rh=Math.floor(rng()*5)+3;for(let dy=0;dy<rh;dy++)for(let dx=0;dx<rw;dx++)if(dy===0||dy===rh-1||dx===0||dx===rw-1)set(rx+dx,ry+dy,T.RUINS);}
+    // echo crystals
+    for(let n=0;n<20;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H);if(get(x,y)===T.EMPTY)set(x,y,T.ECHO);}
+    for(let x=0;x<WORLD_W;x++){set(x,0,T.WALL);set(x,WORLD_H-1,T.WALL);}
+    for(let y=0;y<WORLD_H;y++){set(0,y,T.WALL);set(WORLD_W-1,y,T.WALL);}
+    set(60,57,T.STAIRS_D); set(40,5,T.STAIRS_U);
+  } else if(layer===3){
+    for(let i=0;i<arr.length;i++)arr[i]=T.MAGMA;
+    for(let n=0;n<35;n++){let cx=Math.floor(rng()*WORLD_W),cy=Math.floor(rng()*WORLD_H),r=Math.floor(rng()*8)+3;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)if(dx*dx+dy*dy<=r*r)set(cx+dx,cy+dy,T.EMPTY);}
+    // lava rivers
+    for(let n=0;n<8;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H);let cx=x,cy=y;for(let i=0;i<30;i++){set(cx,cy,T.LAVA);set(cx+1,cy,T.LAVA);cx+=Math.round(rng()*2-1);cy+=Math.round(rng()*2-1);cx=Math.max(1,Math.min(WORLD_W-2,cx));cy=Math.max(1,Math.min(WORLD_H-2,cy));}}
+    // obsidian
+    for(let n=0;n<30;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H);if(get(x,y)===T.MAGMA)set(x,y,T.OBSIDIAN);}
+    // fire vents
+    for(let n=0;n<25;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H);if(get(x,y)===T.EMPTY)set(x,y,T.VENT);}
+    for(let x=0;x<WORLD_W;x++){set(x,0,T.WALL);set(x,WORLD_H-1,T.WALL);}
+    for(let y=0;y<WORLD_H;y++){set(0,y,T.WALL);set(WORLD_W-1,y,T.WALL);}
+    set(50,56,T.STAIRS_D); set(70,5,T.STAIRS_U);
+  } else if(layer===4){
+    for(let i=0;i<arr.length;i++)arr[i]=T.CORE;
+    for(let n=0;n<30;n++){let cx=Math.floor(rng()*WORLD_W),cy=Math.floor(rng()*WORLD_H),r=Math.floor(rng()*6)+3;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)if(dx*dx+dy*dy<=r*r)set(cx+dx,cy+dy,T.EMPTY);}
+    // energy pillars
+    for(let n=0;n<30;n++){let x=Math.floor(rng()*WORLD_W),y=Math.floor(rng()*WORLD_H);if(get(x,y)===T.EMPTY)set(x,y,T.ENERGY);}
+    // void patches
+    for(let n=0;n<20;n++){let cx=Math.floor(rng()*WORLD_W),cy=Math.floor(rng()*WORLD_H),r=Math.floor(rng()*4)+1;for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++)if(dx*dx+dy*dy<=r*r&&get(cx+dx,cy+dy)===T.EMPTY)set(cx+dx,cy+dy,T.VOID_T);}
+    // altar in center
+    set(50,30,T.ALTAR);
+    for(let x=0;x<WORLD_W;x++){set(x,0,T.WALL);set(x,WORLD_H-1,T.WALL);}
+    for(let y=0;y<WORLD_H;y++){set(0,y,T.WALL);set(WORLD_W-1,y,T.WALL);}
+    // stairs up only
+    set(50,5,T.STAIRS_U);
+  }
+  return arr;
+}
+
+function getWorld(layer){
+  if(!worlds[layer])worlds[layer]=genWorld(layer);
+  return worlds[layer];
+}
+
+function getTile(layer,x,y){
+  if(x<0||x>=WORLD_W||y<0||y>=WORLD_H)return T.WALL;
+  const key=`${layer}_${x}_${y}`;
+  if(worldEdits[key]!==undefined)return worldEdits[key];
+  return getWorld(layer)[y*WORLD_W+x];
+}
+
+function setTile(layer,x,y,t){
+  worldEdits[`${layer}_${x}_${y}`]=t;
+}
+
+function tileAt(layer,px,py){
+  return getTile(layer,Math.floor(px/TILE_SIZE),Math.floor(py/TILE_SIZE));
+}
+
+// ============================================================
+// PLAYER INIT
+// ============================================================
+function createPlayer(name,cls){
+  const cd=CLASSES[cls];
+  return {
+    name,class:cls,level:1,xp:0,
+    stats:{...cd.stats},
+    x:50*TILE_SIZE+16,y:10*TILE_SIZE+16,
+    layer:0,
+    inventory:{},
+    equippedParts:[],
+    collectedParts:[],
+    currentQuestId:QUESTS[cd.questline][0].id,
+    questProgress:{},
+    completedQuests:[],
+    talentPoints:0,
+    unlockedTalents:[],
+    currentTool:null,
+    miningPower:1,
+    maxEquipSlots:4
+  };
+}
+
+function loadPlayer(data){
+  player=data;
+  // ensure arrays exist
+  if(!player.equippedParts)player.equippedParts=[];
+  if(!player.collectedParts)player.collectedParts=[];
+  if(!player.completedQuests)player.completedQuests=[];
+  if(!player.unlockedTalents)player.unlockedTalents=[];
+  if(!player.questProgress)player.questProgress={};
+  if(!player.inventory)player.inventory={};
+  if(!player.maxEquipSlots)player.maxEquipSlots=4;
+}
+
+// ============================================================
+// COMPUTED STATS
+// ============================================================
+function computeStats(){
+  const base={...player.stats};
+  const pMult=hasTalent('e_mutate')?1.5:1;
+  // apply equipped parts
+  for(const pid of player.equippedParts){
+    const part=findPartDef(pid);
+    if(!part)continue;
+    for(const[k,v]of Object.entries(part.bonus)){
+      if(k==='atk')base.atk+=v*pMult;
+      else if(k==='def')base.def+=v*pMult;
+      else if(k==='spd')base.spd+=v*pMult;
+      else if(k==='maxHp')base.maxHp+=v*pMult;
+    }
+  }
+  // talent bonuses
+  if(hasTalent('t_sharp'))base.atk*=1.15;
+  if(hasTalent('t_tough'))base.def*=1.15;
+  if(hasTalent('t_apex')){base.atk*=1.30;base.def*=1.30;}
+  if(hasTalent('e_grow'))base.maxHp*=1.25;
+  if(hasTalent('x_swift'))base.spd*=1.25;
+  if(hasTalent('e_trans')){base.atk*=1.20;base.def*=1.20;base.spd*=1.20;base.maxHp*=1.20;}
+  return base;
+}
+
+function hasTalent(id){return player.unlockedTalents&&player.unlockedTalents.includes(id);}
+
+function findPartDef(pid){
+  for(const md of Object.values(MONSTER_DEFS)){
+    for(const p of md.parts)if(p.id===pid)return p;
+  }
+  return null;
+}
+
+function getMiningPower(){
+  let mp=player.miningPower||1;
+  if(hasTalent('x_dig'))mp+=2;
+  return mp;
+}
+
+// ============================================================
+// SAVE / LOAD
+// ============================================================
+function getSaveData(){
+  return {
+    name:player.name,class:player.class,level:player.level,xp:player.xp,
+    stats:player.stats,x:player.x,y:player.y,layer:player.layer,
+    inventory:player.inventory,
+    parts:{equipped:player.equippedParts,collected:player.collectedParts},
+    quests:{current:player.currentQuestId,progress:player.questProgress,completed:player.completedQuests},
+    talents:{unlocked:player.unlockedTalents,points:player.talentPoints},
+    tool:player.currentTool,
+    miningPower:player.miningPower||1,
+    maxEquipSlots:player.maxEquipSlots||4,
+    worldEdits
+  };
+}
+
+async function saveGame(){
+  const data=JSON.stringify(getSaveData());
+  const key='slimester_'+player.name;
+  try{if(window.AppDB)await window.AppDB.set(key,data);else localStorage.setItem(key,data);}catch(e){}
+}
+
+async function loadSave(name){
+  const key='slimester_'+name;
+  try{
+    let data=window.AppDB?await window.AppDB.get(key):localStorage.getItem(key);
+    if(!data)return null;
+    return JSON.parse(typeof data==='string'?data:JSON.stringify(data));
+  }catch(e){return null;}
+}
+
+// ============================================================
+// AUTH FLOW
+// ============================================================
+async function tryNewPlayer(){
+  const nm=document.getElementById('name-input').value.trim();
+  if(!nm){document.getElementById('auth-error').textContent='Enter a name!';return;}
+  document.getElementById('auth-error').textContent='';
+  const existing=await loadSave(nm);
+  if(existing){document.getElementById('auth-error').textContent='Name taken! Use Returning Player.';return;}
+  // show char select
+  document.getElementById('auth-panel').style.display='none';
+  document.getElementById('char-panel').style.display='block';
+  pendingName=nm;
+}
+
+async function tryReturning(){
+  const nm=document.getElementById('name-input').value.trim();
+  if(!nm){document.getElementById('auth-error').textContent='Enter a name!';return;}
+  document.getElementById('auth-error').textContent='Checking...';
+  const data=await loadSave(nm);
+  if(!data){document.getElementById('auth-error').textContent='No save found for that name.';return;}
+  // restore
+  loadPlayer(data.name?data:{name:nm,...data});
+  if(data.worldEdits)Object.assign(worldEdits,data.worldEdits);
+  if(data.talents){player.unlockedTalents=data.talents.unlocked||[];player.talentPoints=data.talents.points||0;}
+  if(data.quests){player.currentQuestId=data.quests.current;player.questProgress=data.quests.progress||{};player.completedQuests=data.quests.completed||[];}
+  if(data.parts){player.equippedParts=data.parts.equipped||[];player.collectedParts=data.parts.collected||[];}
+  player.miningPower=data.miningPower||1;
+  player.maxEquipSlots=data.maxEquipSlots||4;
+  hideOverlay();
+  startGame();
+}
+
+let pendingName='';
+function selectClass(cls){
+  selectedClass=cls;
+  ['acid','crystal','shadow'].forEach(c=>{
+    const card=document.getElementById('card-'+c);
+    if(c===cls){card.style.borderColor=CLASSES[c].color;card.style.boxShadow=`0 0 20px ${CLASSES[c].color}`;}
+    else{card.style.borderColor='#334';card.style.boxShadow='none';}
+  });
+}
+
+function beginJourney(){
+  if(!pendingName){document.getElementById('char-error').textContent='Error: no name';return;}
+  player=createPlayer(pendingName,selectedClass);
+  hideOverlay();
+  startGame();
+}
+
+function showOverlay(){document.getElementById('overlay').classList.add('visible');}
+function hideOverlay(){document.getElementById('overlay').classList.remove('visible');document.getElementById('auth-panel').style.display='block';document.getElementById('char-panel').style.display='none';}
+
+function showAuth(){
+  document.getElementById('auth-panel').style.display='block';
+  document.getElementById('char-panel').style.display='none';
+  document.getElementById('auth-error').textContent='';
+  showOverlay();
+}
+
+// ============================================================
+// TITLE SCREEN PARTICLES
+// ============================================================
+function initTitleParticles(){
+  titleParticles=[];
+  for(let i=0;i<60;i++)titleParticles.push({
+    x:Math.random()*canvas.width,y:Math.random()*canvas.height,
+    r:Math.random()*8+2,
+    vx:(Math.random()-0.5)*0.4,vy:(Math.random()-0.5)*0.4,
+    color:`hsl(${100+Math.random()*60},80%,${30+Math.random()*30}%)`,
+    alpha:Math.random()*0.5+0.1
+  });
+}
+
+// ============================================================
+// GAME START
+// ============================================================
+function startGame(){
+  screen='game';
+  camX=player.x-canvas.width/2;
+  camY=player.y-canvas.height/2;
+  monsters=[];
+  groundItems=[];
+  particles=[];
+  floatNums=[];
+  initMultiplayer();
+}
+
+// ============================================================
+// MULTIPLAYER
+// ============================================================
+async function initMultiplayer(){
+  if(!window.Realtime)return;
+  try{
+    await window.Realtime.connect('slimester_main');
+    window.Realtime.setMyState({name:player.name,class:player.class,x:player.x,y:player.y,layer:player.layer});
+    window.Realtime.on('player_update',(data,sid)=>{otherPlayers[sid]=data;});
+    window.Realtime.onLeave(p=>{delete otherPlayers[p.id];});
+  }catch(e){}
+}
+
+setInterval(()=>{
+  if(window.Realtime&&screen==='game'){
+    try{window.Realtime.send('player_update',{name:player.name,class:player.class,x:player.x,y:player.y,layer:player.layer});}catch(e){}
+  }
+},500);
+
+// ============================================================
+// MONSTER SPAWNING
+// ============================================================
+const LAYER_MONSTERS={
+  0:['mud_golem','slime_beetle'],
+  1:['stone_spider','cave_troll'],
+  2:['crystal_wyrm'],
+  3:['fire_salamander','magma_beast'],
+  4:['core_guardian']
+};
+
+function spawnMonsters(){
+  if(monsters.filter(m=>m.layer===player.layer).length>=MAX_MONSTERS)return;
+  const pool=LAYER_MONSTERS[player.layer]||[];
+  if(!pool.length)return;
+  const key=pool[Math.floor(Math.random()*pool.length)];
+  const def=MONSTER_DEFS[key];
+  let attempts=0,mx,my;
+  do{
+    mx=player.x+(Math.random()*600-300);
+    my=player.y+(Math.random()*600-300);
+    attempts++;
+  }while(attempts<20&&isSolid(player.layer,mx,my));
+  if(attempts>=20)return;
+  // deep clone parts with individual hp
+  const mParts=def.parts.map(p=>({...p,curHp:p.hp}));
+  monsters.push({
+    id:Math.random(),type:key,def,layer:player.layer,
+    x:mx,y:my,
+    hp:def.hp,maxHp:def.hp,
+    parts:mParts,
+    attackCd:0,alive:true
+  });
+}
+
+// ============================================================
+// COLLISION
+// ============================================================
+function isSolid(layer,px,py){
+  const tx=Math.floor(px/TILE_SIZE),ty=Math.floor(py/TILE_SIZE);
+  const t=getTile(layer,tx,ty);
+  return TILE_INFO[t]&&TILE_INFO[t].solid;
+}
+
+function checkCollision(layer,px,py,radius){
+  radius=radius||12;
+  const corners=[
+    [px-radius,py-radius],[px+radius,py-radius],
+    [px-radius,py+radius],[px+radius,py+radius]
+  ];
+  let dx=0,dy=0;
+  for(const[cx,cy]of corners){
+    if(isSolid(layer,cx,cy)){
+      const tx=Math.floor(cx/TILE_SIZE),ty=Math.floor(cy/TILE_SIZE);
+      const blockL=tx*TILE_SIZE,blockR=(tx+1)*TILE_SIZE;
+      const blockT=ty*TILE_SIZE,blockB=(ty+1)*TILE_SIZE;
+      if(px<blockL)dx=Math.min(dx,blockL-px-radius);
+      else if(px>blockR)dx=Math.max(dx,blockR-px+radius);
+      else if(py<blockT)dy=Math.min(dy,blockT-py-radius);
+      else dy=Math.max(dy,blockB-py+radius);
+    }
+  }
+  return{dx,dy};
+}
+
+// ============================================================
+// PARTICLES / FLOAT NUMBERS
+// ============================================================
+function addParticle(x,y,color,count=5,speed=2){
+  for(let i=0;i<count;i++){
+    const a=Math.random()*Math.PI*2;
+    const s=Math.random()*speed+0.5;
+    particles.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s,r:Math.random()*4+2,color,life:1,layer:player.layer});
+  }
+}
+
+function addFloat(x,y,text,color='#ffff44'){
+  floatNums.push({x,y,vy:-1.5,text,color,life:1,layer:player.layer});
+}
+
+function addXpGem(x,y,layer,amount){
+  groundItems.push({id:Math.random(),type:'xp',x,y,layer,amount,r:6});
+}
+
+// ============================================================
+// QUESTS
+// ============================================================
+function getCurrentQuest(){
+  if(!player.currentQuestId)return null;
+  for(const ql of Object.values(QUESTS))for(const q of ql)if(q.id===player.currentQuestId)return q;
+  return null;
+}
+
+function questProgress(qid){return player.questProgress[qid]||0;}
+
+function advanceQuest(q){
+  if(!q)return;
+  const xpGain=q.xp;
+  gainXp(xpGain);
+  player.completedQuests.push(q.id);
+  if(q.next){player.currentQuestId=q.next;player.questProgress[q.next]=0;}
+  else player.currentQuestId=null;
+  addFloat(player.x,player.y-40,'Quest Complete!','#aaff44');
+}
+
+function onKill(monsterType){
+  const q=getCurrentQuest();
+  if(!q)return;
+  if(q.goal.kill===monsterType){
+    player.questProgress[q.id]=(player.questProgress[q.id]||0)+1;
+    if(player.questProgress[q.id]>=q.goal.count)advanceQuest(q);
+  }
+}
+
+function onCollect(itemId,amount=1){
+  const q=getCurrentQuest();
+  if(!q)return;
+  if(q.goal.collect===itemId){
+    player.questProgress[q.id]=(player.questProgress[q.id]||0)+amount;
+    if(player.questProgress[q.id]>=q.goal.count)advanceQuest(q);
+  }
+}
+
+function checkLayerQuest(layer){
+  const q=getCurrentQuest();
+  if(!q)return;
+  if(q.goal.layer!==undefined&&q.goal.layer<=layer&&!(player.questProgress[q.id])){
+    player.questProgress[q.id]=1;
+    advanceQuest(q);
+  }
+}
+
+function checkEquipQuest(){
+  const q=getCurrentQuest();
+  if(!q)return;
+  if(q.goal.equip!==undefined&&player.equippedParts.length>=q.goal.equip&&!player.questProgress[q.id]){
+    player.questProgress[q.id]=1;
+    advanceQuest(q);
+  }
+}
+
+// ============================================================
+// XP / LEVEL UP
+// ============================================================
+function gainXp(amount){
+  player.xp+=amount;
+  const threshold=player.level*100;
+  if(player.xp>=threshold){
+    player.xp-=threshold;
+    player.level++;
+    player.stats.maxHp+=5;
+    player.stats.hp=Math.min(player.stats.hp+5,player.stats.maxHp);
+    player.stats.atk+=2;
+    player.stats.def+=1;
+    player.stats.spd+=0.2;
+    if(player.level%3===0)player.talentPoints++;
+    addFloat(player.x,player.y-60,'LEVEL UP!','#ffff44');
+    addParticle(player.x,player.y,'#ffff44',15,3);
+  }
+}
+
+// ============================================================
+// COMBAT
+// ============================================================
+function attackMonster(m,partIdx){
+  if(attackCooldown>0)return;
+  attackCooldown=0.8;
+  const cs=computeStats();
+  let dmg=cs.atk+Math.floor(Math.random()*6)-Math.max(0,m.def);
+  if(dmg<1)dmg=1;
+  hitCombo++;
+  if(hasTalent('t_combo')&&hitCombo%3===0)dmg*=2;
+  // target specific part or body
+  if(partIdx!==undefined&&partIdx>=0&&partIdx<m.parts.length){
+    const part=m.parts[partIdx];
+    if(part.curHp>0){
+      part.curHp-=dmg;
+      addFloat(m.x,m.y-m.def.size,'−'+dmg,'#ff4444');
+      addParticle(m.x,m.y,m.def.color,4);
+      if(part.curHp<=0){
+        part.curHp=0;
+        // drop part on ground
+        groundItems.push({id:Math.random(),type:'part',partId:part.id,x:m.x+Math.random()*20-10,y:m.y+Math.random()*20-10,layer:m.layer,r:8,color:part.color,name:part.name});
+        addFloat(m.x,m.y-30,'Part dropped!','#aaffaa');
+      }
+    }
+  }
+  m.hp-=dmg;
+  if(m.hp<=0){killMonster(m);}
+}
+
+function killMonster(m){
+  m.alive=false;
+  addXpGem(m.x,m.y,m.layer,m.def.xp);
+  // drop remaining parts
+  for(const p of m.parts){
+    if(p.curHp>0&&Math.random()<0.3){
+      groundItems.push({id:Math.random(),type:'part',partId:p.id,x:m.x+Math.random()*30-15,y:m.y+Math.random()*30-15,layer:m.layer,r:8,color:p.color,name:p.name});
+    }
+  }
+  addParticle(m.x,m.y,m.def.color,12,3);
+  onKill(m.type);
+}
+
+// ============================================================
+// INPUT
+// ============================================================
+window.addEventListener('keydown',e=>{
+  keys[e.code]=true;
+  if(screen==='title'){screen='auth';showAuth();return;}
+  if(screen==='game'){
+    if(e.code==='KeyI'){openPanel=openPanel==='inv'?null:'inv';}
+    if(e.code==='KeyQ'){openPanel=openPanel==='quest'?null:'quest';}
+    if(e.code==='KeyT'){openPanel=openPanel==='talent'?null:'talent';}
+    if(e.code==='KeyC'){openPanel=openPanel==='craft'?null:'craft';}
+    if(e.code==='Escape'){openPanel=null;}
+    if(e.code==='KeyE'){useItem();}
+  }
+});
+window.addEventListener('keyup',e=>{keys[e.code]=false;});
+
+canvas.addEventListener('mousemove',e=>{mouseX=e.clientX;mouseY=e.clientY;});
+canvas.addEventListener('mousedown',e=>{
+  mouseDown=true;
+  clickPos={x:e.clientX,y:e.clientY};
+  handleClick(e.clientX,e.clientY);
+});
+canvas.addEventListener('mouseup',()=>{mouseDown=false;mineTarget=null;});
+
+// Touch support
+canvas.addEventListener('touchstart',e=>{
+  e.preventDefault();
+  const t=e.touches[0];
+  mouseX=t.clientX;mouseY=t.clientY;
+  mouseDown=true;
+  clickPos={x:t.clientX,y:t.clientY};
+  handleClick(t.clientX,t.clientY);
+},{passive:false});
+canvas.addEventListener('touchmove',e=>{
+  e.preventDefault();
+  const t=e.touches[0];
+  mouseX=t.clientX;mouseY=t.clientY;
+},{passive:false});
+canvas.addEventListener('touchend',e=>{e.preventDefault();mouseDown=false;mineTarget=null;},{passive:false});
+
+function handleClick(cx,cy){
+  if(screen==='title'){screen='auth';showAuth();return;}
+  if(screen==='game'&&openPanel){
+    handlePanelClick(cx,cy);
+    return;
+  }
+  if(screen!=='game')return;
+  // world click
+  const wx=cx+camX, wy=cy+camY;
+  // check monsters
+  let hitMon=null,hitPart=-1;
+  for(const m of monsters){
+    if(!m.alive||m.layer!==player.layer)continue;
+    const sx=m.x-camX,sy=m.y-camY;
+    const dist=Math.hypot(cx-sx,cy-sy);
+    if(dist<m.def.size+10){hitMon=m;break;}
+    // check parts
+    for(let pi=0;pi<m.parts.length;pi++){
+      const pd=getPartPos(m,pi);
+      const psx=pd.x-camX,psy=pd.y-camY;
+      if(Math.hypot(cx-psx,cy-psy)<12){hitMon=m;hitPart=pi;break;}
+    }
+    if(hitMon)break;
+  }
+  if(hitMon&&Math.hypot(hitMon.x-player.x,hitMon.y-player.y)<200){
+    attackMonster(hitMon,hitPart);
+    return;
+  }
+  // check mining
+  const tx=Math.floor(wx/TILE_SIZE),ty=Math.floor(wy/TILE_SIZE);
+  const dist2=Math.hypot(wx-player.x,wy-player.y);
+  if(dist2<80){
+    const tile=getTile(player.layer,tx,ty);
+    const info=TILE_INFO[tile];
+    if(info&&info.mine){mineTarget={x:tx,y:ty,layer:player.layer};return;}
+    // mushroom pick
+    if(tile===T.MUSHROOM){addResource('mushroom',1);setTile(player.layer,tx,ty,T.EMPTY);addParticle(wx,wy,'#cc44aa',5);return;}
+  }
+  // move click
+  moveTo(wx,wy);
+}
+
+let moveTarget=null;
+function moveTo(wx,wy){moveTarget={x:wx,y:wy};}
+
+function useItem(){
+  // use health potion if available
+  if((player.inventory.health_pot||0)>0){
+    player.inventory.health_pot--;
+    const cs=computeStats();
+    player.stats.hp=Math.min(cs.maxHp,player.stats.hp+30);
+    addFloat(player.x,player.y-40,'+30 HP','#44ff88');
+  } else if((player.inventory.mega_pot||0)>0){
+    player.inventory.mega_pot--;
+    const cs=computeStats();
+    player.stats.hp=Math.min(cs.maxHp,player.stats.hp+80);
+    addFloat(player.x,player.y-40,'+80 HP','#44ff88');
+  }
+}
+
+function addResource(key,count){
+  player.inventory[key]=(player.inventory[key]||0)+count;
+  onCollect(key,count);
+}
+
+// ============================================================
+// PANEL CLICK HANDLING
+// ============================================================
+function handlePanelClick(cx,cy){
+  // panels are drawn on canvas - we use hit regions stored per frame
+  if(!panelHits)return;
+  for(const hit of panelHits){
+    if(cx>=hit.x&&cx<=hit.x+hit.w&&cy>=hit.y&&cy<=hit.y+hit.h){
+      hit.action();
+      return;
+    }
+  }
+  // click outside closes panel
+  const pw=Math.min(600,canvas.width-40),ph=Math.min(500,canvas.height-80);
+  const px=(canvas.width-pw)/2,py=(canvas.height-ph)/2;
+  if(cx<px||cx>px+pw||cy<py||cy>py+ph)openPanel=null;
+}
+let panelHits=[];
+
+// ============================================================
+// MINING
+// ============================================================
+function updateMining(dt){
+  if(!mineTarget||!mouseDown)return;
+  const{x:tx,y:ty,layer}=mineTarget;
+  const tile=getTile(layer,tx,ty);
+  const info=TILE_INFO[tile];
+  if(!info||!info.mine){mineTarget=null;return;}
+  const need=info.need||0;
+  const omni=hasTalent('x_shape');
+  if(!omni&&getMiningPower()<need+1&&!(need===0)){// can mine need:0 always
+    if(need>0&&getMiningPower()<=need){addFloat(player.x,player.y-30,'Need better pickaxe!','#ff8888');mineTarget=null;return;}
+  }
+  const key=`${layer}_${tx}_${ty}`;
+  if(tileHpMap[key]===undefined)tileHpMap[key]=info.hp;
+  const spd=hasTalent('t_absorb')?1.5:1;
+  const dmgPerSec=getMiningPower()*spd*3;
+  mineProgress+=dt;
+  if(mineProgress>=0.3){
+    mineProgress=0;
+    tileHpMap[key]-=getMiningPower();
+    addParticle(tx*TILE_SIZE+16,ty*TILE_SIZE+16,info.color,3,1.5);
+    if(tileHpMap[key]<=0){
+      setTile(layer,tx,ty,T.EMPTY);
+      delete tileHpMap[key];
+      if(info.drop)addResource(info.drop,1);
+      mineTarget=null;
+    }
+  }
+}
+
+// ============================================================
+// UPDATE
+// ============================================================
+let lastAutoSave=0;
+function update(dt){
+  if(screen==='loading'){
+    loadProgress+=dt/2;
+    if(loadProgress>=1){loadProgress=1;screen='title';initTitleParticles();}
+    return;
+  }
+  if(screen==='title'){
+    for(const p of titleParticles){p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=canvas.width;if(p.x>canvas.width)p.x=0;if(p.y<0)p.y=canvas.height;if(p.y>canvas.height)p.y=0;}
+    return;
+  }
+  if(screen!=='game')return;
+  if(openPanel)return;
+
+  attackCooldown=Math.max(0,attackCooldown-dt);
+  damageCooldown=Math.max(0,damageCooldown-dt);
+
+  // movement
+  const cs=computeStats();
+  const spd=cs.spd*32*dt;
+  let dx=0,dy=0;
+  if(keys['ArrowLeft']||keys['KeyA'])dx-=spd;
+  if(keys['ArrowRight']||keys['KeyD'])dx+=spd;
+  if(keys['ArrowUp']||keys['KeyW'])dy-=spd;
+  if(keys['ArrowDown']||keys['KeyS'])dy+=spd;
+
+  // move target click
+  if(moveTarget&&!dx&&!dy){
+    const mdx=moveTarget.x-player.x,mdy=moveTarget.y-player.y;
+    const md=Math.hypot(mdx,mdy);
+    if(md<8){moveTarget=null;}
+    else{const s=Math.min(spd,md);dx=mdx/md*s;dy=mdy/md*s;}
+  }
+
+  player.x+=dx;
+  const c1=checkCollision(player.layer,player.x,player.y);
+  player.x+=c1.dx;
+  player.y+=dy;
+  const c2=checkCollision(player.layer,player.x,player.y);
+  player.y+=c2.dy;
+
+  // camera lerp
+  const targetCamX=player.x-canvas.width/2;
+  const targetCamY=player.y-canvas.height/2;
+  camX+=(targetCamX-camX)*0.1;
+  camY+=(targetCamY-camY)*0.1;
+
+  // tile damage
+  const ptx=Math.floor(player.x/TILE_SIZE),pty=Math.floor(player.y/TILE_SIZE);
+  const ptile=getTile(player.layer,ptx,pty);
+  const pinfo=TILE_INFO[ptile];
+  if(pinfo&&pinfo.damage&&damageCooldown<=0){
+    player.stats.hp-=pinfo.damage;
+    damageCooldown=1;
+    addFloat(player.x,player.y-30,'-'+pinfo.damage,'#ff4444');
+    if(player.stats.hp<=0)playerDied();
+  }
+
+  // stairs
+  if(ptile===T.STAIRS_D){goDown();}
+  else if(ptile===T.STAIRS_U){goUp();}
+
+  // mining
+  updateMining(dt);
+
+  // monsters
+  // try spawn
+  if(Math.random()<0.01)spawnMonsters();
+  for(const m of monsters){
+    if(!m.alive||m.layer!==player.layer)continue;
+    const mdist=Math.hypot(m.x-player.x,m.y-player.y);
+    // despawn if too far
+    if(mdist>700){m.alive=false;continue;}
+    // move toward player
+    if(mdist>m.def.size+20){
+      const ang=Math.atan2(player.y-m.y,player.x-m.x);
+      const mspd=m.def.spd*24*dt;
+      m.x+=Math.cos(ang)*mspd;m.y+=Math.sin(ang)*mspd;
+    }
+    // attack player
+    m.attackCd=Math.max(0,m.attackCd-dt);
+    if(mdist<m.def.size+24&&m.attackCd<=0){
+      m.attackCd=1.5;
+      const dmg=Math.max(1,m.def.atk-cs.def);
+      player.stats.hp-=dmg;
+      addFloat(player.x,player.y-30,'-'+dmg,'#ff4444');
+      addParticle(player.x,player.y,'#ff4444',5);
+      if(player.stats.hp<=0)playerDied();
+    }
+  }
+  monsters=monsters.filter(m=>m.alive);
+
+  // ground item pickup
+  for(let i=groundItems.length-1;i>=0;i--){
+    const gi=groundItems[i];
+    if(gi.layer!==player.layer)continue;
+    if(Math.hypot(gi.x-player.x,gi.y-player.y)<24){
+      if(gi.type==='xp'){gainXp(gi.amount);addParticle(gi.x,gi.y,'#aa44ff',5);}
+      else if(gi.type==='part'){
+        player.collectedParts.push(gi.partId);
+        addFloat(player.x,player.y-40,'Got '+gi.name+'!','#aaffaa');
+        onCollect(gi.partId,1);
+      }
+      groundItems.splice(i,1);
+    }
+  }
+
+  // particles
+  for(const p of particles){p.x+=p.vx;p.y+=p.vy;p.vy+=0.05;p.life-=dt*1.5;}
+  particles=particles.filter(p=>p.life>0&&p.layer===player.layer);
+
+  // float nums
+  for(const f of floatNums){f.y+=f.vy;f.life-=dt*1.2;}
+  floatNums=floatNums.filter(f=>f.life>0);
+
+  // auto save
+  lastAutoSave+=dt;
+  if(lastAutoSave>30){lastAutoSave=0;saveGame();}
+}
+
+// ============================================================
+// STAIRS
+// ============================================================
+let stairCooldown=0;
+function goDown(){
+  if(stairCooldown>0)return;
+  if(player.layer>=4)return;
+  stairCooldown=2;
+  player.layer++;
+  // find up stairs
+  const w=getWorld(player.layer);
+  placeAtStairs(player.layer,'up');
+  monsters=[];
+  groundItems=groundItems.filter(g=>g.layer!==player.layer);
+  checkLayerQuest(player.layer);
+  setTimeout(()=>{stairCooldown=0;},2000);
+}
+
+function goUp(){
+  if(stairCooldown>0)return;
+  if(player.layer<=0)return;
+  stairCooldown=2;
+  player.layer--;
+  placeAtStairs(player.layer,'down');
+  monsters=[];
+  setTimeout(()=>{stairCooldown=0;},2000);
+}
+
+function placeAtStairs(layer,type){
+  const w=getWorld(layer);
+  const target=type==='up'?T.STAIRS_U:T.STAIRS_D;
+  for(let y=0;y<WORLD_H;y++)for(let x=0;x<WORLD_W;x++){
+    const k=`${layer}_${x}_${y}`;
+    const t=worldEdits[k]!==undefined?worldEdits[k]:w[y*WORLD_W+x];
+    if(t===target){player.x=x*TILE_SIZE+16;player.y=y*TILE_SIZE+16;return;}
+  }
+  player.x=playerSpawnX[layer];player.y=playerSpawnY[layer];
+}
+
+// ============================================================
+// PLAYER DEATH
+// ============================================================
+function playerDied(){
+  const cs=computeStats();
+  player.stats.hp=Math.floor(cs.maxHp*0.5);
+  player.layer=0;player.x=50*TILE_SIZE+16;player.y=10*TILE_SIZE+16;
+  player.xp=Math.floor(player.xp*0.7);
+  monsters=[];
+  addFloat(player.x,player.y-80,'YOU DIED','#ff2222');
+  screen='died';
+  setTimeout(()=>{screen='game';},2000);
+}
+
+// ============================================================
+// PART POSITION HELPERS
+// ============================================================
+function getPartPos(m,partIdx){
+  const part=m.parts[partIdx];
+  const offsets={arm:[-m.def.size-4,0],shell:[0,0],head:[0,-m.def.size-4],eye:[m.def.size*0.4,-m.def.size*0.3],wing:[-m.def.size,m.def.size*0.3],leg:[0,m.def.size+4],body:[0,0]};
+  const off=offsets[part.pos]||[0,0];
+  return{x:m.x+off[0],y:m.y+off[1]};
+}
+
+// ============================================================
+// RENDER
+// ============================================================
+let gameTime=0;
+function render(dt){
+  gameTime+=dt||0.016;
+  ctx.fillStyle='#06060b';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  if(screen==='loading'){renderLoading();return;}
+  if(screen==='title'){renderTitle();return;}
+  if(screen==='game'||screen==='died'){renderGame();if(screen==='died')renderDeathOverlay();return;}
+}
+
+// ============================================================
+// LOADING SCREEN
+// ============================================================
+function renderLoading(){
+  const cx=canvas.width/2,cy=canvas.height/2;
+  // bouncing slime
+  const bY=Math.abs(Math.sin(gameTime*3))*40;
+  drawSlime(cx,cy-60-bY,28,'#44ff88','#88ffcc',gameTime);
+  // title
+  ctx.save();
+  ctx.font='bold 64px Nunito';
+  ctx.textAlign='center';
+  ctx.shadowColor='#44ff88';ctx.shadowBlur=30;
+  ctx.fillStyle='#44ff88';
+  ctx.fillText('SLIMESTER',cx,cy+30);
+  ctx.restore();
+  // loading text
+  ctx.fillStyle='#aaa';ctx.font='20px Nunito';ctx.textAlign='center';
+  ctx.fillText('LOADING...',cx,cy+70);
+  // progress bar
+  const bw=300,bh=16,bx=cx-150,by=cy+90;
+  ctx.strokeStyle='#334';ctx.lineWidth=2;
+  ctx.strokeRect(bx,by,bw,bh);
+  ctx.fillStyle='#44ff88';
+  ctx.fillRect(bx,by,bw*loadProgress,bh);
+}
+
+// ============================================================
+// TITLE SCREEN
+// ============================================================
+function renderTitle(){
+  // particles
+  for(const p of titleParticles){
+    ctx.globalAlpha=p.alpha;
+    ctx.fillStyle=p.color;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fill();
+  }
+  ctx.globalAlpha=1;
+  const cx=canvas.width/2,cy=canvas.height/2;
+  // logo
+  const pulse=Math.sin(gameTime*2)*0.15+1;
+  ctx.save();
+  ctx.translate(cx,cy-60);ctx.scale(pulse,pulse);
+  ctx.font='bold 72px Nunito';ctx.textAlign='center';
+  ctx.shadowColor='#44ff88';ctx.shadowBlur=40;
+  ctx.fillStyle='#44ff88';
+  ctx.fillText('SLIMESTER',0,0);
+  ctx.restore();
+  ctx.fillStyle='#88ffcc';ctx.font='24px Nunito';ctx.textAlign='center';
+  ctx.fillText('A Sandbox RPG',cx,cy+10);
+  // blink
+  if(Math.floor(gameTime*2)%2===0){
+    ctx.fillStyle='#e2e8f0';ctx.font='18px Nunito';
+    ctx.fillText('PRESS ANY KEY TO CONTINUE',cx,cy+80);
+  }
+}
+
+// ============================================================
+// GAME RENDER
+// ============================================================
+function renderGame(){
+  ctx.save();
+  ctx.translate(-camX,-camY);
+
+  // tiles
+  const startTX=Math.floor(camX/TILE_SIZE)-1;
+  const startTY=Math.floor(camY/TILE_SIZE)-1;
+  const endTX=startTX+Math.ceil(canvas.width/TILE_SIZE)+2;
+  const endTY=startTY+Math.ceil(canvas.height/TILE_SIZE)+2;
+
+  for(let ty=startTY;ty<endTY;ty++){
+    for(let tx=startTX;tx<endTX;tx++){
+      if(tx<0||tx>=WORLD_W||ty<0||ty>=WORLD_H)continue;
+      const tile=getTile(player.layer,tx,ty);
+      const info=TILE_INFO[tile];
+      if(!info)continue;
+      const px=tx*TILE_SIZE,py=ty*TILE_SIZE;
+      // ore sense glow
+      if(hasTalent('x_sense')&&(tile===T.CRYSTAL||tile===T.GEM||tile===T.ECHO||tile===T.ENERGY)){
+        ctx.save();ctx.shadowColor=info.color;ctx.shadowBlur=12;
+        ctx.fillStyle=info.color;ctx.fillRect(px,py,TILE_SIZE,TILE_SIZE);
+        ctx.restore();continue;
+      }
+      // draw tile
+      if(info.solid){
+        // 3D depth
+        const dark=shadeColor(info.color,-40);
+        ctx.fillStyle=dark;ctx.fillRect(px+2,py+4,TILE_SIZE,TILE_SIZE);
+      }
+      ctx.fillStyle=info.color;ctx.fillRect(px,py,TILE_SIZE,TILE_SIZE);
+      // stairs indicator
+      if(tile===T.STAIRS_D){drawStairsD(px,py);}
+      else if(tile===T.STAIRS_U){drawStairsU(px,py);}
+      else if(tile===T.ALTAR){drawAltar(px,py);}
+      else if(tile===T.ENERGY){
+        ctx.save();ctx.globalAlpha=0.6+Math.sin(gameTime*3)*0.3;
+        ctx.fillStyle='#00ffaa';ctx.fillRect(px,py,TILE_SIZE,TILE_SIZE);
+        ctx.restore();
+      }
+      else if(tile===T.LAVA||tile===T.VENT){
+        ctx.save();ctx.globalAlpha=0.7+Math.sin(gameTime*4+tx+ty)*0.2;
+        ctx.fillStyle=info.color;ctx.fillRect(px,py,TILE_SIZE,TILE_SIZE);
+        ctx.restore();
+      }
+      // mine progress
+      const mk=`${player.layer}_${tx}_${ty}`;
+      if(tileHpMap[mk]!==undefined&&info.hp){
+        const pct=1-tileHpMap[mk]/info.hp;
+        ctx.fillStyle=`rgba(255,255,255,${pct*0.6})`;
+        ctx.fillRect(px,py+TILE_SIZE-4,TILE_SIZE*pct,4);
+      }
+    }
+  }
+
+  // mine target highlight
+  if(mineTarget){
+    ctx.strokeStyle='#ffffff';ctx.lineWidth=2;ctx.globalAlpha=0.5+Math.sin(gameTime*8)*0.3;
+    ctx.strokeRect(mineTarget.x*TILE_SIZE,mineTarget.y*TILE_SIZE,TILE_SIZE,TILE_SIZE);
+    ctx.globalAlpha=1;
+  }
+
+  // ground items
+  for(const gi of groundItems){
+    if(gi.layer!==player.layer)continue;
+    if(gi.type==='xp'){
+      ctx.save();ctx.shadowColor='#aa44ff';ctx.shadowBlur=8;
+      ctx.fillStyle='#aa44ff';ctx.beginPath();
+      ctx.arc(gi.x,gi.y,gi.r,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    } else if(gi.type==='part'){
+      ctx.save();ctx.shadowColor=gi.color;ctx.shadowBlur=6;
+      ctx.fillStyle=gi.color;ctx.beginPath();
+      const s=gi.r;
+      ctx.moveTo(gi.x,gi.y-s);ctx.lineTo(gi.x+s,gi.y);ctx.lineTo(gi.x,gi.y+s);ctx.lineTo(gi.x-s,gi.y);
+      ctx.closePath();ctx.fill();
+      ctx.restore();
+      ctx.fillStyle='#fff';ctx.font='9px Nunito';ctx.textAlign='center';
+      ctx.fillText(gi.name,gi.x,gi.y-gi.r-2);
+    }
+  }
+
+  // other players
+  for(const[sid,op] of Object.entries(otherPlayers)){
+    if(op.layer!==player.layer)continue;
+    const cls=CLASSES[op.class]||CLASSES.acid;
+    ctx.globalAlpha=0.6;
+    drawSlime(op.x,op.y,18,cls.color,cls.glowColor,gameTime);
+    ctx.globalAlpha=1;
+    ctx.fillStyle='#e2e8f0';ctx.font='11px Nunito';ctx.textAlign='center';
+    ctx.fillText(op.name,op.x,op.y-24);
+  }
+
+  // monsters
+  for(const m of monsters){
+    if(!m.alive||m.layer!==player.layer)continue;
+    renderMonster(m);
+  }
+
+  // player
+  const pcls=CLASSES[player.class];
+  const hasAura=hasTalent('e_trans');
+  if(hasAura){ctx.save();ctx.shadowColor=pcls.glowColor;ctx.shadowBlur=30;}
+  drawSlimeWithParts(player.x,player.y,player.class,player.equippedParts,gameTime);
+  if(hasAura)ctx.restore();
+
+  // particles
+  for(const p of particles){
+    ctx.save();ctx.globalAlpha=p.life;ctx.fillStyle=p.color;
+    ctx.beginPath();ctx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+
+  // float nums
+  for(const f of floatNums){
+    ctx.save();ctx.globalAlpha=f.life;ctx.fillStyle=f.color;
+    ctx.font='bold 14px Nunito';ctx.textAlign='center';
+    ctx.shadowColor=f.color;ctx.shadowBlur=6;
+    ctx.fillText(f.text,f.x,f.y);
+    ctx.restore();
+  }
+
+  ctx.restore(); // end camera transform
+
+  // HUD
+  renderHUD();
+  // panels
+  if(openPanel)renderPanel();
+}
+
+// ============================================================
+// SLIME DRAWING
+// ============================================================
+function drawSlime(x,y,r,color,glowColor,t){
+  const squish=Math.sin(t*4)*0.08;
+  const rx=r*(1-squish),ry=r*(1+squish);
+  // shadow
+  ctx.fillStyle='rgba(0,0,0,0.3)';
+  ctx.beginPath();ctx.ellipse(x+2,y+r+2,rx*0.8,4,0,0,Math.PI*2);ctx.fill();
+  // body
+  ctx.save();ctx.shadowColor=glowColor||color;ctx.shadowBlur=15;
+  ctx.fillStyle=color;
+  ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+  // eyes
+  const eyeOff=rx*0.35;
+  ctx.fillStyle='#fff';
+  ctx.beginPath();ctx.arc(x-eyeOff,y-ry*0.2,rx*0.22,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(x+eyeOff,y-ry*0.2,rx*0.22,0,Math.PI*2);ctx.fill();
+  ctx.fillStyle='#111';
+  ctx.beginPath();ctx.arc(x-eyeOff+1,y-ry*0.2+1,rx*0.11,0,Math.PI*2);ctx.fill();
+  ctx.beginPath();ctx.arc(x+eyeOff+1,y-ry*0.2+1,rx*0.11,0,Math.PI*2);ctx.fill();
+}
+
+function drawSlimeWithParts(x,y,cls,equippedParts,t){
+  const cd=CLASSES[cls];
+  const evolved=hasTalent('e_form');
+  const r=evolved?22:18;
+  // draw equipped parts behind
+  for(const pid of equippedParts){
+    const pd=findPartDef(pid);
+    if(!pd)continue;
+    drawEquippedPart(x,y,r,pd,t);
+  }
+  // draw slime body
+  drawSlime(x,y,r,cd.color,cd.glowColor,t);
+  // draw equipped parts front
+  for(const pid of equippedParts){
+    const pd=findPartDef(pid);
+    if(!pd)continue;
+    drawEquippedPartFront(x,y,r,pd,t);
+  }
+}
+
+function drawEquippedPart(x,y,r,part,t){
+  ctx.save();
+  switch(part.pos){
+    case 'shell':
+      ctx.strokeStyle=part.color;ctx.lineWidth=3;ctx.globalAlpha=0.6;
+      ctx.shadowColor=part.color;ctx.shadowBlur=8;
+      ctx.beginPath();ctx.ellipse(x,y,r+8,r+8,0,0,Math.PI*2);ctx.stroke();
+      break;
+    case 'wing':
+      ctx.fillStyle=part.color;ctx.globalAlpha=0.5;
+      ctx.beginPath();ctx.ellipse(x-r-6,y,8,14,Math.PI*0.3+Math.sin(t*3)*0.1,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(x+r+6,y,8,14,-Math.PI*0.3-Math.sin(t*3)*0.1,0,Math.PI*2);ctx.fill();
+      break;
+    case 'leg':
+      ctx.fillStyle=part.color;ctx.globalAlpha=0.8;
+      for(let i=-1;i<=1;i+=2){
+        ctx.beginPath();ctx.ellipse(x+i*r*0.5,y+r+4,4,8,0,0,Math.PI*2);ctx.fill();
+      }
+      break;
+  }
+  ctx.restore();
+}
+
+function drawEquippedPartFront(x,y,r,part,t){
+  ctx.save();
+  switch(part.pos){
+    case 'arm':
+      ctx.fillStyle=part.color;ctx.shadowColor=part.color;ctx.shadowBlur=6;
+      ctx.beginPath();ctx.ellipse(x-r-8,y+4,7,5,0,0,Math.PI*2);ctx.fill();
+      ctx.beginPath();ctx.ellipse(x+r+8,y+4,7,5,0,0,Math.PI*2);ctx.fill();
+      break;
+    case 'head':
+      ctx.fillStyle=part.color;ctx.shadowColor=part.color;ctx.shadowBlur=6;
+      ctx.beginPath();ctx.arc(x,y-r-6,6,0,Math.PI*2);ctx.fill();
+      break;
+    case 'eye':
+      ctx.fillStyle=part.color;ctx.shadowColor=part.color;ctx.shadowBlur=8;
+      ctx.beginPath();ctx.arc(x,y-r*0.5,4,0,Math.PI*2);ctx.fill();
+      break;
+    case 'body':
+      ctx.strokeStyle=part.color;ctx.lineWidth=2;ctx.globalAlpha=0.4;
+      ctx.beginPath();ctx.ellipse(x,y,r-2,r-2,0,0,Math.PI*2);ctx.stroke();
+      break;
+  }
+  ctx.restore();
+}
+
+// ============================================================
+// MONSTER RENDERING
+// ============================================================
+function renderMonster(m){
+  const d=m.def;
+  // body
+  ctx.save();
+  ctx.shadowColor=d.color;ctx.shadowBlur=10;
+  ctx.fillStyle=d.color;
+  ctx.beginPath();ctx.arc(m.x,m.y,d.size,0,Math.PI*2);ctx.fill();
+  ctx.restore();
+  // parts
+  for(let pi=0;pi<m.parts.length;pi++){
+    const p=m.parts[pi];
+    if(p.curHp<=0)continue;
+    const pos=getPartPos(m,pi);
+    ctx.save();ctx.fillStyle=p.color;ctx.shadowColor=p.color;ctx.shadowBlur=5;
+    ctx.beginPath();ctx.arc(pos.x,pos.y,6,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+    // part hp bar
+    const pw=16,ph=3;
+    const bx=pos.x-pw/2,by=pos.y-10;
+    ctx.fillStyle='#222';ctx.fillRect(bx,by,pw,ph);
+    ctx.fillStyle=p.color;ctx.fillRect(bx,by,pw*(p.curHp/p.hp),ph);
+  }
+  // hp bar above
+  const bw=d.size*2+10,bh=5;
+  const bx=m.x-bw/2,by=m.y-d.size-12;
+  ctx.fillStyle='#220000';ctx.fillRect(bx,by,bw,bh);
+  ctx.fillStyle='#ff3333';ctx.fillRect(bx,by,bw*(m.hp/m.maxHp),bh);
+  // name
+  ctx.fillStyle='#e2e8f0';ctx.font='10px Nunito';ctx.textAlign='center';
+  ctx.fillText(d.name,m.x,by-3);
+}
+
+function drawStairsD(px,py){
+  ctx.fillStyle='#ffcc44';ctx.font='18px serif';ctx.textAlign='center';
+  ctx.fillText('▼',px+16,py+22);
+}
+function drawStairsU(px,py){
+  ctx.fillStyle='#44ccff';ctx.font='18px serif';ctx.textAlign='center';
+  ctx.fillText('▲',px+16,py+22);
+}
+function drawAltar(px,py){
+  ctx.save();ctx.shadowColor='#aaff44';ctx.shadowBlur=20;
+  ctx.fillStyle='#aaff44';ctx.font='20px serif';ctx.textAlign='center';
+  ctx.fillText('✦',px+16,py+22);
+  ctx.restore();
+}
+
+// ============================================================
+// HUD
+// ============================================================
+function renderHUD(){
+  const cs=computeStats();
+  ctx.font='13px Nunito';ctx.textAlign='left';
+
+  // top-left: layer + name
+  ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(8,8,200,44);
+  ctx.fillStyle='#e2e8f0';ctx.font='bold 14px Nunito';
+  ctx.fillText(LAYERS[player.layer],14,26);
+  ctx.fillStyle=CLASSES[player.class].color;ctx.font='13px Nunito';
+  ctx.fillText(player.name+' (Lv '+player.level+')',14,44);
+
+  // bottom-left: hp + xp bars
+  const barW=200,barH=12;
+  const bx=10,by=canvas.height-70;
+  // hp
+  ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(bx-2,by-2,barW+4,barH+4);
+  ctx.fillStyle='#440000';ctx.fillRect(bx,by,barW,barH);
+  ctx.fillStyle='#ff3333';ctx.fillRect(bx,by,barW*(player.stats.hp/cs.maxHp),barH);
+  ctx.fillStyle='#fff';ctx.font='10px Nunito';ctx.textAlign='left';
+  ctx.fillText(`HP: ${Math.floor(player.stats.hp)}/${Math.floor(cs.maxHp)}`,bx+4,by+9);
+  // xp
+  const xpY=by+18;
+  ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(bx-2,xpY-2,barW+4,barH+4);
+  ctx.fillStyle='#220044';ctx.fillRect(bx,xpY,barW,barH);
+  ctx.fillStyle='#aa44ff';ctx.fillRect(bx,xpY,barW*(player.xp/(player.level*100)),barH);
+  ctx.fillStyle='#fff';ctx.font='10px Nunito';ctx.fillText(`XP: ${player.xp}/${player.level*100}`,bx+4,xpY+9);
+  // talent points
+  if(player.talentPoints>0){
+    ctx.fillStyle='#ffff44';ctx.font='bold 11px Nunito';
+    ctx.fillText(`★ ${player.talentPoints} Talent Point${player.talentPoints>1?'s':''}`,bx,xpY+22);
+  }
+
+  // bottom-right: quest + tool
+  const q=getCurrentQuest();
+  if(q){
+    const qx=canvas.width-220,qy=canvas.height-80;
+    ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(qx-4,qy-4,216,70);
+    ctx.fillStyle='#aaff44';ctx.font='bold 11px Nunito';ctx.textAlign='left';
+    ctx.fillText('QUEST: '+q.title,qx,qy+10);
+    ctx.fillStyle='#aaa';ctx.font='10px Nunito';
+    ctx.fillText(q.desc,qx,qy+24);
+    const prog=player.questProgress[q.id]||0;
+    if(q.goal.count){ctx.fillStyle='#e2e8f0';ctx.fillText(`Progress: ${prog}/${q.goal.count}`,qx,qy+38);}
+    else if(q.goal.layer!==undefined){ctx.fillStyle='#e2e8f0';ctx.fillText(`Go to layer ${q.goal.layer+1}`,qx,qy+38);}
+    else if(q.goal.equip!==undefined){ctx.fillStyle='#e2e8f0';ctx.fillText(`Equip ${q.goal.equip} parts (${player.equippedParts.length})`,qx,qy+38);}
+    ctx.fillStyle='#888';ctx.font='10px Nunito';
+    ctx.fillText('Tool: '+(player.currentTool||'Bare Hands'),qx,qy+52);
+  }
+
+  // top-right: player count + minimap
+  const playerCount=1+Object.values(otherPlayers).filter(op=>op.layer===player.layer).length;
+  ctx.fillStyle='rgba(0,0,0,0.6)';ctx.fillRect(canvas.width-100,8,92,24);
+  ctx.fillStyle='#e2e8f0';ctx.font='12px Nunito';ctx.textAlign='right';
+  ctx.fillText('Players: '+playerCount,canvas.width-12,24);
+
+  // minimap
+  const mmW=80,mmH=48,mmX=canvas.width-mmW-8,mmY=36;
+  ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(mmX,mmY,mmW,mmH);
+  const scaleX=mmW/WORLD_W,scaleY=mmH/WORLD_H;
+  // draw player dot
+  const pdotX=mmX+Math.floor(player.x/TILE_SIZE)*scaleX;
+  const pdotY=mmY+Math.floor(player.y/TILE_SIZE)*scaleY;
+  ctx.fillStyle=CLASSES[player.class].color;
+  ctx.fillRect(pdotX-1,pdotY-1,3,3);
+  // monsters
+  ctx.fillStyle='#ff4444';
+  for(const m of monsters){
+    if(m.layer!==player.layer)continue;
+    const mx2=mmX+Math.floor(m.x/TILE_SIZE)*scaleX;
+    const my2=mmY+Math.floor(m.y/TILE_SIZE)*scaleY;
+    ctx.fillRect(mx2,my2,2,2);
+  }
+  // stairs
+  ctx.fillStyle='#ffcc44';
+  for(let ty=0;ty<WORLD_H;ty++)for(let tx=0;tx<WORLD_W;tx++){
+    const tile=getTile(player.layer,tx,ty);
+    if(tile===T.STAIRS_D||tile===T.STAIRS_U){ctx.fillRect(mmX+tx*scaleX,mmY+ty*scaleY,2,2);}
+  }
+
+  // key hints bottom center
+  ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillRect(canvas.width/2-180,canvas.height-20,360,18);
+  ctx.fillStyle='#666';ctx.font='11px Nunito';ctx.textAlign='center';
+  ctx.fillText('[I]nventory [Q]uests [T]alents [C]raft [E]Use Item [ESC]Close',canvas.width/2,canvas.height-6);
+}
+
+// ============================================================
+// PANELS
+// ============================================================
+function renderPanel(){
+  panelHits=[];
+  const pw=Math.min(600,canvas.width-40),ph=Math.min(500,canvas.height-80);
+  const px=(canvas.width-pw)/2,py=(canvas.height-ph)/2;
+  // bg
+  ctx.fillStyle='rgba(6,6,11,0.95)';ctx.fillRect(px,py,pw,ph);
+  ctx.strokeStyle='#44ff88';ctx.lineWidth=2;ctx.strokeRect(px,py,pw,ph);
+  // close hint
+  ctx.fillStyle='#555';ctx.font='11px Nunito';ctx.textAlign='right';
+  ctx.fillText('[ESC] Close',px+pw-10,py+16);
+
+  if(openPanel==='inv')renderInvPanel(px,py,pw,ph);
+  else if(openPanel==='quest')renderQuestPanel(px,py,pw,ph);
+  else if(openPanel==='talent')renderTalentPanel(px,py,pw,ph);
+  else if(openPanel==='craft')renderCraftPanel(px,py,pw,ph);
+}
+
+function renderInvPanel(px,py,pw,ph){
+  ctx.fillStyle='#44ff88';ctx.font='bold 18px Nunito';ctx.textAlign='center';
+  ctx.fillText('Inventory & Parts',px+pw/2,py+30);
+
+  const half=pw/2-20;
+  // left: resources
+  ctx.fillStyle='#aaa';ctx.font='bold 13px Nunito';ctx.textAlign='left';
+  ctx.fillText('Resources:',px+14,py+54);
+  let iy=py+72;
+  const inv=player.inventory;
+  const keys2=Object.keys(inv).filter(k=>k!=='health_pot'&&k!=='mega_pot');
+  const pots=Object.keys(inv).filter(k=>k==='health_pot'||k==='mega_pot');
+  const allKeys=[...keys2,...pots];
+  for(const k of allKeys){
+    if(!inv[k])continue;
+    ctx.fillStyle='#e2e8f0';ctx.font='12px Nunito';
+    ctx.fillText(`${k.replace(/_/g,' ')}: ${inv[k]}`,px+14,iy);
+    iy+=18;if(iy>py+ph-60)break;
+  }
+
+  // right: parts
+  ctx.fillStyle='#aaa';ctx.font='bold 13px Nunito';ctx.textAlign='left';
+  ctx.fillText('Collected Parts:',px+pw/2+6,py+54);
+  const slots=player.maxEquipSlots+(hasTalent('e_slots')?1:0);
+  ctx.fillStyle='#777';ctx.font='11px Nunito';
+  ctx.fillText(`Equipped: ${player.equippedParts.length}/${slots}`,px+pw/2+6,py+68);
+
+  let ry=py+84;
+  const unique=[...new Set(player.collectedParts)];
+  for(const pid of unique){
+    const pd=findPartDef(pid);if(!pd)continue;
+    const equipped=player.equippedParts.includes(pid);
+    const count=player.collectedParts.filter(p=>p===pid).length;
+    ctx.fillStyle=equipped?'#44ff88':'#e2e8f0';
+    ctx.font='12px Nunito';ctx.textAlign='left';
+    const label=`${pd.name} x${count}${equipped?' [E]':''}`;
+    ctx.fillText(label,px+pw/2+6,ry);
+    // click region
+    panelHits.push({x:px+pw/2+6,y:ry-14,w:half-10,h:16,action:()=>toggleEquip(pid)});
+    ry+=18;if(ry>py+ph-40)break;
+  }
+  if(unique.length===0){ctx.fillStyle='#555';ctx.font='12px Nunito';ctx.fillText('No parts collected yet.',px+pw/2+6,ry);}
+}
+
+function toggleEquip(pid){
+  const slots=player.maxEquipSlots+(hasTalent('e_slots')?1:0);
+  const idx=player.equippedParts.indexOf(pid);
+  if(idx>=0){player.equippedParts.splice(idx,1);}
+  else if(player.equippedParts.length<slots){player.equippedParts.push(pid);checkEquipQuest();}
+  else{addFloat(player.x,player.y-40,'Slots full!','#ff8888');}
+}
+
+function renderQuestPanel(px,py,pw,ph){
+  ctx.fillStyle='#aaff44';ctx.font='bold 18px Nunito';ctx.textAlign='center';
+  ctx.fillText('Quest Log',px+pw/2,py+30);
+
+  const q=getCurrentQuest();
+  let qy=py+55;
+  if(q){
+    ctx.fillStyle='#aaff44';ctx.font='bold 14px Nunito';ctx.textAlign='left';
+    ctx.fillText('► '+q.title,px+16,qy);qy+=20;
+    ctx.fillStyle='#e2e8f0';ctx.font='12px Nunito';
+    ctx.fillText(q.desc,px+16,qy);qy+=18;
+    const prog=player.questProgress[q.id]||0;
+    if(q.goal.count){ctx.fillStyle='#aaa';ctx.fillText(`Progress: ${prog}/${q.goal.count}`,px+16,qy);qy+=18;}
+    ctx.fillStyle='#ffcc44';ctx.fillText('Reward: '+q.xp+' XP',px+16,qy);qy+=28;
+  } else {
+    ctx.fillStyle='#555';ctx.font='14px Nunito';ctx.textAlign='center';
+    ctx.fillText('All quests complete!',px+pw/2,qy);qy+=28;
+  }
+  ctx.fillStyle='#888';ctx.font='bold 13px Nunito';ctx.textAlign='left';
+  ctx.fillText('Completed:',px+16,qy);qy+=18;
+  for(const cid of player.completedQuests){
+    let found=null;
+    for(const ql of Object.values(QUESTS))for(const qq of ql)if(qq.id===cid)found=qq;
+    if(!found)continue;
+    ctx.fillStyle='#555';ctx.font='12px Nunito';ctx.fillText('✓ '+found.title,px+16,qy);qy+=16;
+    if(qy>py+ph-20)break;
+  }
+}
+
+function renderTalentPanel(px,py,pw,ph){
+  ctx.fillStyle='#ffcc44';ctx.font='bold 18px Nunito';ctx.textAlign='center';
+  ctx.fillText('Talent Tree',px+pw/2,py+30);
+  ctx.fillStyle='#e2e8f0';ctx.font='13px Nunito';
+  ctx.fillText(`Points: ${player.talentPoints}`,px+pw/2,py+48);
+
+  const cols=['combat','evolution','exploration'];
+  const colW=(pw-40)/3;
+  const colColors={'combat':'#ff6644','evolution':'#44ff88','exploration':'#44aaff'};
+  const colNames={'combat':'Combat','evolution':'Evolution','exploration':'Exploration'};
+
+  for(let ci=0;ci<3;ci++){
+    const cx=px+20+ci*colW;
+    const col=cols[ci];
+    ctx.fillStyle=colColors[col];ctx.font='bold 12px Nunito';ctx.textAlign='center';
+    ctx.fillText(colNames[col],cx+colW/2,py+66);
+    const talents=TALENT_TREE[col];
+    for(let ti=0;ti<talents.length;ti++){
+      const t=talents[ti];
+      const ty2=py+82+ti*72;
+      const unlocked=hasTalent(t.id);
+      const canUnlock=!unlocked&&player.talentPoints>=t.cost&&(ti===0||hasTalent(talents[ti-1].id));
+      // connector line
+      if(ti>0){ctx.strokeStyle=hasTalent(talents[ti-1].id)?colColors[col]:'#333';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(cx+colW/2,ty2-10);ctx.lineTo(cx+colW/2,ty2);ctx.stroke();}
+      ctx.fillStyle=unlocked?colColors[col]:canUnlock?'#334':' #1a1a2e';
+      ctx.strokeStyle=unlocked?colColors[col]:canUnlock?'#556':'#222';
+      ctx.lineWidth=1.5;
+      roundRect(ctx,cx+4,ty2,colW-8,60,8,true,true);
+      ctx.fillStyle=unlocked?'#111':canUnlock?'#e2e8f0':'#444';
+      ctx.font='bold 11px Nunito';ctx.textAlign='center';
+      ctx.fillText(t.name,cx+colW/2,ty2+16);
+      ctx.fillStyle=unlocked?'#333':canUnlock?'#aaa':'#333';
+      ctx.font='10px Nunito';
+      wrapText(ctx,t.desc,cx+colW/2,ty2+30,colW-12,12);
+      ctx.fillStyle=unlocked?'#44ff88':canUnlock?'#ffcc44':'#555';
+      ctx.font='10px Nunito';
+      ctx.fillText(unlocked?'Unlocked':'Cost: '+t.cost,cx+colW/2,ty2+52);
+      if(canUnlock){
+        panelHits.push({x:cx+4,y:ty2,w:colW-8,h:60,action:()=>unlockTalent(t,col,ti)});
+      }
+    }
+  }
+}
+
+function unlockTalent(t,col,idx){
+  if(player.talentPoints<t.cost)return;
+  const talents=TALENT_TREE[col];
+  if(idx>0&&!hasTalent(talents[idx-1].id))return;
+  player.talentPoints-=t.cost;
+  player.unlockedTalents.push(t.id);
+  if(t.bonus.slots)player.maxEquipSlots++;
+  addFloat(player.x,player.y-60,'Talent Unlocked!','#ffcc44');
+}
+
+function renderCraftPanel(px,py,pw,ph){
+  ctx.fillStyle='#44aaff';ctx.font='bold 18px Nunito';ctx.textAlign='center';
+  ctx.fillText('Crafting',px+pw/2,py+30);
+
+  let cy2=py+52;
+  for(const r of RECIPES){
+    const canCraft=canCraftRecipe(r);
+    // bg
+    ctx.fillStyle=canCraft?'rgba(0,80,40,0.5)':'rgba(20,20,30,0.5)';
+    ctx.fillRect(px+12,cy2-16,pw-24,52);
+    ctx.strokeStyle=canCraft?'#44ff88':'#333';ctx.lineWidth=1;
+    ctx.strokeRect(px+12,cy2-16,pw-24,52);
+    // name
+    ctx.fillStyle=canCraft?'#44ff88':'#888';ctx.font='bold 13px Nunito';ctx.textAlign='left';
+    ctx.fillText(r.icon+' '+r.name,px+20,cy2);
+    // ingredients
+    const ingStr=Object.entries(r.ing).map(([k,v])=>`${k.replace(/_/g,' ')}×${v}`).join(', ');
+    ctx.fillStyle='#aaa';ctx.font='11px Nunito';
+    ctx.fillText('Needs: '+ingStr,px+20,cy2+16);
+    // what it does
+    let effect='';
+    if(r.minePower)effect=`Mining Power: ${r.minePower}`;
+    else if(r.heal)effect=`Heal: ${r.heal} HP`;
+    ctx.fillStyle='#777';ctx.fillText(effect,px+20,cy2+30);
+    // craft button
+    if(canCraft){
+      ctx.fillStyle='#44ff88';ctx.font='bold 12px Nunito';ctx.textAlign='right';
+      ctx.fillText('[CRAFT]',px+pw-20,cy2);
+      panelHits.push({x:px+pw-80,y:cy2-14,w:70,h:20,action:()=>craftItem(r)});
+    }
+    cy2+=60;
+    if(cy2>py+ph-20)break;
+  }
+}
+
+function canCraftRecipe(r){
+  for(const[k,v]of Object.entries(r.ing)){if((player.inventory[k]||0)<v)return false;}
+  return true;
+}
+
+function craftItem(r){
+  if(!canCraftRecipe(r))return;
+  for(const[k,v]of Object.entries(r.ing))player.inventory[k]-=v;
+  if(r.consumable){
+    player.inventory[r.id]=(player.inventory[r.id]||0)+1;
+    addFloat(player.x,player.y-40,'Crafted '+r.name,'#44aaff');
+  } else if(r.minePower){
+    player.currentTool=r.name;
+    player.miningPower=r.minePower;
+    addFloat(player.x,player.y-40,'Equipped '+r.name,'#44aaff');
+  }
+}
+
+// ============================================================
+// DEATH OVERLAY
+// ============================================================
+function renderDeathOverlay(){
+  ctx.fillStyle='rgba(0,0,0,0.7)';ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.save();ctx.shadowColor='#ff2222';ctx.shadowBlur=40;
+  ctx.fillStyle='#ff2222';ctx.font='bold 72px Nunito';ctx.textAlign='center';
+  ctx.fillText('YOU DIED',canvas.width/2,canvas.height/2);
+  ctx.restore();
+  ctx.fillStyle='#aaa';ctx.font='20px Nunito';ctx.textAlign='center';
+  ctx.fillText('Respawning...',canvas.width/2,canvas.height/2+50);
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function shadeColor(hex,amt){
+  let r=parseInt(hex.slice(1,3),16)+amt,g=parseInt(hex.slice(3,5),16)+amt,b=parseInt(hex.slice(5,7),16)+amt;
+  r=Math.max(0,Math.min(255,r));g=Math.max(0,Math.min(255,g));b=Math.max(0,Math.min(255,b));
+  return '#'+r.toString(16).padStart(2,'0')+g.toString(16).padStart(2,'0')+b.toString(16).padStart(2,'0');
+}
+
+function roundRect(ctx,x,y,w,h,r,fill,stroke){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+  if(fill)ctx.fill();if(stroke)ctx.stroke();
+}
+
+function wrapText(ctx,text,cx,y,maxW,lineH){
+  const words=text.split(' ');let line='';
+  for(const w of words){const test=line+w+' ';if(ctx.measureText(test).width>maxW&&line){ctx.fillText(line,cx,y);line=w+' ';y+=lineH;}else line=test;}
+  if(line)ctx.fillText(line,cx,y);
+}
+
+// ============================================================
+// MAIN LOOP
+// ============================================================
+let lastTime=0;
+function gameLoop(timestamp){
+  const dt=Math.min((timestamp-lastTime)/1000,0.1);
+  lastTime=timestamp;
+  update(dt);
+  render(dt);
+  requestAnimationFrame(gameLoop);
+}
+requestAnimationFrame(gameLoop);
+
+// Touch stair cooldown reset
+setInterval(()=>{if(stairCooldown>0)stairCooldown=Math.max(0,stairCooldown-0.1);},100);
+</script>
+</body>
+</html>

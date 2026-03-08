@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Power Promoter - Post to All Platforms</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -13,9 +13,9 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #050508 0%, #0f0415 50%, #0a0515 100%);
-            color: #e0e0e0;
+            font-family: 'Nunito', sans-serif;
+            background: #06060b;
+            color: #e2e8f0;
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
@@ -24,12 +24,9 @@
         body::before {
             content: '';
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 20% 50%, rgba(199, 125, 255, 0.05) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.03) 0%, transparent 50%);
+            inset: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.04) 0%, transparent 50%);
             pointer-events: none;
             z-index: -1;
         }
@@ -102,8 +99,8 @@
             border: 1.5px solid rgba(199, 125, 255, 0.2);
             border-radius: 14px;
             padding: 18px;
-            color: #e0e0e0;
-            font-family: 'Inter', sans-serif;
+            color: #e2e8f0;
+            font-family: 'Nunito', sans-serif;
             font-size: 1em;
             line-height: 1.6;
             resize: vertical;
@@ -136,7 +133,7 @@
         }
 
         .char-count.danger {
-            color: #ff3b30;
+            color: #ef4444;
         }
 
         .post-button {
@@ -243,14 +240,14 @@
         }
 
         .status-badge.connected {
-            background: #00d084;
-            box-shadow: 0 0 8px #00d084;
+            background: #10b981;
+            box-shadow: 0 0 8px #10b981;
         }
 
         .disconnect-btn {
             background: none;
             border: none;
-            color: #ff3b30;
+            color: #ef4444;
             cursor: pointer;
             font-size: 1.2em;
             padding: 0;
@@ -329,7 +326,7 @@
         }
 
         .platform-card.connected .platform-card-status {
-            color: #00d084;
+            color: #10b981;
             font-weight: 600;
         }
 
@@ -412,8 +409,8 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(199, 125, 255, 0.3);
             border-radius: 10px;
-            color: #e0e0e0;
-            font-family: 'Inter', sans-serif;
+            color: #e2e8f0;
+            font-family: 'Nunito', sans-serif;
             transition: all 0.3s ease;
         }
 
@@ -423,6 +420,38 @@
             background: rgba(199, 125, 255, 0.1);
             box-shadow: 0 0 15px rgba(199, 125, 255, 0.2);
         }
+
+        .auth-guide {
+            background: rgba(168, 85, 247, 0.06);
+            border: 1px solid rgba(168, 85, 247, 0.18);
+            border-radius: 10px;
+            margin-bottom: 18px;
+            overflow: hidden;
+        }
+        .auth-guide-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 14px; cursor: pointer; user-select: none;
+            font-weight: 700; font-size: 0.88em; color: #c084fc;
+            transition: background 0.2s;
+        }
+        .auth-guide-header:hover { background: rgba(168, 85, 247, 0.1); }
+        .auth-guide-arrow { transition: transform 0.2s; font-size: 1.1em; }
+        .auth-guide.collapsed .auth-guide-arrow { transform: rotate(-90deg); }
+        .auth-guide.collapsed .auth-guide-steps { display: none; }
+        .auth-guide-steps {
+            padding: 0 14px 14px 30px;
+            margin: 0; font-size: 0.82em; color: #94a3b8;
+            line-height: 1.8; list-style: decimal;
+        }
+        .auth-guide-steps li { padding: 2px 0; }
+        .auth-guide-steps li strong { color: #e2e8f0; }
+        .auth-guide-link {
+            display: block; margin: 0 14px 14px; padding: 10px 14px;
+            background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 8px; color: #c084fc; font-weight: 700; font-size: 0.85em;
+            text-decoration: none; text-align: center; transition: all 0.2s ease;
+        }
+        .auth-guide-link:hover { background: rgba(168, 85, 247, 0.22); border-color: rgba(168, 85, 247, 0.5); }
 
         .auth-modal-buttons {
             display: grid;
@@ -444,38 +473,40 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #64c8ff, #a855f7);
+            background: linear-gradient(135deg, #a855f7, #a855f7);
             color: white;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(100, 200, 255, 0.3);
+            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.3);
         }
 
         .btn-secondary {
             background: rgba(255, 255, 255, 0.05);
-            color: #e0e0e0;
-            border: 1px solid rgba(100, 200, 255, 0.2);
+            color: #e2e8f0;
+            border: 1px solid rgba(168, 85, 247, 0.2);
         }
 
         .btn-secondary:hover {
-            background: rgba(100, 200, 255, 0.1);
-            border-color: rgba(100, 200, 255, 0.4);
+            background: rgba(168, 85, 247, 0.1);
+            border-color: rgba(168, 85, 247, 0.4);
         }
 
         .notification {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: linear-gradient(135deg, #1a1a2e, #25254a);
-            border: 1px solid rgba(100, 200, 255, 0.3);
+            background: rgba(6, 6, 11, 0.95);
+            border: 1px solid rgba(168, 85, 247, 0.3);
             border-radius: 12px;
-            padding: 20px;
+            padding: 16px 20px;
             max-width: 350px;
+            backdrop-filter: blur(12px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
             animation: slideInUp 0.3s ease;
             z-index: 2000;
+            font-size: 0.9em;
         }
 
         @keyframes slideInUp {
@@ -490,40 +521,15 @@
         }
 
         .notification.success {
-            border-color: #00d084;
-            background: rgba(0, 208, 132, 0.1);
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
         }
 
-        .notification.success::before {
-            content: '✓';
-            color: #00d084;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .notification.error {
-            border-color: #ff3b30;
-            background: rgba(255, 59, 48, 0.1);
-        }
-
-        .notification.error::before {
-            content: '✕';
-            color: #ff3b30;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .notification.info {
-            border-color: #64c8ff;
-            background: rgba(100, 200, 255, 0.1);
-        }
-
-        .notification.info::before {
-            content: 'ℹ';
-            color: #64c8ff;
-            font-weight: bold;
-            margin-right: 10px;
-        }
+        .notification.success::before { content: '✓'; color: #10b981; font-weight: bold; margin-right: 10px; }
+        .notification.error { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+        .notification.error::before { content: '✕'; color: #ef4444; font-weight: bold; margin-right: 10px; }
+        .notification.info { border-color: #a855f7; background: rgba(168, 85, 247, 0.1); }
+        .notification.info::before { content: 'ℹ'; color: #a855f7; font-weight: bold; margin-right: 10px; }
 
         .close-btn {
             position: absolute;
@@ -538,14 +544,14 @@
         }
 
         .close-btn:hover {
-            color: #e0e0e0;
+            color: #e2e8f0;
             transform: rotate(90deg);
         }
 
         .posting-status {
             display: none;
-            background: linear-gradient(135deg, rgba(100, 200, 255, 0.2), rgba(168, 85, 247, 0.2));
-            border: 1px solid rgba(100, 200, 255, 0.3);
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(168, 85, 247, 0.2));
+            border: 1px solid rgba(168, 85, 247, 0.3);
             border-radius: 12px;
             padding: 20px;
             margin-top: 20px;
@@ -579,21 +585,16 @@
         }
 
         .status-indicator.success {
-            background: #00d084;
+            background: #10b981;
         }
 
         .status-indicator.error {
-            background: #ff3b30;
+            background: #ef4444;
         }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
         }
 
         @media (max-width: 768px) {
@@ -627,26 +628,7 @@
 <body>
     <div class="container">
         <header>
-            <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
-                <h1>⚡ Power Promoter</h1>
-                <svg style="width: 80px; height: 80px; animation: float 3s ease-in-out infinite;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="envelopeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#c77dff;stop-opacity:1" />
-                            <stop offset="50%" style="stop-color:#e0aaff;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#b366ff;stop-opacity:1" />
-                        </linearGradient>
-                    </defs>
-                    <!-- Envelope body -->
-                    <rect x="15" y="30" width="70" height="50" fill="url(#envelopeGradient)" stroke="#000000" stroke-width="1.5"/>
-                    <!-- Top flap left -->
-                    <path d="M 15 30 L 50 55 L 15 55 Z" fill="url(#envelopeGradient)" opacity="0.9" stroke="#000000" stroke-width="1.5"/>
-                    <!-- Top flap right -->
-                    <path d="M 85 30 L 50 55 L 85 55 Z" fill="url(#envelopeGradient)" opacity="0.8" stroke="#000000" stroke-width="1.5"/>
-                    <!-- Center line -->
-                    <line x1="50" y1="30" x2="50" y2="55" stroke="#000000" stroke-width="1.5" opacity="0.7"/>
-                </svg>
-            </div>
+            <h1>⚡ Power Promoter</h1>
             <p>Post to all your social media platforms simultaneously</p>
         </header>
 
@@ -688,15 +670,36 @@
     </div>
 
     <script>
+        // DB wrapper — AppDB with localStorage fallback
+        const DB = {
+            async get(key) {
+                try { if (window.AppDB) return await window.AppDB.get(key); } catch(e) {}
+                try { const v = localStorage.getItem('pp_'+key); return v ? JSON.parse(v) : null; } catch(e) { return null; }
+            },
+            async set(key, val) {
+                try { if (window.AppDB) { await window.AppDB.set(key, val); return; } } catch(e) {}
+                try { localStorage.setItem('pp_'+key, JSON.stringify(val)); } catch(e) {}
+            }
+        };
+
         // Platform configurations
         const PLATFORMS = {
             twitter: {
-                name: 'Twitter',
+                name: 'Twitter / X',
                 icon: '𝕏',
                 color: '#000000',
                 fields: ['username', 'apiKey'],
                 labels: ['Username', 'API Key'],
-                maxChars: 280
+                maxChars: 280,
+                guide: [
+                    'Go to <strong>developer.x.com</strong> and sign in',
+                    'Click <strong>Developer Portal</strong> → <strong>Projects & Apps</strong>',
+                    'Create a new project or select an existing one',
+                    'Under your app, go to <strong>Keys and Tokens</strong>',
+                    'Generate your <strong>API Key and Secret</strong>',
+                    'Copy the API Key and paste it below'
+                ],
+                link: { label: 'Open X Developer Portal', url: 'https://developer.x.com/en/portal/dashboard' }
             },
             facebook: {
                 name: 'Facebook',
@@ -704,7 +707,17 @@
                 color: '#1877f2',
                 fields: ['pageId', 'accessToken'],
                 labels: ['Page ID', 'Access Token'],
-                maxChars: 63206
+                maxChars: 63206,
+                guide: [
+                    'Go to <strong>developers.facebook.com</strong> and log in',
+                    'Click <strong>My Apps</strong> → <strong>Create App</strong> (choose Business type)',
+                    'Add the <strong>Pages API</strong> product to your app',
+                    'Go to <strong>Graph API Explorer</strong> tool',
+                    'Select your app and click <strong>Generate Access Token</strong>',
+                    'Grant <strong>pages_manage_posts</strong> permission',
+                    'Your <strong>Page ID</strong> is in your Facebook page URL or Page Settings → Page Info'
+                ],
+                link: { label: 'Open Facebook Developer Portal', url: 'https://developers.facebook.com/apps/' }
             },
             instagram: {
                 name: 'Instagram',
@@ -712,7 +725,16 @@
                 color: '#e1306c',
                 fields: ['username', 'apiKey'],
                 labels: ['Username', 'API Key'],
-                maxChars: 2200
+                maxChars: 2200,
+                guide: [
+                    'You need a <strong>Facebook Business</strong> account linked to your Instagram',
+                    'Go to <strong>developers.facebook.com</strong> → <strong>My Apps</strong>',
+                    'Create an app and add the <strong>Instagram Graph API</strong> product',
+                    'Go to <strong>Graph API Explorer</strong>',
+                    'Select your app and generate a token with <strong>instagram_basic</strong> and <strong>instagram_content_publish</strong> permissions',
+                    'Copy the token — this is your API Key'
+                ],
+                link: { label: 'Open Facebook Developer Portal', url: 'https://developers.facebook.com/apps/' }
             },
             tiktok: {
                 name: 'TikTok',
@@ -720,7 +742,17 @@
                 color: '#000000',
                 fields: ['username', 'accessToken'],
                 labels: ['Username', 'Access Token'],
-                maxChars: 2200
+                maxChars: 2200,
+                guide: [
+                    'Go to <strong>developers.tiktok.com</strong> and sign in',
+                    'Click <strong>Manage Apps</strong> → <strong>Create App</strong>',
+                    'Select <strong>Content Posting API</strong> as the product',
+                    'Fill in your app details and submit for review',
+                    'Once approved, go to your app\'s <strong>Sandbox/Keys</strong> section',
+                    'Generate an <strong>Access Token</strong> with posting permissions',
+                    'Copy the token and paste it below'
+                ],
+                link: { label: 'Open TikTok Developer Portal', url: 'https://developers.tiktok.com/apps/' }
             },
             linkedin: {
                 name: 'LinkedIn',
@@ -728,7 +760,16 @@
                 color: '#0a66c2',
                 fields: ['profileId', 'accessToken'],
                 labels: ['Profile ID', 'Access Token'],
-                maxChars: 3000
+                maxChars: 3000,
+                guide: [
+                    'Go to <strong>linkedin.com/developers</strong> and sign in',
+                    'Click <strong>Create App</strong> and fill in your details',
+                    'Under <strong>Products</strong>, request access to <strong>Share on LinkedIn</strong>',
+                    'Go to the <strong>Auth</strong> tab and note your Client ID & Secret',
+                    'Use LinkedIn\'s OAuth flow to generate an <strong>Access Token</strong> with <strong>w_member_social</strong> scope',
+                    'Your <strong>Profile ID</strong> is your vanity URL (e.g. "john-doe-123") or numeric ID from the API'
+                ],
+                link: { label: 'Open LinkedIn Developer Portal', url: 'https://www.linkedin.com/developers/apps/' }
             },
             threads: {
                 name: 'Threads',
@@ -736,23 +777,358 @@
                 color: '#000000',
                 fields: ['username', 'apiKey'],
                 labels: ['Username', 'API Key'],
-                maxChars: 500
+                maxChars: 500,
+                guide: [
+                    'Threads uses the <strong>Instagram Graph API</strong> — you need a linked Instagram Business account',
+                    'Go to <strong>developers.facebook.com</strong> → <strong>My Apps</strong>',
+                    'Create or select an app with <strong>Threads API</strong> access',
+                    'Go to <strong>Use Cases</strong> → <strong>Customize</strong> → add <strong>threads_manage</strong> permissions',
+                    'Use the <strong>Graph API Explorer</strong> to generate an access token',
+                    'Copy the token — this is your API Key'
+                ],
+                link: { label: 'Open Facebook Developer Portal', url: 'https://developers.facebook.com/apps/' }
             },
             bluesky: {
                 name: 'Bluesky',
                 icon: '🦋',
                 color: '#1185fe',
                 fields: ['handle', 'password'],
-                labels: ['Handle', 'Password'],
-                maxChars: 300
+                labels: ['Handle (e.g. you.bsky.social)', 'App Password'],
+                maxChars: 300,
+                guide: [
+                    'Log in to <strong>bsky.app</strong>',
+                    'Go to <strong>Settings</strong> → <strong>Privacy and Security</strong>',
+                    'Scroll down to <strong>App Passwords</strong>',
+                    'Click <strong>Add App Password</strong>',
+                    'Give it a name (e.g. "Power Promoter")',
+                    'Copy the generated password — use this instead of your real password',
+                    'Your handle is your username (e.g. <strong>yourname.bsky.social</strong>)'
+                ],
+                link: { label: 'Open Bluesky App Passwords', url: 'https://bsky.app/settings/app-passwords' }
             },
             mastodon: {
                 name: 'Mastodon',
                 icon: '🐘',
                 color: '#6364FF',
                 fields: ['instance', 'accessToken'],
-                labels: ['Instance URL', 'Access Token'],
-                maxChars: 500
+                labels: ['Instance URL (e.g. mastodon.social)', 'Access Token'],
+                maxChars: 500,
+                guide: [
+                    'Log in to your Mastodon instance (e.g. <strong>mastodon.social</strong>)',
+                    'Go to <strong>Preferences</strong> → <strong>Development</strong>',
+                    'Click <strong>New Application</strong>',
+                    'Name it "Power Promoter" and check the <strong>write:statuses</strong> scope',
+                    'Click <strong>Submit</strong>',
+                    'Click on your new app name to see the keys',
+                    'Copy the <strong>Access Token</strong> and paste it below'
+                ],
+                link: { label: 'Open Mastodon Settings', url: 'https://mastodon.social/settings/applications' }
+            },
+            reddit: {
+                name: 'Reddit',
+                icon: '🤖',
+                color: '#FF4500',
+                fields: ['username', 'accessToken'],
+                labels: ['Username', 'Access Token'],
+                maxChars: 40000,
+                guide: [
+                    'Go to <strong>reddit.com/prefs/apps</strong> and scroll to the bottom',
+                    'Click <strong>create another app...</strong>',
+                    'Select <strong>script</strong> as the app type',
+                    'Name it "Power Promoter" and set the redirect URI to <strong>http://localhost</strong>',
+                    'Click <strong>create app</strong>',
+                    'Note the <strong>Client ID</strong> (under the app name) and <strong>Secret</strong>',
+                    'Use these with your Reddit username/password to generate an OAuth <strong>Access Token</strong>'
+                ],
+                link: { label: 'Open Reddit App Preferences', url: 'https://www.reddit.com/prefs/apps' }
+            },
+            youtube: {
+                name: 'YouTube',
+                icon: '▶',
+                color: '#FF0000',
+                fields: ['channelId', 'apiKey'],
+                labels: ['Channel ID', 'API Key'],
+                maxChars: 5000,
+                guide: [
+                    'Go to <strong>console.cloud.google.com</strong> and sign in',
+                    'Create a new project or select an existing one',
+                    'Go to <strong>APIs & Services</strong> → <strong>Enable APIs</strong>',
+                    'Search for and enable the <strong>YouTube Data API v3</strong>',
+                    'Go to <strong>Credentials</strong> → <strong>Create Credentials</strong> → <strong>API Key</strong>',
+                    'Copy the generated API Key',
+                    'Your <strong>Channel ID</strong> is in YouTube Studio → Settings → Channel → Advanced settings'
+                ],
+                link: { label: 'Open Google Cloud Console', url: 'https://console.cloud.google.com/apis/credentials' }
+            },
+            whatsapp: {
+                name: 'WhatsApp',
+                icon: '💬',
+                color: '#25D366',
+                fields: ['phoneNumberId', 'accessToken'],
+                labels: ['Phone Number ID', 'Access Token'],
+                maxChars: 4096,
+                guide: [
+                    'Go to <strong>developers.facebook.com</strong> and log in',
+                    'Create an app and select <strong>Business</strong> type',
+                    'Add the <strong>WhatsApp</strong> product to your app',
+                    'Go to <strong>WhatsApp</strong> → <strong>Getting Started</strong> in the sidebar',
+                    'Note your <strong>Phone Number ID</strong> and <strong>Temporary Access Token</strong>',
+                    'For a permanent token, go to <strong>System Users</strong> in Business Settings',
+                    'Generate a token with <strong>whatsapp_business_messaging</strong> permission'
+                ],
+                link: { label: 'Open Facebook Developer Portal', url: 'https://developers.facebook.com/apps/' }
+            },
+            wechat: {
+                name: 'WeChat',
+                icon: '微',
+                color: '#07C160',
+                fields: ['appId', 'appSecret'],
+                labels: ['App ID', 'App Secret'],
+                maxChars: 2048,
+                guide: [
+                    'Go to <strong>mp.weixin.qq.com</strong> and register an Official Account',
+                    'Complete identity verification for your account',
+                    'Go to <strong>Development</strong> → <strong>Basic Configuration</strong>',
+                    'Your <strong>App ID (AppID)</strong> is displayed on this page',
+                    'Click <strong>Reset</strong> next to App Secret to generate a new one',
+                    'Copy both the <strong>App ID</strong> and <strong>App Secret</strong>',
+                    'Make sure to whitelist your server IP under the security settings'
+                ],
+                link: { label: 'Open WeChat Official Account Platform', url: 'https://mp.weixin.qq.com/' }
+            },
+            telegram: {
+                name: 'Telegram',
+                icon: '✈',
+                color: '#26A5E4',
+                fields: ['botToken', 'chatId'],
+                labels: ['Bot Token', 'Chat/Channel ID'],
+                maxChars: 4096,
+                guide: [
+                    'Open Telegram and search for <strong>@BotFather</strong>',
+                    'Send <strong>/newbot</strong> and follow the prompts to name your bot',
+                    'BotFather will give you a <strong>Bot Token</strong> — copy it',
+                    'Add your bot as an admin to your channel or group',
+                    'For your <strong>Chat ID</strong>: forward a message from your channel to <strong>@userinfobot</strong>',
+                    'Or use the format <strong>@yourchannel</strong> (your channel\'s public username)',
+                    'For private channels, the Chat ID is a negative number (e.g. <strong>-1001234567890</strong>)'
+                ],
+                link: { label: 'Open BotFather on Telegram', url: 'https://t.me/BotFather' }
+            },
+            snapchat: {
+                name: 'Snapchat',
+                icon: '👻',
+                color: '#FFFC00',
+                fields: ['username', 'accessToken'],
+                labels: ['Username', 'Access Token'],
+                maxChars: 250,
+                guide: [
+                    'Go to <strong>business.snapchat.com</strong> and log in',
+                    'Click <strong>Business Manager</strong> → set up your business if needed',
+                    'Go to <strong>kit.snapchat.com/portal</strong> (Snap Kit Developer Portal)',
+                    'Click <strong>Create New App</strong>',
+                    'Enable <strong>Creative Kit</strong> for sharing content',
+                    'Go to your app\'s <strong>Credentials</strong> section',
+                    'Copy the <strong>Access Token</strong> (OAuth2 token) from your app settings'
+                ],
+                link: { label: 'Open Snap Kit Developer Portal', url: 'https://kit.snapchat.com/portal/' }
+            },
+            pinterest: {
+                name: 'Pinterest',
+                icon: '📌',
+                color: '#E60023',
+                fields: ['username', 'accessToken'],
+                labels: ['Username', 'Access Token'],
+                maxChars: 500,
+                guide: [
+                    'Go to <strong>developers.pinterest.com</strong> and log in',
+                    'Click <strong>My Apps</strong> → <strong>Create App</strong>',
+                    'Fill in your app name and description',
+                    'Once approved, go to your app\'s settings',
+                    'Under <strong>OAuth</strong>, generate an <strong>Access Token</strong>',
+                    'Make sure to select <strong>pins:read</strong> and <strong>pins:write</strong> scopes',
+                    'Copy the access token and paste it below'
+                ],
+                link: { label: 'Open Pinterest Developer Portal', url: 'https://developers.pinterest.com/apps/' }
+            },
+            truthsocial: {
+                name: 'Truth Social',
+                icon: 'T',
+                color: '#5448EE',
+                fields: ['username', 'accessToken'],
+                labels: ['Username', 'Access Token'],
+                maxChars: 500,
+                guide: [
+                    'Truth Social uses the <strong>Mastodon API</strong> (it\'s a Mastodon fork)',
+                    'Log in to <strong>truthsocial.com</strong>',
+                    'Go to <strong>Settings</strong> → <strong>Development</strong>',
+                    'Click <strong>New Application</strong>',
+                    'Name it "Power Promoter" and check the <strong>write:statuses</strong> scope',
+                    'Click <strong>Submit</strong>, then click your app name',
+                    'Copy the <strong>Access Token</strong> and paste it below'
+                ],
+                link: { label: 'Open Truth Social Settings', url: 'https://truthsocial.com/settings/applications' }
+            },
+            weibo: {
+                name: 'Weibo',
+                icon: '微',
+                color: '#E6162D',
+                fields: ['appKey', 'appSecret'],
+                labels: ['App Key', 'App Secret'],
+                maxChars: 2000,
+                guide: [
+                    'Go to <strong>open.weibo.com</strong> and register a developer account',
+                    'Click <strong>My Apps</strong> → <strong>Create App</strong>',
+                    'Select <strong>Web Application</strong> and fill in your details',
+                    'Submit for review — approval may take 1-3 business days',
+                    'Once approved, go to <strong>App Info</strong> → <strong>Basic Info</strong>',
+                    'Copy your <strong>App Key</strong> and <strong>App Secret</strong>',
+                    'Set your callback URL under <strong>Advanced Info</strong>'
+                ],
+                link: { label: 'Open Weibo Developer Portal', url: 'https://open.weibo.com/apps' }
+            },
+            viber: {
+                name: 'Viber',
+                icon: '📱',
+                color: '#7360F2',
+                fields: ['botToken', 'senderId'],
+                labels: ['Bot Token', 'Sender Name/ID'],
+                maxChars: 7000,
+                guide: [
+                    'Go to <strong>partners.viber.com</strong> and log in',
+                    'Click <strong>Create Bot Account</strong>',
+                    'Fill in your bot name, icon, and category',
+                    'After creation, you\'ll receive a <strong>Bot Token</strong> (auth token)',
+                    'Copy the token — this is used for all API calls',
+                    'Your <strong>Sender Name</strong> is the bot name you chose',
+                    'Users must subscribe to your bot before receiving messages'
+                ],
+                link: { label: 'Open Viber Bot Dashboard', url: 'https://partners.viber.com/account/create-bot-account' }
+            },
+            discord: {
+                name: 'Discord',
+                icon: '🎮',
+                color: '#5865F2',
+                fields: ['webhookUrl', 'username'],
+                labels: ['Webhook URL', 'Display Name (optional)'],
+                maxChars: 2000,
+                guide: [
+                    'Open Discord and go to the <strong>server</strong> you want to post to',
+                    'Click the <strong>gear icon</strong> next to the channel name (Edit Channel)',
+                    'Go to <strong>Integrations</strong> → <strong>Webhooks</strong>',
+                    'Click <strong>New Webhook</strong>',
+                    'Name it "Power Promoter" and choose the channel',
+                    'Click <strong>Copy Webhook URL</strong>',
+                    'Paste the full URL below — no other credentials needed'
+                ],
+                link: { label: 'Open Discord App', url: 'https://discord.com/app' }
+            },
+            twitch: {
+                name: 'Twitch',
+                icon: '🎬',
+                color: '#9146FF',
+                fields: ['username', 'accessToken'],
+                labels: ['Username', 'Access Token'],
+                maxChars: 500,
+                guide: [
+                    'Go to <strong>dev.twitch.tv/console</strong> and log in',
+                    'Click <strong>Register Your Application</strong>',
+                    'Name it "Power Promoter", set category to <strong>Chat Bot</strong>',
+                    'Set the redirect URL to <strong>http://localhost</strong>',
+                    'Click <strong>Create</strong>, then click <strong>Manage</strong> on your app',
+                    'Note your <strong>Client ID</strong> and generate a <strong>Client Secret</strong>',
+                    'Use Twitch\'s OAuth flow to get an <strong>Access Token</strong> with <strong>chat:edit</strong> scope'
+                ],
+                link: { label: 'Open Twitch Developer Console', url: 'https://dev.twitch.tv/console/apps' }
+            },
+            line: {
+                name: 'LINE',
+                icon: '💚',
+                color: '#06C755',
+                fields: ['channelToken', 'channelSecret'],
+                labels: ['Channel Access Token', 'Channel Secret'],
+                maxChars: 5000,
+                guide: [
+                    'Go to <strong>developers.line.biz</strong> and log in',
+                    'Click <strong>Create New Provider</strong> (or select existing)',
+                    'Click <strong>Create a Messaging API Channel</strong>',
+                    'Fill in channel name, description, and category',
+                    'After creation, go to the <strong>Messaging API</strong> tab',
+                    'Scroll to <strong>Channel Access Token</strong> and click <strong>Issue</strong>',
+                    'Copy the token — your <strong>Channel Secret</strong> is in the <strong>Basic Settings</strong> tab'
+                ],
+                link: { label: 'Open LINE Developer Console', url: 'https://developers.line.biz/console/' }
+            },
+            likee: {
+                name: 'Likee',
+                icon: '❤',
+                color: '#E8275E',
+                fields: ['username', 'accessToken'],
+                labels: ['Username', 'Access Token'],
+                maxChars: 1000,
+                guide: [
+                    'Go to <strong>likee.video/developer</strong> (Likee Open Platform)',
+                    'Register as a developer with your Likee account',
+                    'Click <strong>Create Application</strong>',
+                    'Fill in your app details and intended use case',
+                    'Submit for review — approval is required',
+                    'Once approved, find your <strong>Access Token</strong> in your app dashboard',
+                    'Copy the token and paste it below'
+                ],
+                link: { label: 'Open Likee Open Platform', url: 'https://likee.video/' }
+            },
+            picsart: {
+                name: 'Picsart',
+                icon: '🎨',
+                color: '#7D2AE8',
+                fields: ['username', 'apiKey'],
+                labels: ['Username', 'API Key'],
+                maxChars: 2000,
+                guide: [
+                    'Go to <strong>picsart.io/api</strong> (Picsart for Developers)',
+                    'Click <strong>Sign Up</strong> or log in with your Picsart account',
+                    'Go to the <strong>Dashboard</strong> → <strong>API Keys</strong>',
+                    'Click <strong>Generate New Key</strong>',
+                    'Select the scopes you need (image upload, sharing)',
+                    'Copy the <strong>API Key</strong>',
+                    'Your username is your Picsart profile name'
+                ],
+                link: { label: 'Open Picsart Developer Portal', url: 'https://picsart.io/' }
+            },
+            vevo: {
+                name: 'Vevo',
+                icon: '🎵',
+                color: '#ED1C24',
+                fields: ['artistId', 'apiKey'],
+                labels: ['Artist/Channel ID', 'API Key'],
+                maxChars: 5000,
+                guide: [
+                    'Vevo access requires a <strong>partnership or label deal</strong>',
+                    'Contact Vevo via <strong>vevo.com/contact</strong> for API access',
+                    'Once approved, you\'ll receive developer credentials',
+                    'Log in to the <strong>Vevo Partner Portal</strong>',
+                    'Go to <strong>API Settings</strong> → <strong>Credentials</strong>',
+                    'Copy your <strong>API Key</strong> and <strong>Artist/Channel ID</strong>',
+                    'Note: posting is limited to official music content partners'
+                ],
+                link: { label: 'Open Vevo Partner Portal', url: 'https://www.vevo.com/' }
+            },
+            tumblr: {
+                name: 'Tumblr',
+                icon: '📝',
+                color: '#35465C',
+                fields: ['blogName', 'apiKey'],
+                labels: ['Blog Name', 'OAuth API Key'],
+                maxChars: 100000,
+                guide: [
+                    'Go to <strong>tumblr.com/oauth/apps</strong> and log in',
+                    'Click <strong>Register Application</strong>',
+                    'Fill in app name, website, and description',
+                    'Set the callback URL to <strong>http://localhost</strong>',
+                    'Click <strong>Register</strong>',
+                    'Copy your <strong>OAuth Consumer Key</strong> — this is your API Key',
+                    'Your <strong>Blog Name</strong> is the subdomain of your Tumblr (e.g. <strong>myblog</strong> from myblog.tumblr.com)'
+                ],
+                link: { label: 'Open Tumblr OAuth Apps', url: 'https://www.tumblr.com/oauth/apps' }
             }
         };
 
@@ -767,17 +1143,13 @@
             setupTextareaListener();
         }
 
-        // Load connected platforms from AppDB
         async function loadConnectedPlatforms() {
-            const stored = await AppDB.get('connectedPlatforms');
-            if (stored) {
-                connectedPlatforms = stored;
-            }
+            const stored = await DB.get('connectedPlatforms');
+            if (stored) connectedPlatforms = stored;
         }
 
-        // Save connected platforms to AppDB
         async function saveConnectedPlatforms() {
-            await AppDB.set('connectedPlatforms', connectedPlatforms);
+            await DB.set('connectedPlatforms', connectedPlatforms);
         }
 
         // Render platforms grid
@@ -819,8 +1191,8 @@
                 list.appendChild(item);
             });
 
-            if (connected.length === 0) {
-                list.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No platforms connected yet</div>';
+            if (Object.keys(connectedPlatforms).length === 0) {
+                list.innerHTML = '<div style="color:#64748b;text-align:center;padding:20px;font-size:0.9em;">No platforms connected yet</div>';
             }
         }
 
@@ -837,10 +1209,28 @@
             title.textContent = `Connect ${platform.name}`;
 
             form.innerHTML = '';
+
+            // Guide section
+            if (platform.guide && platform.guide.length) {
+                const guideEl = document.createElement('div');
+                guideEl.className = 'auth-guide';
+                guideEl.innerHTML = `
+                    <div class="auth-guide-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                        <span>How to get your credentials</span>
+                        <span class="auth-guide-arrow">▾</span>
+                    </div>
+                    <ol class="auth-guide-steps">
+                        ${platform.guide.map(step => `<li>${step}</li>`).join('')}
+                    </ol>
+                    ${platform.link ? `<a href="${platform.link.url}" target="_blank" rel="noopener" class="auth-guide-link">${platform.link.label} ↗</a>` : ''}
+                `;
+                form.appendChild(guideEl);
+            }
+
             platform.fields.forEach((field, idx) => {
                 const group = document.createElement('div');
                 group.className = 'form-group';
-                const inputType = platform.labels[idx].includes('Password') ? 'password' : 'text';
+                const inputType = platform.labels[idx].toLowerCase().includes('password') ? 'password' : 'text';
                 group.innerHTML = `
                     <label for="${field}">${platform.labels[idx]}</label>
                     <input type="${inputType}" id="${field}" placeholder="Enter your ${platform.labels[idx].toLowerCase()}">
