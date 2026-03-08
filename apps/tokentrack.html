@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script>
+(function(){
+  var errs=[];
+  window.onerror=function(msg,src,line,col,err){
+    errs.push({message:msg,line:line,col:col,stack:err&&err.stack||""});
+    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
+  };
+  window.addEventListener("unhandledrejection",function(e){
+    errs.push({message:String(e.reason),line:0});
+    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
+  });
+  window.addEventListener("load",function(){
+    setTimeout(function(){
+      if(errs.length>0&&window.parent!==window){
+        window.parent.postMessage({type:"studio-error",errors:errs},"*");
+      }
+      // Blank page detection: check if body has visible content
+      var body=document.body;
+      if(body&&window.parent!==window){
+        var text=(body.innerText||"").trim();
+        var hasCanvas=body.querySelector("canvas,svg,img,video,iframe");
+        var h=body.scrollHeight;
+        if(!text&&!hasCanvas&&h<50){
+          window.parent.postMessage({type:"studio-error",errors:[{message:"Page appears blank — no visible content rendered",line:0,blank:true}]},"*");
+        }
+      }
+    },2000);
+  });
+})();
+</script><script>
+(function(){
+  var errs=[];
+  window.onerror=function(msg,src,line,col,err){
+    errs.push({message:msg,line:line,col:col,stack:err&&err.stack||""});
+    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
+  };
+  window.addEventListener("unhandledrejection",function(e){
+    errs.push({message:String(e.reason),line:0});
+    if(window.parent!==window)window.parent.postMessage({type:"studio-error",errors:errs},"*");
+  });
+  window.addEventListener("load",function(){
+    setTimeout(function(){
+      if(errs.length>0&&window.parent!==window){
+        window.parent.postMessage({type:"studio-error",errors:errs},"*");
+      }
+      // Blank page detection: check if body has visible content
+      var body=document.body;
+      if(body&&window.parent!==window){
+        var text=(body.innerText||"").trim();
+        var hasCanvas=body.querySelector("canvas,svg,img,video,iframe");
+        var h=body.scrollHeight;
+        if(!text&&!hasCanvas&&h<50){
+          window.parent.postMessage({type:"studio-error",errors:[{message:"Page appears blank — no visible content rendered",line:0,blank:true}]},"*");
+        }
+      }
+    },2000);
+  });
+})();
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Token Tracker - Real-time Crypto Monitoring</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0014 0%, #1a0033 100%);
+            color: #e2e8f0; overflow-x: hidden;
+        }
+        body { background-attachment: fixed; }
+        header {
+            background: rgba(10,0,20,0.9); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(168,85,247,0.2);
+            padding: 1rem 2rem; position: sticky; top: 0; z-index: 100;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+        .header-content {
+            max-width: 1400px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+        }
+        .logo {
+            font-size: 1.5rem; font-weight: 900;
+            background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; letter-spacing: -0.5px; white-space: nowrap;
+        }
+        .header-actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+        .profile-chip {
+            display: flex; align-items: center; gap: 0.6rem;
+            background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.25);
+            border-radius: 2rem; padding: 0.4rem 0.9rem;
+            cursor: pointer; transition: all 0.2s ease;
+            font-size: 0.9rem; font-weight: 600; color: #e2e8f0;
+        }
+        .profile-chip:hover { background: rgba(168,85,247,0.22); border-color: rgba(168,85,247,0.5); }
+        .btn {
+            padding: 0.6rem 1.1rem; border: none; border-radius: 0.5rem;
+            font-size: 0.9rem; font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease; font-family: 'Inter', sans-serif;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #c084fc 0%, #a855f7 100%);
+            color: #fff; box-shadow: 0 4px 15px rgba(168,85,247,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(168,85,247,0.4); }
+        .btn-secondary {
+            background: rgba(168,85,247,0.1); color: #e2e8f0;
+            border: 1px solid rgba(168,85,247,0.3);
+        }
+        .btn-secondary:hover { background: rgba(168,85,247,0.2); border-color: rgba(168,85,247,0.5); }
+        .btn-icon {
+            padding: 0.6rem; width: 38px; height: 38px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(168,85,247,0.1); border: 1px solid rgba(168,85,247,0.3);
+            border-radius: 0.5rem; cursor: pointer; transition: all 0.3s ease;
+        }
+        .btn-icon:hover { background: rgba(168,85,247,0.2); }
+        .btn-small {
+            padding: 0.4rem 0.65rem; font-size: 0.78rem; font-family: 'Inter', sans-serif;
+            background: rgba(168,85,247,0.1); color: #c084fc;
+            border: 1px solid rgba(168,85,247,0.2); border-radius: 0.4rem;
+            cursor: pointer; transition: all 0.2s ease; text-decoration: none; display: inline-block;
+        }
+        .btn-small:hover { background: rgba(168,85,247,0.2); border-color: rgba(168,85,247,0.4); }
+        .btn-close {
+            background: none; border: none; color: #94a3b8;
+            font-size: 1.5rem; cursor: pointer; transition: color 0.2s ease; line-height: 1;
+        }
+        .btn-close:hover { color: #f1f5f9; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+        .main-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        @media (min-width: 1024px) { .main-grid { grid-template-columns: 1fr 360px; } }
+        .card {
+            background: rgba(26,0,51,0.6); backdrop-filter: blur(20px);
+            border: 1px solid rgba(168,85,247,0.15); border-radius: 1rem;
+            padding: 1.5rem; box-shadow: 0 20px 25px rgba(0,0,0,0.3); transition: all 0.3s ease;
+        }
+        .card:hover { border-color: rgba(168,85,247,0.3); box-shadow: 0 25px 35px rgba(168,85,247,0.1); }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.25rem; border-bottom: 1px solid rgba(168,85,247,0.15); padding-bottom: 0.85rem;
+        }
+        .card-title { font-size: 1.1rem; font-weight: 800; color: #f1f5f9; }
+        .stats-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; margin-bottom: 1.5rem; }
+        @media (min-width: 600px) { .stats-grid { grid-template-columns: repeat(4,1fr); } }
+        .stat-box {
+            background: rgba(26,0,51,0.6); border: 1px solid rgba(168,85,247,0.12);
+            border-radius: 0.75rem; padding: 1rem; text-align: center;
+            backdrop-filter: blur(10px); transition: all 0.3s ease;
+        }
+        .stat-box:hover { border-color: rgba(168,85,247,0.25); }
+        .stat-label { font-size: 0.72rem; color: #94a3b8; margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-value { font-size: 1.3rem; font-weight: 800; color: #c084fc; }
+        .token-list { display: flex; flex-direction: column; gap: 0.85rem; }
+        .token-item {
+            background: rgba(10,0,20,0.4); border: 1px solid rgba(168,85,247,0.1);
+            border-radius: 0.75rem; padding: 1rem;
+            display: flex; justify-content: space-between; align-items: center;
+            transition: all 0.3s ease; cursor: pointer; gap: 0.75rem;
+        }
+        .token-item:hover { background: rgba(10,0,20,0.7); border-color: rgba(168,85,247,0.25); transform: translateX(3px); }
+        .token-item.expanded { flex-wrap: wrap; align-items: flex-start; }
+        .token-info { flex: 1; min-width: 0; }
+        .token-name { font-weight: 700; color: #f1f5f9; font-size: 0.95rem; margin-bottom: 0.2rem; }
+        .token-fullname { font-size: 0.72rem; color: #a78bfa; margin-bottom: 0.15rem; }
+        .token-address { font-size: 0.72rem; color: #64748b; font-family: 'Courier New', monospace; }
+        .token-value { text-align: right; flex-shrink: 0; }
+        .token-price { font-size: 1rem; font-weight: 800; color: #f1f5f9; margin-bottom: 0.2rem; }
+        .token-change { font-size: 0.8rem; font-weight: 600; }
+        .token-holdings { font-size: 0.72rem; color: #94a3b8; margin-top: 0.2rem; }
+        .change-positive { color: #10b981; }
+        .change-negative { color: #ef4444; }
+        .token-actions { display: flex; gap: 0.4rem; flex-shrink: 0; }
+        .token-chart-area { width: 100%; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 1px solid rgba(168,85,247,0.1); }
+        .token-chart-container { position: relative; height: 200px; width: 100%; }
+        .token-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px,1fr)); gap: 0.5rem; margin-top: 0.75rem; }
+        .token-detail-item { background: rgba(10,0,20,0.4); padding: 0.55rem 0.65rem; border-radius: 0.5rem; border: 1px solid rgba(168,85,247,0.1); }
+        .token-detail-label { color: #64748b; font-size: 0.68rem; margin-bottom: 0.2rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .token-detail-value { color: #f1f5f9; font-weight: 600; font-size: 0.82rem; }
+        .form-group { margin-bottom: 1.1rem; }
+        label { display: block; margin-bottom: 0.4rem; font-weight: 600; color: #cbd5e1; font-size: 0.9rem; }
+        input[type="text"], input[type="number"] {
+            width: 100%; padding: 0.65rem 0.9rem;
+            background: rgba(10,0,20,0.5); border: 1px solid rgba(168,85,247,0.2);
+            border-radius: 0.5rem; color: #f1f5f9;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; transition: all 0.3s ease;
+        }
+        input:focus {
+            outline: none; border-color: #a855f7;
+            background: rgba(10,0,20,0.7); box-shadow: 0 0 0 3px rgba(168,85,247,0.1);
+        }
+        .toggle { position: relative; display: inline-flex; align-items: center; gap: 0.75rem; }
+        .toggle-switch {
+            width: 48px; height: 26px;
+            background: rgba(168,85,247,0.2); border: 1px solid rgba(168,85,247,0.3);
+            border-radius: 13px; cursor: pointer; transition: all 0.3s ease; position: relative;
+        }
+        .toggle-switch.active { background: linear-gradient(135deg,#c084fc 0%,#a855f7 100%); border-color: #a855f7; }
+        .toggle-switch::after {
+            content: ''; position: absolute; width: 22px; height: 22px;
+            background: white; border-radius: 50%; top: 1px; left: 2px; transition: all 0.3s ease;
+        }
+        .toggle-switch.active::after { left: 23px; }
+        .modal {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.75); z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .modal.active { display: flex; align-items: center; justify-content: center; animation: fadeIn 0.25s ease; }
+        .modal-content {
+            background: rgba(18,0,40,0.98); backdrop-filter: blur(20px);
+            border: 1px solid rgba(168,85,247,0.25); border-radius: 1rem;
+            padding: 1.75rem; max-width: 520px; width: 93%;
+            max-height: 92vh; overflow-y: auto;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.8);
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.25rem; border-bottom: 1px solid rgba(168,85,247,0.15); padding-bottom: 0.9rem;
+        }
+        .modal-title { font-size: 1.3rem; font-weight: 800; color: #f1f5f9; }
+        .sidebar { display: flex; flex-direction: column; gap: 1.25rem; }
+        .notification {
+            position: fixed; bottom: 1.5rem; right: 1.5rem;
+            background: rgba(18,0,40,0.97); border: 1px solid rgba(168,85,247,0.2);
+            border-radius: 0.75rem; padding: 1rem 1.25rem; max-width: 380px;
+            backdrop-filter: blur(20px); box-shadow: 0 20px 25px rgba(0,0,0,0.4);
+            animation: slideInRight 0.3s ease; z-index: 3000; font-size: 0.9rem; color: #e2e8f0;
+        }
+        .notification.success { border-left: 4px solid #10b981; }
+        .notification.error   { border-left: 4px solid #ef4444; }
+        .notification.info    { border-left: 4px solid #a855f7; }
+        .token-search-container { position: relative; }
+        .token-search-input {
+            width: 100%; padding: 0.7rem 1rem;
+            background: rgba(10,0,20,0.5); border: 1px solid rgba(168,85,247,0.2);
+            border-radius: 0.5rem; color: #f1f5f9;
+            font-family: 'Inter', sans-serif; font-size: 0.9rem; transition: all 0.3s ease;
+        }
+        .token-search-input:focus {
+            outline: none; border-color: #a855f7;
+            background: rgba(10,0,20,0.7); box-shadow: 0 0 0 3px rgba(168,85,247,0.1);
+        }
+        .token-dropdown {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: rgba(18,0,40,0.99); border: 1px solid rgba(168,85,247,0.25);
+            border-top: none; border-radius: 0 0 0.5rem 0.5rem;
+            max-height: 320px; overflow-y: auto; z-index: 500; display: none;
+        }
+        .token-dropdown.active { display: block; }
+        .token-dropdown-item {
+            padding: 0.65rem 0.9rem; cursor: pointer; transition: background 0.15s ease;
+            border-bottom: 1px solid rgba(168,85,247,0.08);
+            display: flex; align-items: center; gap: 0.6rem;
+        }
+        .token-dropdown-item:hover { background: rgba(168,85,247,0.15); }
+        .token-dropdown-item:last-child { border-bottom: none; }
+        .token-dropdown-item-name { font-weight: 600; color: #f1f5f9; font-size: 0.88rem; }
+        .token-dropdown-item-sub { font-size: 0.72rem; color: #94a3b8; margin-top: 0.1rem; }
+        .empty-state { text-align: center; padding: 3rem 1rem; color: #64748b; }
+        .empty-icon { font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.5; }
+        .empty-state p { margin-bottom: 0.5rem; font-size: 0.95rem; }
+        .loading-dot {
+            display: inline-block; width: 7px; height: 7px;
+            background: #a855f7; border-radius: 50%; animation: pulse 1.5s ease-in-out infinite;
+        }
+        #loginScreen {
+            position: fixed; inset: 0;
+            background: linear-gradient(135deg, #0a0014 0%, #1a0033 100%);
+            z-index: 9999; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            padding: 2rem; overflow-y: auto;
+        }
+        .login-profile-card {
+            display: flex; align-items: center; gap: 1rem;
+            background: rgba(26,0,51,0.7); border: 1px solid rgba(168,85,247,0.18);
+            border-radius: 1rem; padding: 1rem 1.2rem;
+            cursor: pointer; transition: all 0.22s ease; backdrop-filter: blur(20px);
+        }
+        .login-profile-card:hover {
+            border-color: #a855f7; background: rgba(168,85,247,0.12);
+            transform: translateY(-2px); box-shadow: 0 8px 25px rgba(168,85,247,0.18);
+        }
+        .login-avatar-circle {
+            font-size: 2rem; width: 50px; height: 50px;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(168,85,247,0.12); border-radius: 50%; flex-shrink: 0;
+        }
+        .profile-row {
+            display: flex; align-items: center; gap: 0.75rem;
+            background: rgba(10,0,20,0.4); border: 1px solid rgba(168,85,247,0.12);
+            border-radius: 0.75rem; padding: 0.85rem 1rem;
+        }
+        .profile-row.active-profile { border-color: #a855f7; background: rgba(168,85,247,0.1); }
+        .profile-row-info { flex: 1; min-width: 0; }
+        .profile-row-name { font-weight: 700; color: #f1f5f9; font-size: 0.95rem; }
+        .profile-row-meta { font-size: 0.73rem; color: #94a3b8; }
+        .profile-row-actions { display: flex; gap: 0.35rem; align-items: center; }
+        .avatar-picker { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.35rem; }
+        .avatar-picker span {
+            font-size: 1.35rem; cursor: pointer; padding: 0.2rem 0.25rem;
+            border-radius: 0.3rem; transition: background 0.15s; user-select: none;
+        }
+        .avatar-picker span:hover, .avatar-picker span.sel { background: rgba(168,85,247,0.28); }
+        .change-badge {
+            display: inline-block; font-size: 0.67rem; padding: 0.12rem 0.38rem;
+            border-radius: 0.25rem; background: rgba(10,0,20,0.6); font-weight: 600;
+        }
+        .login-fade-out { animation: loginFadeOut 0.38s ease forwards; }
+        @keyframes loginFadeOut { to { opacity: 0; transform: scale(1.03); pointer-events: none; } }
+        .slide-in { animation: loginFadeIn 0.4s ease forwards; }
+        @keyframes loginFadeIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn      { from { opacity:0; } to { opacity:1; } }
+        @keyframes slideInRight {
+            from { transform: translateX(380px); opacity: 0; }
+            to   { transform: translateX(0);     opacity: 1; }
+        }
+        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.25; } }
+        @media (max-width: 640px) {
+            .container { padding: 0.85rem; }
+            .card { padding: 1rem; }
+            .token-item { flex-direction: column; align-items: flex-start; }
+            .token-value { text-align: left; }
+            .token-actions { width: 100%; margin-left: 0; }
+            .notification { right:0.75rem; left:0.75rem; bottom:0.75rem; max-width: none; }
+        }
+        ::-webkit-scrollbar { width:6px; height:6px; }
+        ::-webkit-scrollbar-track { background: rgba(168,85,247,0.04); }
+        ::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.28); border-radius:3px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(168,85,247,0.48); }
+    </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+    <div style="text-align:center; margin-bottom:2rem;">
+        <div style="font-size:2.8rem; margin-bottom:0.6rem;">⚡</div>
+        <div style="font-size:1.9rem; font-weight:900;
+            background:linear-gradient(135deg,#c084fc,#a855f7);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            background-clip:text; letter-spacing:-0.5px;">Token Tracker</div>
+        <div style="color:#94a3b8; font-size:0.9rem; margin-top:0.5rem;">Select your profile to continue</div>
+    </div>
+    <div style="width:100%; max-width:420px;">
+        <div id="loginProfileList" style="display:flex; flex-direction:column; gap:0.8rem; margin-bottom:1.5rem;"></div>
+        <div style="background:rgba(26,0,51,0.7); border:1px solid rgba(168,85,247,0.22);
+            border-radius:1rem; padding:1.35rem; backdrop-filter:blur(20px);">
+            <div onclick="toggleLoginCreate()" style="display:flex; align-items:center; gap:0.6rem;
+                cursor:pointer; color:#c084fc; font-weight:700; font-size:0.95rem; user-select:none;">
+                <span id="loginCreateArrow" style="transition:transform 0.2s;">▶</span>
+                Create New Profile
+            </div>
+            <div id="loginCreateForm" style="display:none; margin-top:1.1rem;">
+                <div class="form-group">
+                    <label>Profile Name</label>
+                    <input type="text" id="loginNewName" placeholder="e.g. My DeFi Wallet" maxlength="32">
+                </div>
+                <div class="form-group">
+                    <label>Pick an Avatar</label>
+                    <div class="avatar-picker" id="loginAvatarPicker">
+                        <span>🦊</span><span>🐉</span><span>🚀</span><span>💎</span><span>🌙</span>
+                        <span>⚡</span><span>🔥</span><span>🐋</span><span>🦁</span><span>🤖</span>
+                        <span>🎩</span><span>👾</span><span>🌈</span><span>🍀</span><span>🦄</span>
+                    </div>
+                    <input type="text" id="loginNewAvatar" placeholder="Or type any emoji" style="margin-top:0.45rem;" maxlength="4">
+                </div>
+                <button class="btn btn-primary" id="loginCreateBtn" style="width:100%; margin-top:0.25rem;">✨ Create &amp; Enter</button>
+            </div>
+        </div>
+    </div>
+    <div style="color:#475569; font-size:0.75rem; margin-top:1.75rem; text-align:center;">
+        Each profile saves its own tokens, wallet &amp; settings
+    </div>
+</div>
+
+<!-- MAIN APP -->
+<header>
+    <div class="header-content">
+        <div class="logo">⚡ Token Tracker</div>
+        <div class="header-actions">
+            <button class="btn-icon" id="settingsBtn" title="Settings">⚙️</button>
+            <div class="profile-chip" id="profileChip" title="Manage Profiles">
+                <span id="headerAvatar">👤</span>
+                <span id="headerProfileName">No Profile</span>
+            </div>
+            <button class="btn btn-primary" id="addTokenBtn">+ Add Token</button>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="main-grid">
+        <div>
+            <div class="stats-grid" id="statsGrid"></div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">Your Tokens</div>
+                    <div id="lastUpdate" style="font-size:0.75rem; color:#94a3b8; display:flex; align-items:center; gap:0.4rem;">
+                        <span class="loading-dot"></span> Live
+                    </div>
+                </div>
+                <div class="token-list" id="tokenList"></div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="card">
+                <div class="card-header"><div class="card-title">💼 Wallet</div></div>
+                <div class="form-group">
+                    <label>Wallet Address</label>
+                    <input type="text" id="walletAddress" placeholder="0x...">
+                    <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.4rem;">Track your holdings across all tokens</div>
+                </div>
+                <button class="btn btn-primary" id="saveWalletBtn" style="width:100%;">Save Wallet</button>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">🔔 Notifications</div></div>
+                <div class="form-group">
+                    <label>Push Alerts</label>
+                    <div class="toggle" style="margin-top:0.65rem;">
+                        <div class="toggle-switch" id="notifToggle"></div>
+                        <span id="notifStatus" style="font-size:0.9rem;">Disabled</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="alertThreshold">Alert Threshold (%)</label>
+                    <input type="number" id="alertThreshold" value="5" min="0.1" max="100" step="0.1">
+                </div>
+                <button class="btn btn-primary" id="saveSettingsBtn" style="width:100%;">Save</button>
+            </div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">ℹ️ Info</div></div>
+                <div style="font-size:0.85rem; color:#cbd5e1; line-height:1.8;">
+                    <p>📊 Real-time data via DexScreener</p>
+                    <p>🔔 Price-change push alerts</p>
+                    <p>📈 Click any token for chart &amp; details</p>
+                    <p>🔗 Links direct to DexScreener</p>
+                    <p>⚡ Auto-refreshes every 30 seconds</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Token Modal -->
+<div class="modal" id="addTokenModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Add Token</div>
+            <button class="btn-close" id="closeAddTokenBtn">&times;</button>
+        </div>
+        <!-- Step 1: Search -->
+        <div id="tokenSearchView">
+            <div class="form-group">
+                <label>Search Token or Paste Address</label>
+                <div class="token-search-container">
+                    <input type="text" id="tokenSearchInput" class="token-search-input"
+                        placeholder="Name, symbol or contract address…" autocomplete="off">
+                    <div class="token-dropdown" id="tokenDropdown"></div>
+                </div>
+                <div style="font-size:0.75rem; color:#94a3b8; margin-top:0.4rem;">
+                    💡 Searches DexScreener live — or paste any contract address
+                </div>
+            </div>
+            <div style="margin-top:1rem; border-top:1px solid rgba(168,85,247,0.12); padding-top:0.9rem;">
+                <div style="font-size:0.8rem; color:#94a3b8; margin-bottom:0.6rem;">Quick add:</div>
+                <div id="popularTokensList" style="display:flex; flex-wrap:wrap; gap:0.45rem;"></div>
+            </div>
+        </div>
+        <!-- Step 2: Fill details -->
+        <div id="addTokenFormView" style="display:none;">
+            <div class="form-group">
+                <label>Token Name</label>
+                <input type="text" id="tokenName" placeholder="e.g. Ethereum">
+            </div>
+            <div class="form-group">
+                <label>Symbol</label>
+                <input type="text" id="tokenSymbol" placeholder="e.g. ETH">
+            </div>
+            <div class="form-group">
+                <label>Contract Address</label>
+                <input type="text" id="tokenAddress" placeholder="0x…">
+            </div>
+            <div class="form-group">
+                <label>Amount Held</label>
+                <input type="number" id="tokenAmount" placeholder="0.00" step="any" min="0">
+            </div>
+            <div class="form-group">
+                <label>Chain (e.g. base, ethereum, solana)</label>
+                <input type="text" id="tokenChain" value="base">
+            </div>
+            <div style="display:flex; gap:0.65rem; margin-top:0.5rem;">
+                <button type="button" class="btn btn-secondary" id="backToSearchBtn" style="flex:1;">← Back</button>
+                <button type="button" class="btn btn-primary" id="addTokenSubmitBtn" style="flex:1;">✅ Add Token</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Token Modal -->
+<div class="modal" id="editTokenModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Edit Token</div>
+            <button class="btn-close" id="closeEditTokenBtn">&times;</button>
+        </div>
+        <div class="form-group">
+            <label>Token Name</label>
+            <input type="text" id="editTokenName">
+        </div>
+        <div class="form-group">
+            <label>Symbol</label>
+            <input type="text" id="editTokenSymbol">
+        </div>
+        <div class="form-group">
+            <label>Contract Address</label>
+            <input type="text" id="editTokenAddress">
+        </div>
+        <div class="form-group">
+            <label>Amount Held</label>
+            <input type="number" id="editTokenAmount" step="any" min="0">
+        </div>
+        <div class="form-group">
+            <label>Chain</label>
+            <input type="text" id="editTokenChain">
+        </div>
+        <input type="hidden" id="editTokenId">
+        <button type="button" class="btn btn-primary" id="editTokenSubmitBtn" style="width:100%;">Save Changes</button>
+    </div>
+</div>
+
+<!-- Profile Modal -->
+<div class="modal" id="profileModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">User Profiles</div>
+            <div style="display:flex; gap:0.5rem; align-items:center;">
+                <button class="btn btn-secondary" id="switchProfileScreenBtn" style="font-size:0.78rem; padding:0.35rem 0.7rem;">🔄 Switch</button>
+                <button class="btn-close" id="closeProfileBtn">&times;</button>
+            </div>
+        </div>
+        <div id="profileList" style="display:flex; flex-direction:column; gap:0.65rem; margin-bottom:1.25rem;"></div>
+        <div style="border-top:1px solid rgba(168,85,247,0.12); padding-top:1.1rem;">
+            <div style="font-weight:700; color:#f1f5f9; margin-bottom:0.75rem; font-size:0.95rem;">Create New Profile</div>
+            <div class="form-group">
+                <label>Profile Name</label>
+                <input type="text" id="newProfileName" placeholder="e.g. My DeFi Wallet" maxlength="32">
+            </div>
+            <div class="form-group">
+                <label>Avatar</label>
+                <div class="avatar-picker" id="avatarPicker">
+                    <span>🦊</span><span>🐉</span><span>🚀</span><span>💎</span><span>🌙</span>
+                    <span>⚡</span><span>🔥</span><span>🐋</span><span>🦁</span><span>🤖</span>
+                    <span>🎩</span><span>👾</span><span>🌈</span><span>🍀</span><span>🦄</span>
+                </div>
+                <input type="text" id="newProfileAvatar" placeholder="Or type any emoji" style="margin-top:0.45rem;" maxlength="4">
+            </div>
+            <button class="btn btn-primary" id="createProfileBtn" style="width:100%;">✨ Create Profile</button>
+        </div>
+    </div>
+</div>
+
+<!-- Settings Modal -->
+<div class="modal" id="settingsModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">Settings</div>
+            <button class="btn-close" id="closeSettingsBtn">&times;</button>
+        </div>
+        <div class="form-group">
+            <label>Refresh Interval (seconds)</label>
+            <input type="number" id="refreshInterval" value="30" min="10" max="300">
+        </div>
+        <div class="form-group">
+            <label>Clear Profile Data</label>
+            <button class="btn btn-secondary" id="clearDataBtn" style="width:100%; color:#ef4444; border-color:rgba(239,68,68,0.3);">
+                🗑️ Clear All Tokens &amp; Settings
+            </button>
+        </div>
+        <button class="btn btn-primary" id="saveRefreshBtn" style="width:100%; margin-top:0.5rem;">Save</button>
+    </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// DB wrapper — AppDB with localStorage fallback
+// ─────────────────────────────────────────────
+const DB = {
+    async get(key) {
+        try { if (window.AppDB) return await window.AppDB.get(key); } catch(e) {}
+        try { const v = localStorage.getItem('tt_'+key); return v ? JSON.parse(v) : null; } catch(e) { return null; }
+    },
+    async set(key, val) {
+        try { if (window.AppDB) { await window.AppDB.set(key, val); return; } } catch(e) {}
+        try { localStorage.setItem('tt_'+key, JSON.stringify(val)); } catch(e) {}
+    },
+    async delete(key) {
+        try { if (window.AppDB) { await window.AppDB.delete(key); return; } } catch(e) {}
+        try { localStorage.removeItem('tt_'+key); } catch(e) {}
+    }
+};
+
+// ─────────────────────────────────────────────
+// POPULAR TOKENS
+// ─────────────────────────────────────────────
+const POPULAR_TOKENS = [
+    { name:'Ethereum',        symbol:'ETH',  address:'0x4200000000000000000000000000000000000006', chainId:'base'   },
+    { name:'USD Coin',        symbol:'USDC', address:'0x833589fcd6edb6e08f4c7c32d4f71b54bda02913', chainId:'base'   },
+    { name:'DAI',             symbol:'DAI',  address:'0x50c5725949a6f0c72e6c4a641f24049a917db0cb', chainId:'base'   },
+    { name:'Chainlink',       symbol:'LINK', address:'0x350a791bfc2c21f9ed5d10980dad2e2638ffa7f6', chainId:'base'   },
+    { name:'Uniswap',         symbol:'UNI',  address:'0xc3de830ea07524a0761646a6a4e4be0e114a3c83', chainId:'base'   },
+    { name:'Wrapped Bitcoin',  symbol:'WBTC', address:'0x0555e30da8f98308edb960aa94c0db47230d2b9c', chainId:'base'   },
+    { name:'Aave',            symbol:'AAVE', address:'0x63706e401c06ac8513145b7687a14804d17f814b', chainId:'base'   },
+    { name:'Solana',          symbol:'SOL',  address:'So11111111111111111111111111111111111111112',  chainId:'solana' },
+    { name:'Bonk',            symbol:'BONK', address:'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', chainId:'solana'},
+    { name:'dogwifhat',       symbol:'WIF',  address:'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',  chainId:'solana'},
+];
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let currentProfileId  = null;
+let appState = { tokens:[], wallet:'', notificationsEnabled:false, alertThreshold:5, refreshInterval:30, prices:{} };
+let refreshIntervalId = null;
+let tokenCharts       = {};
+let expandedTokenId   = null;
+let _loginSelAvatar   = '🦊';
+let _modalSelAvatar   = '🦊';
+let _pendingLogo      = null;
+let _pendingPairAddr  = null;
+window._profiles      = [];
+// Per-token selected chart timeframe: { tokenId: resolution }
+const chartTimeframes = {};
+// Cache of fetched candles: { tokenId_resolution: [{time,open,high,low,close}] }
+const candleCache = {};
+
+// ─────────────────────────────────────────────
+// UTILS
+// ─────────────────────────────────────────────
+function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function formatPrice(p) {
+    if (p === null || p === undefined || isNaN(p)) return '—';
+    if (p >= 1000) return '$' + p.toLocaleString('en-US', {maximumFractionDigits:2});
+    if (p >= 1)    return '$' + p.toFixed(4);
+    if (p >= 0.01) return '$' + p.toFixed(6);
+    return '$' + p.toFixed(8);
+}
+function formatVal(v) {
+    if (!v || isNaN(v)) return '$0.00';
+    if (v >= 1e9) return '$' + (v/1e9).toFixed(2) + 'B';
+    if (v >= 1e6) return '$' + (v/1e6).toFixed(2) + 'M';
+    if (v >= 1e3) return '$' + (v/1e3).toFixed(2) + 'K';
+    return '$' + Number(v).toFixed(2);
+}
+function posCss(n)   { return Number(n) >= 0 ? 'change-positive' : 'change-negative'; }
+function posArrow(n) { return Number(n) >= 0 ? '▲' : '▼'; }
+function showNotification(msg, type) {
+    const old = document.querySelector('.notification');
+    if (old) old.remove();
+    const n = document.createElement('div');
+    n.className = 'notification ' + (type || 'info');
+    n.textContent = msg;
+    document.body.appendChild(n);
+    setTimeout(() => { if (n.parentNode) n.remove(); }, 4000);
+}
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+// ─────────────────────────────────────────────
+// PERSISTENCE
+// ─────────────────────────────────────────────
+async function loadProfiles()         { return (await DB.get('profiles')) || []; }
+async function saveProfiles(p)        { await DB.set('profiles', p); }
+async function setActiveProfileId(id) { await DB.set('activeProfileId', id); }
+async function loadProfileData(id) {
+    const d = await DB.get('profile_data_' + id);
+    return d || { tokens:[], wallet:'', notificationsEnabled:false, alertThreshold:5, refreshInterval:30, prices:{} };
+}
+async function saveProfileData(id, d) { await DB.set('profile_data_' + id, d); }
+async function saveState() {
+    if (!currentProfileId) return;
+    await saveProfileData(currentProfileId, {
+        tokens: appState.tokens, wallet: appState.wallet,
+        notificationsEnabled: appState.notificationsEnabled,
+        alertThreshold: appState.alertThreshold,
+        refreshInterval: appState.refreshInterval,
+        prices: appState.prices
+    });
+}
+
+// ─────────────────────────────────────────────
+// PROFILE MANAGEMENT
+// ─────────────────────────────────────────────
+async function switchProfile(id) {
+    if (currentProfileId) await saveState();
+    currentProfileId = id;
+    await setActiveProfileId(id);
+    const d = await loadProfileData(id);
+    appState.tokens               = d.tokens               || [];
+    appState.wallet               = d.wallet               || '';
+    appState.notificationsEnabled = d.notificationsEnabled || false;
+    appState.alertThreshold       = d.alertThreshold       || 5;
+    appState.refreshInterval      = d.refreshInterval      || 30;
+    appState.prices               = d.prices               || {};
+    document.getElementById('walletAddress').value   = appState.wallet;
+    document.getElementById('alertThreshold').value  = appState.alertThreshold;
+    document.getElementById('refreshInterval').value = appState.refreshInterval;
+    updateNotifUI();
+    updateHeaderProfile();
+    startRefreshLoop();
+    renderAll();
+}
+
+async function deleteProfile(id) {
+    if (!confirm('Delete this profile and all its data?')) return;
+    window._profiles = window._profiles.filter(p => p.id !== id);
+    await saveProfiles(window._profiles);
+    await DB.delete('profile_data_' + id);
+    if (currentProfileId === id) {
+        currentProfileId = null;
+        appState = { tokens:[], wallet:'', notificationsEnabled:false, alertThreshold:5, refreshInterval:30, prices:{} };
+        updateHeaderProfile();
+        renderAll();
+    }
+}
+
+function updateHeaderProfile() {
+    const p = (window._profiles || []).find(x => x.id === currentProfileId);
+    document.getElementById('headerAvatar').textContent      = p ? (p.avatar || '👤') : '👤';
+    document.getElementById('headerProfileName').textContent = p ? p.name : 'No Profile';
+}
+
+// ─────────────────────────────────────────────
+// LOGIN SCREEN
+// ─────────────────────────────────────────────
+function toggleLoginCreate() {
+    const form  = document.getElementById('loginCreateForm');
+    const arrow = document.getElementById('loginCreateArrow');
+    const open  = form.style.display === 'block';
+    form.style.display    = open ? 'none' : 'block';
+    arrow.style.transform = open ? '' : 'rotate(90deg)';
+}
+
+async function renderLoginScreen() {
+    const list = document.getElementById('loginProfileList');
+    list.innerHTML = '';
+    const profiles = window._profiles || [];
+    if (!profiles.length) {
+        list.innerHTML = '<div style="text-align:center;color:#64748b;font-size:0.88rem;padding:0.5rem 0 1rem;">No profiles yet — create one below.</div>';
+    } else {
+        profiles.forEach(p => {
+            const card = document.createElement('div');
+            card.className = 'login-profile-card slide-in';
+            card.innerHTML = `
+                <div class="login-avatar-circle">${p.avatar || '👤'}</div>
+                <div style="flex:1;min-width:0;">
+                    <div style="font-size:1rem;font-weight:800;color:#f1f5f9;">${escapeHtml(p.name)}</div>
+                    <div style="font-size:0.75rem;color:#94a3b8;margin-top:0.15rem;">Tap to enter your wallet</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:0.5rem;">
+                    <span style="font-size:1.1rem;color:#a855f7;">→</span>
+                    <button class="btn-small" data-del="${p.id}" style="color:#ef4444;border-color:rgba(239,68,68,0.3);">🗑️</button>
+                </div>`;
+            card.addEventListener('click', async (e) => {
+                if (e.target.closest('[data-del]')) return;
+                await enterProfile(p.id);
+            });
+            card.querySelector('[data-del]').addEventListener('click', async (e) => {
+                e.stopPropagation();
+                if (!confirm('Delete profile "' + p.name + '"?')) return;
+                window._profiles = window._profiles.filter(x => x.id !== p.id);
+                await saveProfiles(window._profiles);
+                await DB.delete('profile_data_' + p.id);
+                if (currentProfileId === p.id) currentProfileId = null;
+                await renderLoginScreen();
+            });
+            list.appendChild(card);
+        });
+    }
+    setupLoginAvatarPicker();
+}
+
+function setupLoginAvatarPicker() {
+    _loginSelAvatar = '🦊';
+    document.getElementById('loginAvatarPicker').querySelectorAll('span').forEach(s => {
+        s.onclick = () => {
+            document.getElementById('loginAvatarPicker').querySelectorAll('span').forEach(x => x.classList.remove('sel'));
+            s.classList.add('sel');
+            _loginSelAvatar = s.textContent;
+            document.getElementById('loginNewAvatar').value = _loginSelAvatar;
+        };
+    });
+}
+
+async function enterProfile(id) {
+    await switchProfile(id);
+    const screen = document.getElementById('loginScreen');
+    screen.classList.add('login-fade-out');
+    setTimeout(() => { screen.style.display = 'none'; }, 400);
+}
+
+function showLoginScreen() {
+    const screen = document.getElementById('loginScreen');
+    screen.style.display = 'flex';
+    screen.classList.remove('login-fade-out');
+    renderLoginScreen();
+    document.getElementById('loginCreateForm').style.display = 'none';
+    document.getElementById('loginCreateArrow').style.transform = '';
+}
+
+// ─────────────────────────────────────────────
+// IN-APP PROFILE MODAL
+// ─────────────────────────────────────────────
+async function renderProfileList() {
+    const list = document.getElementById('profileList');
+    list.innerHTML = '';
+    const profiles = window._profiles || [];
+    if (!profiles.length) {
+        list.innerHTML = '<div style="color:#94a3b8;text-align:center;font-size:0.88rem;padding:0.75rem 0;">No profiles yet.</div>';
+        return;
+    }
+    profiles.forEach(p => {
+        const active = p.id === currentProfileId;
+        const row = document.createElement('div');
+        row.className = 'profile-row' + (active ? ' active-profile' : '');
+        row.innerHTML = `
+            <div style="font-size:1.7rem;flex-shrink:0;">${p.avatar || '👤'}</div>
+            <div class="profile-row-info">
+                <div class="profile-row-name">${escapeHtml(p.name)}</div>
+                <div class="profile-row-meta">${active ? '✅ Active' : 'Click to switch'}</div>
+            </div>
+            <div class="profile-row-actions">
+                ${!active ? `<button class="btn-small" data-sw="${p.id}">Switch</button>` : '<span style="font-size:0.78rem;color:#a855f7;font-weight:700;">Active</span>'}
+                <button class="btn-small" data-del="${p.id}" style="color:#ef4444;border-color:rgba(239,68,68,0.3);">🗑️</button>
+            </div>`;
+        list.appendChild(row);
+    });
+    list.querySelectorAll('[data-sw]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            await switchProfile(btn.dataset.sw);
+            closeModal('profileModal');
+            showNotification('Switched to ' + (window._profiles.find(p => p.id === btn.dataset.sw)?.name || ''), 'success');
+        });
+    });
+    list.querySelectorAll('[data-del]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            await deleteProfile(btn.dataset.del);
+            renderProfileList();
+        });
+    });
+}
+
+// ─────────────────────────────────────────────
+// DEXSCREENER API
+// ─────────────────────────────────────────────
+async function dexSearch(query) {
+    try {
+        const res = await fetch('https://api.dexscreener.com/latest/dex/search?q=' + encodeURIComponent(query));
+        if (!res.ok) return [];
+        const data = await res.json();
+        return data.pairs || [];
+    } catch(e) { return []; }
+}
+
+async function dexFetchToken(chainId, address) {
+    try {
+        const res = await fetch('https://api.dexscreener.com/latest/dex/tokens/' + address);
+        if (!res.ok) return null;
+        const data = await res.json();
+        if (!data.pairs || !data.pairs.length) return null;
+        const filtered = chainId ? data.pairs.filter(p => p.chainId === chainId) : data.pairs;
+        const pool = (filtered.length ? filtered : data.pairs)
+            .sort((a,b) => (b.liquidity?.usd||0) - (a.liquidity?.usd||0));
+        return pool[0] || null;
+    } catch(e) { return null; }
+}
+
+// Fetch OHLCV candles from DexScreener
+// resolution: 1, 5, 15, 60, 240, 1D
+async function dexFetchCandles(chainId, pairAddress, resolution) {
+    try {
+        const res = await fetch(
+            `https://api.dexscreener.com/latest/dex/candles/${chainId}/${pairAddress}?resolution=${resolution}&limit=200`
+        );
+        if (!res.ok) return null;
+        const data = await res.json();
+        return data.candles || null;
+    } catch(e) { return null; }
+}
+
+// ─────────────────────────────────────────────
+// PRICE FETCHING
+// ─────────────────────────────────────────────
+async function fetchPrices() {
+    if (!appState.tokens.length) return;
+    for (const token of appState.tokens) {
+        try {
+            const pair = await dexFetchToken(token.chainId || token.chain, token.address);
+            if (!pair) continue;
+            const newPrice  = parseFloat(pair.priceUsd) || 0;
+            const prev      = appState.prices[token.id];
+            const prevPrice = prev ? prev.price : null;
+            const history   = prev?.history ? [...prev.history] : [];
+            history.push({ time: Date.now(), price: newPrice });
+            if (history.length > 120) history.shift();
+            if (prevPrice && appState.notificationsEnabled) {
+                const pct = Math.abs((newPrice - prevPrice) / prevPrice * 100);
+                if (pct >= appState.alertThreshold) {
+                    const dir = newPrice > prevPrice ? '📈' : '📉';
+                    showNotification(dir + ' ' + token.symbol + ' moved ' + pct.toFixed(2) + '%', 'info');
+                }
+            }
+            if (!token.dexPairAddress) {
+                token.dexPairAddress = pair.pairAddress;
+                token.dexChainId     = pair.chainId;
+                if (!token.logoUrl) token.logoUrl = pair.info?.imageUrl || null;
+            }
+            appState.prices[token.id] = {
+                price:      newPrice,
+                prevPrice,
+                change24h:  parseFloat(pair.priceChange?.h24) || 0,
+                change1h:   parseFloat(pair.priceChange?.h1)  || 0,
+                change5m:   parseFloat(pair.priceChange?.m5)  || 0,
+                volume24h:  pair.volume?.h24    || 0,
+                volume1h:   pair.volume?.h1     || 0,
+                liquidity:  pair.liquidity?.usd || 0,
+                marketCap:  pair.marketCap || pair.fdv || 0,
+                buys24h:    pair.txns?.h24?.buys  || 0,
+                sells24h:   pair.txns?.h24?.sells || 0,
+                dexId:      pair.dexId,
+                chainId:    pair.chainId,
+                pairAddress:pair.pairAddress,
+                url:        pair.url,
+                history
+            };
+        } catch(e) { console.warn('Fetch failed for', token.symbol, e); }
+    }
+    await saveState();
+    renderAll();
+    document.getElementById('lastUpdate').innerHTML =
+        '<span class="loading-dot"></span> ' + new Date().toLocaleTimeString();
+}
+
+function startRefreshLoop() {
+    if (refreshIntervalId) clearInterval(refreshIntervalId);
+    fetchPrices();
+    refreshIntervalId = setInterval(fetchPrices, (appState.refreshInterval || 30) * 1000);
+}
+
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+function renderAll() { renderStats(); renderTokenList(); renderPopularTokens(); }
+
+function renderStats() {
+    let total = 0, wSum = 0, wChange = 0;
+    appState.tokens.forEach(t => {
+        const pd = appState.prices[t.id];
+        if (pd && t.amount) {
+            const v = pd.price * t.amount;
+            total += v; wSum += v; wChange += pd.change24h * v;
+        }
+    });
+    const avg = wSum > 0 ? wChange / wSum : 0;
+    document.getElementById('statsGrid').innerHTML = `
+        <div class="stat-box"><div class="stat-label">Portfolio</div><div class="stat-value">${formatVal(total)}</div></div>
+        <div class="stat-box"><div class="stat-label">24h Change</div><div class="stat-value ${posCss(avg)}">${avg >= 0 ? '+' : ''}${avg.toFixed(2)}%</div></div>
+        <div class="stat-box"><div class="stat-label">Tokens</div><div class="stat-value">${appState.tokens.length}</div></div>
+        <div class="stat-box"><div class="stat-label">Wallet</div><div class="stat-value" style="font-size:0.85rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${appState.wallet ? appState.wallet.slice(0,6)+'…'+appState.wallet.slice(-4) : '—'}</div></div>`;
+}
+
+function renderTokenList() {
+    const list = document.getElementById('tokenList');
+    if (!appState.tokens.length) {
+        list.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>No tokens yet</p><p style="font-size:0.82rem;color:#475569;">Click "+ Add Token" to start tracking</p></div>`;
+        return;
+    }
+    list.innerHTML = '';
+    appState.tokens.forEach(token => {
+        const pd         = appState.prices[token.id];
+        const price      = pd?.price ?? null;
+        const isExpanded = expandedTokenId === token.id;
+        const holdVal    = (price && token.amount) ? price * token.amount : null;
+        const item       = document.createElement('div');
+        item.className   = 'token-item' + (isExpanded ? ' expanded' : '');
+
+        const logo = token.logoUrl
+            ? `<img src="${token.logoUrl}" style="width:38px;height:38px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">`
+            : `<div style="width:38px;height:38px;border-radius:50%;background:rgba(168,85,247,0.15);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;">🪙</div>`;
+
+        const badges = pd ? `
+            <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-top:0.3rem;">
+                <span class="change-badge ${posCss(pd.change5m)}">${posArrow(pd.change5m)}${Math.abs(pd.change5m||0).toFixed(2)}% 5m</span>
+                <span class="change-badge ${posCss(pd.change1h)}">${posArrow(pd.change1h)}${Math.abs(pd.change1h||0).toFixed(2)}% 1h</span>
+                <span class="change-badge ${posCss(pd.change24h)}">${posArrow(pd.change24h)}${Math.abs(pd.change24h||0).toFixed(2)}% 24h</span>
+            </div>` : '';
+
+        const tf = chartTimeframes[token.id] || '60';
+        const tfOptions = [
+            { label:'5m',  value:'5'   },
+            { label:'15m', value:'15'  },
+            { label:'1h',  value:'60'  },
+            { label:'4h',  value:'240' },
+            { label:'1D',  value:'1D'  },
+        ];
+        const tfButtons = tfOptions.map(o => `
+            <button onclick="event.stopPropagation();setChartTimeframe('${token.id}','${o.value}')"
+                style="padding:0.2rem 0.55rem;font-size:0.72rem;border-radius:0.3rem;cursor:pointer;font-family:Inter,sans-serif;font-weight:700;border:1px solid rgba(168,85,247,${tf===o.value?'0.7':'0.2'});background:${tf===o.value?'rgba(168,85,247,0.3)':'rgba(10,0,20,0.5)'};color:${tf===o.value?'#e2e8f0':'#94a3b8'};">
+                ${o.label}
+            </button>`).join('');
+
+        const expandedHtml = isExpanded ? `
+            <div class="token-chart-area" onclick="event.stopPropagation()">
+                ${pd ? `
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.4rem;">
+                    <span style="font-size:0.75rem;color:#94a3b8;font-weight:600;">Price Chart</span>
+                    <div style="display:flex;gap:0.3rem;">${tfButtons}</div>
+                </div>
+                <div class="token-chart-container"><canvas id="chart_${token.id}"></canvas></div>
+                <div id="chartStatus_${token.id}" style="font-size:0.72rem;color:#64748b;text-align:center;margin-top:0.3rem;min-height:1rem;"></div>
+                ` : '<div style="text-align:center;color:#64748b;padding:2rem 0;">Fetching data…</div>'}
+                ${pd ? `<div class="token-details">
+                    <div class="token-detail-item"><div class="token-detail-label">24h Volume</div><div class="token-detail-value">${formatVal(pd.volume24h)}</div></div>
+                    <div class="token-detail-item"><div class="token-detail-label">1h Volume</div><div class="token-detail-value">${formatVal(pd.volume1h)}</div></div>
+                    <div class="token-detail-item"><div class="token-detail-label">Liquidity</div><div class="token-detail-value">${formatVal(pd.liquidity)}</div></div>
+                    <div class="token-detail-item"><div class="token-detail-label">Market Cap</div><div class="token-detail-value">${pd.marketCap ? formatVal(pd.marketCap) : '—'}</div></div>
+                    <div class="token-detail-item"><div class="token-detail-label">Buys / Sells 24h</div><div class="token-detail-value"><span class="change-positive">${pd.buys24h}</span> / <span class="change-negative">${pd.sells24h}</span></div></div>
+                    <div class="token-detail-item"><div class="token-detail-label">DEX</div><div class="token-detail-value">${pd.dexId || '—'}</div></div>
+                    <div class="token-detail-item"><div class="token-detail-label">Chain</div><div class="token-detail-value">${pd.chainId || token.chainId || '—'}</div></div>
+                    <div class="token-detail-item"><div class="token-detail-label">Holdings</div><div class="token-detail-value">${holdVal ? formatVal(holdVal) : '—'}</div></div>
+                </div>
+                ${pd.url ? `<a href="${pd.url}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.75rem;color:#a855f7;font-size:0.82rem;font-weight:600;text-decoration:none;" onclick="event.stopPropagation()">📊 View on DexScreener ↗</a>` : ''}` : ''}
+            </div>` : '';
+
+        item.innerHTML = `
+            <div style="display:flex;align-items:center;gap:0.7rem;flex:1;min-width:0;">
+                ${logo}
+                <div class="token-info">
+                    <div class="token-name">${escapeHtml(token.symbol)}</div>
+                    <div class="token-fullname">${escapeHtml(token.name)} · ${escapeHtml(pd?.chainId || token.chainId || token.chain || 'base')}</div>
+                    <div class="token-address">${token.address.length > 18 ? token.address.slice(0,9)+'…'+token.address.slice(-7) : token.address}</div>
+                    ${badges}
+                </div>
+            </div>
+            <div class="token-value">
+                <div class="token-price">${price !== null ? formatPrice(price) : '<span style="color:#475569;font-size:0.8rem;">fetching…</span>'}</div>
+                ${pd ? `<div class="token-change ${posCss(pd.change24h)}">${posArrow(pd.change24h)} ${Math.abs(pd.change24h||0).toFixed(2)}%</div>` : ''}
+                ${holdVal ? `<div class="token-holdings">${token.amount} · ${formatVal(holdVal)}</div>` : (token.amount ? `<div class="token-holdings">${token.amount} tokens</div>` : '')}
+            </div>
+            <div class="token-actions" onclick="event.stopPropagation()">
+                <button class="btn-small" onclick="openEditToken('${token.id}')">✏️</button>
+                <button class="btn-small" onclick="removeToken('${token.id}')" style="color:#ef4444;border-color:rgba(239,68,68,0.3);">🗑️</button>
+            </div>
+            ${expandedHtml}`;
+
+        item.addEventListener('click', () => toggleExpand(token.id));
+        list.appendChild(item);
+        if (isExpanded && pd) {
+            requestAnimationFrame(() => loadAndRenderChart(token));
+        }
+    });
+}
+
+async function loadAndRenderChart(token) {
+    const canvas = document.getElementById('chart_' + token.id);
+    const statusEl = document.getElementById('chartStatus_' + token.id);
+    if (!canvas) return;
+    if (tokenCharts[token.id]) { tokenCharts[token.id].destroy(); delete tokenCharts[token.id]; }
+
+    const pd = appState.prices[token.id];
+    const tf = chartTimeframes[token.id] || '60';
+    const cacheKey = token.id + '_' + tf;
+
+    // Show loading
+    if (statusEl) statusEl.textContent = 'Loading chart…';
+
+    let candles = candleCache[cacheKey] || null;
+
+    // Try DexScreener candles if we have a pair address
+    const pairAddr = pd?.pairAddress || token.dexPairAddress;
+    const chainId  = pd?.chainId     || token.chainId || token.chain;
+
+    if (!candles && pairAddr && chainId) {
+        candles = await dexFetchCandles(chainId, pairAddr, tf);
+        if (candles && candles.length) candleCache[cacheKey] = candles;
+    }
+
+    // Fall back to local history filtered by timeframe
+    if (!candles || !candles.length) {
+        if (statusEl) statusEl.textContent = 'Using local history (pair candles unavailable)';
+        const history = pd?.history || [];
+        if (history.length < 2) { if (statusEl) statusEl.textContent = 'Not enough data yet.'; return; }
+        const cutoff = getCutoff(tf);
+        const filtered = history.filter(h => h.time >= cutoff);
+        const pts = filtered.length >= 2 ? filtered : history;
+        renderLineChart(canvas, token.id,
+            pts.map(h => h.price),
+            pts.map(h => new Date(h.time).toLocaleTimeString())
+        );
+        return;
+    }
+
+    if (statusEl) statusEl.textContent = '';
+
+    // Render candlestick-style as OHLC line (Chart.js has no built-in candlestick without plugin)
+    // We'll render close prices as a smooth line with open/high/low tooltips
+    const closes = candles.map(c => c.close);
+    const labels = candles.map(c => {
+        const d = new Date(c.timestamp * 1000);
+        if (tf === '1D') return d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+        return d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+    });
+
+    renderLineChart(canvas, token.id, closes, labels, candles);
+}
+
+function getCutoff(tf) {
+    const now = Date.now();
+    const map = { '5':5*60*1000, '15':15*60*1000, '60':60*60*1000, '240':4*60*60*1000, '1D':24*60*60*1000 };
+    return now - (map[tf] || 60*60*1000) * 50; // ~50 bars back
+}
+
+function renderLineChart(canvas, tokenId, prices, labels, candles) {
+    if (tokenCharts[tokenId]) { tokenCharts[tokenId].destroy(); delete tokenCharts[tokenId]; }
+    const isUp  = prices[prices.length-1] >= prices[0];
+    const color = isUp ? '#10b981' : '#ef4444';
+
+    tokenCharts[tokenId] = new Chart(canvas, {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                data: prices,
+                borderColor: color, borderWidth: 2,
+                backgroundColor: color + '18', fill: true,
+                tension: 0.3, pointRadius: 0, pointHoverRadius: 5,
+                pointHoverBackgroundColor: color
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false, animation: { duration: 400 },
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: 'rgba(18,0,40,0.95)',
+                    borderColor: 'rgba(168,85,247,0.3)', borderWidth: 1,
+                    titleColor: '#94a3b8', bodyColor: '#f1f5f9',
+                    callbacks: {
+                        label: ctx => {
+                            if (candles && candles[ctx.dataIndex]) {
+                                const c = candles[ctx.dataIndex];
+                                return [
+                                    'O: ' + formatPrice(c.open),
+                                    'H: ' + formatPrice(c.high),
+                                    'L: ' + formatPrice(c.low),
+                                    'C: ' + formatPrice(c.close),
+                                ];
+                            }
+                            return 'Price: ' + formatPrice(ctx.raw);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    display: true,
+                    ticks: { color:'#64748b', font:{size:9}, maxTicksLimit:8, maxRotation:0 },
+                    grid: { display: false }
+                },
+                y: {
+                    display: true,
+                    position: 'right',
+                    ticks: { color:'#94a3b8', font:{size:10}, callback: v => formatPrice(v), maxTicksLimit:6 },
+                    grid: { color:'rgba(168,85,247,0.05)' }
+                }
+            }
+        }
+    });
+}
+
+function toggleExpand(id) {
+    if (tokenCharts[id]) { tokenCharts[id].destroy(); delete tokenCharts[id]; }
+    expandedTokenId = expandedTokenId === id ? null : id;
+    renderTokenList();
+}
+
+function setChartTimeframe(tokenId, tf) {
+    chartTimeframes[tokenId] = tf;
+    // Re-render token list to update button states, then load chart
+    renderTokenList();
+}
+
+function renderPopularTokens() {
+    const el = document.getElementById('popularTokensList');
+    if (!el) return;
+    el.innerHTML = '';
+    POPULAR_TOKENS.forEach(t => {
+        const btn = document.createElement('button');
+        btn.className   = 'btn-small';
+        btn.textContent = t.symbol;
+        btn.title       = t.name;
+        btn.addEventListener('click', () => prefillForm(t));
+        el.appendChild(btn);
+    });
+}
+
+// ─────────────────────────────────────────────
+// TOKEN FORM — prefill from search result
+// ─────────────────────────────────────────────
+function prefillForm(token) {
+    // Store metadata globally (no dataset on a div)
+    _pendingLogo     = token.logoUrl        || null;
+    _pendingPairAddr = token.dexPairAddress || null;
+
+    document.getElementById('tokenName').value    = token.name    || '';
+    document.getElementById('tokenSymbol').value  = token.symbol  || '';
+    document.getElementById('tokenAddress').value = token.address || '';
+    document.getElementById('tokenChain').value   = token.chainId || token.chain || 'base';
+    document.getElementById('tokenAmount').value  = '';
+
+    // Switch views
+    document.getElementById('tokenSearchView').style.display  = 'none';
+    document.getElementById('addTokenFormView').style.display = 'block';
+}
+
+// ─────────────────────────────────────────────
+// ADD TOKEN — the actual save logic
+// ─────────────────────────────────────────────
+async function doAddToken() {
+    const name    = document.getElementById('tokenName').value.trim();
+    const symbol  = document.getElementById('tokenSymbol').value.trim().toUpperCase();
+    const address = document.getElementById('tokenAddress').value.trim();
+    const amount  = parseFloat(document.getElementById('tokenAmount').value) || 0;
+    const chainId = (document.getElementById('tokenChain').value.trim().toLowerCase()) || 'base';
+
+    if (!name)    { showNotification('Token name is required.',    'error'); return; }
+    if (!symbol)  { showNotification('Token symbol is required.',  'error'); return; }
+    if (!address) { showNotification('Contract address is required.', 'error'); return; }
+
+    if (appState.tokens.some(t =>
+        t.address.toLowerCase() === address.toLowerCase() &&
+        (t.chainId || t.chain)  === chainId
+    )) {
+        showNotification(symbol + ' is already in your list.', 'error');
+        return;
+    }
+
+    const token = {
+        id:            'tok_' + Date.now(),
+        name, symbol, address, amount,
+        chain:         chainId,
+        chainId,
+        logoUrl:       _pendingLogo,
+        dexPairAddress:_pendingPairAddr
+    };
+
+    appState.tokens.push(token);
+    await saveState();
+
+    // Reset everything
+    _pendingLogo     = null;
+    _pendingPairAddr = null;
+    document.getElementById('tokenName').value    = '';
+    document.getElementById('tokenSymbol').value  = '';
+    document.getElementById('tokenAddress').value = '';
+    document.getElementById('tokenAmount').value  = '';
+    document.getElementById('tokenChain').value   = 'base';
+    document.getElementById('tokenSearchInput').value = '';
+    document.getElementById('tokenDropdown').classList.remove('active');
+    document.getElementById('tokenDropdown').innerHTML = '';
+    document.getElementById('tokenSearchView').style.display  = 'block';
+    document.getElementById('addTokenFormView').style.display = 'none';
+
+    closeModal('addTokenModal');
+    fetchPrices();
+    renderAll();
+    showNotification(symbol + ' added successfully!', 'success');
+}
+
+// ─────────────────────────────────────────────
+// EDIT TOKEN
+// ─────────────────────────────────────────────
+function openEditToken(id) {
+    const t = appState.tokens.find(x => x.id === id);
+    if (!t) return;
+    document.getElementById('editTokenId').value      = t.id;
+    document.getElementById('editTokenName').value    = t.name    || '';
+    document.getElementById('editTokenSymbol').value  = t.symbol  || '';
+    document.getElementById('editTokenAddress').value = t.address || '';
+    document.getElementById('editTokenAmount').value  = t.amount  || '';
+    document.getElementById('editTokenChain').value   = t.chainId || t.chain || '';
+    document.getElementById('editTokenModal').classList.add('active');
+}
+
+async function doEditToken() {
+    const id = document.getElementById('editTokenId').value;
+    const idx = appState.tokens.findIndex(t => t.id === id);
+    if (idx === -1) { showNotification('Token not found.', 'error'); return; }
+
+    const name    = document.getElementById('editTokenName').value.trim();
+    const symbol  = document.getElementById('editTokenSymbol').value.trim().toUpperCase();
+    const address = document.getElementById('editTokenAddress').value.trim();
+    const amount  = parseFloat(document.getElementById('editTokenAmount').value) || 0;
+    const chainId = document.getElementById('editTokenChain').value.trim().toLowerCase() || 'base';
+
+    if (!name)    { showNotification('Token name is required.',    'error'); return; }
+    if (!symbol)  { showNotification('Token symbol is required.',  'error'); return; }
+    if (!address) { showNotification('Contract address is required.', 'error'); return; }
+
+    appState.tokens[idx] = {
+        ...appState.tokens[idx],
+        name, symbol, address, amount,
+        chain: chainId, chainId,
+        dexPairAddress: null  // reset so it re-resolves on next fetch
+    };
+
+    await saveState();
+    closeModal('editTokenModal');
+    fetchPrices();
+    renderAll();
+    showNotification(symbol + ' updated!', 'success');
+}
+
+async function removeToken(id) {
+    if (!confirm('Remove this token?')) return;
+    appState.tokens = appState.tokens.filter(t => t.id !== id);
+    delete appState.prices[id];
+    if (expandedTokenId === id) expandedTokenId = null;
+    await saveState();
+    renderAll();
+    showNotification('Token removed.', 'info');
+}
+
+// ─────────────────────────────────────────────
+// NOTIFICATIONS
+// ─────────────────────────────────────────────
+function updateNotifUI() {
+    const on = appState.notificationsEnabled;
+    document.getElementById('notifToggle').classList.toggle('active', on);
+    document.getElementById('notifStatus').textContent = on ? 'Enabled' : 'Disabled';
+}
+
+// ─────────────────────────────────────────────
+// SEARCH (DexScreener live)
+// ─────────────────────────────────────────────
+function setupSearch() {
+    const input = document.getElementById('tokenSearchInput');
+    const dd    = document.getElementById('tokenDropdown');
+    let timer   = null;
+
+    input.addEventListener('input', () => {
+        const q = input.value.trim();
+        if (!q) { dd.classList.remove('active'); dd.innerHTML = ''; return; }
+
+        // Pasted contract address — skip to form directly
+        if ((q.startsWith('0x') && q.length >= 20) || (q.length >= 32 && !q.includes(' '))) {
+            dd.classList.remove('active');
+            prefillForm({ name:'Custom Token', symbol:'???', address:q, chainId:'base' });
+            return;
+        }
+
+        // Instant local matches
+        const local = POPULAR_TOKENS.filter(t =>
+            t.name.toLowerCase().includes(q.toLowerCase()) ||
+            t.symbol.toLowerCase().includes(q.toLowerCase())
+        );
+
+        const localHtml = local.map((t,i) => `
+            <div class="token-dropdown-item" data-li="${i}">
+                <div style="width:22px;height:22px;border-radius:50%;background:rgba(168,85,247,0.18);display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0;">🪙</div>
+                <div>
+                    <div class="token-dropdown-item-name">${escapeHtml(t.name)} <span style="color:#94a3b8;">(${escapeHtml(t.symbol)})</span></div>
+                    <div class="token-dropdown-item-sub">${t.chainId}</div>
+                </div>
+            </div>`).join('');
+
+        dd.innerHTML = localHtml + '<div style="padding:0.45rem 0.9rem;font-size:0.72rem;color:#64748b;">Searching DexScreener…</div>';
+        dd.classList.add('active');
+
+        // Bind local item clicks with mousedown to beat blur
+        dd.querySelectorAll('[data-li]').forEach(el => {
+            el.addEventListener('mousedown', e => {
+                e.preventDefault();
+                prefillForm(local[parseInt(el.dataset.li)]);
+                dd.classList.remove('active');
+                dd.innerHTML = '';
+            });
+        });
+
+        clearTimeout(timer);
+        timer = setTimeout(async () => {
+            const pairs = await dexSearch(q);
+            if (!pairs.length) return;
+
+            const seen = new Set();
+            const top  = pairs.filter(p => {
+                const k = p.chainId + '_' + (p.baseToken?.address || '');
+                if (seen.has(k)) return false;
+                seen.add(k); return true;
+            }).slice(0, 8);
+
+            dd.innerHTML = top.map((p,i) => {
+                const img = p.info?.imageUrl
+                    ? `<img src="${p.info.imageUrl}" style="width:22px;height:22px;border-radius:50%;object-fit:cover;flex-shrink:0;" onerror="this.style.display='none'">`
+                    : `<div style="width:22px;height:22px;border-radius:50%;background:rgba(168,85,247,0.18);display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0;">🪙</div>`;
+                return `<div class="token-dropdown-item" data-di="${i}">
+                    ${img}
+                    <div style="flex:1;min-width:0;">
+                        <div class="token-dropdown-item-name">${escapeHtml(p.baseToken?.name||'?')} <span style="color:#94a3b8;">(${escapeHtml(p.baseToken?.symbol||'?')})</span></div>
+                        <div class="token-dropdown-item-sub">${p.chainId} · ${p.dexId} · ${formatPrice(parseFloat(p.priceUsd)||0)} · vol ${formatVal(p.volume?.h24||0)}</div>
+                    </div>
+                </div>`;
+            }).join('');
+            dd.classList.add('active');
+
+            dd.querySelectorAll('[data-di]').forEach(el => {
+                el.addEventListener('mousedown', e => {
+                    e.preventDefault();
+                    const p = top[parseInt(el.dataset.di)];
+                    prefillForm({
+                        name:          p.baseToken?.name    || '?',
+                        symbol:        p.baseToken?.symbol  || '?',
+                        address:       p.baseToken?.address || '',
+                        chainId:       p.chainId,
+                        logoUrl:       p.info?.imageUrl     || null,
+                        dexPairAddress:p.pairAddress
+                    });
+                    dd.classList.remove('active');
+                    dd.innerHTML = '';
+                });
+            });
+        }, 420);
+    });
+
+    // Close on outside click
+    document.addEventListener('mousedown', e => {
+        if (!e.target.closest('.token-search-container')) {
+            dd.classList.remove('active');
+        }
+    });
+}
+
+// ─────────────────────────────────────────────
+// EVENT WIRING — called once on init
+// ─────────────────────────────────────────────
+function setupEvents() {
+    // ── Header buttons ──
+    document.getElementById('settingsBtn').addEventListener('click', () =>
+        document.getElementById('settingsModal').classList.add('active'));
+
+    document.getElementById('addTokenBtn').addEventListener('click', () => {
+        if (!currentProfileId) { showNotification('Please select a profile first.', 'error'); return; }
+        _pendingLogo = null; _pendingPairAddr = null;
+        document.getElementById('tokenSearchInput').value = '';
+        document.getElementById('tokenDropdown').classList.remove('active');
+        document.getElementById('tokenDropdown').innerHTML = '';
+        document.getElementById('tokenSearchView').style.display  = 'block';
+        document.getElementById('addTokenFormView').style.display = 'none';
+        document.getElementById('addTokenModal').classList.add('active');
+        renderPopularTokens();
+    });
+
+    document.getElementById('profileChip').addEventListener('click', () => {
+        renderProfileList();
+        document.getElementById('profileModal').classList.add('active');
+    });
+
+    // ── Modal close buttons ──
+    document.getElementById('closeAddTokenBtn').addEventListener('click',  () => closeModal('addTokenModal'));
+    document.getElementById('closeEditTokenBtn').addEventListener('click', () => closeModal('editTokenModal'));
+    document.getElementById('closeProfileBtn').addEventListener('click',   () => closeModal('profileModal'));
+    document.getElementById('closeSettingsBtn').addEventListener('click',  () => closeModal('settingsModal'));
+
+    // ── Backdrop clicks ──
+    ['addTokenModal','editTokenModal','settingsModal','profileModal'].forEach(id => {
+        document.getElementById(id).addEventListener('click', e => {
+            if (e.target.id === id) closeModal(id);
+        });
+    });
+
+    // ── Back button in add token form ──
+    document.getElementById('backToSearchBtn').addEventListener('click', () => {
+        document.getElementById('tokenSearchView').style.display  = 'block';
+        document.getElementById('addTokenFormView').style.display = 'none';
+    });
+
+    // ── ADD TOKEN SUBMIT BUTTON ──
+    document.getElementById('addTokenSubmitBtn').addEventListener('click', doAddToken);
+
+    // ── EDIT TOKEN SUBMIT BUTTON ──
+    document.getElementById('editTokenSubmitBtn').addEventListener('click', doEditToken);
+
+    // ── Wallet save ──
+    document.getElementById('saveWalletBtn').addEventListener('click', async () => {
+        if (!currentProfileId) { showNotification('No active profile.', 'error'); return; }
+        appState.wallet = document.getElementById('walletAddress').value.trim();
+        await saveState();
+        renderStats();
+        showNotification('Wallet saved!', 'success');
+    });
+
+    // ── Notifications toggle ──
+    document.getElementById('notifToggle').addEventListener('click', async () => {
+        if (!appState.notificationsEnabled) {
+            if (typeof Notification !== 'undefined' && Notification.permission !== 'granted') {
+                const p = await Notification.requestPermission();
+                if (p !== 'granted') { showNotification('Notification permission denied.', 'error'); return; }
+            }
+            appState.notificationsEnabled = true;
+        } else {
+            appState.notificationsEnabled = false;
+        }
+        await saveState();
+        updateNotifUI();
+    });
+
+    // ── Alert threshold save ──
+    document.getElementById('saveSettingsBtn').addEventListener('click', async () => {
+        if (!currentProfileId) { showNotification('No active profile.', 'error'); return; }
+        appState.alertThreshold = parseFloat(document.getElementById('alertThreshold').value) || 5;
+        await saveState();
+        showNotification('Settings saved!', 'success');
+    });
+
+    // ── Refresh interval save ──
+    document.getElementById('saveRefreshBtn').addEventListener('click', async () => {
+        appState.refreshInterval = parseInt(document.getElementById('refreshInterval').value) || 30;
+        await saveState();
+        startRefreshLoop();
+        closeModal('settingsModal');
+        showNotification('Refresh interval updated!', 'success');
+    });
+
+    // ── Clear data ──
+    document.getElementById('clearDataBtn').addEventListener('click', async () => {
+        if (!confirm('Clear all tokens and settings for the current profile?')) return;
+        appState = { tokens:[], wallet:'', notificationsEnabled:false, alertThreshold:5, refreshInterval:30, prices:{} };
+        document.getElementById('walletAddress').value   = '';
+        document.getElementById('alertThreshold').value  = '5';
+        document.getElementById('refreshInterval').value = '30';
+        updateNotifUI();
+        await saveState();
+        expandedTokenId = null;
+        renderAll();
+        closeModal('settingsModal');
+        showNotification('Data cleared.', 'info');
+    });
+
+    // ── Profile modal — create new ──
+    document.getElementById('createProfileBtn').addEventListener('click', async () => {
+        const name     = document.getElementById('newProfileName').value.trim();
+        const avatarVal= document.getElementById('newProfileAvatar').value.trim();
+        const avatar   = avatarVal || _modalSelAvatar || '👤';
+        if (!name) { showNotification('Enter a profile name.', 'error'); return; }
+        if ((window._profiles||[]).some(p => p.name.toLowerCase() === name.toLowerCase())) {
+            showNotification('Name already taken.', 'error'); return;
+        }
+        const np = { id:'profile_'+Date.now(), name, avatar };
+        window._profiles.push(np);
+        await saveProfiles(window._profiles);
+        document.getElementById('newProfileName').value   = '';
+        document.getElementById('newProfileAvatar').value = '';
+        document.getElementById('avatarPicker').querySelectorAll('span').forEach(s => s.classList.remove('sel'));
+        _modalSelAvatar = '🦊';
+        await switchProfile(np.id);
+        closeModal('profileModal');
+        showNotification('Profile "' + name + '" created!', 'success');
+    });
+
+    // ── In-app avatar picker ──
+    document.getElementById('avatarPicker').querySelectorAll('span').forEach(s => {
+        s.addEventListener('click', () => {
+            document.getElementById('avatarPicker').querySelectorAll('span').forEach(x => x.classList.remove('sel'));
+            s.classList.add('sel');
+            _modalSelAvatar = s.textContent;
+            document.getElementById('newProfileAvatar').value = s.textContent;
+        });
+    });
+
+    // ── Switch profile screen button ──
+    document.getElementById('switchProfileScreenBtn').addEventListener('click', () => {
+        closeModal('profileModal');
+        showLoginScreen();
+    });
+
+    // ── Login screen — create profile ──
+    document.getElementById('loginCreateBtn').addEventListener('click', async () => {
+        const name     = document.getElementById('loginNewName').value.trim();
+        const avatarVal= document.getElementById('loginNewAvatar').value.trim();
+        const avatar   = avatarVal || _loginSelAvatar || '👤';
+        if (!name) { showNotification('Enter a profile name.', 'error'); return; }
+        if ((window._profiles||[]).some(p => p.name.toLowerCase() === name.toLowerCase())) {
+            showNotification('Name already taken.', 'error'); return;
+        }
+        const np = { id:'profile_'+Date.now(), name, avatar };
+        window._profiles.push(np);
+        await saveProfiles(window._profiles);
+        await enterProfile(np.id);
+    });
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+async function init() {
+    window._profiles = await loadProfiles();
+    await renderLoginScreen();
+    setupEvents();
+    setupSearch();
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Power Promoter - Post to All Platforms</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #050508 0%, #0f0415 50%, #0a0515 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(199, 125, 255, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(168, 85, 247, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px 0;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 12px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #c77dff 0%, #e0aaff 50%, #b366ff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        header p {
+            color: #999;
+            font-size: 1.05em;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .post-section {
+            background: rgba(15, 10, 30, 0.5);
+            border: 1px solid rgba(199, 125, 255, 0.15);
+            border-radius: 20px;
+            padding: 35px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .post-section:hover {
+            border-color: rgba(199, 125, 255, 0.25);
+            background: rgba(15, 10, 30, 0.6);
+        }
+
+        .post-section h2 {
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            color: #e0aaff;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 220px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid rgba(199, 125, 255, 0.2);
+            border-radius: 14px;
+            padding: 18px;
+            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            font-size: 1em;
+            line-height: 1.6;
+            resize: vertical;
+            margin-bottom: 18px;
+            transition: all 0.3s ease;
+        }
+
+        textarea::placeholder {
+            color: #666;
+            font-weight: 400;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #c77dff;
+            background: rgba(199, 125, 255, 0.08);
+            box-shadow: 0 0 30px rgba(199, 125, 255, 0.15),
+                        inset 0 0 20px rgba(199, 125, 255, 0.05);
+        }
+
+        .char-count {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+
+        .char-count.warning {
+            color: #ff9500;
+        }
+
+        .char-count.danger {
+            color: #ff3b30;
+        }
+
+        .post-button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #c77dff 0%, #e0aaff 100%);
+            border: none;
+            border-radius: 14px;
+            color: #000;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            box-shadow: 0 4px 15px rgba(199, 125, 255, 0.3);
+        }
+
+        .post-button:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(199, 125, 255, 0.5);
+        }
+
+        .post-button:active:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        .post-button:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .platforms-sidebar {
+            background: rgba(15, 10, 30, 0.5);
+            border: 1px solid rgba(199, 125, 255, 0.15);
+            border-radius: 20px;
+            padding: 30px;
+            backdrop-filter: blur(20px);
+            height: fit-content;
+            position: sticky;
+            top: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .platforms-sidebar h3 {
+            margin-bottom: 22px;
+            color: #e0aaff;
+            font-size: 1.25em;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .platform-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .platform-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid rgba(199, 125, 255, 0.15);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .platform-item:hover {
+            background: rgba(199, 125, 255, 0.08);
+            border-color: rgba(199, 125, 255, 0.35);
+            transform: translateX(4px);
+        }
+
+        .platform-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .platform-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3em;
+        }
+
+        .platform-name {
+            font-weight: 500;
+            font-size: 0.95em;
+        }
+
+        .status-badge {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #666;
+            transition: all 0.3s ease;
+        }
+
+        .status-badge.connected {
+            background: #00d084;
+            box-shadow: 0 0 8px #00d084;
+        }
+
+        .disconnect-btn {
+            background: none;
+            border: none;
+            color: #ff3b30;
+            cursor: pointer;
+            font-size: 1.2em;
+            padding: 0;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .platform-item:hover .disconnect-btn {
+            opacity: 1;
+        }
+
+        .disconnect-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .platforms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(199, 125, 255, 0.2);
+        }
+
+        .platform-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1.5px solid rgba(199, 125, 255, 0.15);
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .platform-card:hover {
+            border-color: rgba(199, 125, 255, 0.4);
+            background: rgba(199, 125, 255, 0.08);
+            transform: translateY(-6px);
+            box-shadow: 0 12px 35px rgba(199, 125, 255, 0.2);
+        }
+
+        .platform-card.connected {
+            border-color: rgba(0, 208, 132, 0.5);
+            background: rgba(0, 208, 132, 0.08);
+        }
+
+        .platform-card.connected:hover {
+            border-color: rgba(0, 208, 132, 0.8);
+            background: rgba(0, 208, 132, 0.15);
+        }
+
+        .platform-card-icon {
+            font-size: 2.8em;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .platform-card-name {
+            font-weight: 700;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+            letter-spacing: -0.3px;
+        }
+
+        .platform-card-status {
+            font-size: 0.8em;
+            color: #777;
+            font-weight: 500;
+            text-transform: capitalize;
+        }
+
+        .platform-card.connected .platform-card-status {
+            color: #00d084;
+            font-weight: 600;
+        }
+
+        .auth-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .auth-modal.show {
+            display: flex;
+        }
+
+        .auth-modal-content {
+            background: linear-gradient(135deg, #1a0a2e, #2d1b4e);
+            border: 1px solid rgba(199, 125, 255, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .auth-modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .auth-modal-icon {
+            font-size: 2.5em;
+        }
+
+        .auth-modal h2 {
+            color: #c77dff;
+            font-size: 1.5em;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #c77dff;
+            font-size: 0.9em;
+        }
+
+        .form-group input {
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(199, 125, 255, 0.3);
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #c77dff;
+            background: rgba(199, 125, 255, 0.1);
+            box-shadow: 0 0 15px rgba(199, 125, 255, 0.2);
+        }
+
+        .auth-modal-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #64c8ff, #a855f7);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(100, 200, 255, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #e0e0e0;
+            border: 1px solid rgba(100, 200, 255, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(100, 200, 255, 0.1);
+            border-color: rgba(100, 200, 255, 0.4);
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #1a1a2e, #25254a);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 350px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: slideInUp 0.3s ease;
+            z-index: 2000;
+        }
+
+        @keyframes slideInUp {
+            from {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .notification.success {
+            border-color: #00d084;
+            background: rgba(0, 208, 132, 0.1);
+        }
+
+        .notification.success::before {
+            content: '✓';
+            color: #00d084;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .notification.error {
+            border-color: #ff3b30;
+            background: rgba(255, 59, 48, 0.1);
+        }
+
+        .notification.error::before {
+            content: '✕';
+            color: #ff3b30;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .notification.info {
+            border-color: #64c8ff;
+            background: rgba(100, 200, 255, 0.1);
+        }
+
+        .notification.info::before {
+            content: 'ℹ';
+            color: #64c8ff;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #888;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #e0e0e0;
+            transform: rotate(90deg);
+        }
+
+        .posting-status {
+            display: none;
+            background: linear-gradient(135deg, rgba(100, 200, 255, 0.2), rgba(168, 85, 247, 0.2));
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .posting-status.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+        }
+
+        .status-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+        }
+
+        .status-indicator.pending {
+            background: #ff9500;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .status-indicator.success {
+            background: #00d084;
+        }
+
+        .status-indicator.error {
+            background: #ff3b30;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            .platforms-sidebar {
+                position: static;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .platforms-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+
+            .auth-modal-content {
+                padding: 30px 20px;
+            }
+
+            .notification {
+                right: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px;">
+                <h1>⚡ Power Promoter</h1>
+                <svg style="width: 80px; height: 80px; animation: float 3s ease-in-out infinite;" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="envelopeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#c77dff;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#e0aaff;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#b366ff;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Envelope body -->
+                    <rect x="15" y="30" width="70" height="50" fill="url(#envelopeGradient)" stroke="#000000" stroke-width="1.5"/>
+                    <!-- Top flap left -->
+                    <path d="M 15 30 L 50 55 L 15 55 Z" fill="url(#envelopeGradient)" opacity="0.9" stroke="#000000" stroke-width="1.5"/>
+                    <!-- Top flap right -->
+                    <path d="M 85 30 L 50 55 L 85 55 Z" fill="url(#envelopeGradient)" opacity="0.8" stroke="#000000" stroke-width="1.5"/>
+                    <!-- Center line -->
+                    <line x1="50" y1="30" x2="50" y2="55" stroke="#000000" stroke-width="1.5" opacity="0.7"/>
+                </svg>
+            </div>
+            <p>Post to all your social media platforms simultaneously</p>
+        </header>
+
+        <div class="main-content">
+            <div class="post-section">
+                <h2>Compose Your Post</h2>
+                <textarea id="postContent" placeholder="What's on your mind? Write your post here and share it across all connected platforms..."></textarea>
+                <div class="char-count">
+                    <span id="charCount">0</span> / <span id="maxChar">280</span> characters
+                </div>
+                <button class="post-button" id="postBtn" onclick="publishPost()">
+                    Share to All Platforms
+                </button>
+                <div class="posting-status" id="postingStatus"></div>
+            </div>
+
+            <div class="platforms-sidebar">
+                <h3>Connected Platforms</h3>
+                <div class="platform-list" id="platformList"></div>
+            </div>
+        </div>
+
+        <div class="post-section">
+            <h2>Connect Your Accounts</h2>
+            <div class="platforms-grid" id="platformsGrid"></div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="auth-modal" id="authModal">
+        <div class="auth-modal-content">
+            <button class="close-btn" onclick="closeAuthModal()">✕</button>
+            <div class="auth-modal-header">
+                <span class="auth-modal-icon" id="authModalIcon"></span>
+                <h2 id="authModalTitle">Connect</h2>
+            </div>
+            <div class="auth-form" id="authForm"></div>
+        </div>
+    </div>
+
+    <script>
+        // Platform configurations
+        const PLATFORMS = {
+            twitter: {
+                name: 'Twitter',
+                icon: '𝕏',
+                color: '#000000',
+                fields: ['username', 'apiKey'],
+                labels: ['Username', 'API Key'],
+                maxChars: 280
+            },
+            facebook: {
+                name: 'Facebook',
+                icon: 'f',
+                color: '#1877f2',
+                fields: ['pageId', 'accessToken'],
+                labels: ['Page ID', 'Access Token'],
+                maxChars: 63206
+            },
+            instagram: {
+                name: 'Instagram',
+                icon: '📷',
+                color: '#e1306c',
+                fields: ['username', 'apiKey'],
+                labels: ['Username', 'API Key'],
+                maxChars: 2200
+            },
+            tiktok: {
+                name: 'TikTok',
+                icon: '♪',
+                color: '#000000',
+                fields: ['username', 'accessToken'],
+                labels: ['Username', 'Access Token'],
+                maxChars: 2200
+            },
+            linkedin: {
+                name: 'LinkedIn',
+                icon: 'in',
+                color: '#0a66c2',
+                fields: ['profileId', 'accessToken'],
+                labels: ['Profile ID', 'Access Token'],
+                maxChars: 3000
+            },
+            threads: {
+                name: 'Threads',
+                icon: '@',
+                color: '#000000',
+                fields: ['username', 'apiKey'],
+                labels: ['Username', 'API Key'],
+                maxChars: 500
+            },
+            bluesky: {
+                name: 'Bluesky',
+                icon: '🦋',
+                color: '#1185fe',
+                fields: ['handle', 'password'],
+                labels: ['Handle', 'Password'],
+                maxChars: 300
+            },
+            mastodon: {
+                name: 'Mastodon',
+                icon: '🐘',
+                color: '#6364FF',
+                fields: ['instance', 'accessToken'],
+                labels: ['Instance URL', 'Access Token'],
+                maxChars: 500
+            }
+        };
+
+        let connectedPlatforms = {};
+        let currentAuthPlatform = null;
+
+        // Initialize app
+        async function init() {
+            await loadConnectedPlatforms();
+            renderPlatformsGrid();
+            renderPlatformList();
+            setupTextareaListener();
+        }
+
+        // Load connected platforms from AppDB
+        async function loadConnectedPlatforms() {
+            const stored = await AppDB.get('connectedPlatforms');
+            if (stored) {
+                connectedPlatforms = stored;
+            }
+        }
+
+        // Save connected platforms to AppDB
+        async function saveConnectedPlatforms() {
+            await AppDB.set('connectedPlatforms', connectedPlatforms);
+        }
+
+        // Render platforms grid
+        function renderPlatformsGrid() {
+            const grid = document.getElementById('platformsGrid');
+            grid.innerHTML = '';
+            
+            Object.entries(PLATFORMS).forEach(([key, platform]) => {
+                const isConnected = !!connectedPlatforms[key];
+                const card = document.createElement('div');
+                card.className = `platform-card ${isConnected ? 'connected' : ''}`;
+                card.onclick = () => openAuthModal(key);
+                card.innerHTML = `
+                    <div class="platform-card-icon">${platform.icon}</div>
+                    <div class="platform-card-name">${platform.name}</div>
+                    <div class="platform-card-status">${isConnected ? 'Connected' : 'Connect'}</div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Render platform list in sidebar
+        function renderPlatformList() {
+            const list = document.getElementById('platformList');
+            list.innerHTML = '';
+            
+            const connected = Object.entries(connectedPlatforms).map(([key, data]) => {
+                const platform = PLATFORMS[key];
+                const item = document.createElement('div');
+                item.className = 'platform-item';
+                item.innerHTML = `
+                    <div class="platform-info">
+                        <div class="platform-icon" style="background: ${platform.color}20;">${platform.icon}</div>
+                        <div class="platform-name">${platform.name}</div>
+                    </div>
+                    <div class="status-badge connected"></div>
+                    <button class="disconnect-btn" onclick="disconnectPlatform('${key}')">✕</button>
+                `;
+                list.appendChild(item);
+            });
+
+            if (connected.length === 0) {
+                list.innerHTML = '<div style="color: #666; text-align: center; padding: 20px;">No platforms connected yet</div>';
+            }
+        }
+
+        // Open authentication modal
+        function openAuthModal(platformKey) {
+            currentAuthPlatform = platformKey;
+            const platform = PLATFORMS[platformKey];
+            const modal = document.getElementById('authModal');
+            const icon = document.getElementById('authModalIcon');
+            const title = document.getElementById('authModalTitle');
+            const form = document.getElementById('authForm');
+
+            icon.textContent = platform.icon;
+            title.textContent = `Connect ${platform.name}`;
+
+            form.innerHTML = '';
+            platform.fields.forEach((field, idx) => {
+                const group = document.createElement('div');
+                group.className = 'form-group';
+                const inputType = platform.labels[idx].includes('Password') ? 'password' : 'text';
+                group.innerHTML = `
+                    <label for="${field}">${platform.labels[idx]}</label>
+                    <input type="${inputType}" id="${field}" placeholder="Enter your ${platform.labels[idx].toLowerCase()}">
+                `;
+                form.appendChild(group);
+            });
+
+            const buttons = document.createElement('div');
+            buttons.className = 'auth-modal-buttons';
+            buttons.innerHTML = `
+                <button class="btn btn-primary" onclick="confirmAuth()">Connect</button>
+                <button class="btn btn-secondary" onclick="closeAuthModal()">Cancel</button>
+            `;
+            form.appendChild(buttons);
+
+            modal.classList.add('show');
+        }
+
+        // Close auth modal
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('show');
+            currentAuthPlatform = null;
+        }
+
+        // Confirm authentication
+        async function confirmAuth() {
+            if (!currentAuthPlatform) return;
+
+            const platform = PLATFORMS[currentAuthPlatform];
+            const credentials = {};
+
+            platform.fields.forEach(field => {
+                const value = document.getElementById(field)?.value;
+                if (!value) {
+                    showNotification('Please fill in all fields', 'error');
+                    return;
+                }
+                credentials[field] = value;
+            });
+
+            connectedPlatforms[currentAuthPlatform] = credentials;
+            await saveConnectedPlatforms();
+
+            showNotification(`${platform.name} connected successfully!`, 'success');
+            renderPlatformsGrid();
+            renderPlatformList();
+            closeAuthModal();
+        }
+
+        // Disconnect platform
+        async function disconnectPlatform(platformKey) {
+            delete connectedPlatforms[platformKey];
+            await saveConnectedPlatforms();
+            showNotification(`${PLATFORMS[platformKey].name} disconnected`, 'info');
+            renderPlatformsGrid();
+            renderPlatformList();
+        }
+
+        // Setup textarea listener
+        function setupTextareaListener() {
+            const textarea = document.getElementById('postContent');
+            textarea.addEventListener('input', (e) => {
+                const length = e.target.value.length;
+                const charCount = document.getElementById('charCount');
+                charCount.textContent = length;
+
+                const shortestMax = Math.min(
+                    ...Object.entries(connectedPlatforms).map(([key]) => PLATFORMS[key].maxChars)
+                ) || 280;
+
+                const countEl = charCount.parentElement;
+                if (length > shortestMax) {
+                    countEl.classList.add('danger');
+                    countEl.classList.remove('warning');
+                } else if (length > shortestMax * 0.8) {
+                    countEl.classList.add('warning');
+                    countEl.classList.remove('danger');
+                } else {
+                    countEl.classList.remove('warning', 'danger');
+                }
+            });
+        }
+
+        // Publish post
+        async function publishPost() {
+            let content = document.getElementById('postContent').value.trim();
+
+            if (!content) {
+                showNotification('Please write something to post', 'error');
+                return;
+            }
+
+            // Add unremovable footer
+            content += '\n\nposted from Inclawbate.com';
+
+            if (Object.keys(connectedPlatforms).length === 0) {
+                showNotification('Please connect at least one platform', 'error');
+                return;
+            }
+
+            const postBtn = document.getElementById('postBtn');
+            postBtn.disabled = true;
+
+            const status = document.getElementById('postingStatus');
+            status.classList.add('show');
+            status.innerHTML = '';
+
+            const results = {};
+
+            for (const [platformKey] of Object.entries(connectedPlatforms)) {
+                results[platformKey] = { status: 'pending' };
+                updatePostingStatus(results);
+            }
+
+            // Simulate posting to each platform
+            for (const [platformKey, credentials] of Object.entries(connectedPlatforms)) {
+                try {
+                    // Simulate API call with delay
+                    await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 400));
+                    results[platformKey] = { status: 'success' };
+                } catch (error) {
+                    results[platformKey] = { status: 'error', error: error.message };
+                }
+                updatePostingStatus(results);
+            }
+
+            showNotification('Posted to all platforms successfully!', 'success');
+            document.getElementById('postContent').value = '';
+            document.getElementById('charCount').textContent = '0';
+            
+            setTimeout(() => {
+                status.classList.remove('show');
+                postBtn.disabled = false;
+            }, 2000);
+        }
+
+        // Update posting status display
+        function updatePostingStatus(results) {
+            const status = document.getElementById('postingStatus');
+            status.innerHTML = '';
+
+            Object.entries(results).forEach(([platformKey, result]) => {
+                const platform = PLATFORMS[platformKey];
+                const item = document.createElement('div');
+                item.className = 'status-item';
+
+                let indicatorClass = result.status;
+                let statusText = result.status.charAt(0).toUpperCase() + result.status.slice(1);
+                if (result.status === 'error') {
+                    statusText = 'Failed: ' + result.error;
+                }
+
+                item.innerHTML = `
+                    <div class="status-indicator ${indicatorClass}">
+                        ${result.status === 'pending' ? '⏳' : result.status === 'success' ? '✓' : '✕'}
+                    </div>
+                    <span>${platform.name}: ${statusText}</span>
+                `;
+                status.appendChild(item);
+            });
+        }
+
+        // Show notification
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'close-btn';
+            closeBtn.textContent = '✕';
+            closeBtn.onclick = () => notification.remove();
+            notification.appendChild(closeBtn);
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Initialize app on load
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
