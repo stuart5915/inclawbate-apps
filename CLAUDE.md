@@ -181,6 +181,8 @@ You can include these via `<script>` or `<link>` tags:
 ## Publishing
 
 When your app is ready:
+nIf this is your first time publishing, run `node publish.js --setup` first to configure your identity.
+
 
 ```bash
 node publish.js --slug my-app --name "My App" --category games --description "A fun game"

@@ -3,6 +3,8 @@
 /**
  * Publish an Inclawbate app to inclawbate.com
  *
+ * First-time setup:  node publish.js --setup
+ *
  * Usage:
  *   node publish.js --slug my-app --name "My App"
  *   node publish.js --slug my-app --name "My App" --category games --description "A fun game" --tags game,arcade
@@ -12,11 +14,9 @@
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
+const readline = require('readline');
 
-// ── Defaults ──
-const CREATOR_WALLET = '0x18b18E245122f4bDA5F2ee4F25c702E05C241D49';
-const CREATOR_X_HANDLE = 'itsEvilDuck';
-const PUBLISHER_EMAIL = 'w_18b18e245122@inclawbate.com';
+const CONFIG_FILE = path.join(__dirname, '.publisher.json');
 const API_URL = 'https://www.inclawbate.com/api/publish-site';
 
 // ── Parse CLI args ──
@@ -26,7 +26,7 @@ function parseArgs() {
     for (let i = 0; i < args.length; i++) {
         if (args[i].startsWith('--')) {
             const key = args[i].slice(2);
-            if (key === 'update' || key === 'listed') {
+            if (key === 'update' || key === 'listed' || key === 'setup') {
                 parsed[key] = true;
             } else if (i + 1 < args.length && !args[i + 1].startsWith('--')) {
                 parsed[key] = args[++i];
@@ -36,10 +36,48 @@ function parseArgs() {
     return parsed;
 }
 
+function ask(rl, question) {
+    return new Promise(resolve => rl.question(question, resolve));
+}
+
+async function setup() {
+    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    console.log('\n  Inclawbate Publisher Setup');
+    console.log('  =========================\n');
+
+    const wallet = await ask(rl, '  Your wallet address (0x...): ');
+    const x_handle = await ask(rl, '  Your X/Twitter handle (without @): ');
+    const email = await ask(rl, '  Your publisher email (or press Enter for auto): ');
+
+    const config = {
+        creator_wallet: wallet.trim(),
+        creator_x_handle: x_handle.trim().replace('@', ''),
+        publisher_email: email.trim() || `w_${wallet.trim().slice(2, 16).toLowerCase()}@inclawbate.com`,
+    };
+
+    fs.writeFileSync(CONFIG_FILE, JSON.stringify(config, null, 2));
+    console.log(`\n  Saved to .publisher.json`);
+    console.log(`  Wallet:  ${config.creator_wallet}`);
+    console.log(`  Handle:  ${config.creator_x_handle}`);
+    console.log(`  Email:   ${config.publisher_email}\n`);
+    rl.close();
+}
+
+function loadConfig() {
+    if (!fs.existsSync(CONFIG_FILE)) {
+        console.error('\n  No .publisher.json found. Run: node publish.js --setup\n');
+        process.exit(1);
+    }
+    return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf-8'));
+}
+
 function printUsage() {
     console.log(`
   Inclawbate App Publisher
   ========================
+
+  First-time setup:
+    node publish.js --setup
 
   Usage:
     node publish.js --slug <slug> --name "App Name" [options]
@@ -94,11 +132,17 @@ function post(url, body) {
 async function main() {
     const args = parseArgs();
 
+    if (args.setup) {
+        await setup();
+        return;
+    }
+
     if (!args.slug || !args.name) {
         printUsage();
         process.exit(1);
     }
 
+    const config = loadConfig();
     const slug = args.slug.toLowerCase().trim();
     const filePath = args.file || path.join('apps', `${slug}.html`);
 
@@ -126,11 +170,11 @@ async function main() {
         slug,
         name: args.name,
         code,
-        email: PUBLISHER_EMAIL,
+        email: config.publisher_email,
         description: args.description || '',
         category: args.category || 'other',
-        creator_wallet: CREATOR_WALLET,
-        creator_x_handle: CREATOR_X_HANDLE,
+        creator_wallet: config.creator_wallet,
+        creator_x_handle: config.creator_x_handle,
         tags,
         is_listed: !!args.listed,
         source: 'claude-code',
