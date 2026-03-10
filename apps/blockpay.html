@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockPay</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #1a1a1f;
+            --surface: #222228;
+            --surface-2: #28282f;
+            --border: rgba(148,163,184,0.08);
+            --border-hover: rgba(148,163,184,0.15);
+            --text: #e2e8f0;
+            --text-2: #94a3b8;
+            --text-3: #475569;
+            --accent: #c9a96e;
+            --accent-dim: rgba(201,169,110,0.08);
+            --gold: #c9a96e;
+            --gold-light: #dfc191;
+            --gold-dim: rgba(201,169,110,0.12);
+            --white: #f8fafc;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%;
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        body::before {
+            content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-size: 180px;
+            opacity: 0.028;
+        }
+        body::after {
+            content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(201,169,110,0.03) 0%, transparent 60%),
+                        radial-gradient(ellipse 80% 60% at 50% 100%, rgba(0,0,0,0.3) 0%, transparent 70%);
+        }
+        header, main { position: relative; z-index: 1; }
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.1); border-radius: 3px; }
+
+        /* ── Header ── */
+        header {
+            background: rgba(26,26,31,0.9);
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(201,169,110,0.08);
+            padding: 0 2rem;
+            height: 56px; display: flex; align-items: center;
+            position: sticky; top: 0; z-index: 100;
+        }
+        .header-inner {
+            max-width: 920px; margin: 0 auto; width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo {
+            font-size: 0.82rem; font-weight: 600; color: var(--white);
+            letter-spacing: 0.18em; text-transform: uppercase;
+            display: flex; align-items: center; gap: 0.7rem;
+        }
+        .logo-mark {
+            width: 28px; height: 28px; border-radius: 4px;
+            border: 1.5px solid var(--gold);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.55rem; font-weight: 700; letter-spacing: 0;
+            color: var(--gold-light); line-height: 1;
+        }
+        .nav-tabs { display: flex; gap: 0.1rem; }
+        .nav-tab {
+            padding: 0.45rem 0.8rem; border-radius: 6px; border: none;
+            background: transparent; color: var(--text-3);
+            font-size: 0.75rem; font-weight: 600;
+            cursor: pointer; font-family: 'Nunito', sans-serif;
+            transition: all 0.2s; letter-spacing: 0.01em;
+        }
+        .nav-tab:hover { color: var(--text-2); }
+        .nav-tab.active { color: var(--gold-light); background: transparent; }
+        .wallet-btn {
+            display: flex; align-items: center; gap: 0.4rem;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 8px; padding: 0.35rem 0.75rem;
+            font-size: 0.72rem; font-weight: 600; color: var(--text-2);
+            cursor: pointer; transition: all 0.2s;
+            font-family: 'Nunito', sans-serif; letter-spacing: 0.01em;
+        }
+        .wallet-btn:hover { border-color: var(--border-hover); color: var(--text); }
+        .wallet-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+        /* ── Layout ── */
+        main { max-width: 920px; margin: 0 auto; padding: 2.5rem 2rem; }
+        .page { display: none; animation: fadeIn 0.25s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── Page Title ── */
+        .page-title {
+            font-size: 1.4rem; font-weight: 300; color: var(--white);
+            letter-spacing: -0.01em; margin-bottom: 0.3rem;
+        }
+        .page-subtitle {
+            font-size: 0.8rem; color: var(--text-3); margin-bottom: 2.25rem;
+            line-height: 1.6; font-weight: 400; letter-spacing: 0.01em;
+        }
+
+        /* ── Stats ── */
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem; margin-bottom: 2.5rem;
+        }
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.2rem 1.25rem;
+            transition: border-color 0.2s;
+        }
+        .stat-card:hover { border-color: var(--border-hover); }
+        .stat-label {
+            font-size: 0.62rem; font-weight: 600; color: var(--text-3);
+            text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 0.6rem;
+        }
+        .stat-value { font-size: 1.55rem; font-weight: 300; color: var(--white); letter-spacing: -0.02em; line-height: 1; }
+        .stat-value.accent { color: var(--gold-light); }
+
+        /* ── Section ── */
+        .section-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1rem;
+        }
+        .section-label {
+            font-size: 0.65rem; font-weight: 600; color: var(--text-3);
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+
+        /* ── Buttons ── */
+        .btn {
+            padding: 0.5rem 1.1rem; border: none; border-radius: 8px;
+            font-size: 0.74rem; font-weight: 600; cursor: pointer;
+            font-family: 'Nunito', sans-serif; transition: all 0.15s;
+            display: inline-flex; align-items: center; gap: 0.3rem;
+            letter-spacing: 0.02em;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: #1a1a1f; }
+        .btn-primary:hover { background: linear-gradient(135deg, var(--gold-light), var(--gold)); }
+        .btn-ghost {
+            background: transparent; color: var(--text-2);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover { border-color: var(--border-hover); color: var(--text); }
+        .btn-sm { padding: 0.38rem 0.8rem; font-size: 0.7rem; }
+        .btn-icon {
+            width: 30px; height: 30px; padding: 0; border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* ── Invoice List ── */
+        .invoice-list { display: flex; flex-direction: column; gap: 0.4rem; }
+        .invoice-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px; padding: 0.85rem 1.1rem;
+            display: flex; align-items: center; gap: 0.9rem;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .invoice-card:hover { border-color: var(--border-hover); background: var(--surface-2); }
+        .inv-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+        .inv-dot.paid { background: #34d399; }
+        .inv-dot.pending { background: #fbbf24; }
+        .inv-dot.overdue { background: #f87171; }
+        .inv-dot.draft { background: var(--text-3); }
+        .inv-info { flex: 1; min-width: 0; }
+        .inv-client {
+            font-weight: 600; font-size: 0.85rem; color: var(--white);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            letter-spacing: 0.01em;
+        }
+        .inv-meta {
+            font-size: 0.65rem; color: var(--text-3); display: flex;
+            gap: 0.6rem; margin-top: 0.15rem; font-weight: 400;
+            letter-spacing: 0.02em;
+        }
+        .inv-amount { font-weight: 700; font-size: 0.88rem; color: var(--white); white-space: nowrap; letter-spacing: -0.01em; }
+        .inv-actions { display: flex; gap: 0.2rem; flex-shrink: 0; }
+
+        /* ── Badges ── */
+        .badge {
+            display: inline-flex; padding: 0.15rem 0.45rem;
+            border-radius: 4px; font-size: 0.58rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.06em;
+        }
+        .badge-paid { background: rgba(52,211,153,0.1); color: #34d399; }
+        .badge-pending { background: rgba(251,191,36,0.1); color: #fbbf24; }
+        .badge-overdue { background: rgba(248,113,113,0.1); color: #f87171; }
+        .badge-draft { background: rgba(71,85,105,0.2); color: var(--text-3); }
+        .badge-crypto { background: var(--gold-dim); color: var(--gold); }
+        .badge-fiat { background: rgba(56,189,248,0.1); color: #38bdf8; }
+
+        /* ── Modal ── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(16,16,19,0.85);
+            backdrop-filter: blur(16px); z-index: 200;
+            display: none; align-items: center; justify-content: center; padding: 1rem;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px; width: 100%; max-width: 500px;
+            max-height: 90vh; overflow-y: auto; padding: 1.75rem;
+            animation: modalIn 0.2s ease;
+        }
+        @keyframes modalIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 1.75rem;
+        }
+        .modal-title { font-size: 1.05rem; font-weight: 300; color: var(--white); letter-spacing: 0.01em; }
+        .modal-close {
+            width: 28px; height: 28px; border-radius: 6px;
+            background: transparent; border: none;
+            color: var(--text-3); cursor: pointer; font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: color 0.12s;
+        }
+        .modal-close:hover { color: var(--text); }
+
+        /* ── Forms ── */
+        .form-group { margin-bottom: 1.1rem; }
+        .form-label {
+            display: block; font-size: 0.6rem; font-weight: 600;
+            color: var(--text-3); margin-bottom: 0.45rem;
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%; padding: 0.6rem 0.85rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px; color: var(--text);
+            font-family: 'Nunito', sans-serif; font-size: 0.84rem;
+            font-weight: 400; transition: border-color 0.15s;
+            letter-spacing: 0.01em;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none; border-color: var(--gold);
+        }
+        .form-input::placeholder, .form-textarea::placeholder { color: var(--text-3); font-weight: 400; }
+        .form-select {
+            cursor: pointer; appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%23475569' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 0.8rem center;
+            padding-right: 2.2rem;
+        }
+        .form-select option { background: var(--surface); color: var(--text); }
+        .form-textarea { resize: vertical; min-height: 65px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .form-hint { font-size: 0.62rem; color: var(--text-3); margin-top: 0.25rem; font-weight: 400; letter-spacing: 0.02em; }
+
+        /* ── Line Items ── */
+        .line-items { margin-bottom: 0.75rem; }
+        .line-item {
+            display: grid; grid-template-columns: 2.5fr 1fr 1fr auto;
+            gap: 0.5rem; align-items: center; margin-bottom: 0.4rem;
+        }
+        .line-item .form-input { padding: 0.5rem 0.7rem; font-size: 0.82rem; }
+        .line-remove {
+            width: 26px; height: 26px; border-radius: 6px;
+            background: transparent; border: none;
+            color: var(--text-3); cursor: pointer; font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: color 0.12s;
+        }
+        .line-remove:hover { color: #f87171; }
+        .line-labels {
+            display: grid; grid-template-columns: 2.5fr 1fr 1fr auto;
+            gap: 0.5rem; margin-bottom: 0.3rem;
+        }
+        .line-labels span {
+            font-size: 0.55rem; font-weight: 600; color: var(--text-3);
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+
+        /* ── Invoice Total ── */
+        .invoice-total {
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 10px; padding: 1rem 1.1rem;
+            display: flex; justify-content: space-between; align-items: baseline;
+            margin: 1.25rem 0 1.1rem;
+        }
+        .total-label { font-size: 0.62rem; font-weight: 600; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; }
+        .total-value { font-size: 1.35rem; font-weight: 300; color: var(--gold-light); letter-spacing: -0.01em; }
+
+        /* ── Payment Methods ── */
+        .pay-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 0.75rem; margin-bottom: 3rem;
+        }
+        .pay-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.25rem;
+            cursor: pointer; transition: all 0.15s;
+        }
+        .pay-card:hover { border-color: var(--border-hover); }
+        .pay-card.selected { border-color: var(--gold); background: var(--gold-dim); }
+        .pay-card-icon { font-size: 1.25rem; margin-bottom: 0.65rem; }
+        .pay-card-title { font-weight: 600; font-size: 0.82rem; color: var(--white); margin-bottom: 0.25rem; letter-spacing: 0.01em; }
+        .pay-card-desc { font-size: 0.7rem; color: var(--text-3); line-height: 1.5; font-weight: 400; }
+
+        /* ── Token List ── */
+        .token-row {
+            display: flex; align-items: center; gap: 0.9rem;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .token-row:first-child { border-top: 1px solid var(--border); }
+        .token-icon {
+            width: 34px; height: 34px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.68rem; font-weight: 800; flex-shrink: 0;
+        }
+        .token-info { flex: 1; }
+        .token-name { font-weight: 600; font-size: 0.84rem; color: var(--white); letter-spacing: 0.01em; }
+        .token-name span { color: var(--text-3); font-weight: 400; }
+        .token-chain { font-size: 0.64rem; color: var(--text-3); font-weight: 400; letter-spacing: 0.02em; }
+        .toggle {
+            position: relative; width: 34px; height: 18px;
+            background: var(--surface-2); border: 1px solid var(--border);
+            border-radius: 9px; cursor: pointer; transition: all 0.2s;
+        }
+        .toggle.on { background: var(--gold); border-color: var(--gold); }
+        .toggle::after {
+            content: ''; position: absolute; top: 2px; left: 2px;
+            width: 12px; height: 12px; border-radius: 6px;
+            background: var(--text-3); transition: all 0.2s;
+        }
+        .toggle.on::after { transform: translateX(16px); background: var(--bg); }
+
+        /* ── Invoice Preview ── */
+        .invoice-preview { padding: 0.25rem 0; }
+        .preview-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 1.75rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .preview-brand { font-size: 0.85rem; font-weight: 600; color: var(--gold-light); letter-spacing: 0.18em; text-transform: uppercase; }
+        .preview-id { font-size: 0.72rem; color: var(--text-3); }
+        .preview-id strong { color: var(--text); }
+        .preview-section { margin-bottom: 1.25rem; }
+        .preview-label {
+            font-size: 0.56rem; font-weight: 600; color: var(--text-3);
+            text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.4rem;
+        }
+        .preview-table { width: 100%; border-collapse: collapse; }
+        .preview-table th {
+            text-align: left; font-size: 0.55rem; font-weight: 600;
+            color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em;
+            padding: 0.55rem 0; border-bottom: 1px solid var(--border);
+        }
+        .preview-table td {
+            padding: 0.55rem 0; font-size: 0.82rem; color: var(--text-2);
+            border-bottom: 1px solid var(--border); font-weight: 400;
+        }
+        .preview-table .text-right { text-align: right; }
+        .preview-total td {
+            border-bottom: none; font-weight: 600; font-size: 0.95rem;
+            color: var(--white); padding-top: 0.9rem; letter-spacing: -0.01em;
+        }
+
+        /* ── Settings ── */
+        .settings-block {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.5rem; margin-bottom: 0.75rem;
+        }
+        .settings-block-title {
+            font-size: 0.62rem; font-weight: 600; color: var(--text-3);
+            text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── Toast ── */
+        .toast-wrap {
+            position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+            z-index: 300; display: flex; flex-direction: column; gap: 0.4rem; align-items: center;
+        }
+        .toast {
+            background: var(--surface); color: var(--gold-light);
+            border: 1px solid var(--gold-dim);
+            border-radius: 8px; padding: 0.5rem 1.2rem;
+            font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
+            animation: toastUp 0.2s ease;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .toast.error { border-color: rgba(248,113,113,0.2); color: #f87171; }
+        @keyframes toastUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── Empty ── */
+        .empty { text-align: center; padding: 3.5rem 1rem; }
+        .empty-title { font-size: 0.82rem; font-weight: 400; color: var(--text-2); margin-bottom: 0.35rem; letter-spacing: 0.01em; }
+        .empty-desc { font-size: 0.76rem; color: var(--text-3); margin-bottom: 1.25rem; font-weight: 400; }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            header { padding: 0 1.25rem; height: auto; padding-top: 0.65rem; padding-bottom: 0.65rem; }
+            .header-inner { flex-wrap: wrap; gap: 0.4rem; }
+            .nav-tabs { order: 3; width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+            .nav-tab { flex-shrink: 0; }
+            main { padding: 1.75rem 1.25rem; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .line-item { grid-template-columns: 1fr; gap: 0.3rem; }
+            .line-labels { display: none; }
+            .preview-header { flex-direction: column; }
+        }
+        @media (max-width: 480px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+            .stat-value { font-size: 1.2rem; }
+            .pay-grid { grid-template-columns: 1fr 1fr; }
+            .inv-actions { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="toast-wrap" id="toastContainer"></div>
+
+    <header>
+        <div class="header-inner">
+            <div class="logo">
+                <div class="logo-mark">Bp</div>
+                Block<span style="color:var(--gold);margin-left:-0.42em">Pay</span>
+            </div>
+            <nav class="nav-tabs">
+                <button class="nav-tab active" data-page="dashboard">Dashboard</button>
+                <button class="nav-tab" data-page="invoices">Invoices</button>
+                <button class="nav-tab" data-page="payments">Payments</button>
+                <button class="nav-tab" data-page="tokens">Tokens</button>
+                <button class="nav-tab" data-page="settings">Settings</button>
+            </nav>
+            <button class="wallet-btn" id="walletChip" onclick="connectWallet()">
+                <div class="wallet-dot" id="walletDot" style="background:var(--text-3)"></div>
+                <span id="walletLabel">Connect Wallet</span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <!-- DASHBOARD -->
+        <div class="page active" id="page-dashboard">
+            <div class="page-title">Dashboard</div>
+            <div class="page-subtitle">Your invoicing overview at a glance.</div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Earned</div>
+                    <div class="stat-value accent" id="statEarned">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Outstanding</div>
+                    <div class="stat-value" id="statOutstanding">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Paid</div>
+                    <div class="stat-value" id="statPaid">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Pending</div>
+                    <div class="stat-value" id="statPending">0</div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <div class="section-label">Recent Invoices</div>
+                <button class="btn btn-primary btn-sm" onclick="openCreateInvoice()">+ New Invoice</button>
+            </div>
+            <div class="invoice-list" id="dashRecentInvoices">
+                <div class="empty">
+                    <div class="empty-title">No invoices yet</div>
+                    <div class="empty-desc">Create your first invoice to start getting paid</div>
+                    <button class="btn btn-primary" onclick="openCreateInvoice()">Create Invoice</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- INVOICES -->
+        <div class="page" id="page-invoices">
+            <div class="page-title">Invoices</div>
+            <div class="page-subtitle">Manage and track all your invoices.</div>
+            <div class="section-header">
+                <select class="form-select" id="invoiceFilter" style="padding:0.35rem 2rem 0.35rem 0.7rem;font-size:0.75rem;width:auto;background:var(--surface)" onchange="renderInvoices()">
+                    <option value="all">All Invoices</option>
+                    <option value="draft">Drafts</option>
+                    <option value="pending">Pending</option>
+                    <option value="paid">Paid</option>
+                    <option value="overdue">Overdue</option>
+                </select>
+                <button class="btn btn-primary btn-sm" onclick="openCreateInvoice()">+ New Invoice</button>
+            </div>
+            <div class="invoice-list" id="allInvoicesList"></div>
+        </div>
+
+        <!-- PAYMENTS -->
+        <div class="page" id="page-payments">
+            <div class="page-title">Payments</div>
+            <div class="page-subtitle">Configure how clients can pay you.</div>
+
+            <div class="pay-grid">
+                <div class="pay-card" onclick="togglePayMethod(this, 'fiat-card')">
+                    <div class="pay-card-icon">&#128179;</div>
+                    <div class="pay-card-title">Card / Bank</div>
+                    <div class="pay-card-desc">Visa, Mastercard, bank transfers via fiat rails</div>
+                </div>
+                <div class="pay-card" onclick="togglePayMethod(this, 'moonpay')">
+                    <div class="pay-card-icon">&#127765;</div>
+                    <div class="pay-card-title">MoonPay</div>
+                    <div class="pay-card-desc">Client pays fiat, you receive crypto</div>
+                </div>
+                <div class="pay-card selected" onclick="togglePayMethod(this, 'crypto-direct')">
+                    <div class="pay-card-icon">&#9935;</div>
+                    <div class="pay-card-title">Crypto Direct</div>
+                    <div class="pay-card-desc">Wallet-to-wallet on Base and more</div>
+                </div>
+                <div class="pay-card" onclick="togglePayMethod(this, 'claws')">
+                    <div class="pay-card-icon">&#129430;</div>
+                    <div class="pay-card-title">CLAWS</div>
+                    <div class="pay-card-desc">Inclawbate's native payment system</div>
+                </div>
+            </div>
+
+            <div class="section-label" style="margin-bottom:1.25rem">Payment History</div>
+            <div class="invoice-list" id="paymentHistory">
+                <div class="empty">
+                    <div class="empty-title">No payments yet</div>
+                    <div class="empty-desc">Transactions will appear here when clients pay</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOKENS -->
+        <div class="page" id="page-tokens">
+            <div class="page-title">Tokens</div>
+            <div class="page-subtitle">Choose which tokens your clients can use to pay.</div>
+            <div id="tokensList"></div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="page" id="page-settings">
+            <div class="page-title">Settings</div>
+            <div class="page-subtitle">Manage your profile and preferences.</div>
+
+            <div class="settings-block">
+                <div class="settings-block-title">Profile</div>
+                <div class="form-group">
+                    <label class="form-label">Business Name</label>
+                    <input class="form-input" id="settingName" placeholder="Your name or business">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input class="form-input" id="settingEmail" type="email" placeholder="you@email.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Default Currency</label>
+                    <select class="form-select" id="settingCurrency">
+                        <option value="USD">USD ($)</option>
+                        <option value="EUR">EUR</option>
+                        <option value="GBP">GBP</option>
+                        <option value="ETH">ETH</option>
+                        <option value="CLAWS">CLAWS</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="saveSettings()">Save Profile</button>
+            </div>
+
+            <div class="settings-block">
+                <div class="settings-block-title">Wallet</div>
+                <div class="form-group">
+                    <label class="form-label">Receiving Address</label>
+                    <input class="form-input" id="settingWallet" placeholder="0x...">
+                    <div class="form-hint">Crypto payments will be sent to this address</div>
+                </div>
+                <button class="btn btn-primary" onclick="saveSettings()">Save Wallet</button>
+            </div>
+
+            <div class="settings-block">
+                <div class="settings-block-title">Data</div>
+                <div style="display:flex;gap:0.5rem">
+                    <button class="btn btn-ghost" onclick="exportData()">Export JSON</button>
+                    <button class="btn btn-ghost" onclick="clearAllData()" style="color:#f87171;border-color:rgba(248,113,113,0.15)">Clear All Data</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- CREATE INVOICE MODAL -->
+    <div class="modal-overlay" id="invoiceModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="invoiceModalTitle">New Invoice</div>
+                <button class="modal-close" onclick="closeModal('invoiceModal')">&times;</button>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Client</label>
+                    <input class="form-input" id="invClient" placeholder="Name or company">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Email</label>
+                    <input class="form-input" id="invEmail" type="email" placeholder="client@email.com">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Due Date</label>
+                    <input class="form-input" id="invDueDate" type="date">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Payment Type</label>
+                    <select class="form-select" id="invPayType">
+                        <option value="crypto">Crypto</option>
+                        <option value="fiat">Fiat</option>
+                        <option value="both">Both</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group" id="cryptoTokenGroup">
+                <label class="form-label">Preferred Token</label>
+                <select class="form-select" id="invToken">
+                    <option value="ETH">ETH</option>
+                    <option value="USDC">USDC</option>
+                    <option value="USDT">USDT</option>
+                    <option value="CLAWS">CLAWS</option>
+                    <option value="SOL">SOL</option>
+                    <option value="ISB">ISB</option>
+                    <option value="BV7X">BV7X</option>
+                    <option value="CLAWNCH">CLAWNCH</option>
+                    <option value="CLAWNSTR">CLAWNSTR</option>
+                    <option value="S4H">S4H</option>
+                    <option value="INCLAWNCH">INCLAWNCH</option>
+                    <option value="DELUS">DELUS</option>
+                    <option value="TYM">TYM</option>
+                    <option value="STU">STU</option>
+                    <option value="100ROCKETS">100ROCKETS</option>
+                    <option value="DD">DD</option>
+                    <option value="JESUS">JESUS</option>
+                    <option value="any">Any Accepted Token</option>
+                </select>
+            </div>
+
+            <label class="form-label" style="margin-bottom:0.6rem">Line Items</label>
+            <div class="line-labels"><span>Description</span><span>Qty</span><span>Rate</span><span></span></div>
+            <div class="line-items" id="lineItems">
+                <div class="line-item">
+                    <input class="form-input" placeholder="Service description" data-field="desc">
+                    <input class="form-input" placeholder="1" type="number" min="1" value="1" data-field="qty">
+                    <input class="form-input" placeholder="0.00" type="number" step="0.01" data-field="rate">
+                    <button class="line-remove" onclick="removeLineItem(this)">&times;</button>
+                </div>
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="addLineItem()" style="margin-bottom:1rem">+ Add Line</button>
+
+            <div class="form-group">
+                <label class="form-label">Notes</label>
+                <textarea class="form-textarea" id="invNotes" placeholder="Payment terms, notes..."></textarea>
+            </div>
+
+            <div class="invoice-total">
+                <span class="total-label">Total</span>
+                <span class="total-value" id="invoiceTotal">$0.00</span>
+            </div>
+
+            <div style="display:flex;gap:0.5rem;justify-content:flex-end">
+                <button class="btn btn-ghost" onclick="saveInvoice('draft')">Save Draft</button>
+                <button class="btn btn-primary" onclick="saveInvoice('pending')">Send Invoice</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PREVIEW MODAL -->
+    <div class="modal-overlay" id="previewModal">
+        <div class="modal" style="max-width:540px">
+            <div class="modal-header">
+                <div class="modal-title">Invoice Preview</div>
+                <button class="modal-close" onclick="closeModal('previewModal')">&times;</button>
+            </div>
+            <div id="previewContent"></div>
+            <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1.5rem">
+                <button class="btn btn-ghost" onclick="closeModal('previewModal')">Close</button>
+                <button class="btn btn-ghost" id="previewShareBtn">Copy Pay Link</button>
+                <button class="btn btn-primary" id="previewMarkPaid">Mark as Paid</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'blockpay_data';
+        const TOKENS = [
+            { symbol: 'ETH', name: 'Ethereum', chain: 'Ethereum / Base', color: '#627eea', enabled: true },
+            { symbol: 'USDC', name: 'USD Coin', chain: 'Base / Ethereum', color: '#2775ca', enabled: true },
+            { symbol: 'USDT', name: 'Tether', chain: 'Ethereum / Base', color: '#26a17b', enabled: true },
+            { symbol: 'CLAWS', name: 'CLAWS Token', chain: 'Base', color: '#a855f7', enabled: true },
+            { symbol: 'SOL', name: 'Solana', chain: 'Solana', color: '#00ffa3', enabled: false },
+            { symbol: 'ISB', name: 'Inclawbate', chain: 'Base', color: '#e040fb', enabled: true },
+            { symbol: 'BV7X', name: 'BV7X', chain: 'Base', color: '#ff6b35', enabled: true },
+            { symbol: 'CLAWNCH', name: 'Clawnch', chain: 'Base', color: '#f472b6', enabled: true },
+            { symbol: 'CLAWNSTR', name: 'Clawnstr', chain: 'Base', color: '#fb923c', enabled: true },
+            { symbol: 'S4H', name: 'S4H', chain: 'Base', color: '#4ade80', enabled: true },
+            { symbol: 'INCLAWNCH', name: 'Inclawnch', chain: 'Base', color: '#c084fc', enabled: true },
+            { symbol: 'DELUS', name: 'Delus', chain: 'Base', color: '#f43f5e', enabled: true },
+            { symbol: 'TYM', name: 'TYM', chain: 'Base', color: '#38bdf8', enabled: true },
+            { symbol: 'STU', name: 'STU', chain: 'Base', color: '#facc15', enabled: true },
+            { symbol: '100ROCKETS', name: '100 Rockets', chain: 'Base', color: '#ef4444', enabled: true },
+            { symbol: 'DD', name: 'DD', chain: 'Base', color: '#a78bfa', enabled: true },
+            { symbol: 'JESUS', name: 'Jesus', chain: 'Base', color: '#fbbf24', enabled: true },
+        ];
+
+        let data = loadData();
+        let editingInvoiceId = null;
+
+        function loadData() {
+            try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(e) {}
+            return { invoices: [], settings: { name: '', email: '', currency: 'USD', wallet: '' }, tokens: TOKENS.map(t => ({ symbol: t.symbol, enabled: t.enabled })), payMethods: ['crypto-direct'] };
+        }
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            if (window.AppDB) window.AppDB.set('blockpay_data', data).catch(() => {});
+        }
+        async function loadFromCloud() {
+            if (!window.AppDB) return;
+            try { const c = await window.AppDB.get('blockpay_data'); if (c?.invoices?.length > (data.invoices?.length||0)) { data = c; saveData(); renderAll(); toast('Synced from cloud'); } } catch(e) {}
+        }
+
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('page-' + tab.dataset.page).classList.add('active');
+            });
+        });
+
+        let walletAddress = null;
+        function getWallet() {
+            try { const m = document.cookie.match(/inclawbate_token=([^;]+)/); if (!m) return null; const p = JSON.parse(atob(decodeURIComponent(m[1]).split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); return p.wallet_address || null; } catch { return null; }
+        }
+        async function connectWallet() {
+            const c = getWallet();
+            if (c) walletAddress = c;
+            else if (window.ethereum) { try { const a = await window.ethereum.request({ method: 'eth_requestAccounts' }); walletAddress = a[0]; } catch(e) { toast('Cancelled', true); return; } }
+            else { toast('No wallet detected', true); return; }
+            document.getElementById('walletDot').style.background = '#c9a96e';
+            document.getElementById('walletLabel').textContent = walletAddress.slice(0,6) + '...' + walletAddress.slice(-4);
+            data.settings.wallet = walletAddress;
+            document.getElementById('settingWallet').value = walletAddress;
+            saveData(); toast('Wallet connected');
+        }
+
+        function toast(msg, isError) {
+            const el = document.createElement('div');
+            el.className = 'toast' + (isError ? ' error' : '');
+            el.textContent = msg;
+            document.getElementById('toastContainer').appendChild(el);
+            setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'opacity 0.15s'; setTimeout(() => el.remove(), 150); }, 2200);
+        }
+
+        function openModal(id) { document.getElementById(id).classList.add('open'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+        function openCreateInvoice() {
+            editingInvoiceId = null;
+            document.getElementById('invoiceModalTitle').textContent = 'New Invoice';
+            document.getElementById('invClient').value = '';
+            document.getElementById('invEmail').value = '';
+            document.getElementById('invDueDate').value = getDefaultDueDate();
+            document.getElementById('invPayType').value = 'crypto';
+            document.getElementById('invToken').value = 'any';
+            document.getElementById('invNotes').value = '';
+            document.getElementById('lineItems').innerHTML = '';
+            addLineItem(); recalcTotal(); openModal('invoiceModal');
+        }
+        function getDefaultDueDate() { const d = new Date(); d.setDate(d.getDate() + 14); return d.toISOString().split('T')[0]; }
+
+        function addLineItem() {
+            const div = document.createElement('div'); div.className = 'line-item';
+            div.innerHTML = `<input class="form-input" placeholder="Service description" data-field="desc"><input class="form-input" placeholder="1" type="number" min="1" value="1" data-field="qty" oninput="recalcTotal()"><input class="form-input" placeholder="0.00" type="number" step="0.01" data-field="rate" oninput="recalcTotal()"><button class="line-remove" onclick="removeLineItem(this)">&times;</button>`;
+            document.getElementById('lineItems').appendChild(div);
+        }
+        function removeLineItem(btn) { if (document.querySelectorAll('#lineItems .line-item').length > 1) { btn.closest('.line-item').remove(); recalcTotal(); } }
+
+        function getLineItems() {
+            const items = [];
+            document.querySelectorAll('#lineItems .line-item').forEach(row => {
+                const desc = row.querySelector('[data-field="desc"]').value.trim();
+                const qty = parseFloat(row.querySelector('[data-field="qty"]').value) || 1;
+                const rate = parseFloat(row.querySelector('[data-field="rate"]').value) || 0;
+                if (desc || rate > 0) items.push({ desc: desc || 'Service', qty, rate });
+            });
+            return items;
+        }
+        function recalcTotal() { document.getElementById('invoiceTotal').textContent = formatCurrency(getLineItems().reduce((s, i) => s + i.qty * i.rate, 0)); }
+        function generateId() { return 'INV-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase(); }
+
+        function saveInvoice(status) {
+            const client = document.getElementById('invClient').value.trim();
+            if (!client) { toast('Client name required', true); return; }
+            const items = getLineItems();
+            if (!items.length) { toast('Add at least one item', true); return; }
+            const invoice = {
+                id: editingInvoiceId || generateId(), client,
+                email: document.getElementById('invEmail').value.trim(),
+                dueDate: document.getElementById('invDueDate').value,
+                payType: document.getElementById('invPayType').value,
+                token: document.getElementById('invToken').value,
+                items, notes: document.getElementById('invNotes').value.trim(),
+                total: items.reduce((s, i) => s + i.qty * i.rate, 0), status,
+                createdAt: editingInvoiceId ? (data.invoices.find(i => i.id === editingInvoiceId)?.createdAt || new Date().toISOString()) : new Date().toISOString(),
+                updatedAt: new Date().toISOString()
+            };
+            if (editingInvoiceId) { const idx = data.invoices.findIndex(i => i.id === editingInvoiceId); if (idx >= 0) data.invoices[idx] = invoice; }
+            else data.invoices.unshift(invoice);
+            saveData(); closeModal('invoiceModal'); renderAll();
+            toast(status === 'draft' ? 'Draft saved' : 'Invoice sent');
+        }
+
+        function editInvoice(id) {
+            const inv = data.invoices.find(i => i.id === id); if (!inv) return;
+            editingInvoiceId = id;
+            document.getElementById('invoiceModalTitle').textContent = 'Edit Invoice';
+            document.getElementById('invClient').value = inv.client;
+            document.getElementById('invEmail').value = inv.email || '';
+            document.getElementById('invDueDate').value = inv.dueDate || '';
+            document.getElementById('invPayType').value = inv.payType || 'crypto';
+            document.getElementById('invToken').value = inv.token || 'any';
+            document.getElementById('invNotes').value = inv.notes || '';
+            const c = document.getElementById('lineItems'); c.innerHTML = '';
+            (inv.items || []).forEach(item => {
+                const div = document.createElement('div'); div.className = 'line-item';
+                div.innerHTML = `<input class="form-input" placeholder="Service description" data-field="desc" value="${escapeHtml(item.desc)}"><input class="form-input" placeholder="1" type="number" min="1" value="${item.qty}" data-field="qty" oninput="recalcTotal()"><input class="form-input" placeholder="0.00" type="number" step="0.01" value="${item.rate}" data-field="rate" oninput="recalcTotal()"><button class="line-remove" onclick="removeLineItem(this)">&times;</button>`;
+                c.appendChild(div);
+            });
+            recalcTotal(); openModal('invoiceModal');
+        }
+
+        function deleteInvoice(id) {
+            if (!confirm('Delete this invoice?')) return;
+            data.invoices = data.invoices.filter(i => i.id !== id);
+            saveData(); renderAll(); toast('Invoice deleted');
+        }
+
+        function previewInvoice(id) {
+            const inv = data.invoices.find(i => i.id === id); if (!inv) return;
+            const s = data.settings;
+            const rows = (inv.items || []).map(item => `<tr><td>${escapeHtml(item.desc)}</td><td class="text-right">${item.qty}</td><td class="text-right">${formatCurrency(item.rate)}</td><td class="text-right">${formatCurrency(item.qty * item.rate)}</td></tr>`).join('');
+            document.getElementById('previewContent').innerHTML = `
+                <div class="invoice-preview">
+                    <div class="preview-header">
+                        <div><div class="preview-brand">${escapeHtml(s.name || 'BlockPay')}</div><div style="font-size:0.72rem;color:var(--text-3);margin-top:0.15rem">${escapeHtml(s.email || '')}</div></div>
+                        <div style="text-align:right"><div class="preview-id"><strong>${inv.id}</strong></div><div style="font-size:0.72rem;color:var(--text-3);margin-top:0.15rem">Due ${inv.dueDate || 'N/A'}</div><div style="margin-top:0.4rem"><span class="badge badge-${inv.status}">${inv.status}</span></div></div>
+                    </div>
+                    <div class="preview-section"><div class="preview-label">Bill To</div><div style="font-weight:800;font-size:0.88rem;color:var(--white)">${escapeHtml(inv.client)}</div><div style="font-size:0.76rem;color:var(--text-3)">${escapeHtml(inv.email || '')}</div></div>
+                    <div class="preview-section"><div class="preview-label">Payment</div><span class="badge badge-${inv.payType === 'fiat' ? 'fiat' : 'crypto'}">${inv.payType}</span>${inv.payType !== 'fiat' ? ` <span class="badge badge-crypto">${inv.token === 'any' ? 'any token' : inv.token}</span>` : ''}</div>
+                    <table class="preview-table"><thead><tr><th>Description</th><th class="text-right">Qty</th><th class="text-right">Rate</th><th class="text-right">Amount</th></tr></thead><tbody>${rows}<tr class="preview-total"><td colspan="3" class="text-right">Total</td><td class="text-right">${formatCurrency(inv.total)}</td></tr></tbody></table>
+                    ${inv.notes ? `<div class="preview-section" style="margin-top:1.25rem"><div class="preview-label">Notes</div><div style="font-size:0.78rem;color:var(--text-3);line-height:1.5">${escapeHtml(inv.notes)}</div></div>` : ''}
+                </div>`;
+            document.getElementById('previewShareBtn').onclick = () => { navigator.clipboard.writeText(location.origin + '/s/blockpay?inv=' + inv.id).then(() => toast('Link copied')).catch(() => toast('Copy failed', true)); };
+            document.getElementById('previewMarkPaid').onclick = () => { inv.status = 'paid'; inv.paidAt = new Date().toISOString(); saveData(); renderAll(); closeModal('previewModal'); toast('Marked as paid'); };
+            document.getElementById('previewMarkPaid').style.display = inv.status === 'paid' ? 'none' : '';
+            openModal('previewModal');
+        }
+
+        async function payWithClaws(id) {
+            const inv = data.invoices.find(i => i.id === id);
+            if (!inv || !window.CLAWS) { toast('CLAWS unavailable', true); return; }
+            try { if (!data.settings.wallet) { toast('Set wallet first', true); return; } const tx = await window.CLAWS.pay(inv.total, data.settings.wallet); inv.status = 'paid'; inv.paidAt = new Date().toISOString(); inv.txHash = tx; saveData(); renderAll(); toast('Payment received'); } catch(e) { toast('Payment failed', true); }
+        }
+
+        function renderAll() { renderDashboard(); renderInvoices(); renderTokens(); renderSettings(); renderPaymentHistory(); }
+
+        function renderDashboard() {
+            const inv = data.invoices, paid = inv.filter(i => i.status === 'paid'), pend = inv.filter(i => i.status === 'pending' || i.status === 'overdue');
+            document.getElementById('statEarned').textContent = formatCurrency(paid.reduce((s, i) => s + i.total, 0));
+            document.getElementById('statOutstanding').textContent = formatCurrency(pend.reduce((s, i) => s + i.total, 0));
+            document.getElementById('statPaid').textContent = paid.length;
+            document.getElementById('statPending').textContent = pend.length;
+            const recent = inv.slice(0, 5), el = document.getElementById('dashRecentInvoices');
+            if (!recent.length) { el.innerHTML = `<div class="empty"><div class="empty-title">No invoices yet</div><div class="empty-desc">Create your first invoice to start getting paid</div><button class="btn btn-primary" onclick="openCreateInvoice()">Create Invoice</button></div>`; return; }
+            el.innerHTML = recent.map(cardHtml).join('');
+        }
+
+        function renderInvoices() {
+            const f = document.getElementById('invoiceFilter').value;
+            let inv = data.invoices; if (f !== 'all') inv = inv.filter(i => i.status === f);
+            const el = document.getElementById('allInvoicesList');
+            if (!inv.length) { el.innerHTML = `<div class="empty"><div class="empty-title">No invoices found</div></div>`; return; }
+            el.innerHTML = inv.map(cardHtml).join('');
+        }
+
+        function cardHtml(inv) {
+            return `<div class="invoice-card" onclick="previewInvoice('${inv.id}')"><div class="inv-dot ${inv.status}"></div><div class="inv-info"><div class="inv-client">${escapeHtml(inv.client)}</div><div class="inv-meta"><span>${inv.id}</span><span>${inv.dueDate || ''}</span><span class="badge badge-${inv.payType === 'fiat' ? 'fiat' : 'crypto'}">${inv.payType}</span></div></div><div class="inv-amount">${formatCurrency(inv.total)}</div><div class="inv-actions"><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();editInvoice('${inv.id}')">&#9998;</button><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();deleteInvoice('${inv.id}')" style="color:#f87171">&#215;</button></div></div>`;
+        }
+
+        function renderTokens() {
+            document.getElementById('tokensList').innerHTML = TOKENS.map(t => {
+                const saved = data.tokens.find(s => s.symbol === t.symbol); const on = saved ? saved.enabled : t.enabled;
+                return `<div class="token-row"><div class="token-icon" style="color:${t.color};background:${t.color}12">${t.symbol.slice(0,2)}</div><div class="token-info"><div class="token-name">${t.symbol} <span>${t.name}</span></div><div class="token-chain">${t.chain}</div></div><div class="toggle ${on ? 'on' : ''}" onclick="toggleToken('${t.symbol}',${!on})"></div></div>`;
+            }).join('');
+        }
+        function toggleToken(symbol, enabled) { const idx = data.tokens.findIndex(t => t.symbol === symbol); if (idx >= 0) data.tokens[idx].enabled = enabled; else data.tokens.push({ symbol, enabled }); saveData(); renderTokens(); }
+
+        function renderSettings() {
+            document.getElementById('settingName').value = data.settings.name || '';
+            document.getElementById('settingEmail').value = data.settings.email || '';
+            document.getElementById('settingCurrency').value = data.settings.currency || 'USD';
+            document.getElementById('settingWallet').value = data.settings.wallet || '';
+        }
+
+        function renderPaymentHistory() {
+            const paid = data.invoices.filter(i => i.status === 'paid'), el = document.getElementById('paymentHistory');
+            if (!paid.length) { el.innerHTML = `<div class="empty"><div class="empty-title">No payments yet</div><div class="empty-desc">Transactions will appear here when clients pay</div></div>`; return; }
+            el.innerHTML = paid.map(inv => `<div class="invoice-card" onclick="previewInvoice('${inv.id}')"><div class="inv-dot paid"></div><div class="inv-info"><div class="inv-client">${escapeHtml(inv.client)}</div><div class="inv-meta"><span>${inv.id}</span><span>${inv.paidAt ? new Date(inv.paidAt).toLocaleDateString() : ''}</span>${inv.txHash ? `<span class="badge badge-crypto">${inv.txHash.slice(0,8)}</span>` : ''}</div></div><div class="inv-amount" style="color:#c9a96e">${formatCurrency(inv.total)}</div></div>`).join('');
+        }
+
+        function saveSettings() { data.settings.name = document.getElementById('settingName').value.trim(); data.settings.email = document.getElementById('settingEmail').value.trim(); data.settings.currency = document.getElementById('settingCurrency').value; data.settings.wallet = document.getElementById('settingWallet').value.trim(); saveData(); toast('Settings saved'); }
+        function togglePayMethod(el, method) { el.classList.toggle('selected'); const idx = data.payMethods.indexOf(method); if (idx >= 0) data.payMethods.splice(idx, 1); else data.payMethods.push(method); saveData(); }
+        function exportData() { const b = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = 'blockpay.json'; a.click(); URL.revokeObjectURL(u); toast('Exported'); }
+        function clearAllData() { if (!confirm('Clear all BlockPay data?')) return; data = { invoices: [], settings: { name: '', email: '', currency: 'USD', wallet: '' }, tokens: TOKENS.map(t => ({ symbol: t.symbol, enabled: t.enabled })), payMethods: ['crypto-direct'] }; saveData(); renderAll(); toast('All data cleared'); }
+        function formatCurrency(amount) { const c = data.settings?.currency || 'USD'; if (['ETH','CLAWS'].includes(c)) return amount.toFixed(2) + ' ' + c; const sym = { USD: '$', EUR: '\u20AC', GBP: '\u00A3' }; return (sym[c] || '$') + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+        function checkOverdue() { const today = new Date().toISOString().split('T')[0]; let c = false; data.invoices.forEach(inv => { if (inv.status === 'pending' && inv.dueDate && inv.dueDate < today) { inv.status = 'overdue'; c = true; } }); if (c) { saveData(); renderAll(); } }
+
+        renderAll(); checkOverdue();
+        const cw = getWallet();
+        if (cw) { walletAddress = cw; document.getElementById('walletDot').style.background = '#c9a96e'; document.getElementById('walletLabel').textContent = cw.slice(0,6) + '...' + cw.slice(-4); data.settings.wallet = cw; }
+        loadFromCloud();
+        document.getElementById('invPayType').addEventListener('change', function() { document.getElementById('cryptoTokenGroup').style.display = this.value === 'fiat' ? 'none' : ''; });
+        document.querySelectorAll('.modal-overlay').forEach(o => { o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); }); });
+    </script>
+</body>
+</html>
