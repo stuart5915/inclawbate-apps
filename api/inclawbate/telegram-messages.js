@@ -1,7 +1,19 @@
-import { kv } from '@vercel/kv';
-
-const KV_KEY = 'clawsnet:telegram_messages';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const TABLE = 'telegram_messages';
 const TELEGRAM_API = 'https://api.telegram.org/bot';
+
+function supaFetch(path, options = {}) {
+  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    ...options,
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+}
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -19,13 +31,22 @@ async function getMessages(req, res) {
     const since = parseInt(req.query.since) || 0;
     const limit = Math.min(parseInt(req.query.limit) || 50, 200);
 
-    const messages = (await kv.get(KV_KEY)) || [];
+    let query = `${TABLE}?select=*&order=timestamp.desc&limit=${limit}`;
+    if (since) query += `&timestamp=gt.${since}`;
 
-    const filtered = since
-      ? messages.filter(m => m.timestamp > since)
-      : messages.slice(-limit);
+    const resp = await supaFetch(query);
+    const rows = await resp.json();
 
-    return res.status(200).json({ ok: true, messages: filtered });
+    const messages = (rows || []).map(r => ({
+      id: r.message_id,
+      text: r.text,
+      from: { id: r.from_id, name: r.from_name, username: r.from_username },
+      replyTo: r.reply_to_id ? { id: r.reply_to_id, text: r.reply_to_text, name: r.reply_to_name } : null,
+      timestamp: r.timestamp,
+      edited: r.edited,
+    })).reverse();
+
+    return res.status(200).json({ ok: true, messages });
   } catch (err) {
     console.error('Get messages error:', err);
     return res.status(500).json({ ok: false, error: 'Failed to fetch messages' });
