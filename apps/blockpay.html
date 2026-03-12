@@ -5,6 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BlockPay</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Agent-readable schema -->
+    <meta name="agent-api" content="window.BlockPay">
+    <meta name="agent-version" content="2.0">
+    <meta name="agent-safe" content="draftInvoice,suggestTerms,proposeTokens,generateSummary,listInvoices,getInvoice,getStats,getSettings,listTokens,exportData,getCustodyPolicy">
+    <meta name="human-only" content="sendInvoice,markPaid,deleteInvoice,connectWallet,updateWallet,refund">
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "BlockPay",
+        "description": "Freelancer invoicing app with crypto payments on Base chain",
+        "url": "https://inclawbate.com/s/blockpay",
+        "applicationCategory": "FinanceApplication",
+        "operatingSystem": "Web",
+        "offers": { "@type": "Offer", "price": "0" },
+        "additionalProperty": [
+            {
+                "@type": "PropertyValue",
+                "name": "custodyPolicy",
+                "value": "Agents NEVER hold keys, sign transactions, or move funds. All send/pay/refund/delete actions are human-only. Agent API is shaped around observing and drafting only. Wallet addresses are never exposed to agents."
+            }
+        ],
+        "potentialAction": [
+            {
+                "@type": "Action",
+                "name": "DraftInvoice",
+                "description": "Agent-safe: Create a draft invoice for human review",
+                "target": "https://inclawbate.com/s/blockpay?action=draft&client={client}&amount={amount}&token={token}&due={due}",
+                "input": [
+                    {"@type": "PropertyValueSpecification", "valueName": "client", "valueRequired": true},
+                    {"@type": "PropertyValueSpecification", "valueName": "amount", "valueRequired": true},
+                    {"@type": "PropertyValueSpecification", "valueName": "token", "valueRequired": false, "defaultValue": "USDC"},
+                    {"@type": "PropertyValueSpecification", "valueName": "due", "valueRequired": false}
+                ]
+            },
+            {
+                "@type": "Action",
+                "name": "ListInvoices",
+                "description": "Agent-safe: List all invoices with optional filter",
+                "target": "https://inclawbate.com/s/blockpay?action=list&filter={filter}"
+            },
+            {
+                "@type": "Action",
+                "name": "GenerateSummary",
+                "description": "Agent-safe: Generate a financial digest",
+                "target": "https://inclawbate.com/s/blockpay?action=summary&period={period}"
+            },
+            {
+                "@type": "Action",
+                "name": "ProposeTokens",
+                "description": "Agent-safe: Suggest tokens to accept (human must approve)",
+                "target": "https://inclawbate.com/s/blockpay?action=suggest-tokens&tokens={tokens}&reason={reason}"
+            }
+        ]
+    }
+    </script>
     <style>
         :root {
             --bg: #1a1a1f;
@@ -201,6 +257,7 @@
         .badge-draft { background: rgba(71,85,105,0.2); color: var(--text-3); }
         .badge-crypto { background: var(--gold-dim); color: var(--gold); }
         .badge-fiat { background: rgba(56,189,248,0.1); color: #38bdf8; }
+        .badge-agent { background: rgba(168,85,247,0.1); color: #a855f7; }
 
         /* ── Modal ── */
         .modal-overlay {
@@ -284,6 +341,34 @@
         .line-labels span {
             font-size: 0.55rem; font-weight: 600; color: var(--text-3);
             text-transform: uppercase; letter-spacing: 0.1em;
+        }
+
+        /* ── Invoice Builder ── */
+        .invoice-builder {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+        }
+        .builder-form { min-width: 0; }
+        .builder-preview { min-width: 0; }
+        .live-preview-card {
+            background: var(--bg); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1.5rem;
+            position: sticky; top: 1rem;
+            min-height: 200px;
+        }
+        .live-preview-card .preview-brand { margin-bottom: 0.15rem; }
+        .live-preview-card .preview-from-email { font-size: 0.68rem; color: var(--text-3); margin-bottom: 1.25rem; }
+        .live-preview-card .preview-meta-row {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;
+        }
+        .live-preview-card .lp-empty {
+            text-align: center; padding: 2rem 1rem;
+            color: var(--text-3); font-size: 0.75rem; font-weight: 400;
+        }
+        @media (max-width: 768px) {
+            .invoice-builder { grid-template-columns: 1fr; }
+            .builder-preview { order: -1; }
+            .live-preview-card { position: static; }
         }
 
         /* ── Invoice Total ── */
@@ -405,6 +490,59 @@
         .empty-title { font-size: 0.82rem; font-weight: 400; color: var(--text-2); margin-bottom: 0.35rem; letter-spacing: 0.01em; }
         .empty-desc { font-size: 0.76rem; color: var(--text-3); margin-bottom: 1.25rem; font-weight: 400; }
 
+        /* ── Command Bar ── */
+        .cmd-bar {
+            position: fixed; bottom: 1.25rem; left: 50%; transform: translateX(-50%);
+            width: calc(100% - 2.5rem); max-width: 560px; z-index: 150;
+            display: flex; align-items: center; gap: 0.5rem;
+        }
+        .cmd-toggle {
+            width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+            background: var(--gold); color: #1a1a1f; border: none;
+            font-size: 0.9rem; font-weight: 800; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.15s; box-shadow: 0 4px 20px rgba(201,169,110,0.3);
+        }
+        .cmd-toggle:hover { opacity: 0.85; }
+        .cmd-input-wrap {
+            flex: 1; display: none; position: relative;
+        }
+        .cmd-input-wrap.open { display: flex; }
+        .cmd-input {
+            width: 100%; padding: 0.65rem 0.9rem; padding-right: 2.5rem;
+            background: var(--surface); border: 1px solid var(--gold-dim);
+            border-radius: 10px; color: var(--text);
+            font-family: 'Nunito', sans-serif; font-size: 0.82rem; font-weight: 400;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            transition: border-color 0.15s;
+        }
+        .cmd-input:focus { outline: none; border-color: var(--gold); }
+        .cmd-input::placeholder { color: var(--text-3); }
+        .cmd-send {
+            position: absolute; right: 0.4rem; top: 50%; transform: translateY(-50%);
+            background: var(--gold); color: #1a1a1f; border: none;
+            border-radius: 6px; width: 28px; height: 28px; cursor: pointer;
+            font-size: 0.7rem; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .cmd-help {
+            display: none; position: fixed; bottom: 4.5rem; left: 50%; transform: translateX(-50%);
+            width: calc(100% - 2.5rem); max-width: 560px; z-index: 149;
+            background: var(--surface); border: 1px solid var(--border);
+            border-radius: 12px; padding: 1rem 1.25rem;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+            font-size: 0.72rem; color: var(--text-2); line-height: 1.8;
+        }
+        .cmd-help.open { display: block; }
+        .cmd-help code {
+            background: var(--bg); padding: 0.1rem 0.35rem; border-radius: 4px;
+            font-size: 0.68rem; color: var(--gold-light);
+        }
+        .cmd-help-title {
+            font-size: 0.6rem; font-weight: 600; color: var(--text-3);
+            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;
+        }
+
         /* ── Responsive ── */
         @media (max-width: 768px) {
             header { padding: 0 1.25rem; height: auto; padding-top: 0.65rem; padding-bottom: 0.65rem; }
@@ -422,11 +560,31 @@
             .stats-grid { grid-template-columns: 1fr 1fr; }
             .stat-value { font-size: 1.2rem; }
             .pay-grid { grid-template-columns: 1fr 1fr; }
-            .inv-actions { display: none; }
+            .inv-actions { display: flex; }
         }
     </style>
 </head>
 <body>
+    <!-- Command Bar -->
+    <div class="cmd-help" id="cmdHelp">
+        <div class="cmd-help-title">Agent-Safe Commands</div>
+        <code>draft invoice for [client] [amount] [token] due [date]</code><br>
+        <code>suggest tokens ETH USDC CLAWS</code><br>
+        <code>summary</code> · <code>summary week</code> · <code>summary month</code><br>
+        <code>list invoices</code> · <code>list drafts</code> · <code>list paid</code><br>
+        <code>show invoice [id]</code> · <code>stats</code> · <code>tokens</code><br>
+        <code>set name [name]</code> · <code>set email [email]</code> · <code>export</code><br>
+        <div class="cmd-help-title" style="margin-top:0.6rem;color:#f87171">Human-Only (blocked for agents)</div>
+        Send invoice · Mark paid · Delete · Connect wallet · Refund
+    </div>
+    <div class="cmd-bar">
+        <button class="cmd-toggle" id="cmdToggle" onclick="toggleCmdBar()" title="Agent Command Bar">&#9881;</button>
+        <div class="cmd-input-wrap" id="cmdWrap">
+            <input class="cmd-input" id="cmdInput" placeholder="Type a command... (try 'help')" onkeydown="if(event.key==='Enter')runCmd()">
+            <button class="cmd-send" onclick="runCmd()">&#9654;</button>
+        </div>
+    </div>
+
     <div class="toast-wrap" id="toastContainer"></div>
 
     <header>
@@ -510,16 +668,7 @@
             <div class="page-subtitle">Configure how clients can pay you.</div>
 
             <div class="pay-grid">
-                <div class="pay-card" onclick="togglePayMethod(this, 'fiat-card')">
-                    <div class="pay-card-icon">&#128179;</div>
-                    <div class="pay-card-title">Card / Bank</div>
-                    <div class="pay-card-desc">Visa, Mastercard, bank transfers via fiat rails</div>
-                </div>
-                <div class="pay-card" onclick="togglePayMethod(this, 'moonpay')">
-                    <div class="pay-card-icon">&#127765;</div>
-                    <div class="pay-card-title">MoonPay</div>
-                    <div class="pay-card-desc">Client pays fiat, you receive crypto</div>
-                </div>
+                <!-- Card/Bank and MoonPay hidden until ready -->
                 <div class="pay-card selected" onclick="togglePayMethod(this, 'crypto-direct')">
                     <div class="pay-card-icon">&#9935;</div>
                     <div class="pay-card-title">Crypto Direct</div>
@@ -570,7 +719,22 @@
                         <option value="EUR">EUR</option>
                         <option value="GBP">GBP</option>
                         <option value="ETH">ETH</option>
+                        <option value="USDC">USDC</option>
+                        <option value="USDT">USDT</option>
                         <option value="CLAWS">CLAWS</option>
+                        <option value="SOL">SOL</option>
+                        <option value="ISB">ISB</option>
+                        <option value="BV7X">BV7X</option>
+                        <option value="CLAWNCH">CLAWNCH</option>
+                        <option value="CLAWNSTR">CLAWNSTR</option>
+                        <option value="S4H">S4H</option>
+                        <option value="INCLAWNCH">INCLAWNCH</option>
+                        <option value="DELUS">DELUS</option>
+                        <option value="TYM">TYM</option>
+                        <option value="STU">STU</option>
+                        <option value="100ROCKETS">100ROCKETS</option>
+                        <option value="DD">DD</option>
+                        <option value="JESUS">JESUS</option>
                     </select>
                 </div>
                 <button class="btn btn-primary" onclick="saveSettings()">Save Profile</button>
@@ -598,84 +762,110 @@
 
     <!-- CREATE INVOICE MODAL -->
     <div class="modal-overlay" id="invoiceModal">
-        <div class="modal">
+        <div class="modal" style="max-width:920px">
             <div class="modal-header">
                 <div class="modal-title" id="invoiceModalTitle">New Invoice</div>
                 <button class="modal-close" onclick="closeModal('invoiceModal')">&times;</button>
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Client</label>
-                    <input class="form-input" id="invClient" placeholder="Name or company">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Email</label>
-                    <input class="form-input" id="invEmail" type="email" placeholder="client@email.com">
-                </div>
-            </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label class="form-label">Due Date</label>
-                    <input class="form-input" id="invDueDate" type="date">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Payment Type</label>
-                    <select class="form-select" id="invPayType">
-                        <option value="crypto">Crypto</option>
-                        <option value="fiat">Fiat</option>
-                        <option value="both">Both</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group" id="cryptoTokenGroup">
-                <label class="form-label">Preferred Token</label>
-                <select class="form-select" id="invToken">
-                    <option value="ETH">ETH</option>
-                    <option value="USDC">USDC</option>
-                    <option value="USDT">USDT</option>
-                    <option value="CLAWS">CLAWS</option>
-                    <option value="SOL">SOL</option>
-                    <option value="ISB">ISB</option>
-                    <option value="BV7X">BV7X</option>
-                    <option value="CLAWNCH">CLAWNCH</option>
-                    <option value="CLAWNSTR">CLAWNSTR</option>
-                    <option value="S4H">S4H</option>
-                    <option value="INCLAWNCH">INCLAWNCH</option>
-                    <option value="DELUS">DELUS</option>
-                    <option value="TYM">TYM</option>
-                    <option value="STU">STU</option>
-                    <option value="100ROCKETS">100ROCKETS</option>
-                    <option value="DD">DD</option>
-                    <option value="JESUS">JESUS</option>
-                    <option value="any">Any Accepted Token</option>
-                </select>
-            </div>
+            <div class="invoice-builder">
+                <div class="builder-form">
+                    <div class="preview-label" style="margin-bottom:0.6rem">From</div>
+                    <div class="form-row" style="margin-bottom:0.5rem">
+                        <div class="form-group">
+                            <label class="form-label">Your Name / Business</label>
+                            <input class="form-input" id="invFromName" placeholder="Your name or business" oninput="updateLivePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Your Email</label>
+                            <input class="form-input" id="invFromEmail" type="email" placeholder="you@email.com" oninput="updateLivePreview()">
+                        </div>
+                        <div class="form-group" style="flex:1 1 100%">
+                            <label class="form-label">Your Wallet Address</label>
+                            <input class="form-input" id="invFromWallet" placeholder="0x..." oninput="updateLivePreview()">
+                        </div>
+                    </div>
+                    <div class="preview-label" style="margin-bottom:0.6rem">Bill To</div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Client Name</label>
+                            <input class="form-input" id="invClient" placeholder="Client or company" oninput="updateLivePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Client Email</label>
+                            <input class="form-input" id="invEmail" type="email" placeholder="client@email.com" oninput="updateLivePreview()">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Due Date</label>
+                            <input class="form-input" id="invDueDate" type="date" onchange="updateLivePreview()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Payment Type</label>
+                            <select class="form-select" id="invPayType" onchange="updateLivePreview()">
+                                <option value="crypto">Crypto</option>
+                                <option value="fiat">Fiat</option>
+                                <option value="both">Both</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group" id="cryptoTokenGroup">
+                        <label class="form-label">Preferred Token</label>
+                        <select class="form-select" id="invToken" onchange="updateLivePreview()">
+                            <option value="ETH">ETH</option>
+                            <option value="USDC">USDC</option>
+                            <option value="USDT">USDT</option>
+                            <option value="CLAWS">CLAWS</option>
+                            <option value="SOL">SOL</option>
+                            <option value="ISB">ISB</option>
+                            <option value="BV7X">BV7X</option>
+                            <option value="CLAWNCH">CLAWNCH</option>
+                            <option value="CLAWNSTR">CLAWNSTR</option>
+                            <option value="S4H">S4H</option>
+                            <option value="INCLAWNCH">INCLAWNCH</option>
+                            <option value="DELUS">DELUS</option>
+                            <option value="TYM">TYM</option>
+                            <option value="STU">STU</option>
+                            <option value="100ROCKETS">100ROCKETS</option>
+                            <option value="DD">DD</option>
+                            <option value="JESUS">JESUS</option>
+                            <option value="any">Any Accepted Token</option>
+                        </select>
+                    </div>
 
-            <label class="form-label" style="margin-bottom:0.6rem">Line Items</label>
-            <div class="line-labels"><span>Description</span><span>Qty</span><span>Rate</span><span></span></div>
-            <div class="line-items" id="lineItems">
-                <div class="line-item">
-                    <input class="form-input" placeholder="Service description" data-field="desc">
-                    <input class="form-input" placeholder="1" type="number" min="1" value="1" data-field="qty">
-                    <input class="form-input" placeholder="0.00" type="number" step="0.01" data-field="rate">
-                    <button class="line-remove" onclick="removeLineItem(this)">&times;</button>
+                    <label class="form-label" style="margin-bottom:0.6rem">Line Items</label>
+                    <div class="line-labels"><span>Description</span><span>Qty</span><span>Rate</span><span></span></div>
+                    <div class="line-items" id="lineItems">
+                        <div class="line-item">
+                            <input class="form-input" placeholder="Service description" data-field="desc" oninput="updateLivePreview()">
+                            <input class="form-input" placeholder="1" type="number" min="1" value="1" data-field="qty" oninput="recalcTotal();updateLivePreview()">
+                            <input class="form-input" placeholder="0.00" type="number" step="0.01" data-field="rate" oninput="recalcTotal();updateLivePreview()">
+                            <button class="line-remove" onclick="removeLineItem(this)">&times;</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-ghost btn-sm" onclick="addLineItem()" style="margin-bottom:1rem">+ Add Line</button>
+
+                    <div class="form-group">
+                        <label class="form-label">Notes</label>
+                        <textarea class="form-textarea" id="invNotes" placeholder="Payment terms, notes..." oninput="updateLivePreview()"></textarea>
+                    </div>
+
+                    <div class="invoice-total">
+                        <span class="total-label">Total</span>
+                        <span class="total-value" id="invoiceTotal">$0.00</span>
+                    </div>
+
+                    <div style="display:flex;gap:0.5rem;justify-content:flex-end;flex-wrap:wrap">
+                        <button class="btn btn-ghost" onclick="saveInvoice('draft')">Save Draft</button>
+                        <button class="btn btn-ghost" onclick="previewFromCreate()">Preview</button>
+                        <button class="btn btn-ghost" onclick="saveDraftAndPdf()">Save PDF</button>
+                        <button class="btn btn-primary" onclick="saveInvoice('pending')">Send Invoice</button>
+                    </div>
                 </div>
-            </div>
-            <button class="btn btn-ghost btn-sm" onclick="addLineItem()" style="margin-bottom:1rem">+ Add Line</button>
-
-            <div class="form-group">
-                <label class="form-label">Notes</label>
-                <textarea class="form-textarea" id="invNotes" placeholder="Payment terms, notes..."></textarea>
-            </div>
-
-            <div class="invoice-total">
-                <span class="total-label">Total</span>
-                <span class="total-value" id="invoiceTotal">$0.00</span>
-            </div>
-
-            <div style="display:flex;gap:0.5rem;justify-content:flex-end">
-                <button class="btn btn-ghost" onclick="saveInvoice('draft')">Save Draft</button>
-                <button class="btn btn-primary" onclick="saveInvoice('pending')">Send Invoice</button>
+                <div class="builder-preview">
+                    <div class="preview-label" style="margin-bottom:0.75rem">Live Preview</div>
+                    <div id="livePreviewContent" class="live-preview-card"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -690,7 +880,8 @@
             <div id="previewContent"></div>
             <div style="display:flex;gap:0.5rem;justify-content:flex-end;margin-top:1.5rem">
                 <button class="btn btn-ghost" onclick="closeModal('previewModal')">Close</button>
-                <button class="btn btn-ghost" id="previewShareBtn">Copy Pay Link</button>
+<button class="btn btn-ghost" id="previewPdfBtn" onclick="downloadPdf()">Save PDF</button>
+                <button class="btn btn-ghost" id="previewEmailBtn">Send Email</button>
                 <button class="btn btn-primary" id="previewMarkPaid">Mark as Paid</button>
             </div>
         </div>
@@ -698,6 +889,7 @@
 
     <script>
         const STORAGE_KEY = 'blockpay_data';
+        const SYNC_API = 'https://www.inclawbate.com/api/inclawbate/blockpay-sync';
         const TOKENS = [
             { symbol: 'ETH', name: 'Ethereum', chain: 'Ethereum / Base', color: '#627eea', enabled: true },
             { symbol: 'USDC', name: 'USD Coin', chain: 'Base / Ethereum', color: '#2775ca', enabled: true },
@@ -721,17 +913,147 @@
         let data = loadData();
         let editingInvoiceId = null;
 
+        function defaultData() {
+            return { invoices: [], settings: { name: '', email: '', currency: 'USD', wallet: '' }, tokens: TOKENS.map(t => ({ symbol: t.symbol, enabled: t.enabled })), payMethods: ['crypto-direct'], lastSaved: new Date().toISOString() };
+        }
         function loadData() {
             try { const r = localStorage.getItem(STORAGE_KEY); if (r) return JSON.parse(r); } catch(e) {}
-            return { invoices: [], settings: { name: '', email: '', currency: 'USD', wallet: '' }, tokens: TOKENS.map(t => ({ symbol: t.symbol, enabled: t.enabled })), payMethods: ['crypto-direct'] };
+            return defaultData();
         }
         function saveData() {
+            data.lastSaved = new Date().toISOString();
             localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
             if (window.AppDB) window.AppDB.set('blockpay_data', data).catch(() => {});
+            syncToCloud();
+        }
+        // ═══════════════════════════════════════════
+        // EVENT SYSTEM — webhooks + polling + events
+        // ═══════════════════════════════════════════
+        var eventLog = [];
+        var webhookUrls = JSON.parse(localStorage.getItem('blockpay_webhooks') || '[]');
+
+        function emitEvent(type, payload) {
+            var event = { type: type, timestamp: new Date().toISOString(), data: payload };
+            eventLog.push(event);
+            if (eventLog.length > 100) eventLog.shift();
+
+            // Custom DOM event for in-page listeners
+            window.dispatchEvent(new CustomEvent('blockpay-event', { detail: event }));
+
+            // Console log for agents watching console
+            console.log('[BlockPay:event]', JSON.stringify(event));
+
+            // postMessage to parent iframe
+            try { if (window.parent !== window) window.parent.postMessage({ type: 'blockpay-event', event: event }, '*'); } catch(e) {}
+
+            // Fire webhooks
+            webhookUrls.forEach(function(url) {
+                fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(event) }).catch(function() {});
+            });
+        }
+
+        // Expose event API on window.BlockPay (added after BlockPay is defined)
+        function attachEventApi() {
+            // Subscribe to events with callback
+            var listeners = {};
+            window.BlockPay.on = function(type, fn) {
+                if (!listeners[type]) listeners[type] = [];
+                listeners[type].push(fn);
+                return { ok: true, scope: 'agent-safe', subscribed: type };
+            };
+            window.BlockPay.off = function(type, fn) {
+                if (!listeners[type]) return;
+                listeners[type] = listeners[type].filter(function(f) { return f !== fn; });
+            };
+            window.addEventListener('blockpay-event', function(e) {
+                var type = e.detail.type;
+                if (listeners[type]) listeners[type].forEach(function(fn) { fn(e.detail); });
+                if (listeners['*']) listeners['*'].forEach(function(fn) { fn(e.detail); });
+            });
+
+            // Polling endpoint — returns events since a timestamp
+            window.BlockPay.poll = function(sinceIso) {
+                var since = sinceIso ? new Date(sinceIso).getTime() : 0;
+                var events = eventLog.filter(function(e) { return new Date(e.timestamp).getTime() > since; });
+                return { ok: true, scope: 'agent-safe', events: events, count: events.length, latestTimestamp: events.length ? events[events.length - 1].timestamp : sinceIso || null };
+            };
+
+            // Webhook management
+            window.BlockPay.addWebhook = function(url) {
+                if (!url || typeof url !== 'string') return { ok: false, error: 'URL required' };
+                if (webhookUrls.indexOf(url) >= 0) return { ok: true, scope: 'agent-safe', note: 'Already registered' };
+                webhookUrls.push(url);
+                localStorage.setItem('blockpay_webhooks', JSON.stringify(webhookUrls));
+                return { ok: true, scope: 'agent-safe', registered: url, total: webhookUrls.length };
+            };
+            window.BlockPay.removeWebhook = function(url) {
+                webhookUrls = webhookUrls.filter(function(u) { return u !== url; });
+                localStorage.setItem('blockpay_webhooks', JSON.stringify(webhookUrls));
+                return { ok: true, scope: 'agent-safe', removed: url, total: webhookUrls.length };
+            };
+            window.BlockPay.listWebhooks = function() {
+                return { ok: true, scope: 'agent-safe', webhooks: webhookUrls.slice() };
+            };
+
+            // Event log
+            window.BlockPay.getEvents = function(limit) {
+                var n = Math.min(limit || 50, 100);
+                return { ok: true, scope: 'agent-safe', events: eventLog.slice(-n), count: eventLog.length };
+            };
+        }
+
+        var syncDebounce = null;
+        function syncToCloud() {
+            clearTimeout(syncDebounce);
+            syncDebounce = setTimeout(function() {
+                var wallet = data.settings.wallet;
+                if (!wallet) return;
+                fetch(SYNC_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        wallet: wallet,
+                        profile: { name: data.settings.name, email: data.settings.email, currency: data.settings.currency },
+                        invoices: data.invoices,
+                        tokens: data.tokens
+                    })
+                }).catch(function() {});
+            }, 2000);
+        }
+        function mergeData(local, cloud) {
+            if (!cloud) return local;
+            const merged = JSON.parse(JSON.stringify(local));
+            const localMap = new Map(local.invoices.map(i => [i.id, i]));
+            const cloudMap = new Map((cloud.invoices || []).map(i => [i.id, i]));
+            cloudMap.forEach((cInv, id) => {
+                const lInv = localMap.get(id);
+                if (!lInv) { merged.invoices.push(cInv); }
+                else if (cInv.updatedAt > lInv.updatedAt) { const idx = merged.invoices.findIndex(i => i.id === id); if (idx >= 0) merged.invoices[idx] = cInv; }
+            });
+            if (cloud.lastSaved > (local.lastSaved || '')) {
+                merged.settings = cloud.settings || merged.settings;
+                merged.tokens = cloud.tokens || merged.tokens;
+                merged.payMethods = cloud.payMethods || merged.payMethods;
+            }
+            return merged;
+        }
+        async function waitForAppDB() {
+            if (window.AppDB) return true;
+            return new Promise(resolve => {
+                var t = setInterval(function() { if (window.AppDB) { clearInterval(t); resolve(true); } }, 100);
+                setTimeout(function() { clearInterval(t); resolve(false); }, 8000);
+            });
         }
         async function loadFromCloud() {
-            if (!window.AppDB) return;
-            try { const c = await window.AppDB.get('blockpay_data'); if (c?.invoices?.length > (data.invoices?.length||0)) { data = c; saveData(); renderAll(); toast('Synced from cloud'); } } catch(e) {}
+            var ready = await waitForAppDB();
+            if (!ready) return;
+            try {
+                const cloud = await window.AppDB.get('blockpay_data');
+                if (!cloud) { window.AppDB.set('blockpay_data', data).catch(function(){}); return; }
+                const merged = mergeData(data, cloud);
+                const changed = JSON.stringify(merged) !== JSON.stringify(data);
+                if (changed) { data = merged; localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); renderAll(); toast('Synced from cloud'); }
+            } catch(e) {}
         }
 
         document.querySelectorAll('.nav-tab').forEach(tab => {
@@ -773,6 +1095,9 @@
         function openCreateInvoice() {
             editingInvoiceId = null;
             document.getElementById('invoiceModalTitle').textContent = 'New Invoice';
+            document.getElementById('invFromName').value = data.settings.name || '';
+            document.getElementById('invFromEmail').value = data.settings.email || '';
+            document.getElementById('invFromWallet').value = data.settings.wallet || '';
             document.getElementById('invClient').value = '';
             document.getElementById('invEmail').value = '';
             document.getElementById('invDueDate').value = getDefaultDueDate();
@@ -780,16 +1105,16 @@
             document.getElementById('invToken').value = 'any';
             document.getElementById('invNotes').value = '';
             document.getElementById('lineItems').innerHTML = '';
-            addLineItem(); recalcTotal(); openModal('invoiceModal');
+            addLineItem(); recalcTotal(); updateLivePreview(); openModal('invoiceModal');
         }
         function getDefaultDueDate() { const d = new Date(); d.setDate(d.getDate() + 14); return d.toISOString().split('T')[0]; }
 
         function addLineItem() {
             const div = document.createElement('div'); div.className = 'line-item';
-            div.innerHTML = `<input class="form-input" placeholder="Service description" data-field="desc"><input class="form-input" placeholder="1" type="number" min="1" value="1" data-field="qty" oninput="recalcTotal()"><input class="form-input" placeholder="0.00" type="number" step="0.01" data-field="rate" oninput="recalcTotal()"><button class="line-remove" onclick="removeLineItem(this)">&times;</button>`;
+            div.innerHTML = `<input class="form-input" placeholder="Service description" data-field="desc" oninput="updateLivePreview()"><input class="form-input" placeholder="1" type="number" min="1" value="1" data-field="qty" oninput="recalcTotal();updateLivePreview()"><input class="form-input" placeholder="0.00" type="number" step="0.01" data-field="rate" oninput="recalcTotal();updateLivePreview()"><button class="line-remove" onclick="removeLineItem(this);updateLivePreview()">&times;</button>`;
             document.getElementById('lineItems').appendChild(div);
         }
-        function removeLineItem(btn) { if (document.querySelectorAll('#lineItems .line-item').length > 1) { btn.closest('.line-item').remove(); recalcTotal(); } }
+        function removeLineItem(btn) { if (document.querySelectorAll('#lineItems .line-item').length > 1) { btn.closest('.line-item').remove(); recalcTotal(); updateLivePreview(); } }
 
         function getLineItems() {
             const items = [];
@@ -802,6 +1127,54 @@
             return items;
         }
         function recalcTotal() { document.getElementById('invoiceTotal').textContent = formatCurrency(getLineItems().reduce((s, i) => s + i.qty * i.rate, 0)); }
+
+        function updateLivePreview() {
+            const el = document.getElementById('livePreviewContent');
+            const client = document.getElementById('invClient').value.trim();
+            const email = document.getElementById('invEmail').value.trim();
+            const due = document.getElementById('invDueDate').value;
+            const payType = document.getElementById('invPayType').value;
+            const token = document.getElementById('invToken').value;
+            const notes = document.getElementById('invNotes').value.trim();
+            const items = getLineItems();
+            const total = items.reduce((s, i) => s + i.qty * i.rate, 0);
+            const fromName = document.getElementById('invFromName').value.trim();
+            const fromEmail = document.getElementById('invFromEmail').value.trim();
+            const fromWallet = document.getElementById('invFromWallet').value.trim();
+
+            if (!client && !items.length) {
+                el.innerHTML = '<div class="lp-empty">Start filling in the form to see your invoice</div>';
+                return;
+            }
+
+            const rows = items.map(i => `<tr><td>${escapeHtml(i.desc)}</td><td class="text-right">${i.qty}</td><td class="text-right">${formatCurrency(i.rate)}</td><td class="text-right">${formatCurrency(i.qty * i.rate)}</td></tr>`).join('');
+
+            el.innerHTML = `
+                <div class="preview-brand">${escapeHtml(fromName || 'BlockPay')}</div>
+                <div class="preview-from-email">${escapeHtml(fromEmail)}</div>
+                ${fromWallet ? `<div style="font-size:0.65rem;color:var(--text-3);word-break:break-all;margin-top:0.15rem"><span style="font-weight:600;color:var(--text-2)">Pay to:</span> ${escapeHtml(fromWallet)}</div>` : ''}
+                <div class="preview-meta-row">
+                    <div>
+                        <div class="preview-label">Bill To</div>
+                        <div style="font-weight:600;font-size:0.84rem;color:var(--white)">${escapeHtml(client || 'Client name')}</div>
+                        <div style="font-size:0.72rem;color:var(--text-3)">${escapeHtml(email)}</div>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-size:0.68rem;color:var(--text-3)">Due ${due || '...'}</div>
+                        <div style="margin-top:0.3rem">
+                            <span class="badge badge-${payType === 'fiat' ? 'fiat' : 'crypto'}">${payType}</span>
+                            ${payType !== 'fiat' ? `<span class="badge badge-crypto" style="margin-left:0.2rem">${token === 'any' ? 'any' : token}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+                ${items.length ? `
+                <table class="preview-table">
+                    <thead><tr><th>Description</th><th class="text-right">Qty</th><th class="text-right">Rate</th><th class="text-right">Amount</th></tr></thead>
+                    <tbody>${rows}<tr class="preview-total"><td colspan="3" class="text-right">Total</td><td class="text-right">${formatCurrency(total)}</td></tr></tbody>
+                </table>` : ''}
+                ${notes ? `<div style="margin-top:1rem"><div class="preview-label">Notes</div><div style="font-size:0.75rem;color:var(--text-3);line-height:1.5">${escapeHtml(notes)}</div></div>` : ''}
+            `;
+        }
         function generateId() { return 'INV-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase(); }
 
         function saveInvoice(status) {
@@ -811,6 +1184,9 @@
             if (!items.length) { toast('Add at least one item', true); return; }
             const invoice = {
                 id: editingInvoiceId || generateId(), client,
+                fromName: document.getElementById('invFromName').value.trim(),
+                fromEmail: document.getElementById('invFromEmail').value.trim(),
+                fromWallet: document.getElementById('invFromWallet').value.trim(),
                 email: document.getElementById('invEmail').value.trim(),
                 dueDate: document.getElementById('invDueDate').value,
                 payType: document.getElementById('invPayType').value,
@@ -823,13 +1199,24 @@
             if (editingInvoiceId) { const idx = data.invoices.findIndex(i => i.id === editingInvoiceId); if (idx >= 0) data.invoices[idx] = invoice; }
             else data.invoices.unshift(invoice);
             saveData(); closeModal('invoiceModal'); renderAll();
-            toast(status === 'draft' ? 'Draft saved' : 'Invoice sent');
+            // Emit events
+            var summary = { id: invoice.id, client: invoice.client, total: invoice.total, token: invoice.token, dueDate: invoice.dueDate, status: status };
+            if (status === 'pending') {
+                emitEvent('invoice.sent', summary);
+                emailInvoice(invoice); toast('Invoice saved — opening email');
+            } else if (status === 'draft') {
+                emitEvent('invoice.drafted', summary);
+                toast('Draft saved');
+            } else { toast('Invoice saved'); }
         }
 
         function editInvoice(id) {
             const inv = data.invoices.find(i => i.id === id); if (!inv) return;
             editingInvoiceId = id;
             document.getElementById('invoiceModalTitle').textContent = 'Edit Invoice';
+            document.getElementById('invFromName').value = inv.fromName || '';
+            document.getElementById('invFromEmail').value = inv.fromEmail || '';
+            document.getElementById('invFromWallet').value = inv.fromWallet || '';
             document.getElementById('invClient').value = inv.client;
             document.getElementById('invEmail').value = inv.email || '';
             document.getElementById('invDueDate').value = inv.dueDate || '';
@@ -842,7 +1229,7 @@
                 div.innerHTML = `<input class="form-input" placeholder="Service description" data-field="desc" value="${escapeHtml(item.desc)}"><input class="form-input" placeholder="1" type="number" min="1" value="${item.qty}" data-field="qty" oninput="recalcTotal()"><input class="form-input" placeholder="0.00" type="number" step="0.01" value="${item.rate}" data-field="rate" oninput="recalcTotal()"><button class="line-remove" onclick="removeLineItem(this)">&times;</button>`;
                 c.appendChild(div);
             });
-            recalcTotal(); openModal('invoiceModal');
+            recalcTotal(); updateLivePreview(); openModal('invoiceModal');
         }
 
         function deleteInvoice(id) {
@@ -853,12 +1240,11 @@
 
         function previewInvoice(id) {
             const inv = data.invoices.find(i => i.id === id); if (!inv) return;
-            const s = data.settings;
             const rows = (inv.items || []).map(item => `<tr><td>${escapeHtml(item.desc)}</td><td class="text-right">${item.qty}</td><td class="text-right">${formatCurrency(item.rate)}</td><td class="text-right">${formatCurrency(item.qty * item.rate)}</td></tr>`).join('');
             document.getElementById('previewContent').innerHTML = `
                 <div class="invoice-preview">
                     <div class="preview-header">
-                        <div><div class="preview-brand">${escapeHtml(s.name || 'BlockPay')}</div><div style="font-size:0.72rem;color:var(--text-3);margin-top:0.15rem">${escapeHtml(s.email || '')}</div></div>
+                        <div><div class="preview-brand">${escapeHtml(inv.fromName || data.settings.name || 'BlockPay')}</div><div style="font-size:0.72rem;color:var(--text-3);margin-top:0.15rem">${escapeHtml(inv.fromEmail || data.settings.email || '')}</div>${(inv.fromWallet || data.settings.wallet) ? `<div style="font-size:0.65rem;color:var(--text-3);word-break:break-all;margin-top:0.15rem"><span style="font-weight:600;color:var(--text-2)">Pay to:</span> ${escapeHtml(inv.fromWallet || data.settings.wallet)}</div>` : ''}</div>
                         <div style="text-align:right"><div class="preview-id"><strong>${inv.id}</strong></div><div style="font-size:0.72rem;color:var(--text-3);margin-top:0.15rem">Due ${inv.dueDate || 'N/A'}</div><div style="margin-top:0.4rem"><span class="badge badge-${inv.status}">${inv.status}</span></div></div>
                     </div>
                     <div class="preview-section"><div class="preview-label">Bill To</div><div style="font-weight:800;font-size:0.88rem;color:var(--white)">${escapeHtml(inv.client)}</div><div style="font-size:0.76rem;color:var(--text-3)">${escapeHtml(inv.email || '')}</div></div>
@@ -866,16 +1252,95 @@
                     <table class="preview-table"><thead><tr><th>Description</th><th class="text-right">Qty</th><th class="text-right">Rate</th><th class="text-right">Amount</th></tr></thead><tbody>${rows}<tr class="preview-total"><td colspan="3" class="text-right">Total</td><td class="text-right">${formatCurrency(inv.total)}</td></tr></tbody></table>
                     ${inv.notes ? `<div class="preview-section" style="margin-top:1.25rem"><div class="preview-label">Notes</div><div style="font-size:0.78rem;color:var(--text-3);line-height:1.5">${escapeHtml(inv.notes)}</div></div>` : ''}
                 </div>`;
-            document.getElementById('previewShareBtn').onclick = () => { navigator.clipboard.writeText(location.origin + '/s/blockpay?inv=' + inv.id).then(() => toast('Link copied')).catch(() => toast('Copy failed', true)); };
-            document.getElementById('previewMarkPaid').onclick = () => { inv.status = 'paid'; inv.paidAt = new Date().toISOString(); saveData(); renderAll(); closeModal('previewModal'); toast('Marked as paid'); };
+            document.getElementById('previewEmailBtn').onclick = () => emailInvoice(inv);
+            document.getElementById('previewMarkPaid').onclick = () => { inv.status = 'paid'; inv.paidAt = new Date().toISOString(); inv.updatedAt = new Date().toISOString(); saveData(); renderAll(); closeModal('previewModal'); toast('Marked as paid'); emitEvent('invoice.paid', { id: inv.id, client: inv.client, total: inv.total, token: inv.token, paidAt: inv.paidAt }); };
             document.getElementById('previewMarkPaid').style.display = inv.status === 'paid' ? 'none' : '';
             openModal('previewModal');
+        }
+
+        function emailInvoice(inv) {
+            var to = inv.email || '';
+            var from = inv.fromName || data.settings.name || 'BlockPay';
+            var fromEmail = inv.fromEmail || data.settings.email || '';
+            var payLink = 'https://inclawbate.com/s/blockpay?inv=' + inv.id;
+            var itemLines = (inv.items || []).map(function(item) {
+                return '  - ' + item.desc + ' (x' + item.qty + ') — ' + formatCurrency(item.qty * item.rate);
+            }).join('\n');
+            var subject = 'Invoice ' + inv.id + ' from ' + from + ' — ' + formatCurrency(inv.total);
+            var body = 'Hi ' + (inv.client || 'there') + ',\n\n' +
+                'Please find your invoice details below.\n\n' +
+                '--- Invoice ' + inv.id + ' ---\n' +
+                'From: ' + from + (fromEmail ? ' (' + fromEmail + ')' : '') + '\n' +
+                'Due: ' + (inv.dueDate || 'N/A') + '\n' +
+                ((inv.fromWallet || data.settings.wallet) ? 'Pay to: ' + (inv.fromWallet || data.settings.wallet) + '\n' : '') +
+                'Payment: ' + inv.payType + (inv.payType !== 'fiat' && inv.token !== 'any' ? ' (' + inv.token + ')' : '') + '\n\n' +
+                'Items:\n' + itemLines + '\n\n' +
+                'Total: ' + formatCurrency(inv.total) + '\n\n' +
+                '--- Pay Here ---\n' + payLink + '\n\n' +
+                (inv.notes ? 'Notes: ' + inv.notes + '\n\n' : '') +
+                'Thank you,\n' + from;
+            var mailto = 'mailto:' + encodeURIComponent(to) + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+            window.open(mailto, '_self');
+            toast('Opening email client');
+        }
+
+        function downloadPdf(sourceId) {
+            var content = document.getElementById(sourceId || 'previewContent').innerHTML;
+            var css = '*{margin:0;padding:0;box-sizing:border-box}' +
+                'body{font-family:Nunito,sans-serif;background:#fff;color:#1a1a1f;padding:2rem}' +
+                '.invoice-preview{max-width:700px;margin:0 auto}' +
+                '.preview-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:2px solid #e2e8f0}' +
+                '.preview-brand{font-size:1.2rem;font-weight:800;color:#1a1a1f}' +
+                '.preview-section{margin-top:1rem}' +
+                '.preview-label{font-size:0.65rem;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#64748b;margin-bottom:0.25rem}' +
+                '.preview-id{font-size:0.8rem;color:#1a1a1f}' +
+                '.preview-meta-row{display:flex;justify-content:space-between;margin-top:1rem;padding-bottom:0.75rem;border-bottom:1px solid #e2e8f0}' +
+                '.badge{display:inline-block;padding:0.15rem 0.5rem;border-radius:999px;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.04em}' +
+                '.badge-crypto{background:#c9a96e22;color:#c9a96e}.badge-fiat{background:#2775ca22;color:#2775ca}' +
+                '.badge-draft{background:#94a3b822;color:#64748b}.badge-pending{background:#f59e0b22;color:#d97706}' +
+                '.badge-paid{background:#10b98122;color:#059669}.badge-overdue{background:#ef444422;color:#dc2626}' +
+                '.preview-table{width:100%;border-collapse:collapse;margin-top:1rem;font-size:0.78rem}' +
+                '.preview-table th{text-align:left;padding:0.5rem 0.4rem;border-bottom:2px solid #e2e8f0;font-size:0.65rem;text-transform:uppercase;letter-spacing:0.06em;color:#64748b;font-weight:600}' +
+                '.preview-table td{padding:0.5rem 0.4rem;border-bottom:1px solid #f1f5f9;color:#1a1a1f}' +
+                '.preview-total td{border-top:2px solid #e2e8f0;font-weight:800;border-bottom:none}' +
+                '.text-right{text-align:right}' +
+                '@media print{body{padding:1rem}@page{margin:1cm}}';
+            var win = window.open('', '_blank');
+            var doc = win.document;
+            doc.open();
+            doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Invoice<\/title>');
+            doc.write('<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">');
+            doc.write('<style>' + css + '<\/style><\/head><body>');
+            doc.write(content);
+            doc.write('<\/body><\/html>');
+            doc.close();
+            win.onload = function() { win.print(); };
+        }
+
+        function previewFromCreate() {
+            var client = document.getElementById('invClient').value.trim();
+            if (!client) { toast('Client name required', true); return; }
+            var items = getLineItems();
+            if (!items.length) { toast('Add at least one item', true); return; }
+            saveInvoice('draft');
+            var inv = data.invoices.find(function(i) { return i.client === client; });
+            if (inv) previewInvoice(inv.id);
+        }
+
+        function saveDraftAndPdf() {
+            var client = document.getElementById('invClient').value.trim();
+            if (!client) { toast('Client name required', true); return; }
+            var items = getLineItems();
+            if (!items.length) { toast('Add at least one item', true); return; }
+            updateLivePreview();
+            downloadPdf('livePreviewContent');
+            saveInvoice('draft');
         }
 
         async function payWithClaws(id) {
             const inv = data.invoices.find(i => i.id === id);
             if (!inv || !window.CLAWS) { toast('CLAWS unavailable', true); return; }
-            try { if (!data.settings.wallet) { toast('Set wallet first', true); return; } const tx = await window.CLAWS.pay(inv.total, data.settings.wallet); inv.status = 'paid'; inv.paidAt = new Date().toISOString(); inv.txHash = tx; saveData(); renderAll(); toast('Payment received'); } catch(e) { toast('Payment failed', true); }
+            try { if (!data.settings.wallet) { toast('Set wallet first', true); return; } const tx = await window.CLAWS.pay(inv.total, data.settings.wallet); inv.status = 'paid'; inv.paidAt = new Date().toISOString(); inv.txHash = tx; inv.updatedAt = new Date().toISOString(); saveData(); renderAll(); toast('Payment received'); emitEvent('invoice.paid', { id: inv.id, client: inv.client, total: inv.total, token: 'CLAWS', txHash: tx, paidAt: inv.paidAt }); } catch(e) { toast('Payment failed', true); }
         }
 
         function renderAll() { renderDashboard(); renderInvoices(); renderTokens(); renderSettings(); renderPaymentHistory(); }
@@ -900,7 +1365,9 @@
         }
 
         function cardHtml(inv) {
-            return `<div class="invoice-card" onclick="previewInvoice('${inv.id}')"><div class="inv-dot ${inv.status}"></div><div class="inv-info"><div class="inv-client">${escapeHtml(inv.client)}</div><div class="inv-meta"><span>${inv.id}</span><span>${inv.dueDate || ''}</span><span class="badge badge-${inv.payType === 'fiat' ? 'fiat' : 'crypto'}">${inv.payType}</span></div></div><div class="inv-amount">${formatCurrency(inv.total)}</div><div class="inv-actions"><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();editInvoice('${inv.id}')">&#9998;</button><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();deleteInvoice('${inv.id}')" style="color:#f87171">&#215;</button></div></div>`;
+            var agentBadge = inv.source === 'agent' ? '<span class="badge badge-agent">Agent Draft</span>' : '';
+            var suggestBadge = (inv.agentSuggestions && inv.agentSuggestions.length) ? '<span class="badge badge-agent">Has Suggestions</span>' : '';
+            return `<div class="invoice-card" onclick="previewInvoice('${inv.id}')"><div class="inv-dot ${inv.status}"></div><div class="inv-info"><div class="inv-client">${escapeHtml(inv.client)} ${agentBadge}${suggestBadge}</div><div class="inv-meta"><span>${inv.id}</span><span>${inv.dueDate || ''}</span><span class="badge badge-${inv.payType === 'fiat' ? 'fiat' : 'crypto'}">${inv.payType}</span></div></div><div class="inv-amount">${formatCurrency(inv.total)}</div><div class="inv-actions"><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();previewInvoice('${inv.id}')" title="Preview">&#128065;</button><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();editInvoice('${inv.id}')" title="Edit">&#9998;</button><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();deleteInvoice('${inv.id}')" style="color:#f87171" title="Delete">&#215;</button></div></div>`;
         }
 
         function renderTokens() {
@@ -927,17 +1394,422 @@
         function saveSettings() { data.settings.name = document.getElementById('settingName').value.trim(); data.settings.email = document.getElementById('settingEmail').value.trim(); data.settings.currency = document.getElementById('settingCurrency').value; data.settings.wallet = document.getElementById('settingWallet').value.trim(); saveData(); toast('Settings saved'); }
         function togglePayMethod(el, method) { el.classList.toggle('selected'); const idx = data.payMethods.indexOf(method); if (idx >= 0) data.payMethods.splice(idx, 1); else data.payMethods.push(method); saveData(); }
         function exportData() { const b = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const u = URL.createObjectURL(b); const a = document.createElement('a'); a.href = u; a.download = 'blockpay.json'; a.click(); URL.revokeObjectURL(u); toast('Exported'); }
-        function clearAllData() { if (!confirm('Clear all BlockPay data?')) return; data = { invoices: [], settings: { name: '', email: '', currency: 'USD', wallet: '' }, tokens: TOKENS.map(t => ({ symbol: t.symbol, enabled: t.enabled })), payMethods: ['crypto-direct'] }; saveData(); renderAll(); toast('All data cleared'); }
-        function formatCurrency(amount) { const c = data.settings?.currency || 'USD'; if (['ETH','CLAWS'].includes(c)) return amount.toFixed(2) + ' ' + c; const sym = { USD: '$', EUR: '\u20AC', GBP: '\u00A3' }; return (sym[c] || '$') + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+        function clearAllData() { if (!confirm('Clear all BlockPay data?')) return; data = defaultData(); saveData(); renderAll(); toast('All data cleared'); }
+        function formatCurrency(amount) { const c = data.settings?.currency || 'USD'; const fiat = { USD: '$', EUR: '\u20AC', GBP: '\u00A3' }; if (fiat[c]) return fiat[c] + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); return amount.toFixed(2) + ' ' + c; }
         function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
-        function checkOverdue() { const today = new Date().toISOString().split('T')[0]; let c = false; data.invoices.forEach(inv => { if (inv.status === 'pending' && inv.dueDate && inv.dueDate < today) { inv.status = 'overdue'; c = true; } }); if (c) { saveData(); renderAll(); } }
+        function checkOverdue() { const today = new Date().toISOString().split('T')[0]; let c = false; var newlyOverdue = []; data.invoices.forEach(inv => { if (inv.status === 'pending' && inv.dueDate && inv.dueDate < today) { inv.status = 'overdue'; inv.updatedAt = new Date().toISOString(); c = true; newlyOverdue.push(inv); } }); if (c) { saveData(); renderAll(); newlyOverdue.forEach(function(inv) { emitEvent('invoice.overdue', { id: inv.id, client: inv.client, total: inv.total, dueDate: inv.dueDate, daysPast: Math.floor((Date.now() - new Date(inv.dueDate).getTime()) / 86400000), nudge: 'Invoice for ' + inv.client + ' (' + formatCurrency(inv.total) + ') is past due. Consider following up.' }); }); } }
 
         renderAll(); checkOverdue();
         const cw = getWallet();
         if (cw) { walletAddress = cw; document.getElementById('walletDot').style.background = '#c9a96e'; document.getElementById('walletLabel').textContent = cw.slice(0,6) + '...' + cw.slice(-4); data.settings.wallet = cw; }
         loadFromCloud();
-        document.getElementById('invPayType').addEventListener('change', function() { document.getElementById('cryptoTokenGroup').style.display = this.value === 'fiat' ? 'none' : ''; });
+        window.addEventListener('beforeunload', function() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+            if (window.AppDB) window.AppDB.set('blockpay_data', data).catch(function(){});
+        });
+        setInterval(function() { if (window.AppDB) window.AppDB.set('blockpay_data', data).catch(function(){}); }, 60000);
+        setInterval(checkOverdue, 300000); // Re-check overdue every 5min
+        document.getElementById('invPayType').addEventListener('change', function() { document.getElementById('cryptoTokenGroup').style.display = this.value === 'fiat' ? 'none' : ''; updateLivePreview(); });
         document.querySelectorAll('.modal-overlay').forEach(o => { o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); }); });
+
+        // ═══════════════════════════════════════════
+        // AGENT API — window.BlockPay
+        // Split: agent-safe (read + draft) vs human-only (confirm + wallet + refund)
+        // ═══════════════════════════════════════════
+
+        var HUMAN_ACTIONS = ['sendInvoice', 'markPaid', 'deleteInvoice', 'connectWallet', 'updateWallet', 'refund', 'adjustInvoice'];
+
+        // ── CUSTODY POLICY ──
+        // Hard guardrails: agents NEVER hold keys, sign txs, or move funds.
+        var CUSTODY_POLICY = Object.freeze({
+            version: '1.0',
+            rules: [
+                'Agents MUST NOT hold private keys or seed phrases.',
+                'Agents MUST NOT sign transactions or call wallet providers (MetaMask, ethereum.request, etc).',
+                'Agents MUST NOT trigger CLAWS.pay(), CLAWS.gate(), or any on-chain write.',
+                'All send, pay, refund, and delete actions are human-only.',
+                'Agents can only create drafts — humans must review and confirm before any funds move.',
+                'The agent API never exposes wallet addresses or private credentials.',
+                'All agent-created invoices are marked status:draft, source:agent until a human promotes them.',
+            ],
+            agentScope: 'observe + draft',
+            humanScope: 'confirm + sign + send + pay + refund + delete + wallet',
+            enforcement: 'Client-side hard blocks. Human-only methods return {ok:false, scope:"human-only"}. Wallet data is stripped from all agent-facing responses.',
+        });
+
+        window.BlockPay = {
+            version: '2.0',
+
+            // ── AGENT-SAFE: Read ──
+            listInvoices: function(filter) {
+                var inv = data.invoices;
+                if (filter && filter !== 'all') inv = inv.filter(function(i) { return i.status === filter; });
+                return { ok: true, scope: 'agent-safe', count: inv.length, invoices: inv.map(function(i) {
+                    return { id: i.id, client: i.client, total: i.total, status: i.status, dueDate: i.dueDate, token: i.token, payType: i.payType, source: i.source || 'human' };
+                }) };
+            },
+
+            getInvoice: function(id) {
+                var inv = data.invoices.find(function(i) { return i.id === id; });
+                if (!inv) return { ok: false, error: 'Invoice not found' };
+                var safe = JSON.parse(JSON.stringify(inv));
+                delete safe.fromWallet;
+                return { ok: true, scope: 'agent-safe', invoice: safe };
+            },
+
+            getStats: function() {
+                var inv = data.invoices;
+                var paid = inv.filter(function(i) { return i.status === 'paid'; });
+                var pending = inv.filter(function(i) { return i.status === 'pending' || i.status === 'overdue'; });
+                var drafts = inv.filter(function(i) { return i.status === 'draft'; });
+                return {
+                    ok: true, scope: 'agent-safe',
+                    totalEarned: paid.reduce(function(s, i) { return s + i.total; }, 0),
+                    outstanding: pending.reduce(function(s, i) { return s + i.total; }, 0),
+                    paidCount: paid.length,
+                    pendingCount: pending.length,
+                    draftCount: drafts.length,
+                    totalInvoices: inv.length
+                };
+            },
+
+            getSettings: function() {
+                return { ok: true, scope: 'agent-safe', settings: { name: data.settings.name, email: data.settings.email, currency: data.settings.currency } };
+            },
+
+            listTokens: function() {
+                return { ok: true, scope: 'agent-safe', tokens: TOKENS.map(function(t) {
+                    var saved = data.tokens.find(function(s) { return s.symbol === t.symbol; });
+                    return { symbol: t.symbol, name: t.name, chain: t.chain, enabled: saved ? saved.enabled : t.enabled };
+                }) };
+            },
+
+            exportData: function() {
+                var exported = JSON.parse(JSON.stringify(data));
+                if (exported.settings) delete exported.settings.wallet;
+                if (exported.invoices) exported.invoices.forEach(function(i) { delete i.fromWallet; });
+                return { ok: true, scope: 'agent-safe', data: exported };
+            },
+
+            // ── AGENT-SAFE: Draft / Suggest / Propose ──
+            draftInvoice: function(opts) {
+                if (!opts || !opts.client) return { ok: false, error: 'client is required' };
+                var items = opts.items || [{ desc: opts.description || 'Service', qty: opts.qty || 1, rate: opts.amount || opts.rate || 0 }];
+                var total = items.reduce(function(s, i) { return s + (i.qty || 1) * (i.rate || 0); }, 0);
+                var due = opts.due || opts.dueDate || getDefaultDueDate();
+                var invoice = {
+                    id: generateId(), client: opts.client,
+                    fromName: opts.fromName || data.settings.name || '',
+                    fromEmail: opts.fromEmail || data.settings.email || '',
+                    fromWallet: data.settings.wallet || '',
+                    email: opts.clientEmail || opts.email || '',
+                    dueDate: due, payType: opts.payType || 'crypto',
+                    token: opts.token || 'USDC', items: items,
+                    notes: opts.notes || '', total: total,
+                    status: 'draft', source: 'agent',
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                data.invoices.unshift(invoice);
+                saveData(); renderAll();
+                emitEvent('invoice.drafted', { id: invoice.id, client: invoice.client, total: invoice.total, token: invoice.token, dueDate: invoice.dueDate, source: 'agent' });
+                return { ok: true, scope: 'agent-safe', notice: 'Draft created. Human must review and send.', invoice: { id: invoice.id, client: invoice.client, total: invoice.total, status: 'draft' } };
+            },
+
+            suggestTerms: function(id, opts) {
+                var inv = data.invoices.find(function(i) { return i.id === id; });
+                if (!inv) return { ok: false, error: 'Invoice not found' };
+                var suggestions = [];
+                if (opts.dueDate) suggestions.push({ field: 'dueDate', current: inv.dueDate, suggested: opts.dueDate, reason: opts.dueDateReason || '' });
+                if (opts.payType) suggestions.push({ field: 'payType', current: inv.payType, suggested: opts.payType, reason: opts.payTypeReason || '' });
+                if (opts.token) suggestions.push({ field: 'token', current: inv.token, suggested: opts.token, reason: opts.tokenReason || '' });
+                if (opts.notes) suggestions.push({ field: 'notes', current: inv.notes, suggested: opts.notes, reason: opts.notesReason || '' });
+                if (!inv.agentSuggestions) inv.agentSuggestions = [];
+                inv.agentSuggestions.push({ timestamp: new Date().toISOString(), suggestions: suggestions });
+                inv.updatedAt = new Date().toISOString();
+                saveData(); renderAll();
+                return { ok: true, scope: 'agent-safe', notice: 'Suggestions saved. Human must review and accept.', invoiceId: id, suggestions: suggestions };
+            },
+
+            proposeTokens: function(symbols, reason) {
+                if (!Array.isArray(symbols)) return { ok: false, error: 'symbols must be an array' };
+                if (!data.agentProposals) data.agentProposals = [];
+                var proposal = { type: 'tokens', symbols: symbols, reason: reason || '', timestamp: new Date().toISOString(), status: 'pending' };
+                data.agentProposals.push(proposal);
+                saveData(); renderAll();
+                return { ok: true, scope: 'agent-safe', notice: 'Token proposal saved. Human must accept.', proposal: proposal };
+            },
+
+            generateSummary: function(opts) {
+                var inv = data.invoices;
+                var period = (opts && opts.period) || 'all';
+                var now = Date.now();
+                if (period === 'week') inv = inv.filter(function(i) { return (now - new Date(i.createdAt).getTime()) < 7 * 86400000; });
+                else if (period === 'month') inv = inv.filter(function(i) { return (now - new Date(i.createdAt).getTime()) < 30 * 86400000; });
+                var paid = inv.filter(function(i) { return i.status === 'paid'; });
+                var pending = inv.filter(function(i) { return i.status === 'pending'; });
+                var overdue = inv.filter(function(i) { return i.status === 'overdue'; });
+                var drafts = inv.filter(function(i) { return i.status === 'draft'; });
+                var earned = paid.reduce(function(s, i) { return s + i.total; }, 0);
+                var owed = pending.concat(overdue).reduce(function(s, i) { return s + i.total; }, 0);
+                var topClients = {};
+                inv.forEach(function(i) { topClients[i.client] = (topClients[i.client] || 0) + i.total; });
+                var clientList = Object.keys(topClients).map(function(c) { return { client: c, total: topClients[c] }; }).sort(function(a, b) { return b.total - a.total; }).slice(0, 5);
+                var tokenBreakdown = {};
+                inv.forEach(function(i) { tokenBreakdown[i.token || 'unknown'] = (tokenBreakdown[i.token || 'unknown'] || 0) + 1; });
+                return {
+                    ok: true, scope: 'agent-safe', period: period,
+                    summary: {
+                        totalInvoices: inv.length, earned: earned, outstanding: owed,
+                        paidCount: paid.length, pendingCount: pending.length,
+                        overdueCount: overdue.length, draftCount: drafts.length,
+                        topClients: clientList, tokenBreakdown: tokenBreakdown,
+                        avgInvoice: inv.length ? Math.round((earned + owed) / inv.length * 100) / 100 : 0
+                    }
+                };
+            },
+
+            // ── HUMAN-ONLY: These return instructions, not actions ──
+            sendInvoice: function() { return { ok: false, scope: 'human-only', error: 'Sending invoices requires human confirmation. Use draftInvoice() to create a draft, then the human sends it from the UI.' }; },
+            markPaid: function() { return { ok: false, scope: 'human-only', error: 'Marking invoices as paid requires human confirmation. The human must verify payment and confirm in the UI.' }; },
+            deleteInvoice: function() { return { ok: false, scope: 'human-only', error: 'Deleting invoices requires human confirmation. The human must delete from the UI.' }; },
+            connectWallet: function() { return { ok: false, scope: 'human-only', error: 'Connecting a wallet requires human interaction with MetaMask/wallet provider.' }; },
+            updateWallet: function() { return { ok: false, scope: 'human-only', error: 'Changing the receiving wallet requires human confirmation in Settings.' }; },
+            refund: function() { return { ok: false, scope: 'human-only', error: 'Refunds and adjustments require human authorization.' }; },
+
+            // ── Meta ──
+            help: function() {
+                return {
+                    ok: true, api: 'window.BlockPay v2.0',
+                    agentSafe: {
+                        'draftInvoice({client, amount, token?, due?, items?, notes?})': 'Create a DRAFT invoice (human must send)',
+                        'suggestTerms(id, {dueDate?, token?, payType?, notes?})': 'Suggest changes to an invoice (human must accept)',
+                        'proposeTokens([symbols], reason?)': 'Propose which tokens to accept (human must accept)',
+                        'generateSummary({period?})': 'Generate a digest (all/week/month)',
+                        'listInvoices(filter?)': 'List invoices (all/draft/pending/paid/overdue)',
+                        'getInvoice(id)': 'Get full invoice by ID',
+                        'getStats()': 'Dashboard statistics',
+                        'getSettings()': 'Profile info (no wallet exposed)',
+                        'listTokens()': 'Supported tokens and status',
+                        'exportData()': 'Export all data as JSON',
+                        'on(type, callback)': 'Subscribe to events (invoice.drafted, invoice.sent, invoice.paid, invoice.overdue)',
+                        'off(type, callback)': 'Unsubscribe from events',
+                        'poll(sinceIso?)': 'Get events since timestamp (for polling agents)',
+                        'getEvents(limit?)': 'Get recent event log',
+                        'addWebhook(url)': 'Register a webhook URL for event notifications',
+                        'removeWebhook(url)': 'Remove a webhook',
+                        'listWebhooks()': 'List registered webhooks',
+                    },
+                    humanOnly: {
+                        'sendInvoice': 'Confirm and send a draft invoice',
+                        'markPaid': 'Confirm payment received',
+                        'deleteInvoice': 'Permanently delete an invoice',
+                        'connectWallet': 'Connect MetaMask / wallet',
+                        'updateWallet': 'Change receiving wallet address',
+                        'refund': 'Authorize refunds or adjustments',
+                    },
+                    note: 'Agent methods return {scope:"agent-safe"}. Human-only methods return {scope:"human-only", error:"..."}.',
+                    custodyPolicy: CUSTODY_POLICY
+                };
+            },
+
+            // ── Custody policy (read-only) ──
+            getCustodyPolicy: function() {
+                return { ok: true, scope: 'agent-safe', policy: CUSTODY_POLICY };
+            }
+        };
+
+        // Attach event API methods (on, off, poll, webhooks) to BlockPay
+        attachEventApi();
+        // Freeze the agent API — prevents tampering with methods or adding wallet-access paths
+        Object.freeze(window.BlockPay);
+
+        // ═══════════════════════════════════════════
+        // URL PARAMETER ACTIONS (agent-safe only)
+        // ═══════════════════════════════════════════
+        (function handleUrlParams() {
+            var params = new URLSearchParams(window.location.search);
+            var action = params.get('action');
+            if (!action) return;
+
+            var result;
+            switch (action) {
+                case 'draft':
+                    result = window.BlockPay.draftInvoice({
+                        client: params.get('client') || 'Client',
+                        amount: parseFloat(params.get('amount')) || 0,
+                        description: params.get('desc') || params.get('description') || 'Service',
+                        token: params.get('token') || 'USDC',
+                        due: params.get('due') || undefined,
+                        clientEmail: params.get('email') || '',
+                        notes: params.get('notes') || '',
+                        payType: params.get('payType') || 'crypto'
+                    });
+                    if (result.ok) toast('Agent draft created: ' + result.invoice.id);
+                    break;
+                case 'list':
+                    result = window.BlockPay.listInvoices(params.get('filter') || 'all');
+                    break;
+                case 'show': case 'get':
+                    var id = params.get('id');
+                    if (id) { result = window.BlockPay.getInvoice(id); if (result.ok) previewInvoice(id); }
+                    break;
+                case 'stats':
+                    result = window.BlockPay.getStats();
+                    break;
+                case 'summary':
+                    result = window.BlockPay.generateSummary({ period: params.get('period') || 'all' });
+                    break;
+                case 'suggest-tokens':
+                    var symbols = (params.get('tokens') || '').split(',').filter(Boolean);
+                    result = window.BlockPay.proposeTokens(symbols, params.get('reason') || '');
+                    if (result.ok) toast('Token proposal received');
+                    break;
+                default:
+                    if (HUMAN_ACTIONS.indexOf(action) >= 0 || ['create', 'pay', 'mark-paid', 'delete', 'settings'].indexOf(action) >= 0) {
+                        result = { ok: false, scope: 'human-only', error: 'Action "' + action + '" requires human confirmation and cannot be triggered via URL.' };
+                    }
+            }
+            if (result) {
+                console.log('[BlockPay]', JSON.stringify(result));
+                try { if (window.parent !== window) window.parent.postMessage({ type: 'blockpay-result', action: action, result: result }, '*'); } catch(e) {}
+                window.dispatchEvent(new CustomEvent('blockpay-result', { detail: { action: action, result: result } }));
+            }
+            if (window.history.replaceState) window.history.replaceState({}, '', window.location.pathname);
+        })();
+
+        // ═══════════════════════════════════════════
+        // COMMAND BAR
+        // ═══════════════════════════════════════════
+        function toggleCmdBar() {
+            var wrap = document.getElementById('cmdWrap');
+            var help = document.getElementById('cmdHelp');
+            var isOpen = wrap.classList.contains('open');
+            wrap.classList.toggle('open');
+            if (!isOpen) document.getElementById('cmdInput').focus();
+            else help.classList.remove('open');
+        }
+
+        function runCmd() {
+            var input = document.getElementById('cmdInput');
+            var raw = input.value.trim();
+            if (!raw) return;
+            input.value = '';
+            document.getElementById('cmdHelp').classList.remove('open');
+
+            var cmd = raw.toLowerCase();
+            var result;
+
+            if (cmd === 'help' || cmd === '?') { document.getElementById('cmdHelp').classList.add('open'); return; }
+
+            // Read commands
+            if (cmd.match(/^list\s*(invoices?|all)?$/)) { result = window.BlockPay.listInvoices('all'); toast(result.count + ' invoices'); logResult(result); return; }
+            if (cmd.match(/^list\s*(paid|pending|draft|overdue)/)) { var f = cmd.match(/(paid|pending|draft|overdue)/)[1]; result = window.BlockPay.listInvoices(f); toast(result.count + ' ' + f); logResult(result); return; }
+            if (cmd.match(/^(stats|dashboard|overview)$/)) { result = window.BlockPay.getStats(); toast('Earned: ' + formatCurrency(result.totalEarned) + ' | Owed: ' + formatCurrency(result.outstanding)); logResult(result); return; }
+            if (cmd.match(/^summary|digest/)) { var period = 'all'; var pm = cmd.match(/(week|month)/); if (pm) period = pm[1]; result = window.BlockPay.generateSummary({ period: period }); toast(period + ' summary generated'); logResult(result); return; }
+
+            var showMatch = cmd.match(/^(show|get|view|open)\s+(?:invoice\s+)?(.+)/);
+            if (showMatch) { var sid = findInvoiceId(showMatch[2]); if (sid) { previewInvoice(sid); toast('Showing ' + sid); } else toast('Invoice not found', true); return; }
+
+            if (cmd.match(/^(list\s+)?tokens$/)) { result = window.BlockPay.listTokens(); var en = result.tokens.filter(function(t) { return t.enabled; }); toast(en.length + ' tokens enabled'); logResult(result); return; }
+            if (cmd === 'export' || cmd === 'export data') { exportData(); return; }
+
+            // Agent-safe write commands (drafts + suggestions)
+            var draftMatch = raw.match(/^(?:draft|create)\s+(?:invoice\s+)?(?:for\s+)?(.+)/i);
+            if (draftMatch) {
+                var parsed = parseCreateCmd(draftMatch[1]);
+                if (parsed.client) { result = window.BlockPay.draftInvoice(parsed); if (result.ok) toast('Draft created: ' + result.invoice.id); else toast(result.error, true); logResult(result); }
+                else toast('Specify a client name', true);
+                return;
+            }
+
+            var suggestMatch = raw.match(/^suggest\s+tokens?\s+(.+)/i);
+            if (suggestMatch) { var syms = suggestMatch[1].split(/[\s,]+/).map(function(s) { return s.toUpperCase(); }).filter(Boolean); result = window.BlockPay.proposeTokens(syms); toast('Token proposal saved'); logResult(result); return; }
+
+            // Human-only commands — show clear message
+            if (cmd.match(/^(send|publish|confirm)\s/)) { toast('Sending requires human confirmation in the UI', true); return; }
+            if (cmd.match(/^mark\s+.+\s+(paid|complete)/)) { toast('Marking paid requires human confirmation in the UI', true); return; }
+            if (cmd.match(/^delete\s/)) { toast('Deleting requires human confirmation in the UI', true); return; }
+            if (cmd.match(/^(set\s+wallet|connect\s+wallet)/)) { toast('Wallet changes require human confirmation in Settings', true); return; }
+            if (cmd.match(/^(refund|adjust)/)) { toast('Refunds require human authorization in the UI', true); return; }
+
+            // Profile settings (agent-safe: name, email, currency only — NOT wallet)
+            var setMatch = raw.match(/^set\s+(name|email|currency)\s+(.+)/i);
+            if (setMatch) {
+                var key = setMatch[1].toLowerCase();
+                var val = setMatch[2].trim();
+                if (key === 'name') data.settings.name = val;
+                else if (key === 'email') data.settings.email = val;
+                else if (key === 'currency') data.settings.currency = val;
+                saveData(); renderAll();
+                toast(key + ' updated'); return;
+            }
+
+            toast('Unknown command. Try "help"', true);
+        }
+
+        function parseCreateCmd(str) {
+            var opts = { client: '', amount: 0, token: 'USDC', due: getDefaultDueDate() };
+            var amtMatch = str.match(/\$?([\d,]+\.?\d*)\s*(usd[c]?|eth|claws|usdt|sol|[\w]+)?/i);
+            if (amtMatch) { opts.amount = parseFloat(amtMatch[1].replace(/,/g, '')); if (amtMatch[2]) { var t = amtMatch[2].toUpperCase(); if (t === 'USD') t = 'USDC'; opts.token = t; } str = str.replace(amtMatch[0], ''); }
+            var dueMatch = str.match(/due\s+(?:in\s+)?(\d+)\s*(day|week|month)s?/i);
+            if (dueMatch) { var d = new Date(); var n = parseInt(dueMatch[1]); if (dueMatch[2].toLowerCase().startsWith('week')) n *= 7; if (dueMatch[2].toLowerCase().startsWith('month')) n *= 30; d.setDate(d.getDate() + n); opts.due = d.toISOString().split('T')[0]; str = str.replace(dueMatch[0], ''); }
+            var dueMatch2 = str.match(/due\s+(\d{4}-\d{2}-\d{2})/i);
+            if (dueMatch2) { opts.due = dueMatch2[1]; str = str.replace(dueMatch2[0], ''); }
+            opts.client = str.replace(/[,\s]+$/g, '').replace(/^\s+/, '').replace(/\s+/g, ' ').trim();
+            if (!opts.client && amtMatch) opts.client = 'Client';
+            return opts;
+        }
+
+        function findInvoiceId(str) {
+            str = str.trim().toUpperCase();
+            var direct = data.invoices.find(function(i) { return i.id === str; });
+            if (direct) return direct.id;
+            var partial = data.invoices.find(function(i) { return i.id.indexOf(str) >= 0; });
+            if (partial) return partial.id;
+            var byClient = data.invoices.find(function(i) { return i.client.toUpperCase().indexOf(str) >= 0; });
+            if (byClient) return byClient.id;
+            return null;
+        }
+
+        function logResult(result) {
+            console.log('[BlockPay]', JSON.stringify(result));
+            window.dispatchEvent(new CustomEvent('blockpay-result', { detail: result }));
+        }
+
+        // postMessage — agent-safe methods only
+        window.addEventListener('message', function(e) {
+            if (!e.data || e.data.type !== 'blockpay-command') return;
+            var cmd = e.data;
+            var result;
+            var agentMethods = ['draftInvoice','suggestTerms','proposeTokens','generateSummary','listInvoices','getInvoice','getStats','getSettings','listTokens','exportData','help','getCustodyPolicy','poll','getEvents','addWebhook','removeWebhook','listWebhooks'];
+            try {
+                if (agentMethods.indexOf(cmd.method) < 0) {
+                    result = { ok: false, scope: 'human-only', error: 'Method "' + cmd.method + '" requires human confirmation.' };
+                } else {
+                    switch (cmd.method) {
+                        case 'draftInvoice': result = window.BlockPay.draftInvoice(cmd.params); break;
+                        case 'suggestTerms': result = window.BlockPay.suggestTerms(cmd.params, cmd.suggestions || cmd.params); break;
+                        case 'proposeTokens': result = window.BlockPay.proposeTokens(cmd.params, cmd.reason); break;
+                        case 'generateSummary': result = window.BlockPay.generateSummary(cmd.params); break;
+                        case 'listInvoices': result = window.BlockPay.listInvoices(cmd.params); break;
+                        case 'getInvoice': result = window.BlockPay.getInvoice(cmd.params); break;
+                        case 'getStats': result = window.BlockPay.getStats(); break;
+                        case 'getSettings': result = window.BlockPay.getSettings(); break;
+                        case 'listTokens': result = window.BlockPay.listTokens(); break;
+                        case 'exportData': result = window.BlockPay.exportData(); break;
+                        case 'poll': result = window.BlockPay.poll(cmd.params); break;
+                        case 'getEvents': result = window.BlockPay.getEvents(cmd.params); break;
+                        case 'addWebhook': result = window.BlockPay.addWebhook(cmd.params); break;
+                        case 'removeWebhook': result = window.BlockPay.removeWebhook(cmd.params); break;
+                        case 'listWebhooks': result = window.BlockPay.listWebhooks(); break;
+                        case 'help': result = window.BlockPay.help(); break;
+                        case 'getCustodyPolicy': result = window.BlockPay.getCustodyPolicy(); break;
+                    }
+                }
+            } catch(err) { result = { ok: false, error: err.message }; }
+            try { e.source.postMessage({ type: 'blockpay-result', id: cmd.id, result: result }, '*'); } catch(err) {}
+        });
     </script>
 </body>
 </html>
