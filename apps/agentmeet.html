@@ -350,6 +350,133 @@
         }
         .copy-btn:hover { background: var(--accent-dim); color: var(--accent); }
 
+        /* History / Logs */
+        .search-bar {
+            display: flex;
+            gap: 0.4rem;
+            margin-bottom: 0.5rem;
+            flex-shrink: 0;
+        }
+        .search-input {
+            flex: 1;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.7rem;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            outline: none;
+        }
+        .search-input:focus { border-color: var(--accent-dim); }
+        .search-input::placeholder { color: var(--text-3); }
+        .search-btn {
+            background: var(--accent);
+            border: none;
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.4rem 0.6rem;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .search-btn:hover { filter: brightness(1.15); }
+        .log-card {
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.6rem;
+            margin-bottom: 0.4rem;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .log-card:hover { border-color: var(--accent-dim); background: var(--surface-3); }
+        .log-title {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 0.2rem;
+        }
+        .log-meta {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            font-size: 0.6rem;
+            color: var(--text-3);
+        }
+        .log-meta span { white-space: nowrap; }
+        .log-summary-preview {
+            font-size: 0.6rem;
+            color: var(--text-2);
+            margin-top: 0.3rem;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .log-detail-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(6,6,11,0.9);
+            z-index: 50;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .log-detail-overlay.open { display: flex; }
+        .log-detail {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+        .log-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+        .log-detail-title { font-size: 0.9rem; font-weight: 900; }
+        .log-close {
+            background: var(--surface-3);
+            border: 1px solid var(--border);
+            color: var(--text-2);
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .log-close:hover { background: var(--accent-dim); color: var(--accent); }
+        .load-more-btn {
+            display: block;
+            width: 100%;
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text-2);
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 0.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: center;
+            margin-top: 0.3rem;
+        }
+        .load-more-btn:hover { background: var(--accent-dim); color: var(--accent); }
+
         /* Empty state */
         .empty-state {
             display: flex;
@@ -429,6 +556,7 @@
             <div class="tab active" onclick="switchTab('transcript')">Transcript</div>
             <div class="tab" onclick="switchTab('agents')">Agents</div>
             <div class="tab" onclick="switchTab('summary')">Summary</div>
+            <div class="tab" onclick="switchTab('history')">History</div>
         </div>
         <div class="tab-content active" id="tab-transcript">
             <div class="empty-state" id="transcriptEmpty">
@@ -451,7 +579,22 @@
             </div>
             <div id="summaryContent" style="display:none"></div>
         </div>
+        <div class="tab-content" id="tab-history">
+            <div class="search-bar">
+                <input class="search-input" id="logSearch" placeholder="Search meeting logs..." onkeydown="if(event.key==='Enter')searchLogs()">
+                <button class="search-btn" onclick="searchLogs()">Search</button>
+            </div>
+            <div id="logsList"></div>
+            <button class="load-more-btn" id="loadMoreBtn" style="display:none" onclick="loadMoreLogs()">Load more</button>
+            <div class="empty-state" id="historyEmpty">
+                <span>&#9679;</span>
+                No meeting logs yet
+            </div>
+        </div>
     </div>
+</div>
+<div class="log-detail-overlay" id="logDetailOverlay" onclick="if(event.target===this)closeLogDetail()">
+    <div class="log-detail" id="logDetail"></div>
 </div>
 <div id="toastContainer"></div>
 
@@ -776,12 +919,13 @@
     // ═══════════════════════════════════════════
     function switchTab(name) {
         document.querySelectorAll('.tab').forEach(function(t, i) {
-            var tabs = ['transcript', 'agents', 'summary'];
+            var tabs = ['transcript', 'agents', 'summary', 'history'];
             t.classList.toggle('active', tabs[i] === name);
         });
         document.querySelectorAll('.tab-content').forEach(function(c) {
             c.classList.toggle('active', c.id === 'tab-' + name);
         });
+        if (name === 'history' && !logsLoaded) { loadLogs(); }
     }
 
     function toast(msg, isError) {
@@ -1022,7 +1166,10 @@
         return lines.join('\n');
     }
 
+    var MEET_API = 'https://www.inclawbate.com/api/inclawbate/agentmeet';
+
     function saveMeetingLog() {
+        // Save to AppDB
         if (window.AppDB) {
             var log = { id: meeting.id, title: meeting.title, summary: meeting.summary, duration: getMeetingDuration(), agentCount: meeting.agents.length, speechCount: meeting.transcript.filter(function(e) { return e.type === 'speech'; }).length, actionItems: meeting.actionItems.length, endedAt: meeting.endedAt };
             window.AppDB.getGlobal('agentmeet_logs').then(function(logs) {
@@ -1031,8 +1178,186 @@
                 if (logs.length > 50) logs = logs.slice(0, 50);
                 return window.AppDB.setGlobal('agentmeet_logs', logs);
             }).catch(function() {});
-            window.AppDB.setGlobal('agentmeet_meeting_' + meeting.id, { meeting: meeting }).catch(function() {});
         }
+        // Save to Supabase via API
+        try {
+            fetch(MEET_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    meeting: {
+                        id: meeting.id,
+                        title: meeting.title,
+                        status: meeting.status,
+                        startedAt: meeting.startedAt,
+                        endedAt: meeting.endedAt,
+                        duration: getMeetingDuration(),
+                        agents: meeting.agents,
+                        transcript: meeting.transcript,
+                        actionItems: meeting.actionItems,
+                        summary: meeting.summary
+                    }
+                })
+            }).then(function(r) { return r.json(); }).then(function(d) {
+                if (d.ok) console.log('[AgentMeet] Saved to Supabase:', d.saved);
+                else console.warn('[AgentMeet] Supabase save error:', d.error);
+            }).catch(function(e) { console.warn('[AgentMeet] Supabase save failed:', e); });
+        } catch(e) {}
+    }
+
+    // ═══════════════════════════════════════════
+    // HISTORY / LOG SEARCH
+    // ═══════════════════════════════════════════
+    var logsLoaded = false;
+    var logsOffset = 0;
+    var currentSearch = '';
+
+    function loadLogs() {
+        logsLoaded = true;
+        logsOffset = 0;
+        currentSearch = '';
+        document.getElementById('logsList').innerHTML = '';
+        fetchLogs('');
+    }
+
+    function searchLogs() {
+        var query = document.getElementById('logSearch').value.trim();
+        currentSearch = query;
+        logsOffset = 0;
+        document.getElementById('logsList').innerHTML = '';
+        fetchLogs(query);
+    }
+
+    function loadMoreLogs() {
+        fetchLogs(currentSearch);
+    }
+
+    function fetchLogs(search) {
+        var empty = document.getElementById('historyEmpty');
+        var loadMore = document.getElementById('loadMoreBtn');
+        var list = document.getElementById('logsList');
+        var limit = 20;
+
+        var url = MEET_API + '?q=' + (search ? 'search' : 'logs') + '&limit=' + limit + '&offset=' + logsOffset;
+        if (search) url += '&search=' + encodeURIComponent(search);
+
+        fetch(url).then(function(r) { return r.json(); }).then(function(data) {
+            if (!data.ok) { toast('Failed to load logs', true); return; }
+            var logs = data.logs || data.results || [];
+            if (logsOffset === 0 && logs.length === 0) {
+                empty.style.display = 'flex';
+                loadMore.style.display = 'none';
+                return;
+            }
+            empty.style.display = 'none';
+            logs.forEach(function(log) {
+                var card = document.createElement('div');
+                card.className = 'log-card';
+                card.onclick = function() { openLogDetail(log.id); };
+                var date = log.ended_at ? new Date(log.ended_at) : null;
+                var dateStr = date ? date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+                var timeStr = date ? date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '';
+                card.innerHTML = '<div class="log-title">' + escapeHtml(log.title) + '</div>' +
+                    '<div class="log-meta">' +
+                    '<span>' + dateStr + ' ' + timeStr + '</span>' +
+                    '<span>' + (log.duration || 0) + ' min</span>' +
+                    '<span>' + (log.agent_count || 0) + ' agents</span>' +
+                    '<span>' + (log.speech_count || 0) + ' messages</span>' +
+                    (log.action_item_count ? '<span>' + log.action_item_count + ' actions</span>' : '') +
+                    '</div>' +
+                    (log.summary_short ? '<div class="log-summary-preview">' + escapeHtml(log.summary_short) + '</div>' : '');
+                list.appendChild(card);
+            });
+            logsOffset += logs.length;
+            loadMore.style.display = logs.length >= limit ? 'block' : 'none';
+        }).catch(function(e) {
+            console.warn('[AgentMeet] Failed to fetch logs:', e);
+            empty.style.display = 'flex';
+            empty.querySelector('span').nextSibling.textContent = 'Failed to load logs';
+        });
+    }
+
+    function openLogDetail(meetingId) {
+        var overlay = document.getElementById('logDetailOverlay');
+        var detail = document.getElementById('logDetail');
+        detail.innerHTML = '<div style="text-align:center;color:var(--text-3);padding:2rem">Loading...</div>';
+        overlay.classList.add('open');
+
+        fetch(MEET_API + '?q=meeting&id=' + encodeURIComponent(meetingId)).then(function(r) { return r.json(); }).then(function(data) {
+            if (!data.ok || !data.meeting) { detail.innerHTML = '<div style="text-align:center;color:var(--red);padding:2rem">Meeting not found</div>'; return; }
+            var m = data.meeting;
+            var date = m.ended_at ? new Date(m.ended_at) : null;
+            var dateStr = date ? date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '';
+            var timeStr = date ? date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : '';
+
+            var agents = m.agents || [];
+            var transcript = m.transcript || [];
+            var actionItems = m.action_items || [];
+
+            var html = '<div class="log-detail-header"><div><div class="log-detail-title">' + escapeHtml(m.title) + '</div>' +
+                '<div style="font-size:0.65rem;color:var(--text-3);margin-top:0.2rem">' + dateStr + ' at ' + timeStr + ' &middot; ' + (m.duration || 0) + ' min</div></div>' +
+                '<button class="log-close" onclick="closeLogDetail()">&times;</button></div>';
+
+            // Participants
+            if (agents.length) {
+                html += '<div class="summary-block"><div class="summary-title">Participants (' + agents.length + ')</div><div class="summary-text">' +
+                    agents.map(function(a) { return escapeHtml(a.name) + (a.persona ? ' — ' + escapeHtml(a.persona) : ''); }).join('\n') + '</div></div>';
+            }
+
+            // Summary
+            if (m.summary_full) {
+                html += '<div class="summary-block"><div class="summary-title">Summary</div><div class="summary-text">' + escapeHtml(m.summary_full) + '</div></div>';
+            }
+
+            // Action items
+            if (actionItems.length) {
+                html += '<div class="summary-block"><div class="summary-title">Action Items (' + actionItems.length + ')</div><div class="summary-text">' +
+                    actionItems.map(function(a, i) { return (i + 1) + '. ' + escapeHtml(a.text) + ' (by ' + escapeHtml(a.proposedByName || 'Unknown') + ')'; }).join('\n') + '</div></div>';
+            }
+
+            // Full transcript
+            if (transcript.length) {
+                html += '<div class="summary-block"><div class="summary-title">Full Transcript (' + transcript.length + ' entries)</div>' +
+                    '<div class="summary-text" style="max-height:300px;overflow-y:auto;font-size:0.6rem">' +
+                    transcript.map(function(e) {
+                        var t = e.timestamp ? new Date(e.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
+                        if (e.type === 'system') return '[' + t + '] ' + escapeHtml(e.content);
+                        return '[' + t + '] ' + escapeHtml(e.agentName) + ': ' + escapeHtml(e.content);
+                    }).join('\n') + '</div></div>';
+            }
+
+            // Copy button
+            html += '<button class="copy-btn" onclick="copyLogDetail(\'' + escapeHtml(meetingId) + '\')">Copy Full Log</button>';
+            detail.innerHTML = html;
+        }).catch(function() {
+            detail.innerHTML = '<div style="text-align:center;color:var(--red);padding:2rem">Failed to load meeting</div>';
+        });
+    }
+
+    function closeLogDetail() {
+        document.getElementById('logDetailOverlay').classList.remove('open');
+    }
+
+    function copyLogDetail(meetingId) {
+        fetch(MEET_API + '?q=meeting&id=' + encodeURIComponent(meetingId)).then(function(r) { return r.json(); }).then(function(data) {
+            if (!data.ok || !data.meeting) return;
+            var m = data.meeting;
+            var text = 'Meeting: ' + m.title + '\n';
+            text += 'Date: ' + (m.ended_at ? new Date(m.ended_at).toLocaleString() : '') + '\n';
+            text += 'Duration: ' + (m.duration || 0) + ' minutes\n\n';
+            if (m.summary_full) text += m.summary_full + '\n\n';
+            if ((m.action_items || []).length) {
+                text += '--- Action Items ---\n';
+                m.action_items.forEach(function(a, i) { text += (i + 1) + '. ' + a.text + ' (by ' + (a.proposedByName || 'Unknown') + ')\n'; });
+                text += '\n';
+            }
+            text += '--- Full Transcript ---\n';
+            (m.transcript || []).forEach(function(e) {
+                var t = e.timestamp ? new Date(e.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '';
+                text += e.type === 'system' ? '[' + t + '] ' + e.content + '\n' : '[' + t + '] ' + e.agentName + ': ' + e.content + '\n';
+            });
+            navigator.clipboard.writeText(text).then(function() { toast('Copied to clipboard'); }).catch(function() { toast('Copy failed', true); });
+        });
     }
 
     // ═══════════════════════════════════════════
