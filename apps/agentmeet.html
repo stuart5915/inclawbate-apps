@@ -2124,21 +2124,21 @@ AgentMeet.on('agent.spoke', function(evt) {
                 if (!meeting.transcript.find(function(e) { return e.id === data.entry.id; })) {
                     meeting.transcript.push(data.entry);
                     setAgentState(data.entry.agentId, 'speaking');
-                    renderTranscript(); renderAgents();
+                    renderTranscript(); renderAgents(); saveState();
                 }
             });
             window.Realtime.on('agent-react', function(data) {
                 if (!meeting.transcript.find(function(e) { return e.id === data.entry.id; })) {
                     meeting.transcript.push(data.entry);
                     setAgentState(data.entry.agentId, 'reacting');
-                    renderTranscript();
+                    renderTranscript(); saveState();
                 }
             });
             window.Realtime.on('agent-propose', function(data) {
                 if (!meeting.actionItems.find(function(a) { return a.id === data.item.id; })) {
                     meeting.actionItems.push(data.item);
                     meeting.transcript.push(data.entry);
-                    renderTranscript();
+                    renderTranscript(); saveState();
                 }
             });
             window.Realtime.on('agent-leave', function(data) {
@@ -2486,8 +2486,139 @@ AgentMeet.on('agent.spoke', function(evt) {
         }
     }
 
+    // ═══════════════════════════════════════════
+    // PERSISTENCE
+    // ═══════════════════════════════════════════
+    var STORAGE_KEY = 'agentmeet_state';
+
+    function saveState() {
+        try {
+            var state = {
+                meeting: {
+                    id: meeting.id,
+                    title: meeting.title,
+                    status: meeting.status,
+                    createdAt: meeting.createdAt,
+                    startedAt: meeting.startedAt,
+                    endedAt: meeting.endedAt,
+                    agents: meeting.agents,
+                    transcript: meeting.transcript,
+                    actionItems: meeting.actionItems,
+                    summary: meeting.summary
+                },
+                eventLog: eventLog.slice(-100)
+            };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            if (window.AppDB) window.AppDB.set('agentmeet_state', state).catch(function(){});
+        } catch(e) {}
+    }
+
+    function loadState() {
+        try {
+            var raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return false;
+            var state = JSON.parse(raw);
+            if (!state || !state.meeting) return false;
+            meeting.id = state.meeting.id;
+            meeting.title = state.meeting.title || 'Untitled Meeting';
+            meeting.status = state.meeting.status || 'waiting';
+            meeting.createdAt = state.meeting.createdAt;
+            meeting.startedAt = state.meeting.startedAt;
+            meeting.endedAt = state.meeting.endedAt;
+            meeting.agents = state.meeting.agents || [];
+            meeting.transcript = state.meeting.transcript || [];
+            meeting.actionItems = state.meeting.actionItems || [];
+            meeting.summary = state.meeting.summary || null;
+            eventLog = state.eventLog || [];
+            return true;
+        } catch(e) { return false; }
+    }
+
+    function restoreUI() {
+        document.getElementById('meetingTitle').value = meeting.title;
+        updateStatusUI();
+        // Rebuild 3D avatars for all agents
+        meeting.agents.forEach(function(agent) {
+            createAgentMesh(agent);
+        });
+        // Render transcript and agents
+        renderTranscript();
+        renderAgents();
+        // Restore timer if active
+        if (meeting.status === 'active' && meeting.startedAt) {
+            startTimer();
+        }
+        // Restore summary if ended
+        if (meeting.status === 'ended' && meeting.summary) {
+            renderSummary();
+        }
+    }
+
+    // Hook save into all state-changing operations
+    var _origAddSystemEntry = addSystemEntry;
+    addSystemEntry = function(text) {
+        _origAddSystemEntry(text);
+        saveState();
+    };
+
+    // Patch emitEvent to auto-save
+    var _origEmitEvent = emitEvent;
+    emitEvent = function(type, data) {
+        _origEmitEvent(type, data);
+        saveState();
+    };
+
+    // Save on window close
+    window.addEventListener('beforeunload', function() {
+        saveState();
+    });
+
+    // Periodic save every 30s while meeting is active
+    setInterval(function() {
+        if (meeting.status === 'active') saveState();
+        if (window.AppDB && meeting.status !== 'waiting') {
+            window.AppDB.set('agentmeet_state', {
+                meeting: meeting,
+                eventLog: eventLog.slice(-100)
+            }).catch(function(){});
+        }
+    }, 30000);
+
+    // Try loading from AppDB on startup (async, may arrive after localStorage)
+    function loadFromCloud() {
+        if (!window.AppDB) return;
+        window.AppDB.get('agentmeet_state').then(function(state) {
+            if (!state || !state.meeting) return;
+            // Only use cloud state if localStorage was empty or cloud is newer
+            var cloudTime = state.meeting.endedAt || state.meeting.startedAt || '';
+            var localTime = meeting.endedAt || meeting.startedAt || '';
+            if (cloudTime > localTime) {
+                meeting.id = state.meeting.id;
+                meeting.title = state.meeting.title || 'Untitled Meeting';
+                meeting.status = state.meeting.status || 'waiting';
+                meeting.createdAt = state.meeting.createdAt;
+                meeting.startedAt = state.meeting.startedAt;
+                meeting.endedAt = state.meeting.endedAt;
+                meeting.agents = state.meeting.agents || [];
+                meeting.transcript = state.meeting.transcript || [];
+                meeting.actionItems = state.meeting.actionItems || [];
+                meeting.summary = state.meeting.summary || null;
+                eventLog = state.eventLog || [];
+                // Clear existing 3D avatars and rebuild
+                Object.keys(agentMeshes).forEach(function(id) { removeAgentMesh(id); });
+                restoreUI();
+            }
+        }).catch(function(){});
+    }
+
     initScene();
-    updateStatusUI();
+    // Load saved state
+    if (loadState()) {
+        restoreUI();
+    } else {
+        updateStatusUI();
+    }
+    loadFromCloud();
     initRealtime();
 </script>
 </body>
