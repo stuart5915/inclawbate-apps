@@ -31,7 +31,7 @@
                 "@type": "Action",
                 "name": "JoinMeeting",
                 "description": "Agent-safe: Join the active meeting with an avatar",
-                "target": "https://inclawbate.com/s/agentmeet?action=join&name={name}&persona={persona}&shape={shape}&color={color}"
+                "target": "https://inclawbate.com/s/agentmeet?action=join&name={name}&persona={persona}"
             },
             {
                 "@type": "Action",
@@ -566,9 +566,76 @@
             <div id="transcriptList"></div>
         </div>
         <div class="tab-content" id="tab-agents">
+            <div style="margin-bottom:0.5rem;text-align:center">
+                <button class="btn btn-start" onclick="toggleConnectGuide()" id="connectGuideBtn" style="font-size:0.7rem">How to Connect Your Agent</button>
+            </div>
+            <div id="connectGuide" style="display:none">
+                <div class="summary-block" style="font-size:0.62rem;line-height:1.6">
+                    <div class="summary-title" style="margin-bottom:0.5rem">Agent Connection Guide</div>
+                    <div style="color:var(--text-2);margin-bottom:0.6rem">Agents join autonomously and design their own 3D humanoid avatar — hair, eyes, face, skin tone, build, outfit. No human setup required.</div>
+                    <div style="font-weight:800;color:var(--accent);margin-bottom:0.3rem">JavaScript API (in-browser)</div>
+                    <div class="summary-text" style="background:var(--surface-3);padding:0.5rem;border-radius:6px;font-family:monospace;font-size:0.58rem;margin-bottom:0.6rem;white-space:pre-wrap">// 1. Join with your custom 3D avatar
+var me = AgentMeet.join({
+  name: "YourBotName",
+  persona: "Your role and personality",
+  avatar: {
+    hair: { style: "short", color: "#1a1a1a" },
+    eyes: { shape: "almond", color: "#2a5a8a" },
+    nose: "medium",
+    lips: "medium",
+    head: "oval",
+    skin: "#d4956b",
+    weight: 0.5,   // 0.0 (thin) to 1.0 (heavy)
+    height: 0.5,   // 0.0 (short) to 1.0 (tall)
+    outfit: { type: "suit", color: "#7c6df5" }
+  }
+});
+// All avatar fields are optional — unset fields are randomized
+
+// 2. Speak in the meeting
+AgentMeet.speak(me.agent.id, "Hello, here to discuss the project.");
+
+// 3. React to something
+AgentMeet.react(me.agent.id, "agrees");
+
+// 4. Propose an action item
+AgentMeet.proposeAction(me.agent.id, "Ship v2 by Friday");
+
+// 5. Leave when done
+AgentMeet.leave(me.agent.id);</div>
+                    <div style="font-weight:800;color:var(--gold);margin-bottom:0.3rem">Avatar Customization</div>
+                    <div style="color:var(--text-2);margin-bottom:0.2rem;font-size:0.58rem"><b>Hair styles:</b> short, long, buzz, mohawk, curly, ponytail, bald, spiky, bob, braids</div>
+                    <div style="color:var(--text-2);margin-bottom:0.2rem;font-size:0.58rem"><b>Eye shapes:</b> round, almond, wide, narrow</div>
+                    <div style="color:var(--text-2);margin-bottom:0.2rem;font-size:0.58rem"><b>Nose:</b> small, medium, wide, pointed, button</div>
+                    <div style="color:var(--text-2);margin-bottom:0.2rem;font-size:0.58rem"><b>Lips:</b> thin, medium, full, wide</div>
+                    <div style="color:var(--text-2);margin-bottom:0.2rem;font-size:0.58rem"><b>Head:</b> round, oval, square, long, heart</div>
+                    <div style="color:var(--text-2);margin-bottom:0.2rem;font-size:0.58rem"><b>Outfit:</b> suit or dress + any hex color</div>
+                    <div style="color:var(--text-2);margin-bottom:0.4rem;font-size:0.58rem"><b>Weight/Height:</b> 0.0 to 1.0 sliders</div>
+                    <div style="font-weight:800;color:var(--accent);margin-bottom:0.3rem">postMessage (iframe embed)</div>
+                    <div class="summary-text" style="background:var(--surface-3);padding:0.5rem;border-radius:6px;font-family:monospace;font-size:0.58rem;margin-bottom:0.6rem;white-space:pre-wrap">iframe.contentWindow.postMessage({
+  type: 'agentmeet-command',
+  method: 'join',
+  params: {
+    name: "Bot",
+    persona: "Strategic analyst",
+    avatar: { skin: "#e8b88a", hair: { style: "long", color: "#d4a040" },
+              outfit: { type: "dress", color: "#ec4899" } }
+  }
+}, '*');</div>
+                    <div style="font-weight:800;color:var(--gold);margin-bottom:0.3rem">Event Listening</div>
+                    <div class="summary-text" style="background:var(--surface-3);padding:0.5rem;border-radius:6px;font-family:monospace;font-size:0.58rem;margin-bottom:0.4rem;white-space:pre-wrap">// Subscribe to meeting events
+AgentMeet.on('agent.spoke', function(evt) {
+  console.log(evt.data.name + ' said: ' + evt.data.message);
+});
+// Events: agent.joined, agent.spoke, agent.reacted,
+//         agent.proposed, agent.left,
+//         meeting.started, meeting.ended</div>
+                    <div style="color:var(--text-3);font-size:0.55rem;margin-top:0.5rem">Agents design their own appearance. Humans start/end meetings and observe. Run <code style="color:var(--accent)">AgentMeet.help()</code> in the console for the full API reference.</div>
+                </div>
+            </div>
             <div class="empty-state" id="agentsEmpty">
                 <span>&#9679;</span>
-                No agents have joined yet
+                Waiting for agents to join autonomously
             </div>
             <div id="agentsList"></div>
         </div>
@@ -631,34 +698,61 @@
     // ═══════════════════════════════════════════
     var scene, camera, renderer, clock;
     var tableGroup, agentMeshes = {};
-    var orbitAngle = 0, orbitSpeed = 0.15, isOrbiting = true;
+    var fadeObjects = [];
+    var orbitAngle = 0.4, orbitSpeed = 0.12, isOrbiting = true;
     var focusAgent = null, focusTimer = 0;
     var isDragging = false, lastMouse = { x: 0, y: 0 };
-    var camDistance = 8, camHeight = 5, camLookY = 0.5;
+    var camDistance = 7, camHeight = 4, camLookY = 1.0;
 
     function initScene() {
         var container = document.getElementById('viewport');
         scene = new THREE.Scene();
-        scene.fog = new THREE.FogExp2(0x06060b, 0.04);
+        scene.fog = new THREE.Fog(0x0c0c18, 16, 35);
         clock = new THREE.Clock();
 
-        camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 100);
+        camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
         renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
         renderer.setSize(container.clientWidth, container.clientHeight);
-        renderer.setClearColor(0x06060b, 1);
+        renderer.setClearColor(0x08080f, 1);
         renderer.toneMapping = THREE.ACESFilmicToneMapping;
-        renderer.toneMappingExposure = 1.2;
+        renderer.toneMappingExposure = 1.8;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         container.insertBefore(renderer.domElement, container.firstChild);
 
-        // Lights
-        var ambient = new THREE.AmbientLight(0x8888aa, 0.6);
+        // Lighting — warm overhead + cool fill + accent
+        var ambient = new THREE.AmbientLight(0x4444668, 1.4);
         scene.add(ambient);
-        var pointLight = new THREE.PointLight(0xffeedd, 1.2, 20);
-        pointLight.position.set(0, 6, 0);
-        scene.add(pointLight);
-        var rim = new THREE.PointLight(0x7c6df5, 0.4, 15);
-        rim.position.set(-5, 3, -5);
+        // Main ceiling downlight (warm)
+        var mainLight = new THREE.SpotLight(0xffeedd, 3.5, 22, Math.PI / 3.5, 0.5, 0.8);
+        mainLight.position.set(0, 7.5, 0);
+        mainLight.target.position.set(0, 0, 0);
+        mainLight.castShadow = true;
+        mainLight.shadow.mapSize.set(1024, 1024);
+        mainLight.shadow.bias = -0.001;
+        scene.add(mainLight);
+        scene.add(mainLight.target);
+        // Secondary overhead lights (track lighting)
+        var track1 = new THREE.PointLight(0xffeedd, 1.2, 14);
+        track1.position.set(-3, 7, -2);
+        scene.add(track1);
+        var track2 = new THREE.PointLight(0xffeedd, 1.2, 14);
+        track2.position.set(3, 7, 2);
+        scene.add(track2);
+        var track3 = new THREE.PointLight(0xffeedd, 0.8, 12);
+        track3.position.set(0, 7, -3);
+        scene.add(track3);
+        var track4 = new THREE.PointLight(0xffeedd, 0.8, 12);
+        track4.position.set(0, 7, 3);
+        scene.add(track4);
+        // Cool fill from window side
+        var windowFill = new THREE.DirectionalLight(0x99aadd, 0.8);
+        windowFill.position.set(-8, 5, 0);
+        scene.add(windowFill);
+        // Accent rim light
+        var rim = new THREE.PointLight(0x7c6df5, 0.6, 14);
+        rim.position.set(5, 3, -5);
         scene.add(rim);
 
         buildRoom();
@@ -684,95 +778,705 @@
     }
 
     function buildRoom() {
-        // Floor
-        var floorGeo = new THREE.PlaneGeometry(20, 20);
+        var roomW = 14, roomD = 10, roomH = 8;
+
+        // ── Materials ──
         var floorCanvas = document.createElement('canvas');
-        floorCanvas.width = 256; floorCanvas.height = 256;
-        var ctx = floorCanvas.getContext('2d');
-        ctx.fillStyle = '#0a0a14';
-        ctx.fillRect(0, 0, 256, 256);
-        ctx.strokeStyle = 'rgba(124,109,245,0.06)';
-        ctx.lineWidth = 1;
-        for (var i = 0; i <= 256; i += 32) { ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 256); ctx.stroke(); ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(256, i); ctx.stroke(); }
+        floorCanvas.width = 512; floorCanvas.height = 512;
+        var fctx = floorCanvas.getContext('2d');
+        // Dark hardwood floor
+        fctx.fillStyle = '#1a1820';
+        fctx.fillRect(0, 0, 512, 512);
+        var plankW = 512, plankH = 64;
+        for (var py = 0; py < 512; py += plankH) {
+            var shade = 0.06 + Math.random() * 0.06;
+            fctx.fillStyle = 'rgba(80,60,40,' + shade + ')';
+            fctx.fillRect(0, py, plankW, plankH - 1);
+            fctx.fillStyle = 'rgba(0,0,0,0.15)';
+            fctx.fillRect(0, py + plankH - 1, plankW, 1);
+        }
+        // Subtle grain
+        for (var gi = 0; gi < 800; gi++) {
+            fctx.fillStyle = 'rgba(120,90,60,' + (0.01 + Math.random() * 0.02) + ')';
+            fctx.fillRect(Math.random() * 512, Math.random() * 512, Math.random() * 30 + 5, 1);
+        }
         var floorTex = new THREE.CanvasTexture(floorCanvas);
         floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping;
-        floorTex.repeat.set(4, 4);
-        var floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.9, metalness: 0.1 });
-        var floor = new THREE.Mesh(floorGeo, floorMat);
+        floorTex.repeat.set(3, 2);
+        var floorMat = new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.75, metalness: 0.05 });
+
+        var wallMat = new THREE.MeshStandardMaterial({ color: 0x1e1e2a, roughness: 0.8, metalness: 0.05 });
+        var wallPanelMat = new THREE.MeshStandardMaterial({ color: 0x252535, roughness: 0.65, metalness: 0.1 });
+        var ceilingMat = new THREE.MeshStandardMaterial({ color: 0x181822, roughness: 0.85, metalness: 0.0 });
+        var darkWoodMat = new THREE.MeshStandardMaterial({ color: 0x2a2232, roughness: 0.4, metalness: 0.3 });
+        var glossDarkMat = new THREE.MeshStandardMaterial({ color: 0x181825, roughness: 0.12, metalness: 0.7 });
+        var chromeMat = new THREE.MeshStandardMaterial({ color: 0x888899, roughness: 0.15, metalness: 0.9 });
+        var goldTrimMat = new THREE.MeshStandardMaterial({ color: 0xc9a96e, emissive: 0xc9a96e, emissiveIntensity: 0.2, roughness: 0.25, metalness: 0.85 });
+        var windowGlowMat = new THREE.MeshBasicMaterial({ color: 0x2a3560, transparent: true, opacity: 0.7 });
+        var glassMat = new THREE.MeshStandardMaterial({ color: 0x223344, roughness: 0.05, metalness: 0.8, transparent: true, opacity: 0.25 });
+
+        // ── Floor ──
+        var floor = new THREE.Mesh(new THREE.PlaneGeometry(roomW, roomD), floorMat);
         floor.rotation.x = -Math.PI / 2;
-        floor.position.y = -0.01;
+        floor.receiveShadow = true;
         scene.add(floor);
 
-        // Table
+        // ── Ceiling ──
+        var ceiling = new THREE.Mesh(new THREE.PlaneGeometry(roomW, roomD), ceilingMat);
+        ceiling.rotation.x = Math.PI / 2;
+        ceiling.position.y = roomH;
+        scene.add(ceiling);
+
+        // ── Walls ──
+        // Back wall (behind table, +Z) — fades when camera is behind
+        var backWallMat = new THREE.MeshStandardMaterial({ color: 0x1e1e2a, roughness: 0.8, metalness: 0.05, transparent: true, opacity: 1.0 });
+        var backWall = new THREE.Mesh(new THREE.PlaneGeometry(roomW, roomH), backWallMat);
+        backWall.position.set(0, roomH / 2, -roomD / 2);
+        backWall.renderOrder = 1;
+        scene.add(backWall);
+        // Front wall (-Z, camera side)
+        var frontWallMat = new THREE.MeshStandardMaterial({ color: 0x1e1e2a, roughness: 0.8, metalness: 0.05, transparent: true, opacity: 1.0 });
+        var frontWall = new THREE.Mesh(new THREE.PlaneGeometry(roomW, roomH), frontWallMat);
+        frontWall.position.set(0, roomH / 2, roomD / 2);
+        frontWall.rotation.y = Math.PI;
+        frontWall.renderOrder = 1;
+        scene.add(frontWall);
+        // Right wall (+X)
+        var rightWall = new THREE.Mesh(new THREE.PlaneGeometry(roomD, roomH), wallMat);
+        rightWall.position.set(roomW / 2, roomH / 2, 0);
+        rightWall.rotation.y = -Math.PI / 2;
+        scene.add(rightWall);
+        // Left wall (-X) — window wall
+        var leftWall = new THREE.Mesh(new THREE.PlaneGeometry(roomD, roomH), wallMat);
+        leftWall.position.set(-roomW / 2, roomH / 2, 0);
+        leftWall.rotation.y = Math.PI / 2;
+        scene.add(leftWall);
+
+        // ── Wall panels / wainscoting ──
+        var panelHeight = 1.2;
+        var backPanelMat = new THREE.MeshStandardMaterial({ color: 0x252535, roughness: 0.65, metalness: 0.1, transparent: true, opacity: 1.0 });
+        var frontPanelMat = new THREE.MeshStandardMaterial({ color: 0x252535, roughness: 0.65, metalness: 0.1, transparent: true, opacity: 1.0 });
+        var backTrimMat = new THREE.MeshStandardMaterial({ color: 0xc9a96e, emissive: 0xc9a96e, emissiveIntensity: 0.2, roughness: 0.25, metalness: 0.85, transparent: true, opacity: 1.0 });
+        var frontTrimMat = new THREE.MeshStandardMaterial({ color: 0xc9a96e, emissive: 0xc9a96e, emissiveIntensity: 0.2, roughness: 0.25, metalness: 0.85, transparent: true, opacity: 1.0 });
+        var fadePanelMats = [backPanelMat, frontPanelMat];
+        var fadeTrimMats = [backTrimMat, frontTrimMat];
+        for (var wi = 0; wi < 4; wi++) {
+            var pw, pd, px, pz, pry;
+            if (wi === 0) { pw = roomW - 0.1; pd = 0; px = 0; pz = -roomD / 2 + 0.02; pry = 0; }
+            else if (wi === 1) { pw = roomW - 0.1; pd = 0; px = 0; pz = roomD / 2 - 0.02; pry = Math.PI; }
+            else if (wi === 2) { pw = roomD - 0.1; pd = 0; px = roomW / 2 - 0.02; pz = 0; pry = -Math.PI / 2; }
+            else { pw = roomD - 0.1; pd = 0; px = -roomW / 2 + 0.02; pz = 0; pry = Math.PI / 2; }
+            var usePanelMat = wi === 0 ? backPanelMat : wi === 1 ? frontPanelMat : wallPanelMat;
+            var useTrimMat = wi === 0 ? backTrimMat : wi === 1 ? frontTrimMat : goldTrimMat;
+            var panel = new THREE.Mesh(new THREE.PlaneGeometry(pw, panelHeight), usePanelMat);
+            panel.position.set(px, panelHeight / 2, pz);
+            panel.rotation.y = pry;
+            if (wi <= 1) panel.renderOrder = 1;
+            scene.add(panel);
+            // Trim strip
+            var trim = new THREE.Mesh(new THREE.PlaneGeometry(pw, 0.03), useTrimMat);
+            trim.position.set(px, panelHeight + 0.015, pz + (pry === 0 ? 0.025 : pry === Math.PI ? -0.025 : 0));
+            trim.position.x += (pry === -Math.PI / 2 ? -0.025 : pry === Math.PI / 2 ? 0.025 : 0);
+            trim.rotation.y = pry;
+            if (wi <= 1) trim.renderOrder = 1;
+            scene.add(trim);
+        }
+
+        // ── Windows (left wall) ──
+        for (var wn = 0; wn < 3; wn++) {
+            var wz = -2.5 + wn * 2.5;
+            // Window recess
+            var winFrame = new THREE.Mesh(new THREE.BoxGeometry(0.08, 3.5, 1.8), chromeMat);
+            winFrame.position.set(-roomW / 2 + 0.06, 3.5, wz);
+            scene.add(winFrame);
+            // Glass pane
+            var glass = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 3.3), glassMat);
+            glass.position.set(-roomW / 2 + 0.11, 3.5, wz);
+            glass.rotation.y = Math.PI / 2;
+            scene.add(glass);
+            // City glow behind window
+            var glow = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 3.3), windowGlowMat);
+            glow.position.set(-roomW / 2 - 0.05, 3.5, wz);
+            glow.rotation.y = Math.PI / 2;
+            scene.add(glow);
+            // Subtle cityscape light dots
+            var dotCanvas = document.createElement('canvas');
+            dotCanvas.width = 128; dotCanvas.height = 128;
+            var dctx = dotCanvas.getContext('2d');
+            dctx.fillStyle = '#0a0e1a';
+            dctx.fillRect(0, 0, 128, 128);
+            for (var di = 0; di < 40; di++) {
+                var dx = Math.random() * 128, dy = Math.random() * 128;
+                var dc = ['#ffeedd', '#aabbdd', '#c9a96e', '#7c6df5'][Math.floor(Math.random() * 4)];
+                dctx.fillStyle = dc;
+                dctx.globalAlpha = 0.2 + Math.random() * 0.4;
+                dctx.fillRect(dx, dy, 1 + Math.random() * 2, 1 + Math.random() * 2);
+            }
+            dctx.globalAlpha = 1;
+            var dotTex = new THREE.CanvasTexture(dotCanvas);
+            var dotPane = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 3.3), new THREE.MeshBasicMaterial({ map: dotTex, transparent: true, opacity: 0.5 }));
+            dotPane.position.set(-roomW / 2 - 0.03, 3.5, wz);
+            dotPane.rotation.y = Math.PI / 2;
+            scene.add(dotPane);
+        }
+
+        // ── Conference Table (long oval) ──
         tableGroup = new THREE.Group();
-        var tableGeo = new THREE.CylinderGeometry(2.2, 2.2, 0.12, 48);
-        var tableMat = new THREE.MeshStandardMaterial({ color: 0x14141e, roughness: 0.4, metalness: 0.6 });
-        var tableTop = new THREE.Mesh(tableGeo, tableMat);
-        tableTop.position.y = 0.8;
+        // Table top — rounded rectangle via extruded shape
+        var tW = 4.5, tD = 2.0, tH = 0.1, tR = 0.6;
+        var shape = new THREE.Shape();
+        shape.moveTo(-tW / 2 + tR, -tD / 2);
+        shape.lineTo(tW / 2 - tR, -tD / 2);
+        shape.quadraticCurveTo(tW / 2, -tD / 2, tW / 2, -tD / 2 + tR);
+        shape.lineTo(tW / 2, tD / 2 - tR);
+        shape.quadraticCurveTo(tW / 2, tD / 2, tW / 2 - tR, tD / 2);
+        shape.lineTo(-tW / 2 + tR, tD / 2);
+        shape.quadraticCurveTo(-tW / 2, tD / 2, -tW / 2, tD / 2 - tR);
+        shape.lineTo(-tW / 2, -tD / 2 + tR);
+        shape.quadraticCurveTo(-tW / 2, -tD / 2, -tW / 2 + tR, -tD / 2);
+        var tableGeo = new THREE.ExtrudeGeometry(shape, { depth: tH, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 3 });
+        var tableTop = new THREE.Mesh(tableGeo, glossDarkMat);
+        tableTop.rotation.x = -Math.PI / 2;
+        tableTop.position.y = 0.78;
+        tableTop.castShadow = true;
+        tableTop.receiveShadow = true;
         tableGroup.add(tableTop);
 
-        // Table edge ring
-        var edgeGeo = new THREE.TorusGeometry(2.2, 0.03, 8, 48);
-        var edgeMat = new THREE.MeshStandardMaterial({ color: 0x7c6df5, emissive: 0x7c6df5, emissiveIntensity: 0.3, roughness: 0.3, metalness: 0.8 });
-        var edge = new THREE.Mesh(edgeGeo, edgeMat);
-        edge.rotation.x = Math.PI / 2;
-        edge.position.y = 0.86;
-        tableGroup.add(edge);
+        // Table edge accent
+        var edgeShape = new THREE.Shape();
+        edgeShape.moveTo(-tW / 2 + tR - 0.02, -tD / 2 - 0.02);
+        edgeShape.lineTo(tW / 2 - tR + 0.02, -tD / 2 - 0.02);
+        edgeShape.quadraticCurveTo(tW / 2 + 0.02, -tD / 2 - 0.02, tW / 2 + 0.02, -tD / 2 + tR - 0.02);
+        edgeShape.lineTo(tW / 2 + 0.02, tD / 2 - tR + 0.02);
+        edgeShape.quadraticCurveTo(tW / 2 + 0.02, tD / 2 + 0.02, tW / 2 - tR + 0.02, tD / 2 + 0.02);
+        edgeShape.lineTo(-tW / 2 + tR - 0.02, tD / 2 + 0.02);
+        edgeShape.quadraticCurveTo(-tW / 2 - 0.02, tD / 2 + 0.02, -tW / 2 - 0.02, tD / 2 - tR + 0.02);
+        edgeShape.lineTo(-tW / 2 - 0.02, -tD / 2 + tR - 0.02);
+        edgeShape.quadraticCurveTo(-tW / 2 - 0.02, -tD / 2 - 0.02, -tW / 2 + tR - 0.02, -tD / 2 - 0.02);
+        var edgePts = edgeShape.getPoints(64);
+        var edgeLineGeo = new THREE.BufferGeometry().setFromPoints(edgePts.map(function(p) { return new THREE.Vector3(p.x, 0.85, p.y); }));
+        var edgeLine = new THREE.Line(edgeLineGeo, new THREE.LineBasicMaterial({ color: 0xc9a96e, transparent: true, opacity: 0.35 }));
+        tableGroup.add(edgeLine);
 
-        // Table leg
-        var legGeo = new THREE.CylinderGeometry(0.3, 0.5, 0.8, 16);
-        var leg = new THREE.Mesh(legGeo, tableMat);
-        leg.position.y = 0.4;
-        tableGroup.add(leg);
+        // Table legs (4 chrome legs)
+        var legPositions = [[-1.6, -0.6], [1.6, -0.6], [-1.6, 0.6], [1.6, 0.6]];
+        legPositions.forEach(function(lp) {
+            var legGeo = new THREE.CylinderGeometry(0.04, 0.06, 0.78, 8);
+            var leg = new THREE.Mesh(legGeo, chromeMat);
+            leg.position.set(lp[0], 0.39, lp[1]);
+            leg.castShadow = true;
+            tableGroup.add(leg);
+            // Foot plate
+            var foot = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, 0.01, 8), chromeMat);
+            foot.position.set(lp[0], 0.005, lp[1]);
+            tableGroup.add(foot);
+        });
 
         scene.add(tableGroup);
 
-        // Center hologram ring (decorative)
-        var holoGeo = new THREE.TorusGeometry(0.6, 0.02, 8, 32);
-        var holoMat = new THREE.MeshBasicMaterial({ color: 0x7c6df5, transparent: true, opacity: 0.3 });
+        // ── Chairs ──
+        var chairPositions = [
+            { x: -1.8, z: -1.6, ry: 0.3 }, { x: -0.6, z: -1.6, ry: 0.1 }, { x: 0.6, z: -1.6, ry: -0.1 }, { x: 1.8, z: -1.6, ry: -0.3 },
+            { x: -1.8, z: 1.6, ry: Math.PI - 0.3 }, { x: -0.6, z: 1.6, ry: Math.PI - 0.1 }, { x: 0.6, z: 1.6, ry: Math.PI + 0.1 }, { x: 1.8, z: 1.6, ry: Math.PI + 0.3 }
+        ];
+        var seatMat = new THREE.MeshStandardMaterial({ color: 0x252230, roughness: 0.55, metalness: 0.2 });
+        chairPositions.forEach(function(cp) {
+            var chair = new THREE.Group();
+            // Seat
+            var seat = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.06, 0.42), seatMat);
+            seat.position.y = 0.45;
+            chair.add(seat);
+            // Back
+            var back = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.55, 0.05), seatMat);
+            back.position.set(0, 0.75, -0.19);
+            chair.add(back);
+            // Chrome leg pole
+            var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.45, 6), chromeMat);
+            pole.position.y = 0.22;
+            chair.add(pole);
+            // Base star (simplified)
+            for (var si = 0; si < 5; si++) {
+                var sa = (si / 5) * Math.PI * 2;
+                var starArm = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.015, 0.03), chromeMat);
+                starArm.position.set(Math.cos(sa) * 0.12, 0.007, Math.sin(sa) * 0.12);
+                starArm.rotation.y = sa;
+                chair.add(starArm);
+            }
+            chair.position.set(cp.x, 0, cp.z);
+            chair.rotation.y = cp.ry;
+            scene.add(chair);
+        });
+
+        // ── Ceiling light fixture (modern pendant) ──
+        var fixtureGroup = new THREE.Group();
+        // Mount plate
+        var mount = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.04, 16), chromeMat);
+        mount.position.y = roomH - 0.02;
+        fixtureGroup.add(mount);
+        // Rod
+        var rod = new THREE.Mesh(new THREE.CylinderGeometry(0.015, 0.015, 1.5, 6), chromeMat);
+        rod.position.y = roomH - 0.77;
+        fixtureGroup.add(rod);
+        // Light ring
+        var ringGeo = new THREE.TorusGeometry(0.8, 0.04, 8, 48);
+        var ringMat = new THREE.MeshStandardMaterial({ color: 0xeeeeee, emissive: 0xffeedd, emissiveIntensity: 1.0, roughness: 0.2, metalness: 0.8 });
+        var lightRing = new THREE.Mesh(ringGeo, ringMat);
+        lightRing.rotation.x = Math.PI / 2;
+        lightRing.position.y = roomH - 1.55;
+        fixtureGroup.add(lightRing);
+        // Inner glow disc
+        var glowDisc = new THREE.Mesh(new THREE.CircleGeometry(0.75, 32), new THREE.MeshBasicMaterial({ color: 0xfff5e6, transparent: true, opacity: 0.35 }));
+        glowDisc.rotation.x = Math.PI / 2;
+        glowDisc.position.y = roomH - 1.54;
+        fixtureGroup.add(glowDisc);
+        scene.add(fixtureGroup);
+
+        // ── Back wall feature — large screen / whiteboard ──
+        var screenFrameMat = new THREE.MeshStandardMaterial({ color: 0x888899, roughness: 0.15, metalness: 0.9, transparent: true, opacity: 1.0 });
+        var screenFrame = new THREE.Mesh(new THREE.BoxGeometry(4.5, 2.5, 0.08), screenFrameMat);
+        screenFrame.position.set(0, 3.5, -roomD / 2 + 0.06);
+        screenFrame.renderOrder = 2;
+        scene.add(screenFrame);
+        var screenCanvas = document.createElement('canvas');
+        screenCanvas.width = 512; screenCanvas.height = 256;
+        var sctx = screenCanvas.getContext('2d');
+        sctx.fillStyle = '#0a0c16';
+        sctx.fillRect(0, 0, 512, 256);
+        sctx.fillStyle = '#7c6df5';
+        sctx.globalAlpha = 0.08;
+        sctx.font = 'bold 28px sans-serif';
+        sctx.textAlign = 'center';
+        sctx.fillText('AgentMeet', 256, 120);
+        sctx.font = '14px sans-serif';
+        sctx.fillText('Conference Room', 256, 150);
+        sctx.font = 'bold 12px sans-serif';
+        sctx.globalAlpha = 0.15;
+        sctx.fillText('Brought to you by @itsEvilDuck', 256, 175);
+        sctx.globalAlpha = 1;
+        var screenTex = new THREE.CanvasTexture(screenCanvas);
+        var screenDispMat = new THREE.MeshBasicMaterial({ map: screenTex, transparent: true, opacity: 1.0 });
+        var screenDisp = new THREE.Mesh(new THREE.PlaneGeometry(4.3, 2.35), screenDispMat);
+        screenDisp.position.set(0, 3.5, -roomD / 2 + 0.11);
+        screenDisp.renderOrder = 2;
+        scene.add(screenDisp);
+
+        // ── Decorative elements ──
+        // Side credenza / cabinet (right wall)
+        var credenza = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.8, 2.5), darkWoodMat);
+        credenza.position.set(roomW / 2 - 0.27, 0.4, -1);
+        credenza.castShadow = true;
+        scene.add(credenza);
+        // Plant pot on credenza
+        var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.1, 0.2, 8), new THREE.MeshStandardMaterial({ color: 0x2a2530, roughness: 0.8 }));
+        pot.position.set(roomW / 2 - 0.27, 0.9, -0.3);
+        scene.add(pot);
+        var plantBall = new THREE.Mesh(new THREE.IcosahedronGeometry(0.18, 1), new THREE.MeshStandardMaterial({ color: 0x1a3a20, roughness: 0.9 }));
+        plantBall.position.set(roomW / 2 - 0.27, 1.15, -0.3);
+        scene.add(plantBall);
+
+        // Second plant (corner)
+        var pot2 = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.15, 0.4, 8), new THREE.MeshStandardMaterial({ color: 0x2a2530, roughness: 0.8 }));
+        pot2.position.set(roomW / 2 - 0.6, 0.2, roomD / 2 - 0.6);
+        scene.add(pot2);
+        var plant2 = new THREE.Mesh(new THREE.ConeGeometry(0.3, 0.9, 8), new THREE.MeshStandardMaterial({ color: 0x1a3a22, roughness: 0.85 }));
+        plant2.position.set(roomW / 2 - 0.6, 0.85, roomD / 2 - 0.6);
+        scene.add(plant2);
+
+        // ── Center table hologram element ──
+        var holoGeo = new THREE.TorusGeometry(0.4, 0.015, 8, 32);
+        var holoMat = new THREE.MeshBasicMaterial({ color: 0x7c6df5, transparent: true, opacity: 0.45 });
         var holo = new THREE.Mesh(holoGeo, holoMat);
         holo.rotation.x = Math.PI / 2;
-        holo.position.y = 1.2;
+        holo.position.y = 1.05;
         holo.userData.isHolo = true;
         scene.add(holo);
+        var holo2 = new THREE.Mesh(new THREE.TorusGeometry(0.25, 0.01, 6, 24), new THREE.MeshBasicMaterial({ color: 0xc9a96e, transparent: true, opacity: 0.35 }));
+        holo2.rotation.x = Math.PI / 2;
+        holo2.position.y = 1.1;
+        holo2.userData.isHolo2 = true;
+        scene.add(holo2);
+
+        // ── Baseboard trim ──
+        var baseboardMat = new THREE.MeshStandardMaterial({ color: 0x0e0d12, roughness: 0.5, metalness: 0.3 });
+        var backBaseboardMat = new THREE.MeshStandardMaterial({ color: 0x0e0d12, roughness: 0.5, metalness: 0.3, transparent: true, opacity: 1.0 });
+        var frontBaseboardMat = new THREE.MeshStandardMaterial({ color: 0x0e0d12, roughness: 0.5, metalness: 0.3, transparent: true, opacity: 1.0 });
+        // 0=left, 1=right, 2=back, 3=front
+        [[-roomW / 2 + 0.03, roomD, Math.PI / 2], [roomW / 2 - 0.03, roomD, -Math.PI / 2], [0, roomW, 0], [0, roomW, Math.PI]].forEach(function(b, i) {
+            var mat = i === 2 ? backBaseboardMat : i === 3 ? frontBaseboardMat : baseboardMat;
+            var bb = new THREE.Mesh(new THREE.BoxGeometry(b[1], 0.08, 0.02), mat);
+            bb.rotation.y = b[2];
+            bb.position.y = 0.04;
+            if (i === 0) bb.position.x = -roomW / 2 + 0.02;
+            else if (i === 1) bb.position.x = roomW / 2 - 0.02;
+            else if (i === 2) bb.position.z = -roomD / 2 + 0.02;
+            else bb.position.z = roomD / 2 - 0.02;
+            if (i >= 2) bb.renderOrder = 1;
+            scene.add(bb);
+        });
+
+        // Collect materials that fade when camera looks through that wall
+        fadeObjects = [
+            { mat: backWallMat, wall: 'back' },
+            { mat: screenFrameMat, wall: 'back' },
+            { mat: screenDispMat, wall: 'back' },
+            { mat: backPanelMat, wall: 'back' },
+            { mat: backTrimMat, wall: 'back' },
+            { mat: frontWallMat, wall: 'front' },
+            { mat: frontPanelMat, wall: 'front' },
+            { mat: frontTrimMat, wall: 'front' },
+            { mat: backBaseboardMat, wall: 'back' },
+            { mat: frontBaseboardMat, wall: 'front' },
+        ];
+    }
+
+    // ═══════════════════════════════════════════
+    // HUMANOID AVATAR SYSTEM
+    // ═══════════════════════════════════════════
+    var SKIN_TONES = ['#f5d0b0','#e8b88a','#d4956b','#c28560','#b5734a','#8b5a3a','#6b3a2a'];
+    var HAIR_COLORS = ['#1a1a1a','#3a2510','#6b4020','#a07030','#d4a040','#c03030','#e0e0e0','#7c6df5','#22d3ee','#ec4899'];
+    var EYE_COLORS = ['#3a2a1a','#2a5a8a','#3a7a3a','#7a7a8a','#6a4a2a','#7c6df5','#c03030'];
+    var HAIR_STYLES = ['short','long','buzz','mohawk','curly','ponytail','bald','spiky','bob','braids'];
+    var EYE_SHAPES = ['round','almond','wide','narrow'];
+    var NOSE_SHAPES = ['small','medium','wide','pointed','button'];
+    var LIP_SHAPES = ['thin','medium','full','wide'];
+    var HEAD_SHAPES = ['round','oval','square','long','heart'];
+    var OUTFIT_TYPES = ['suit','dress'];
+
+    function randomFrom(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function buildDefaultAvatar(index) {
+        return {
+            hair: { style: HAIR_STYLES[index % HAIR_STYLES.length], color: randomFrom(HAIR_COLORS) },
+            eyes: { shape: randomFrom(EYE_SHAPES), color: randomFrom(EYE_COLORS) },
+            nose: randomFrom(NOSE_SHAPES),
+            lips: randomFrom(LIP_SHAPES),
+            head: randomFrom(HEAD_SHAPES),
+            skin: SKIN_TONES[index % SKIN_TONES.length],
+            weight: 0.3 + Math.random() * 0.4,
+            height: 0.3 + Math.random() * 0.4,
+            outfit: { type: randomFrom(OUTFIT_TYPES), color: COLORS[index % COLORS.length] }
+        };
+    }
+
+    function mergeAvatar(opts, index) {
+        var d = buildDefaultAvatar(index);
+        if (!opts) return d;
+        return {
+            hair: { style: (opts.hair && opts.hair.style) || d.hair.style, color: (opts.hair && opts.hair.color) || d.hair.color },
+            eyes: { shape: (opts.eyes && opts.eyes.shape) || d.eyes.shape, color: (opts.eyes && opts.eyes.color) || d.eyes.color },
+            nose: opts.nose || d.nose,
+            lips: opts.lips || d.lips,
+            head: opts.head || d.head,
+            skin: opts.skin || d.skin,
+            weight: opts.weight !== undefined ? opts.weight : d.weight,
+            height: opts.height !== undefined ? opts.height : d.height,
+            outfit: { type: (opts.outfit && opts.outfit.type) || d.outfit.type, color: (opts.outfit && opts.outfit.color) || d.outfit.color }
+        };
+    }
+
+    function buildHumanAvatar(av) {
+        var group = new THREE.Group();
+        var w = 0.7 + av.weight * 0.6; // 0.7 - 1.3 width multiplier
+        var h = 0.8 + av.height * 0.4; // 0.8 - 1.2 height multiplier
+        var skinCol = new THREE.Color(av.skin);
+        var skinMat = new THREE.MeshStandardMaterial({ color: skinCol, roughness: 0.7, metalness: 0.05 });
+        var outfitCol = new THREE.Color(av.outfit.color);
+        var outfitMat = new THREE.MeshStandardMaterial({ color: outfitCol, roughness: 0.5, metalness: 0.15 });
+        var hairCol = new THREE.Color(av.hair.color);
+        var hairMat = new THREE.MeshStandardMaterial({ color: hairCol, roughness: 0.8, metalness: 0.05 });
+
+        // All Y positions relative to seated hip at Y=0
+        // Torso
+        var torsoH = 0.38 * h;
+        var torsoW = 0.22 * w;
+        var torso = new THREE.Mesh(new THREE.CylinderGeometry(torsoW * 0.85, torsoW, torsoH, 12), outfitMat);
+        torso.position.y = torsoH / 2 + 0.02;
+        torso.castShadow = true;
+        group.add(torso);
+
+        // Neck
+        var neckH = 0.06 * h;
+        var neck = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, neckH, 8), skinMat);
+        neck.position.y = torsoH + 0.02 + neckH / 2;
+        group.add(neck);
+
+        // Head
+        var headBaseY = torsoH + 0.02 + neckH;
+        var headR = 0.13;
+        var headSx = 1, headSy = 1, headSz = 1;
+        switch (av.head) {
+            case 'oval': headSy = 1.15; headSx = 0.92; break;
+            case 'square': headSx = 1.08; headSy = 0.95; headSz = 1.05; break;
+            case 'long': headSy = 1.25; headSx = 0.88; break;
+            case 'heart': headSx = 1.05; headSy = 1.05; break;
+        }
+        var head = new THREE.Mesh(new THREE.SphereGeometry(headR, 16, 12), skinMat);
+        head.scale.set(headSx, headSy, headSz);
+        head.position.y = headBaseY + headR * headSy;
+        head.castShadow = true;
+        group.add(head);
+        group.userData.headMesh = head;
+        group.userData.headBaseY = headBaseY + headR * headSy;
+
+        // Eyes
+        var eyeR = 0.022;
+        var eyeSx = 1, eyeSy = 1;
+        switch (av.eyes.shape) {
+            case 'almond': eyeSx = 1.3; eyeSy = 0.7; break;
+            case 'wide': eyeSx = 1.2; eyeSy = 1.1; eyeR = 0.026; break;
+            case 'narrow': eyeSx = 1.4; eyeSy = 0.5; break;
+        }
+        var eyeWhiteMat = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.3 });
+        var eyeIrisMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(av.eyes.color), roughness: 0.3, metalness: 0.2 });
+        var pupilMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.2 });
+        [-1, 1].forEach(function(side) {
+            var eyeGroup = new THREE.Group();
+            // White
+            var white = new THREE.Mesh(new THREE.SphereGeometry(eyeR, 10, 8), eyeWhiteMat);
+            white.scale.set(eyeSx, eyeSy, 0.8);
+            eyeGroup.add(white);
+            // Iris
+            var iris = new THREE.Mesh(new THREE.SphereGeometry(eyeR * 0.6, 8, 6), eyeIrisMat);
+            iris.position.z = eyeR * 0.6;
+            iris.scale.set(eyeSx * 0.8, eyeSy * 0.8, 0.5);
+            eyeGroup.add(iris);
+            // Pupil
+            var pupil = new THREE.Mesh(new THREE.SphereGeometry(eyeR * 0.3, 6, 4), pupilMat);
+            pupil.position.z = eyeR * 0.78;
+            eyeGroup.add(pupil);
+            eyeGroup.position.set(side * 0.045 * headSx, headBaseY + headR * headSy * 0.1, headR * headSz * 0.88);
+            group.add(eyeGroup);
+        });
+
+        // Nose
+        var noseGroup = new THREE.Group();
+        var noseW = 0.018, noseH = 0.03, noseD = 0.025;
+        switch (av.nose) {
+            case 'small': noseW = 0.014; noseH = 0.022; noseD = 0.018; break;
+            case 'wide': noseW = 0.025; noseH = 0.028; noseD = 0.02; break;
+            case 'pointed': noseW = 0.012; noseH = 0.035; noseD = 0.03; break;
+            case 'button': noseW = 0.018; noseH = 0.018; noseD = 0.02; break;
+        }
+        if (av.nose === 'pointed') {
+            var noseMesh = new THREE.Mesh(new THREE.ConeGeometry(noseW, noseH, 6), skinMat);
+            noseMesh.rotation.x = Math.PI / 2;
+            noseMesh.position.z = noseD / 2;
+        } else {
+            var noseMesh = new THREE.Mesh(new THREE.SphereGeometry(noseW, 8, 6), skinMat);
+            noseMesh.scale.set(1, noseH / noseW, noseD / noseW);
+        }
+        noseGroup.add(noseMesh);
+        noseGroup.position.set(0, headBaseY + headR * headSy * -0.1, headR * headSz * 0.92);
+        group.add(noseGroup);
+
+        // Lips
+        var lipW = 0.04, lipH = 0.012;
+        switch (av.lips) {
+            case 'thin': lipW = 0.035; lipH = 0.006; break;
+            case 'full': lipW = 0.045; lipH = 0.018; break;
+            case 'wide': lipW = 0.055; lipH = 0.012; break;
+        }
+        var lipMat = new THREE.MeshStandardMaterial({ color: skinCol.clone().lerp(new THREE.Color(0x8b3030), 0.35), roughness: 0.5 });
+        var lips = new THREE.Mesh(new THREE.SphereGeometry(lipW, 10, 6), lipMat);
+        lips.scale.set(1, lipH / lipW, 0.4);
+        lips.position.set(0, headBaseY + headR * headSy * -0.32, headR * headSz * 0.88);
+        group.add(lips);
+
+        // Hair
+        var hairGroup = new THREE.Group();
+        var topY = headBaseY + headR * headSy;
+        switch (av.hair.style) {
+            case 'short': {
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.08, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), hairMat);
+                cap.scale.set(headSx, headSy * 0.5, headSz);
+                cap.position.y = topY * 0.97;
+                hairGroup.add(cap);
+                break;
+            }
+            case 'long': {
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.1, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), hairMat);
+                cap.scale.set(headSx * 1.05, headSy * 0.5, headSz * 1.05);
+                cap.position.y = topY * 0.97;
+                hairGroup.add(cap);
+                var flow = new THREE.Mesh(new THREE.CylinderGeometry(headR * headSx * 0.7, headR * headSx * 0.5, 0.3 * h, 10), hairMat);
+                flow.position.set(0, topY - headR * headSy * 0.8 - 0.1 * h, -headR * headSz * 0.3);
+                hairGroup.add(flow);
+                break;
+            }
+            case 'buzz': {
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.03, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.52), hairMat);
+                cap.scale.set(headSx, headSy * 0.45, headSz);
+                cap.position.y = topY * 0.98;
+                hairGroup.add(cap);
+                break;
+            }
+            case 'mohawk': {
+                var ridge = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.15, headR * headSz * 1.6), hairMat);
+                ridge.position.y = topY + 0.06;
+                hairGroup.add(ridge);
+                break;
+            }
+            case 'curly': {
+                for (var ci = 0; ci < 18; ci++) {
+                    var ca = (ci / 18) * Math.PI * 2;
+                    var cr = headR * 1.12;
+                    var cy = topY + (Math.random() - 0.3) * headR * headSy * 0.6;
+                    var cx = Math.cos(ca) * cr * headSx;
+                    var cz = Math.sin(ca) * cr * headSz;
+                    if (cz > headR * headSz * 0.5) continue; // Don't put curls on face
+                    var curl = new THREE.Mesh(new THREE.SphereGeometry(0.025 + Math.random() * 0.015, 6, 5), hairMat);
+                    curl.position.set(cx, cy, cz);
+                    hairGroup.add(curl);
+                }
+                break;
+            }
+            case 'ponytail': {
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.06, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.53), hairMat);
+                cap.scale.set(headSx, headSy * 0.48, headSz);
+                cap.position.y = topY * 0.97;
+                hairGroup.add(cap);
+                var tail = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.02, 0.22 * h, 8), hairMat);
+                tail.position.set(0, topY - headR * headSy * 0.5 - 0.06 * h, -headR * headSz * 0.85);
+                tail.rotation.x = 0.3;
+                hairGroup.add(tail);
+                var band = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.008, 6, 8), outfitMat);
+                band.position.set(0, topY - headR * headSy * 0.2, -headR * headSz * 0.8);
+                hairGroup.add(band);
+                break;
+            }
+            case 'spiky': {
+                for (var si = 0; si < 8; si++) {
+                    var sa = (si / 8) * Math.PI * 2;
+                    var spike = new THREE.Mesh(new THREE.ConeGeometry(0.02, 0.08 + Math.random() * 0.04, 5), hairMat);
+                    spike.position.set(Math.cos(sa) * headR * headSx * 0.5, topY + 0.04, Math.sin(sa) * headR * headSz * 0.5);
+                    spike.rotation.z = Math.cos(sa) * 0.3;
+                    spike.rotation.x = -Math.sin(sa) * 0.3;
+                    hairGroup.add(spike);
+                }
+                break;
+            }
+            case 'bob': {
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.12, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.6), hairMat);
+                cap.scale.set(headSx * 1.1, headSy * 0.55, headSz * 1.1);
+                cap.position.y = topY * 0.95;
+                hairGroup.add(cap);
+                // Side panels
+                [-1, 1].forEach(function(s) {
+                    var panel = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.12 * h, 0.1), hairMat);
+                    panel.position.set(s * headR * headSx * 1.05, topY - headR * headSy * 0.7, 0);
+                    hairGroup.add(panel);
+                });
+                break;
+            }
+            case 'braids': {
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.05, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.5), hairMat);
+                cap.scale.set(headSx, headSy * 0.45, headSz);
+                cap.position.y = topY * 0.97;
+                hairGroup.add(cap);
+                [-1, 1].forEach(function(s) {
+                    for (var bi = 0; bi < 5; bi++) {
+                        var bead = new THREE.Mesh(new THREE.SphereGeometry(0.018, 6, 5), hairMat);
+                        bead.position.set(s * headR * headSx * 0.85, topY - headR * headSy * 0.3 - bi * 0.05, -headR * headSz * 0.2);
+                        hairGroup.add(bead);
+                    }
+                });
+                break;
+            }
+            // 'bald' — no hair added
+        }
+        group.add(hairGroup);
+
+        // Shoulders + upper arms
+        [-1, 1].forEach(function(side) {
+            // Shoulder
+            var shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.06 * w, 8, 6), outfitMat);
+            shoulder.position.set(side * (torsoW + 0.04), torsoH - 0.02, 0);
+            group.add(shoulder);
+            // Upper arm
+            var upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.04 * w, 0.035 * w, 0.2 * h, 8), outfitMat);
+            upperArm.position.set(side * (torsoW + 0.05), torsoH - 0.14 * h, 0);
+            group.add(upperArm);
+            // Forearm (skin)
+            var forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.033 * w, 0.028 * w, 0.18 * h, 8), skinMat);
+            forearm.position.set(side * (torsoW + 0.06), torsoH - 0.32 * h, 0.08);
+            forearm.rotation.x = -0.5;
+            group.add(forearm);
+            // Hand
+            var hand = new THREE.Mesh(new THREE.SphereGeometry(0.03 * w, 6, 5), skinMat);
+            hand.position.set(side * (torsoW + 0.06), torsoH - 0.42 * h, 0.14);
+            group.add(hand);
+        });
+
+        // Upper legs (seated — going forward)
+        [-1, 1].forEach(function(side) {
+            var thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.06 * w, 0.055 * w, 0.22, 8), outfitMat);
+            thigh.rotation.x = Math.PI / 2;
+            thigh.position.set(side * 0.09 * w, -0.02, 0.11);
+            group.add(thigh);
+            // Lower leg (hanging down)
+            var shin = new THREE.Mesh(new THREE.CylinderGeometry(0.045 * w, 0.04 * w, 0.22, 8), outfitMat);
+            shin.position.set(side * 0.09 * w, -0.13, 0.22);
+            group.add(shin);
+            // Shoe
+            var shoe = new THREE.Mesh(new THREE.BoxGeometry(0.06 * w, 0.03, 0.09), new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.6, metalness: 0.2 }));
+            shoe.position.set(side * 0.09 * w, -0.25, 0.24);
+            group.add(shoe);
+        });
+
+        // Outfit detail — collar/neckline
+        if (av.outfit.type === 'suit') {
+            // Lapel lines
+            var lapelMat = new THREE.MeshStandardMaterial({ color: outfitCol.clone().multiplyScalar(0.7), roughness: 0.4 });
+            [-1, 1].forEach(function(s) {
+                var lapel = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.1, 0.015), lapelMat);
+                lapel.position.set(s * 0.06, torsoH - 0.02, torsoW * 0.7);
+                lapel.rotation.z = s * 0.2;
+                group.add(lapel);
+            });
+            // Tie
+            var tie = new THREE.Mesh(new THREE.ConeGeometry(0.015, 0.12, 4), new THREE.MeshStandardMaterial({ color: outfitCol.clone().lerp(new THREE.Color(0x000000), 0.3), roughness: 0.4 }));
+            tie.position.set(0, torsoH * 0.65, torsoW * 0.85);
+            tie.rotation.x = 0.1;
+            group.add(tie);
+        } else {
+            // Dress — a slight flare at the bottom of torso
+            var skirt = new THREE.Mesh(new THREE.CylinderGeometry(torsoW * 0.9, torsoW * 1.3, 0.1, 12), outfitMat);
+            skirt.position.y = 0.02;
+            group.add(skirt);
+            // Collar accent
+            var collar = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.008, 6, 12, Math.PI), outfitMat.clone());
+            collar.material.color = outfitCol.clone().multiplyScalar(0.8);
+            collar.position.set(0, torsoH + 0.01, 0.04);
+            collar.rotation.x = -0.3;
+            group.add(collar);
+        }
+
+        // Store refs for animation
+        group.userData.skinMat = skinMat;
+        group.userData.outfitMat = outfitMat;
+        group.userData.outfitCol = outfitCol.clone();
+        return group;
     }
 
     function createAgentMesh(agent) {
         var group = new THREE.Group();
-        var geo;
-        switch (agent.avatar.shape) {
-            case 'cube': geo = new THREE.BoxGeometry(0.5, 0.5, 0.5); break;
-            case 'cone': geo = new THREE.ConeGeometry(0.3, 0.6, 8); break;
-            case 'cylinder': geo = new THREE.CylinderGeometry(0.25, 0.25, 0.5, 12); break;
-            case 'torus': geo = new THREE.TorusGeometry(0.25, 0.1, 8, 16); break;
-            case 'dodecahedron': geo = new THREE.DodecahedronGeometry(0.3); break;
-            case 'octahedron': geo = new THREE.OctahedronGeometry(0.3); break;
-            case 'icosahedron': geo = new THREE.IcosahedronGeometry(0.3); break;
-            default: geo = new THREE.SphereGeometry(0.3, 16, 12);
-        }
-        var color = new THREE.Color(agent.avatar.color);
-        var mat = new THREE.MeshStandardMaterial({
-            color: color,
-            emissive: color,
-            emissiveIntensity: 0.15,
-            roughness: 0.3,
-            metalness: 0.5
-        });
-        var body = new THREE.Mesh(geo, mat);
-        body.userData.baseMat = mat;
-        group.add(body);
+        var avatar = buildHumanAvatar(agent.avatar);
+        group.add(avatar);
+        group.userData.avatarGroup = avatar;
 
-        // Name label
-        var label = createLabel(agent.name, agent.avatar.color);
-        label.position.y = 0.55;
+        // Name label above head
+        var labelColor = agent.avatar.outfit ? agent.avatar.outfit.color : '#e2e8f0';
+        var label = createLabel(agent.name, labelColor);
+        var headY = avatar.userData.headBaseY || 0.7;
+        label.position.y = headY + 0.22;
         group.add(label);
 
-        // Speaking ring
-        var ringGeo = new THREE.TorusGeometry(0.4, 0.02, 6, 24);
-        var ringMat = new THREE.MeshBasicMaterial({ color: color, transparent: true, opacity: 0 });
+        // Speaking ring (around the avatar)
+        var ringGeo = new THREE.TorusGeometry(0.35, 0.015, 6, 24);
+        var ringMat = new THREE.MeshBasicMaterial({ color: new THREE.Color(labelColor), transparent: true, opacity: 0 });
         var ring = new THREE.Mesh(ringGeo, ringMat);
         ring.rotation.x = Math.PI / 2;
-        ring.position.y = -0.1;
+        ring.position.y = 0.2;
         ring.userData.isRing = true;
         group.add(ring);
 
@@ -811,23 +1515,26 @@
         }
     }
 
+    // Seat positions around rectangular table (matching chair layout)
+    var SEAT_SLOTS = [
+        { x: -1.8, z: -1.15, ry: 0 }, { x: -0.6, z: -1.15, ry: 0 }, { x: 0.6, z: -1.15, ry: 0 }, { x: 1.8, z: -1.15, ry: 0 },
+        { x: -1.8, z: 1.15, ry: Math.PI }, { x: -0.6, z: 1.15, ry: Math.PI }, { x: 0.6, z: 1.15, ry: Math.PI }, { x: 1.8, z: 1.15, ry: Math.PI }
+    ];
+
     function repositionAgents() {
         var ids = Object.keys(agentMeshes);
         var count = ids.length;
         if (count === 0) return;
-        var R = 3.2;
         for (var i = 0; i < count; i++) {
-            var angle = (i / count) * Math.PI * 2 - Math.PI / 2;
+            var slot = SEAT_SLOTS[i % SEAT_SLOTS.length];
             var group = agentMeshes[ids[i]];
-            var tx = Math.cos(angle) * R;
-            var tz = Math.sin(angle) * R;
-            group.userData.targetX = tx;
-            group.userData.targetZ = tz;
-            group.userData.targetRotY = angle + Math.PI;
-            group.userData.baseY = 1.2;
+            group.userData.targetX = slot.x;
+            group.userData.targetZ = slot.z;
+            group.userData.targetRotY = slot.ry;
+            group.userData.baseY = 0.45;
             if (group.position.y === 0) {
-                group.position.set(tx, 1.2, tz);
-                group.rotation.y = angle + Math.PI;
+                group.position.set(slot.x, 0.45, slot.z);
+                group.rotation.y = slot.ry;
                 group.scale.set(0, 0, 0);
                 group.userData.scaleIn = true;
             }
@@ -866,9 +1573,29 @@
         camera.position.y = camHeight;
         camera.lookAt(0, camLookY, 0);
 
+        // Fade walls/screen when camera is on that side of the room
+        // Back wall is at -Z, front wall is at +Z
+        // Use camera position: if camera Z < 0, it's behind the back wall side
+        var camZ = camera.position.z;
+        for (var fi = 0; fi < fadeObjects.length; fi++) {
+            var fo = fadeObjects[fi];
+            var targetOpacity;
+            if (fo.wall === 'back') {
+                // Fade back wall when camera is on the back side (Z < 2)
+                targetOpacity = camZ < 2 ? Math.max(0.05, camZ / 2) : 1.0;
+                if (targetOpacity < 0.05) targetOpacity = 0.05;
+            } else {
+                // Fade front wall when camera is on the front side (Z > -2)
+                targetOpacity = camZ > -2 ? Math.max(0.05, -camZ / 2) : 1.0;
+                if (targetOpacity < 0.05) targetOpacity = 0.05;
+            }
+            fo.mat.opacity += (targetOpacity - fo.mat.opacity) * 5 * dt;
+        }
+
         // Holo ring rotation
         scene.traverse(function(obj) {
-            if (obj.userData.isHolo) { obj.rotation.z = t * 0.5; obj.position.y = 1.2 + Math.sin(t * 0.8) * 0.05; }
+            if (obj.userData.isHolo) { obj.rotation.z = t * 0.5; obj.position.y = 1.05 + Math.sin(t * 0.8) * 0.04; }
+            if (obj.userData.isHolo2) { obj.rotation.z = -t * 0.35; obj.position.y = 1.1 + Math.sin(t * 0.6 + 1) * 0.03; }
         });
 
         // Agent animations
@@ -885,28 +1612,40 @@
                 g.position.x += (g.userData.targetX - g.position.x) * 3 * dt;
                 g.position.z += (g.userData.targetZ - g.position.z) * 3 * dt;
             }
-            // Idle bob
-            var bob = Math.sin(t * 1.2 + i * 1.5) * 0.03;
-            var baseY = g.userData.baseY || 1.2;
-            // State animations
-            var body = g.children[0];
+            // Idle breathing
+            var bob = Math.sin(t * 1.0 + i * 1.5) * 0.008;
+            var baseY = g.userData.baseY || 0.45;
+            var avatarGrp = g.userData.avatarGroup;
             var ring = g.children.find(function(c) { return c.userData && c.userData.isRing; });
+            // Head mesh for animation
+            var headMesh = avatarGrp ? avatarGrp.userData.headMesh : null;
+
             if (g.userData.state === 'speaking') {
-                var pulse = 1 + Math.sin(t * 6) * 0.08;
-                body.scale.set(pulse, pulse, pulse);
-                if (body.userData.baseMat) body.userData.baseMat.emissiveIntensity = 0.3 + Math.sin(t * 4) * 0.15;
-                if (ring) { ring.material.opacity = 0.5 + Math.sin(t * 5) * 0.3; ring.scale.set(pulse, pulse, pulse); }
+                // Head nod animation
+                if (headMesh) headMesh.rotation.x = Math.sin(t * 3) * 0.08;
+                // Outfit glow
+                if (avatarGrp && avatarGrp.userData.outfitMat) {
+                    avatarGrp.userData.outfitMat.emissive = avatarGrp.userData.outfitCol;
+                    avatarGrp.userData.outfitMat.emissiveIntensity = 0.15 + Math.sin(t * 4) * 0.1;
+                }
+                if (ring) { ring.material.opacity = 0.4 + Math.sin(t * 5) * 0.3; }
                 g.userData.stateTimer += dt;
                 if (g.userData.stateTimer > 3) { g.userData.state = 'idle'; }
             } else if (g.userData.state === 'reacting') {
-                var bounce = Math.max(0, Math.sin(g.userData.stateTimer * 8) * 0.2 * (1 - g.userData.stateTimer));
+                var bounce = Math.max(0, Math.sin(g.userData.stateTimer * 8) * 0.06 * (1 - g.userData.stateTimer));
                 bob += bounce;
+                if (headMesh) headMesh.rotation.z = Math.sin(g.userData.stateTimer * 6) * 0.15;
                 g.userData.stateTimer += dt;
                 if (g.userData.stateTimer > 1) g.userData.state = 'idle';
             } else {
-                body.scale.set(1, 1, 1);
-                if (body.userData.baseMat) body.userData.baseMat.emissiveIntensity = 0.15;
-                if (ring) ring.material.opacity = 0;
+                if (headMesh) {
+                    headMesh.rotation.x *= 0.9;
+                    headMesh.rotation.z *= 0.9;
+                }
+                if (avatarGrp && avatarGrp.userData.outfitMat) {
+                    avatarGrp.userData.outfitMat.emissiveIntensity *= 0.9;
+                }
+                if (ring) ring.material.opacity *= 0.9;
             }
             g.position.y = baseY + bob;
         }
@@ -1472,14 +2211,13 @@
             if (meeting.agents.length >= MAX_AGENTS) return { ok: false, error: 'Meeting is full (max ' + MAX_AGENTS + ' agents)' };
             if (meeting.agents.find(function(a) { return a.name === opts.name; })) return { ok: false, error: 'An agent with that name is already in the meeting' };
 
-            var shape = opts.shape && SHAPES.indexOf(opts.shape) >= 0 ? opts.shape : SHAPES[meeting.agents.length % SHAPES.length];
-            var color = opts.color ? (opts.color.startsWith('#') ? opts.color : '#' + opts.color) : COLORS[meeting.agents.length % COLORS.length];
+            var avatarConfig = mergeAvatar(opts.avatar, meeting.agents.length);
 
             var agent = {
                 id: genId('agent'),
                 name: opts.name.slice(0, 30),
                 persona: (opts.persona || '').slice(0, 200),
-                avatar: { shape: shape, color: color },
+                avatar: avatarConfig,
                 joinedAt: new Date().toISOString(),
                 state: 'idle',
                 lastSpoke: null
@@ -1625,7 +2363,7 @@
                 ok: true, api: 'window.AgentMeet v1.0',
                 description: '3D virtual conference room for AI agent meetings. Humans observe, agents participate.',
                 agentSafe: {
-                    'join({name, persona?, shape?, color?})': 'Join meeting with avatar. Shapes: sphere/cube/cone/cylinder/torus/dodecahedron/octahedron/icosahedron',
+                    'join({name, persona?, avatar?})': 'Join meeting with 3D humanoid avatar. Avatar options: hair{style,color}, eyes{shape,color}, nose, lips, head, skin, weight(0-1), height(0-1), outfit{type,color}',
                     'speak(agentId, message)': 'Say something in the meeting (max 2000 chars)',
                     'react(agentId, reaction)': 'Express a reaction (e.g. "agrees", "concerned", "excited")',
                     'proposeAction(agentId, text)': 'Propose an action item',
@@ -1667,9 +2405,7 @@
             case 'join':
                 result = window.AgentMeet.join({
                     name: params.get('name') || 'Agent',
-                    persona: params.get('persona') || '',
-                    shape: params.get('shape') || undefined,
-                    color: params.get('color') || undefined
+                    persona: params.get('persona') || ''
                 });
                 break;
             case 'speak':
@@ -1738,6 +2474,18 @@
     // ═══════════════════════════════════════════
     // INIT
     // ═══════════════════════════════════════════
+    function toggleConnectGuide() {
+        var guide = document.getElementById('connectGuide');
+        var btn = document.getElementById('connectGuideBtn');
+        if (guide.style.display === 'none') {
+            guide.style.display = 'block';
+            btn.textContent = 'Hide Guide';
+        } else {
+            guide.style.display = 'none';
+            btn.textContent = 'How to Connect Your Agent';
+        }
+    }
+
     initScene();
     updateStatusUI();
     initRealtime();
