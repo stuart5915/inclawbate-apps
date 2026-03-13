@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tube Man</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #87CEEB;
+            color: #1a1a2e;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        #canvas3d {
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .ui-overlay {
+            position: fixed;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .title-bar {
+            top: 0; left: 0; right: 0;
+            text-align: center;
+            padding: 1.2rem 1rem 0.5rem;
+        }
+        .title-bar h1 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: #fff;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.6);
+        }
+        .title-bar p {
+            font-size: 0.7rem;
+            color: #fff;
+            font-weight: 400;
+            margin-top: 0.15rem;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+        }
+
+        .controls {
+            bottom: 1.5rem; left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            pointer-events: all;
+            max-width: 95vw;
+        }
+
+        .ctrl-btn {
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 0.5rem 0.9rem;
+            color: #1a1a2e;
+            font-family: 'Nunito', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+        .ctrl-btn:hover {
+            border-color: rgba(0,0,0,0.2);
+            background: rgba(255,255,255,0.95);
+        }
+        .ctrl-btn.active {
+            border-color: rgba(239,68,68,0.5);
+            color: #ef4444;
+            background: rgba(255,255,255,0.95);
+        }
+
+        .wind-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 90px;
+            height: 4px;
+            border-radius: 2px;
+            background: rgba(0,0,0,0.12);
+            outline: none;
+            cursor: pointer;
+        }
+        .wind-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ef4444;
+            cursor: pointer;
+        }
+        .wind-slider::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ef4444;
+            cursor: pointer;
+            border: none;
+        }
+
+        .color-dot {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: border-color 0.15s, transform 0.15s;
+        }
+        .color-dot:hover { transform: scale(1.2); }
+        .color-dot.active { border-color: #fff; }
+
+        .color-row {
+            display: flex;
+            gap: 0.35rem;
+            align-items: center;
+        }
+
+        .crowd-counter {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 10;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0,0,0,0.1);
+            border-radius: 10px;
+            padding: 0.4rem 0.75rem;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+
+        @media (max-width: 480px) {
+            .controls { gap: 0.35rem; }
+            .ctrl-btn { padding: 0.4rem 0.7rem; font-size: 0.65rem; }
+            .wind-slider { width: 65px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas3d"></canvas>
+
+    <div class="ui-overlay title-bar">
+        <h1>Wacky Tube Man</h1>
+        <p>Tap to spawn more. Drag to orbit.</p>
+    </div>
+
+    <div class="crowd-counter" id="counter">1 tube man</div>
+
+    <div class="ui-overlay controls">
+        <div class="ctrl-btn" style="gap:0.5rem">
+            <span>Wind</span>
+            <input type="range" class="wind-slider" id="windSlider" min="0" max="100" value="65">
+        </div>
+        <div class="ctrl-btn color-row" id="colorPicker">
+            <span style="margin-right:0.15rem">Color</span>
+        </div>
+        <button class="ctrl-btn" id="btnSpawn">+ Add</button>
+        <button class="ctrl-btn" id="btnClear">Clear</button>
+        <button class="ctrl-btn" id="btnParty" >Party</button>
+    </div>
+
+    <script type="importmap">
+        { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js" } }
+    </script>
+    <script type="module">
+        import * as THREE from 'three';
+
+        // ── Scene setup ──
+        const canvas = document.getElementById('canvas3d');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        renderer.toneMappingExposure = 1.0;
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87CEEB);
+        scene.fog = new THREE.Fog(0x87CEEB, 30, 60);
+
+        const camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 100);
+        camera.position.set(0, 5, 14);
+        camera.lookAt(0, 4, 0);
+
+        // ── Lighting (outdoor sunny day) ──
+        const ambient = new THREE.AmbientLight(0x8899bb, 0.9);
+        scene.add(ambient);
+
+        const sunLight = new THREE.DirectionalLight(0xfff5e0, 1.8);
+        sunLight.position.set(8, 18, 6);
+        sunLight.castShadow = true;
+        sunLight.shadow.mapSize.set(2048, 2048);
+        sunLight.shadow.camera.near = 1;
+        sunLight.shadow.camera.far = 40;
+        sunLight.shadow.camera.left = -15;
+        sunLight.shadow.camera.right = 15;
+        sunLight.shadow.camera.top = 15;
+        sunLight.shadow.camera.bottom = -2;
+        sunLight.shadow.bias = -0.001;
+        scene.add(sunLight);
+
+        const fillLight = new THREE.DirectionalLight(0x88aadd, 0.5);
+        fillLight.position.set(-6, 8, -4);
+        scene.add(fillLight);
+
+        const bounceLight = new THREE.HemisphereLight(0x8899bb, 0x444422, 0.4);
+        scene.add(bounceLight);
+
+        // ── Ground (concrete parking lot) ──
+        const groundGeo = new THREE.PlaneGeometry(60, 60);
+        const groundMat = new THREE.MeshStandardMaterial({
+            color: 0x888880,
+            roughness: 0.95,
+            metalness: 0.0
+        });
+        const ground = new THREE.Mesh(groundGeo, groundMat);
+        ground.rotation.x = -Math.PI / 2;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // Parking lot lines
+        const lineMat = new THREE.MeshStandardMaterial({ color: 0xcccc99, roughness: 0.8 });
+        for (let i = -3; i <= 3; i++) {
+            const lineGeo = new THREE.PlaneGeometry(0.12, 5);
+            const line = new THREE.Mesh(lineGeo, lineMat);
+            line.rotation.x = -Math.PI / 2;
+            line.position.set(i * 2.8, 0.005, -6);
+            scene.add(line);
+        }
+
+        // ── Colors ──
+        const COLORS = [
+            { name: 'Red', hex: '#ef4444', three: 0xef4444 },
+            { name: 'Yellow', hex: '#fbbf24', three: 0xfbbf24 },
+            { name: 'Green', hex: '#22c55e', three: 0x22c55e },
+            { name: 'Blue', hex: '#3b82f6', three: 0x3b82f6 },
+            { name: 'Purple', hex: '#a855f7', three: 0xa855f7 },
+            { name: 'Pink', hex: '#ec4899', three: 0xec4899 },
+            { name: 'Orange', hex: '#f97316', three: 0xf97316 },
+            { name: 'Cyan', hex: '#06b6d4', three: 0x06b6d4 },
+        ];
+        let activeColorIdx = 0;
+
+        // Build color picker
+        const colorPicker = document.getElementById('colorPicker');
+        COLORS.forEach((c, i) => {
+            const dot = document.createElement('div');
+            dot.className = 'color-dot' + (i === 0 ? ' active' : '');
+            dot.style.background = c.hex;
+            dot.addEventListener('click', () => {
+                activeColorIdx = i;
+                colorPicker.querySelectorAll('.color-dot').forEach((d, j) => d.classList.toggle('active', j === i));
+            });
+            colorPicker.appendChild(dot);
+        });
+
+        // ── Tube Man Physics (realistic dealership proportions) ──
+        const SEGMENTS = 24;
+        const SEG_LENGTH = 0.32;
+        const ARM_SEGMENTS = 14;
+        const ARM_SEG_LENGTH = 0.22;
+        const GRAVITY = -12;
+        const DAMPING = 0.965;
+
+        // Smooth layered noise for natural wind
+        function smoothNoise(t, seed) {
+            const s = t + seed * 137.5;
+            return Math.sin(s * 1.1) * 0.5 + Math.sin(s * 2.3 + 1.7) * 0.25 + Math.sin(s * 4.7 + 3.1) * 0.15 + Math.sin(s * 0.3 + 0.5) * 0.6;
+        }
+
+        let windStrength = 0.65;
+        let partyMode = false;
+        let tubeManList = [];
+
+        class TubeMan {
+            constructor(x, z, colorIdx) {
+                this.colorIdx = colorIdx;
+                this.color = COLORS[colorIdx];
+                this.group = new THREE.Group();
+                this.group.position.set(x, 0, z);
+                scene.add(this.group);
+
+                this.phase = Math.random() * Math.PI * 2;
+                this.freq = 1.8 + Math.random() * 0.8;
+
+                // Body chain
+                this.bodyPts = [];
+                for (let i = 0; i <= SEGMENTS; i++) {
+                    this.bodyPts.push({
+                        x: 0, y: i * SEG_LENGTH, z: 0,
+                        vx: 0, vy: 0, vz: 0
+                    });
+                }
+
+                // Left arm chain (attaches near top)
+                this.shoulderIdx = Math.floor(SEGMENTS * 0.78);
+                this.leftArmPts = [];
+                for (let i = 0; i <= ARM_SEGMENTS; i++) {
+                    this.leftArmPts.push({
+                        x: -i * ARM_SEG_LENGTH * 0.7, y: this.shoulderIdx * SEG_LENGTH + i * ARM_SEG_LENGTH * 0.3, z: 0,
+                        vx: 0, vy: 0, vz: 0
+                    });
+                }
+
+                // Right arm chain
+                this.rightArmPts = [];
+                for (let i = 0; i <= ARM_SEGMENTS; i++) {
+                    this.rightArmPts.push({
+                        x: i * ARM_SEG_LENGTH * 0.7, y: this.shoulderIdx * SEG_LENGTH + i * ARM_SEG_LENGTH * 0.3, z: 0,
+                        vx: 0, vy: 0, vz: 0
+                    });
+                }
+
+                // Nylon fabric material — slight sheen like real inflatable
+                const bodyMat = new THREE.MeshPhysicalMaterial({
+                    color: this.color.three,
+                    roughness: 0.45,
+                    metalness: 0.0,
+                    clearcoat: 0.15,
+                    clearcoatRoughness: 0.6,
+                    emissive: this.color.three,
+                    emissiveIntensity: 0.04,
+                    side: THREE.DoubleSide,
+                    flatShading: false
+                });
+                this.bodyMat = bodyMat;
+
+                // Continuous tube mesh helper
+                this.TUBE_RADIAL = 16;
+                this.BODY_LENGTH_SEGS = SEGMENTS * 3;
+                this.ARM_LENGTH_SEGS = ARM_SEGMENTS * 3;
+
+                // Body — one continuous tube
+                this.bodyGeo = this.createTubeGeo(this.BODY_LENGTH_SEGS, this.TUBE_RADIAL);
+                this.bodyMesh = new THREE.Mesh(this.bodyGeo, bodyMat);
+                this.bodyMesh.castShadow = true;
+                this.group.add(this.bodyMesh);
+
+                // Head — larger, more balloon-like
+                const headGeo = new THREE.SphereGeometry(0.38, 24, 16);
+                this.head = new THREE.Mesh(headGeo, bodyMat);
+                this.head.castShadow = true;
+                this.group.add(this.head);
+
+                // Painted-on face (decal-style — flat circles on the surface)
+                const faceMat = new THREE.MeshStandardMaterial({ color: 0x111111, roughness: 0.7, side: THREE.DoubleSide });
+                const whiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.5, side: THREE.DoubleSide });
+
+                // Eyes — flat discs like painted on nylon
+                const eyeGeo = new THREE.CircleGeometry(0.09, 16);
+                const pupilGeo = new THREE.CircleGeometry(0.055, 12);
+                this.leftEye = new THREE.Mesh(eyeGeo, whiteMat);
+                this.rightEye = new THREE.Mesh(eyeGeo, whiteMat);
+                this.leftPupil = new THREE.Mesh(pupilGeo, faceMat);
+                this.rightPupil = new THREE.Mesh(pupilGeo, faceMat);
+                this.group.add(this.leftEye, this.rightEye, this.leftPupil, this.rightPupil);
+
+                // Mouth — wide smile arc
+                const mouthShape = new THREE.Shape();
+                mouthShape.absarc(0, 0, 0.12, 0, Math.PI, true);
+                const mouthGeo = new THREE.ShapeGeometry(mouthShape, 12);
+                this.mouth = new THREE.Mesh(mouthGeo, faceMat);
+                this.group.add(this.mouth);
+
+                // Arms — one continuous tube each (longer, thinner)
+                this.leftArmGeo = this.createTubeGeo(this.ARM_LENGTH_SEGS, 10);
+                this.leftArmMesh = new THREE.Mesh(this.leftArmGeo, bodyMat);
+                this.leftArmMesh.castShadow = true;
+                this.group.add(this.leftArmMesh);
+
+                this.rightArmGeo = this.createTubeGeo(this.ARM_LENGTH_SEGS, 10);
+                this.rightArmMesh = new THREE.Mesh(this.rightArmGeo, bodyMat);
+                this.rightArmMesh.castShadow = true;
+                this.group.add(this.rightArmMesh);
+
+                // Tapered arm tips (no separate hand spheres — real ones are sealed tubes)
+                // (arm radius function tapers to near-zero)
+
+                // Blower base unit — realistic fan housing
+                const blowerMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.6, metalness: 0.4 });
+                const blowerBody = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.6, 0.5, 16), blowerMat);
+                blowerBody.position.y = 0.25;
+                blowerBody.castShadow = true;
+                blowerBody.receiveShadow = true;
+                this.group.add(blowerBody);
+
+                // Air intake grille
+                const grilleMat = new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.5, metalness: 0.5 });
+                const grilleGeo = new THREE.TorusGeometry(0.42, 0.03, 8, 24);
+                const grille = new THREE.Mesh(grilleGeo, grilleMat);
+                grille.rotation.x = Math.PI / 2;
+                grille.position.y = 0.5;
+                this.group.add(grille);
+
+                // Fabric skirt around blower opening (where air enters the tube)
+                const skirtGeo = new THREE.ConeGeometry(0.5, 0.4, 16, 1, true);
+                const skirt = new THREE.Mesh(skirtGeo, bodyMat);
+                skirt.position.y = 0.7;
+                this.group.add(skirt);
+            }
+
+            simulate(dt, time) {
+                const wind = windStrength;
+                const t = time + this.phase;
+
+                // Blower pulsation — the signature inflate/deflate cycle
+                // Slow swells with occasional dips (like real blower airflow)
+                const blowerPulse = 0.7
+                    + smoothNoise(t * 0.8, this.phase + 200) * 0.25
+                    + smoothNoise(t * 0.3, this.phase + 300) * 0.2
+                    + Math.max(0, smoothNoise(t * 0.15, this.phase + 400)) * 0.3;
+
+                // Multi-layered smooth wind
+                const windBase = wind * 10;
+                const gust = (1 + smoothNoise(t * 0.35, this.phase) * 0.9) * wind;
+                const wx = smoothNoise(t * this.freq * 0.8, 0) * windBase
+                         + smoothNoise(t * 2.1, 1.3) * windBase * 0.6
+                         + smoothNoise(t * 0.4, 4.1) * windBase * 1.4 * gust;
+                const wz = smoothNoise(t * this.freq * 0.5, 2.0) * windBase * 0.8
+                         + smoothNoise(t * 1.6, 3.5) * windBase * 0.5
+                         + smoothNoise(t * 0.28, 5.7) * windBase * gust;
+
+                // Upward blower force modulated by pulse
+                const blowerForce = (16 + wind * 14) * blowerPulse;
+
+                // Simulate body
+                for (let i = 1; i <= SEGMENTS; i++) {
+                    const p = this.bodyPts[i];
+                    const heightFactor = i / SEGMENTS;
+                    const heightCurve = heightFactor * heightFactor;
+
+                    // Per-segment wind variation (wave traveling up body)
+                    const segWind = 1 + smoothNoise(t * 1.5 - i * 0.35, this.phase + 10) * 0.6;
+
+                    // Wind increases with height — top whips around dramatically
+                    p.vx += wx * heightCurve * segWind * dt;
+                    p.vz += wz * heightCurve * segWind * dt;
+
+                    // Blower force diminishes with height (less pressure at top = floppier)
+                    const blowerAtHeight = blowerForce * Math.max(0, 1 - heightFactor * 0.65);
+                    p.vy += (GRAVITY + blowerAtHeight) * dt;
+
+                    // Smooth swaying motion
+                    p.vx += smoothNoise(t * 2.2 + i * 0.6, this.phase + 20) * wind * 4 * heightFactor * dt;
+                    p.vz += smoothNoise(t * 1.8 + i * 0.8, this.phase + 30) * wind * 3 * heightFactor * dt;
+
+                    p.vx *= DAMPING;
+                    p.vy *= DAMPING;
+                    p.vz *= DAMPING;
+
+                    p.x += p.vx * dt;
+                    p.y += p.vy * dt;
+                    p.z += p.vz * dt;
+
+                    // Floor collision — can't go below blower
+                    if (p.y < 0.7) { p.y = 0.7; p.vy = Math.abs(p.vy) * 0.3; }
+                }
+
+                // Constrain body — many iterations for smooth, organic curves
+                this.bodyPts[0].x = 0;
+                this.bodyPts[0].y = 0.7;
+                this.bodyPts[0].z = 0;
+                for (let iter = 0; iter < 8; iter++) {
+                    for (let i = 1; i <= SEGMENTS; i++) {
+                        const a = this.bodyPts[i - 1];
+                        const b = this.bodyPts[i];
+                        const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
+                        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) || 0.001;
+                        const diff = (dist - SEG_LENGTH) / dist;
+                        const mx = dx * diff * 0.5, my = dy * diff * 0.5, mz = dz * diff * 0.5;
+                        b.x -= mx; b.y -= my; b.z -= mz;
+                        if (i > 1) { a.x += mx; a.y += my; a.z += mz; }
+                    }
+                    this.bodyPts[0].x = 0;
+                    this.bodyPts[0].y = 0.7;
+                    this.bodyPts[0].z = 0;
+                }
+
+                // Simulate arms
+                const shoulder = this.bodyPts[this.shoulderIdx];
+                this.simulateArm(this.leftArmPts, shoulder, -1, dt, t, wind, wx, wz);
+                this.simulateArm(this.rightArmPts, shoulder, 1, dt, t, wind, wx, wz);
+
+                // Update meshes
+                this.updateMeshes(time);
+            }
+
+            simulateArm(pts, shoulder, side, dt, t, wind, wx, wz) {
+                pts[0].x = shoulder.x + side * 0.22;
+                pts[0].y = shoulder.y;
+                pts[0].z = shoulder.z;
+
+                for (let i = 1; i <= ARM_SEGMENTS; i++) {
+                    const p = pts[i];
+                    const factor = i / ARM_SEGMENTS;
+
+                    const factorSq = factor * factor;
+
+                    // Smooth dramatic arm flailing — big sweeping arcs
+                    const armWave = smoothNoise(t * this.freq * 2.2 + i * 0.6, this.phase + side * 50);
+                    const armLift = smoothNoise(t * this.freq * 1.4 + i * 0.5, this.phase + side * 70);
+                    const armDepth = smoothNoise(t * 2.8 + i * 0.8, this.phase + side * 90);
+
+                    p.vx += (wx * 1.8 + side * armWave * wind * 14) * factorSq * dt;
+                    p.vy += (GRAVITY * 0.3 + armLift * wind * 18) * dt;
+                    p.vz += (wz * 1.8 + armDepth * wind * 10) * factorSq * dt;
+
+                    // Extra smooth wild whipping at the tips
+                    p.vx += smoothNoise(t * 4 + i * 1.2, this.phase + side * 100) * wind * 6 * factorSq * dt;
+                    p.vy += smoothNoise(t * 3.5 + i * 0.9, this.phase + side * 110) * wind * 4 * factor * dt;
+                    p.vz += smoothNoise(t * 3.2 + i * 1.4, this.phase + side * 120) * wind * 5 * factorSq * dt;
+
+                    p.vx *= DAMPING * 0.96;
+                    p.vy *= DAMPING * 0.96;
+                    p.vz *= DAMPING * 0.96;
+
+                    p.x += p.vx * dt;
+                    p.y += p.vy * dt;
+                    p.z += p.vz * dt;
+                }
+
+                // Constrain arms — more iterations for smooth curves
+                for (let iter = 0; iter < 5; iter++) {
+                    pts[0].x = shoulder.x + side * 0.22;
+                    pts[0].y = shoulder.y;
+                    pts[0].z = shoulder.z;
+                    for (let i = 1; i <= ARM_SEGMENTS; i++) {
+                        const a = pts[i - 1];
+                        const b = pts[i];
+                        const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
+                        const dist = Math.sqrt(dx * dx + dy * dy + dz * dz) || 0.001;
+                        const diff = (dist - ARM_SEG_LENGTH) / dist;
+                        b.x -= dx * diff * 0.5;
+                        b.y -= dy * diff * 0.5;
+                        b.z -= dz * diff * 0.5;
+                        if (i > 1) {
+                            a.x += dx * diff * 0.3;
+                            a.y += dy * diff * 0.3;
+                            a.z += dz * diff * 0.3;
+                        }
+                    }
+                }
+            }
+
+            // Create a reusable tube BufferGeometry (lengthSegs rings x radialSegs verts per ring)
+            createTubeGeo(lengthSegs, radialSegs) {
+                const vCount = (lengthSegs + 1) * (radialSegs + 1);
+                const iCount = lengthSegs * radialSegs * 6;
+                const positions = new Float32Array(vCount * 3);
+                const normals = new Float32Array(vCount * 3);
+                const indices = new Uint16Array(iCount);
+
+                // Build index buffer (doesn't change)
+                let idx = 0;
+                for (let j = 0; j < lengthSegs; j++) {
+                    for (let i = 0; i < radialSegs; i++) {
+                        const a = j * (radialSegs + 1) + i;
+                        const b = a + radialSegs + 1;
+                        indices[idx++] = a; indices[idx++] = b; indices[idx++] = a + 1;
+                        indices[idx++] = a + 1; indices[idx++] = b; indices[idx++] = b + 1;
+                    }
+                }
+
+                const geo = new THREE.BufferGeometry();
+                geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+                geo.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+                geo.setIndex(new THREE.BufferAttribute(indices, 1));
+                return geo;
+            }
+
+            // Update tube vertices from a spline + radius function
+            updateTubeGeo(geo, spline, lengthSegs, radialSegs, radiusFn) {
+                const posAttr = geo.getAttribute('position');
+                const normAttr = geo.getAttribute('normal');
+                const pos = posAttr.array;
+                const norm = normAttr.array;
+
+                const P = new THREE.Vector3();
+                const T = new THREE.Vector3();
+                const N = new THREE.Vector3();
+                const B = new THREE.Vector3();
+                const lastN = new THREE.Vector3(1, 0, 0);
+
+                for (let j = 0; j <= lengthSegs; j++) {
+                    const t = j / lengthSegs;
+                    spline.getPointAt(t, P);
+                    spline.getTangentAt(t, T);
+                    T.normalize();
+
+                    // Stable normal via parallel transport
+                    B.crossVectors(T, lastN);
+                    if (B.lengthSq() < 0.0001) {
+                        B.crossVectors(T, new THREE.Vector3(0, 0, 1));
+                        if (B.lengthSq() < 0.0001) B.crossVectors(T, new THREE.Vector3(1, 0, 0));
+                    }
+                    B.normalize();
+                    N.crossVectors(B, T).normalize();
+                    lastN.copy(N);
+
+                    const r = radiusFn(t);
+
+                    for (let i = 0; i <= radialSegs; i++) {
+                        const angle = (i / radialSegs) * Math.PI * 2;
+                        const cos = Math.cos(angle);
+                        const sin = Math.sin(angle);
+
+                        const vi = (j * (radialSegs + 1) + i) * 3;
+                        pos[vi]     = P.x + (N.x * cos + B.x * sin) * r;
+                        pos[vi + 1] = P.y + (N.y * cos + B.y * sin) * r;
+                        pos[vi + 2] = P.z + (N.z * cos + B.z * sin) * r;
+
+                        norm[vi]     = N.x * cos + B.x * sin;
+                        norm[vi + 1] = N.y * cos + B.y * sin;
+                        norm[vi + 2] = N.z * cos + B.z * sin;
+                    }
+                }
+
+                posAttr.needsUpdate = true;
+                normAttr.needsUpdate = true;
+                geo.computeBoundingSphere();
+            }
+
+            updateMeshes(time) {
+                // Build CatmullRom spline through body physics points
+                const bodyVecs = this.bodyPts.map(p => new THREE.Vector3(p.x, p.y, p.z));
+                const bodySpline = new THREE.CatmullRomCurve3(bodyVecs, false, 'catmullrom', 0.5);
+
+                // Body radius: inflated tube shape — wider at bottom where air enters,
+                // slight belly, tapers toward neck
+                const bodyRadiusFn = (t) => {
+                    const base = 0.32;
+                    const inflation = 0.85 + Math.sin(t * Math.PI * 0.8) * 0.15;
+                    const taper = 1 - t * 0.45;
+                    return base * taper * inflation;
+                };
+
+                this.updateTubeGeo(this.bodyGeo, bodySpline, this.BODY_LENGTH_SEGS, this.TUBE_RADIAL, bodyRadiusFn);
+
+                // Head — inflated balloon on top
+                const top = this.bodyPts[SEGMENTS];
+                const neck = this.bodyPts[SEGMENTS - 1];
+                const headDir = new THREE.Vector3(top.x - neck.x, top.y - neck.y, top.z - neck.z).normalize();
+                this.head.position.set(top.x + headDir.x * 0.25, top.y + headDir.y * 0.25, top.z + headDir.z * 0.25);
+
+                // Face always looks outward from lean direction
+                const faceDir = new THREE.Vector3(top.x - neck.x, 0, top.z - neck.z);
+                if (faceDir.lengthSq() < 0.0001) faceDir.set(0, 0, 1);
+                faceDir.normalize();
+
+                const up = new THREE.Vector3(0, 1, 0);
+                const right = new THREE.Vector3().crossVectors(up, faceDir).normalize();
+                const hx = this.head.position.x, hy = this.head.position.y, hz = this.head.position.z;
+
+                // Painted-on eyes (flat circles flush to head surface)
+                this.leftEye.position.set(hx + faceDir.x * 0.36 - right.x * 0.12, hy + 0.06, hz + faceDir.z * 0.36 - right.z * 0.12);
+                this.leftEye.lookAt(hx + faceDir.x * 2, hy + 0.06, hz + faceDir.z * 2);
+                this.rightEye.position.set(hx + faceDir.x * 0.36 + right.x * 0.12, hy + 0.06, hz + faceDir.z * 0.36 + right.z * 0.12);
+                this.rightEye.lookAt(hx + faceDir.x * 2, hy + 0.06, hz + faceDir.z * 2);
+
+                this.leftPupil.position.set(hx + faceDir.x * 0.365 - right.x * 0.12, hy + 0.06, hz + faceDir.z * 0.365 - right.z * 0.12);
+                this.leftPupil.lookAt(hx + faceDir.x * 2, hy + 0.06, hz + faceDir.z * 2);
+                this.rightPupil.position.set(hx + faceDir.x * 0.365 + right.x * 0.12, hy + 0.06, hz + faceDir.z * 0.365 + right.z * 0.12);
+                this.rightPupil.lookAt(hx + faceDir.x * 2, hy + 0.06, hz + faceDir.z * 2);
+
+                // Painted smile
+                this.mouth.position.set(hx + faceDir.x * 0.36, hy - 0.1, hz + faceDir.z * 0.36);
+                this.mouth.lookAt(hx + faceDir.x * 2, hy - 0.1, hz + faceDir.z * 2);
+
+                // Arms — smooth spline tubes, tapered to sealed tips
+                const armRadiusFn = (t) => 0.12 * (1 - t * 0.7) * (0.8 + Math.sin(t * Math.PI * 0.5) * 0.2);
+
+                const leftVecs = this.leftArmPts.map(p => new THREE.Vector3(p.x, p.y, p.z));
+                const leftSpline = new THREE.CatmullRomCurve3(leftVecs, false, 'catmullrom', 0.5);
+                this.updateTubeGeo(this.leftArmGeo, leftSpline, this.ARM_LENGTH_SEGS, 10, armRadiusFn);
+
+                const rightVecs = this.rightArmPts.map(p => new THREE.Vector3(p.x, p.y, p.z));
+                const rightSpline = new THREE.CatmullRomCurve3(rightVecs, false, 'catmullrom', 0.5);
+                this.updateTubeGeo(this.rightArmGeo, rightSpline, this.ARM_LENGTH_SEGS, 10, armRadiusFn);
+
+                // Party mode color cycling
+                if (partyMode) {
+                    const hue = ((time * 0.3 + this.phase) % 1);
+                    this.bodyMat.color.setHSL(hue, 0.8, 0.55);
+                    this.bodyMat.emissive.setHSL(hue, 0.8, 0.55);
+                    this.bodyMat.emissiveIntensity = 0.15 + Math.sin(time * 4 + this.phase) * 0.1;
+                }
+            }
+
+            setColor(idx) {
+                this.colorIdx = idx;
+                this.color = COLORS[idx];
+                if (!partyMode) {
+                    this.bodyMat.color.set(this.color.three);
+                    this.bodyMat.emissive.set(this.color.three);
+                    this.bodyMat.emissiveIntensity = 0.08;
+                }
+            }
+
+            dispose() {
+                scene.remove(this.group);
+                this.group.traverse(obj => {
+                    if (obj.geometry) obj.geometry.dispose();
+                    if (obj.material) obj.material.dispose();
+                });
+            }
+        }
+
+        // ── Spawn / manage ──
+        function spawnTubeMan(x, z) {
+            const tm = new TubeMan(x || 0, z || 0, activeColorIdx);
+            tubeManList.push(tm);
+            updateCounter();
+            return tm;
+        }
+
+        function clearAll() {
+            tubeManList.forEach(t => t.dispose());
+            tubeManList = [];
+            updateCounter();
+        }
+
+        function updateCounter() {
+            const n = tubeManList.length;
+            document.getElementById('counter').textContent = n + ' tube ' + (n === 1 ? 'man' : 'men');
+        }
+
+        // Start with one
+        spawnTubeMan(0, 0);
+
+        // ── Controls ──
+        document.getElementById('windSlider').addEventListener('input', e => {
+            windStrength = e.target.value / 100;
+        });
+
+        document.getElementById('btnSpawn').addEventListener('click', () => {
+            const angle = Math.random() * Math.PI * 2;
+            const dist = 1.5 + Math.random() * 4;
+            spawnTubeMan(Math.cos(angle) * dist, Math.sin(angle) * dist);
+        });
+
+        document.getElementById('btnClear').addEventListener('click', () => {
+            clearAll();
+            spawnTubeMan(0, 0);
+        });
+
+        document.getElementById('btnParty').addEventListener('click', function() {
+            partyMode = !partyMode;
+            this.classList.toggle('active', partyMode);
+            if (!partyMode) {
+                tubeManList.forEach(t => t.setColor(t.colorIdx));
+            }
+        });
+
+        // Tap canvas to spawn
+        let isDragging = false;
+        let dragStart = { x: 0, y: 0 };
+
+        canvas.addEventListener('pointerdown', e => {
+            isDragging = false;
+            dragStart.x = e.clientX;
+            dragStart.y = e.clientY;
+        });
+
+        canvas.addEventListener('pointermove', e => {
+            const dx = e.clientX - dragStart.x;
+            const dy = e.clientY - dragStart.y;
+            if (Math.abs(dx) > 5 || Math.abs(dy) > 5) isDragging = true;
+        });
+
+        canvas.addEventListener('pointerup', e => {
+            if (isDragging) return;
+            // Raycast to ground plane
+            const rect = canvas.getBoundingClientRect();
+            const mx = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            const my = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+            const raycaster = new THREE.Raycaster();
+            raycaster.setFromCamera(new THREE.Vector2(mx, my), camera);
+            const hits = raycaster.intersectObject(ground);
+            if (hits.length > 0) {
+                const p = hits[0].point;
+                spawnTubeMan(p.x, p.z);
+            }
+        });
+
+        // ── Orbit camera ──
+        let camTheta = 0;
+        let camPhi = 0.5;
+        let camDist = 14;
+        let camTarget = new THREE.Vector3(0, 4, 0);
+        let pointerDown = false;
+        let lastPointer = { x: 0, y: 0 };
+
+        canvas.addEventListener('pointerdown', e => {
+            pointerDown = true;
+            lastPointer.x = e.clientX;
+            lastPointer.y = e.clientY;
+        });
+
+        window.addEventListener('pointermove', e => {
+            if (!pointerDown) return;
+            const dx = e.clientX - lastPointer.x;
+            const dy = e.clientY - lastPointer.y;
+            lastPointer.x = e.clientX;
+            lastPointer.y = e.clientY;
+            camTheta -= dx * 0.008;
+            camPhi = Math.max(0.1, Math.min(1.2, camPhi - dy * 0.008));
+        });
+
+        window.addEventListener('pointerup', () => { pointerDown = false; });
+
+        canvas.addEventListener('wheel', e => {
+            camDist = Math.max(3, Math.min(20, camDist + e.deltaY * 0.01));
+            e.preventDefault();
+        }, { passive: false });
+
+        function updateCamera() {
+            camera.position.x = camTarget.x + Math.sin(camTheta) * Math.cos(camPhi) * camDist;
+            camera.position.y = camTarget.y + Math.sin(camPhi) * camDist;
+            camera.position.z = camTarget.z + Math.cos(camTheta) * Math.cos(camPhi) * camDist;
+            camera.lookAt(camTarget);
+        }
+
+        // ── Party mode lights ──
+        const partyLight = new THREE.PointLight(0xff0000, 0, 15);
+        partyLight.position.set(0, 6, 0);
+        scene.add(partyLight);
+
+        // ── Animation loop ──
+        let lastTime = 0;
+        const fixedDt = 1 / 60;
+
+        function animate(now) {
+            requestAnimationFrame(animate);
+            const time = now * 0.001;
+            const dt = Math.min(time - (lastTime || time), 0.05);
+            lastTime = time;
+
+            // Simulate all tube men
+            tubeManList.forEach(t => t.simulate(fixedDt, time));
+
+            // Party light
+            if (partyMode) {
+                partyLight.intensity = 3;
+                partyLight.color.setHSL((time * 0.5) % 1, 1, 0.5);
+                scene.fog.color.setHSL((time * 0.15) % 1, 0.3, 0.6);
+                scene.background.copy(scene.fog.color);
+            } else {
+                partyLight.intensity = 0;
+                scene.fog.color.set(0x87CEEB);
+                scene.background.set(0x87CEEB);
+            }
+
+            updateCamera();
+            renderer.render(scene, camera);
+        }
+
+        requestAnimationFrame(animate);
+
+        // ── Resize ──
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
