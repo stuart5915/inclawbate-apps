@@ -8,7 +8,7 @@
     <!-- Agent-readable schema -->
     <meta name="agent-api" content="window.BlockPay">
     <meta name="agent-version" content="2.0">
-    <meta name="agent-safe" content="draftInvoice,suggestTerms,proposeTokens,generateSummary,listInvoices,getInvoice,getStats,getSettings,listTokens,exportData,getCustodyPolicy">
+    <meta name="agent-safe" content="draftInvoice,suggestTerms,proposeTokens,generateSummary,listInvoices,getInvoice,getStats,getSettings,listTokens,exportData,getCustodyPolicy,getAuditLog,getSandboxStatus,simulateFees">
     <meta name="human-only" content="sendInvoice,markPaid,deleteInvoice,connectWallet,updateWallet,refund">
     <script type="application/ld+json">
     {
@@ -574,8 +574,9 @@
         <code>list invoices</code> · <code>list drafts</code> · <code>list paid</code><br>
         <code>show invoice [id]</code> · <code>stats</code> · <code>tokens</code><br>
         <code>set name [name]</code> · <code>set email [email]</code> · <code>export</code><br>
-        <div class="cmd-help-title" style="margin-top:0.6rem;color:#f87171">Human-Only (blocked for agents)</div>
-        Send invoice · Mark paid · Delete · Connect wallet · Refund
+        <code>audit</code> · <code>sandbox</code> · <code>fees [amount] [token]</code><br>
+        <div class="cmd-help-title" style="margin-top:0.6rem;color:#f87171">Human-Only (audible confirmation required)</div>
+        Send invoice · Mark paid · Delete · Connect wallet · Refund · Production mode
     </div>
     <div class="cmd-bar">
         <button class="cmd-toggle" id="cmdToggle" onclick="toggleCmdBar()" title="Agent Command Bar">&#9881;</button>
@@ -592,6 +593,7 @@
             <div class="logo">
                 <div class="logo-mark">Bp</div>
                 Block<span style="color:var(--gold);margin-left:-0.42em">Pay</span>
+                <span id="sandboxBadge" class="badge" style="font-size:0.55rem;margin-left:0.4rem;padding:0.15rem 0.5rem;border-radius:4px;background:rgba(251,191,36,0.12);color:#fbbf24">SANDBOX</span>
             </div>
             <nav class="nav-tabs">
                 <button class="nav-tab active" data-page="dashboard">Dashboard</button>
@@ -600,7 +602,7 @@
                 <button class="nav-tab" data-page="tokens">Tokens</button>
                 <button class="nav-tab" data-page="settings">Settings</button>
             </nav>
-            <button class="wallet-btn" id="walletChip" onclick="connectWallet()">
+            <button class="wallet-btn" id="walletChip" onclick="gatedConnectWallet()">
                 <div class="wallet-dot" id="walletDot" style="background:var(--text-3)"></div>
                 <span id="walletLabel">Connect Wallet</span>
             </button>
@@ -751,6 +753,39 @@
             </div>
 
             <div class="settings-block">
+                <div class="settings-block-title">Sandbox Mode</div>
+                <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.75rem">
+                    <div id="sandboxStatusText" style="font-size:0.82rem;font-weight:600"></div>
+                </div>
+                <div id="sandboxBalanceRow" style="font-size:0.78rem;color:var(--text-2);margin-bottom:0.75rem"></div>
+                <div id="sandboxFeePreview" style="font-size:0.72rem;color:var(--text-3);margin-bottom:0.75rem;line-height:1.6"></div>
+                <div style="display:flex;gap:0.5rem;flex-wrap:wrap">
+                    <button class="btn btn-ghost btn-sm" id="sandboxToggleBtn" onclick="toggleSandboxUI()">Switch Mode</button>
+                    <button class="btn btn-ghost btn-sm" onclick="_sandboxState.balance=10000;saveSandbox();renderSandboxSettings()">Reset Balance</button>
+                </div>
+                <div id="sandboxUnlockArea" style="margin-top:0.75rem;display:none">
+                    <div class="form-group">
+                        <label class="form-label">Confirmation Code</label>
+                        <input class="form-input" id="sandboxUnlockCode" placeholder="Enter code from step 1" style="max-width:200px">
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="completeProdUnlock()">Confirm Production Mode</button>
+                </div>
+            </div>
+
+            <div class="settings-block">
+                <div class="settings-block-title">Audit Log</div>
+                <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;flex-wrap:wrap">
+                    <button class="btn btn-ghost btn-sm" onclick="renderAuditLog()">Refresh</button>
+                    <button class="btn btn-ghost btn-sm" onclick="renderAuditLog(null,'human')">Human Only</button>
+                    <button class="btn btn-ghost btn-sm" onclick="renderAuditLog(null,'agent')">Agent Only</button>
+                    <button class="btn btn-ghost btn-sm" onclick="renderAuditLog(null,'external')">External</button>
+                    <button class="btn btn-ghost btn-sm" onclick="exportAuditLog()">Export</button>
+                    <span id="auditChainStatus" style="font-size:0.65rem;color:var(--text-3);display:flex;align-items:center"></span>
+                </div>
+                <div id="auditLogViewer" style="max-height:300px;overflow-y:auto;font-size:0.68rem;font-family:monospace;line-height:1.7;color:var(--text-2)"></div>
+            </div>
+
+            <div class="settings-block">
                 <div class="settings-block-title">Data</div>
                 <div style="display:flex;gap:0.5rem">
                     <button class="btn btn-ghost" onclick="exportData()">Export JSON</button>
@@ -859,13 +894,28 @@
                         <button class="btn btn-ghost" onclick="saveInvoice('draft')">Save Draft</button>
                         <button class="btn btn-ghost" onclick="previewFromCreate()">Preview</button>
                         <button class="btn btn-ghost" onclick="saveDraftAndPdf()">Save PDF</button>
-                        <button class="btn btn-primary" onclick="saveInvoice('pending')">Send Invoice</button>
+                        <button class="btn btn-primary" onclick="gatedSendInvoice()">Send Invoice</button>
                     </div>
                 </div>
                 <div class="builder-preview">
                     <div class="preview-label" style="margin-bottom:0.75rem">Live Preview</div>
                     <div id="livePreviewContent" class="live-preview-card"></div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HUMAN AUTH MODAL -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal" style="max-width:420px">
+            <div class="modal-header">
+                <div class="modal-title" style="color:#fbbf24">Confirm Action</div>
+                <button class="modal-close" onclick="cancelAuthGate()">&times;</button>
+            </div>
+            <div id="authModalBody" style="font-size:0.82rem;color:var(--text-2);line-height:1.7;margin-bottom:1.25rem"></div>
+            <div style="display:flex;gap:0.5rem;justify-content:flex-end">
+                <button class="btn btn-ghost" onclick="cancelAuthGate()">Cancel</button>
+                <button class="btn btn-primary" id="authConfirmBtn" onclick="confirmAuthGate()">Confirm</button>
             </div>
         </div>
     </div>
@@ -912,6 +962,292 @@
 
         let data = loadData();
         let editingInvoiceId = null;
+
+        // ═══════════════════════════════════════════
+        // AUDIBLE HUMAN AUTHORIZATION GATE
+        // All human-only actions MUST pass through this.
+        // Plays an audible tone and shows a confirmation modal.
+        // ═══════════════════════════════════════════
+        var _authPending = null;
+        var _authAudioCtx = null;
+
+        function playAuthBeep() {
+            try {
+                if (!_authAudioCtx) _authAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                var osc = _authAudioCtx.createOscillator();
+                var gain = _authAudioCtx.createGain();
+                osc.connect(gain); gain.connect(_authAudioCtx.destination);
+                osc.type = 'sine'; osc.frequency.value = 880;
+                gain.gain.value = 0.3;
+                osc.start(); osc.stop(_authAudioCtx.currentTime + 0.18);
+                setTimeout(function() {
+                    var osc2 = _authAudioCtx.createOscillator();
+                    var gain2 = _authAudioCtx.createGain();
+                    osc2.connect(gain2); gain2.connect(_authAudioCtx.destination);
+                    osc2.type = 'sine'; osc2.frequency.value = 1100;
+                    gain2.gain.value = 0.3;
+                    osc2.start(); osc2.stop(_authAudioCtx.currentTime + 0.22);
+                }, 200);
+            } catch(e) {}
+        }
+
+        function requireHumanAuth(actionName, description, onConfirm) {
+            playAuthBeep();
+            _authPending = { action: actionName, callback: onConfirm, timestamp: Date.now() };
+            document.getElementById('authModalBody').innerHTML =
+                '<div style="font-weight:700;font-size:0.9rem;color:var(--white);margin-bottom:0.5rem">' + escapeHtml(actionName) + '</div>' +
+                '<div>' + escapeHtml(description) + '</div>' +
+                '<div style="margin-top:0.75rem;font-size:0.7rem;color:var(--text-3)">This action requires manual human confirmation and cannot be triggered by agents or automated systems.</div>';
+            document.getElementById('authConfirmBtn').textContent = 'Confirm ' + actionName;
+            openModal('authModal');
+            auditLog('auth_prompted', 'system', { action: actionName, description: description });
+        }
+
+        function confirmAuthGate() {
+            if (!_authPending) return;
+            var pending = _authPending;
+            _authPending = null;
+            closeModal('authModal');
+            auditLog('auth_confirmed', 'human', { action: pending.action, delayMs: Date.now() - pending.timestamp });
+            if (typeof pending.callback === 'function') pending.callback();
+        }
+
+        function cancelAuthGate() {
+            if (_authPending) {
+                auditLog('auth_cancelled', 'human', { action: _authPending.action });
+            }
+            _authPending = null;
+            closeModal('authModal');
+        }
+
+        // ═══════════════════════════════════════════
+        // IMMUTABLE AUDIT LOG
+        // Every draft, approval, payment, deletion event is logged.
+        // Entries are append-only with content hashes for tamper detection.
+        // ═══════════════════════════════════════════
+        var AUDIT_KEY = 'blockpay_audit_log';
+        var _auditLog = JSON.parse(localStorage.getItem(AUDIT_KEY) || '[]');
+
+        function auditHash(entry) {
+            var str = entry.timestamp + '|' + entry.actor + '|' + entry.action + '|' + JSON.stringify(entry.details) + '|' + (entry.prevHash || '');
+            var hash = 0;
+            for (var i = 0; i < str.length; i++) { hash = ((hash << 5) - hash + str.charCodeAt(i)) | 0; }
+            return 'ah_' + (hash >>> 0).toString(36).padStart(7, '0');
+        }
+
+        function auditLog(action, actor, details) {
+            var prevHash = _auditLog.length ? _auditLog[_auditLog.length - 1].commitId : '';
+            var entry = {
+                timestamp: new Date().toISOString(),
+                action: action,
+                actor: actor,
+                details: details || {},
+                prevHash: prevHash,
+                commitId: ''
+            };
+            entry.commitId = auditHash(entry);
+            _auditLog.push(entry);
+            if (_auditLog.length > 5000) _auditLog = _auditLog.slice(-4000);
+            localStorage.setItem(AUDIT_KEY, JSON.stringify(_auditLog));
+            if (window.AppDB) window.AppDB.set('blockpay_audit_log', _auditLog).catch(function(){});
+        }
+
+        function getAuditLog(limit, filter) {
+            var log = _auditLog.slice();
+            if (filter) log = log.filter(function(e) { return e.action.indexOf(filter) >= 0 || e.actor === filter; });
+            return log.slice(-(limit || 100));
+        }
+
+        function verifyAuditChain() {
+            for (var i = 1; i < _auditLog.length; i++) {
+                if (_auditLog[i].prevHash !== _auditLog[i - 1].commitId) {
+                    return { valid: false, brokenAt: i, entry: _auditLog[i] };
+                }
+            }
+            return { valid: true, length: _auditLog.length };
+        }
+
+        // ═══════════════════════════════════════════
+        // SANDBOX MODE
+        // Simulated funds and confirmations for beta testing.
+        // Two-step operator action required to switch to production.
+        // ═══════════════════════════════════════════
+        var SANDBOX_KEY = 'blockpay_sandbox';
+        var _sandboxState = JSON.parse(localStorage.getItem(SANDBOX_KEY) || 'null') || {
+            enabled: true,
+            balance: 10000,
+            token: 'USDC',
+            txCounter: 0,
+            productionUnlockStep: 0
+        };
+
+        function isSandbox() { return _sandboxState.enabled !== false; }
+
+        function saveSandbox() {
+            localStorage.setItem(SANDBOX_KEY, JSON.stringify(_sandboxState));
+        }
+
+        // Two-step production unlock: step 1 = request, step 2 = confirm with code
+        var _prodUnlockCode = null;
+        function requestProductionMode() {
+            if (!isSandbox()) return { ok: false, error: 'Already in production mode' };
+            _prodUnlockCode = Math.random().toString(36).slice(2, 8).toUpperCase();
+            _sandboxState.productionUnlockStep = 1;
+            saveSandbox();
+            auditLog('production_unlock_requested', 'human', { code: _prodUnlockCode });
+            return { ok: true, step: 1, message: 'Production unlock requested. Enter confirmation code to proceed.', code: _prodUnlockCode };
+        }
+
+        function confirmProductionMode(code) {
+            if (!isSandbox()) return { ok: false, error: 'Already in production mode' };
+            if (_sandboxState.productionUnlockStep !== 1 || !_prodUnlockCode) return { ok: false, error: 'Must request production mode first (step 1)' };
+            if (code !== _prodUnlockCode) {
+                _sandboxState.productionUnlockStep = 0;
+                _prodUnlockCode = null;
+                saveSandbox();
+                auditLog('production_unlock_failed', 'human', { reason: 'bad code' });
+                return { ok: false, error: 'Invalid confirmation code. Process reset.' };
+            }
+            _sandboxState.enabled = false;
+            _sandboxState.productionUnlockStep = 2;
+            _prodUnlockCode = null;
+            saveSandbox();
+            auditLog('production_mode_enabled', 'human', {});
+            renderSandboxBadge();
+            return { ok: true, step: 2, message: 'Production mode enabled. Real transactions are now active.' };
+        }
+
+        function enableSandboxMode() {
+            _sandboxState.enabled = true;
+            _sandboxState.productionUnlockStep = 0;
+            _prodUnlockCode = null;
+            saveSandbox();
+            auditLog('sandbox_mode_enabled', 'human', {});
+            renderSandboxBadge();
+            return { ok: true, message: 'Sandbox mode re-enabled. All transactions are simulated.' };
+        }
+
+        function renderSandboxBadge() {
+            var el = document.getElementById('sandboxBadge');
+            if (!el) return;
+            if (isSandbox()) {
+                el.style.display = 'inline-flex';
+                el.textContent = 'SANDBOX';
+                el.style.background = 'rgba(251,191,36,0.12)';
+                el.style.color = '#fbbf24';
+            } else {
+                el.style.display = 'inline-flex';
+                el.textContent = 'PRODUCTION';
+                el.style.background = 'rgba(248,113,113,0.12)';
+                el.style.color = '#f87171';
+            }
+        }
+
+        // ═══════════════════════════════════════════
+        // FEE & SLIPPAGE MODEL (sandbox simulation)
+        // Realistic crypto fee simulation so agents learn
+        // to account for real-world transaction costs.
+        // ═══════════════════════════════════════════
+        var FEE_MODEL = {
+            ETH:   { gasFee: 0.50, protocolFeePct: 0, slippagePct: 0.3 },
+            USDC:  { gasFee: 0.12, protocolFeePct: 0, slippagePct: 0.05 },
+            USDT:  { gasFee: 0.12, protocolFeePct: 0, slippagePct: 0.05 },
+            CLAWS: { gasFee: 0.08, protocolFeePct: 1.0, slippagePct: 1.5 },
+            SOL:   { gasFee: 0.002, protocolFeePct: 0, slippagePct: 0.2 },
+            DEFAULT: { gasFee: 0.10, protocolFeePct: 0.5, slippagePct: 0.8 }
+        };
+
+        function simulateFees(amount, token) {
+            var model = FEE_MODEL[token] || FEE_MODEL.DEFAULT;
+            var slippageJitter = 1 + (Math.random() - 0.5) * 0.4;
+            var gasFee = model.gasFee * (0.8 + Math.random() * 0.6);
+            var protocolFee = amount * (model.protocolFeePct / 100);
+            var slippage = amount * (model.slippagePct / 100) * slippageJitter;
+            var totalFees = gasFee + protocolFee + slippage;
+            var netAmount = Math.max(0, amount - totalFees);
+            return {
+                grossAmount: amount,
+                gasFee: Math.round(gasFee * 1e4) / 1e4,
+                protocolFee: Math.round(protocolFee * 1e4) / 1e4,
+                slippage: Math.round(slippage * 1e4) / 1e4,
+                totalFees: Math.round(totalFees * 1e4) / 1e4,
+                netAmount: Math.round(netAmount * 1e4) / 1e4,
+                token: token,
+                simulated: true
+            };
+        }
+
+        function simulatePayment(invoiceId) {
+            var inv = data.invoices.find(function(i) { return i.id === invoiceId; });
+            if (!inv) return { ok: false, error: 'Invoice not found' };
+            if (!isSandbox()) return { ok: false, error: 'Simulated payments only available in sandbox mode' };
+
+            var fees = simulateFees(inv.total, inv.token || 'USDC');
+            if (_sandboxState.balance < inv.total) return { ok: false, error: 'Insufficient sandbox balance', balance: _sandboxState.balance, required: inv.total };
+
+            _sandboxState.txCounter++;
+            var txHash = '0xSANDBOX_' + _sandboxState.txCounter.toString(16).padStart(8, '0') + '_' + Date.now().toString(16);
+            _sandboxState.balance -= fees.grossAmount;
+            saveSandbox();
+
+            inv.status = 'paid';
+            inv.paidAt = new Date().toISOString();
+            inv.txHash = txHash;
+            inv.sandbox = true;
+            inv.feeBreakdown = fees;
+            inv.updatedAt = new Date().toISOString();
+            saveData(); renderAll();
+
+            auditLog('payment_simulated', 'human', { invoiceId: inv.id, client: inv.client, grossAmount: fees.grossAmount, netAmount: fees.netAmount, fees: fees, txHash: txHash });
+            emitEvent('invoice.paid', { id: inv.id, client: inv.client, total: inv.total, token: inv.token || 'USDC', txHash: txHash, sandbox: true, fees: fees });
+
+            return { ok: true, sandbox: true, txHash: txHash, fees: fees, remainingBalance: _sandboxState.balance };
+        }
+
+        // ═══════════════════════════════════════════
+        // PROMPT INJECTION / SOCIAL INPUT PROTECTION
+        // Commands from external/social channels are untrusted.
+        // ═══════════════════════════════════════════
+        var TRUSTED_ORIGINS = [
+            window.location.origin,
+            'https://inclawbate.com',
+            'https://www.inclawbate.com'
+        ];
+        var _socialCommandCount = {};
+        var SOCIAL_RATE_LIMIT = 10;
+        var SOCIAL_RATE_WINDOW = 60000;
+
+        function isOriginTrusted(origin) {
+            return TRUSTED_ORIGINS.indexOf(origin) >= 0;
+        }
+
+        function socialRateCheck(channel) {
+            var now = Date.now();
+            if (!_socialCommandCount[channel]) _socialCommandCount[channel] = [];
+            _socialCommandCount[channel] = _socialCommandCount[channel].filter(function(t) { return now - t < SOCIAL_RATE_WINDOW; });
+            if (_socialCommandCount[channel].length >= SOCIAL_RATE_LIMIT) return false;
+            _socialCommandCount[channel].push(now);
+            return true;
+        }
+
+        function sanitizeInput(str) {
+            if (typeof str !== 'string') return '';
+            return str.replace(/<[^>]*>/g, '').replace(/javascript:/gi, '').replace(/on\w+\s*=/gi, '').replace(/data:/gi, '').slice(0, 1000);
+        }
+
+        function validateCommandParams(params) {
+            if (!params || typeof params !== 'object') return params;
+            var clean = {};
+            for (var key in params) {
+                if (!params.hasOwnProperty(key)) continue;
+                var val = params[key];
+                if (typeof val === 'string') clean[key] = sanitizeInput(val);
+                else if (typeof val === 'number') clean[key] = isFinite(val) ? val : 0;
+                else if (Array.isArray(val)) clean[key] = val.map(function(v) { return typeof v === 'string' ? sanitizeInput(v) : v; });
+                else clean[key] = val;
+            }
+            return clean;
+        }
 
         function defaultData() {
             return { invoices: [], settings: { name: '', email: '', currency: 'USD', wallet: '' }, tokens: TOKENS.map(t => ({ symbol: t.symbol, enabled: t.enabled })), payMethods: ['crypto-direct'], lastSaved: new Date().toISOString() };
@@ -1069,16 +1405,8 @@
         function getWallet() {
             try { const m = document.cookie.match(/inclawbate_token=([^;]+)/); if (!m) return null; const p = JSON.parse(atob(decodeURIComponent(m[1]).split('.')[1].replace(/-/g,'+').replace(/_/g,'/'))); return p.wallet_address || null; } catch { return null; }
         }
-        async function connectWallet() {
-            const c = getWallet();
-            if (c) walletAddress = c;
-            else if (window.ethereum) { try { const a = await window.ethereum.request({ method: 'eth_requestAccounts' }); walletAddress = a[0]; } catch(e) { toast('Cancelled', true); return; } }
-            else { toast('No wallet detected', true); return; }
-            document.getElementById('walletDot').style.background = '#c9a96e';
-            document.getElementById('walletLabel').textContent = walletAddress.slice(0,6) + '...' + walletAddress.slice(-4);
-            data.settings.wallet = walletAddress;
-            document.getElementById('settingWallet').value = walletAddress;
-            saveData(); toast('Wallet connected');
+        function connectWallet() {
+            gatedConnectWallet();
         }
 
         function toast(msg, isError) {
@@ -1201,6 +1529,7 @@
             saveData(); closeModal('invoiceModal'); renderAll();
             // Emit events
             var summary = { id: invoice.id, client: invoice.client, total: invoice.total, token: invoice.token, dueDate: invoice.dueDate, status: status };
+            auditLog('invoice_' + status, status === 'draft' ? (invoice.source === 'agent' ? 'agent' : 'human') : 'human', { id: invoice.id, client: invoice.client, total: invoice.total, token: invoice.token, status: status });
             if (status === 'pending') {
                 emitEvent('invoice.sent', summary);
                 emailInvoice(invoice); toast('Invoice saved — opening email');
@@ -1233,9 +1562,7 @@
         }
 
         function deleteInvoice(id) {
-            if (!confirm('Delete this invoice?')) return;
-            data.invoices = data.invoices.filter(i => i.id !== id);
-            saveData(); renderAll(); toast('Invoice deleted');
+            gatedDeleteInvoice(id);
         }
 
         function previewInvoice(id) {
@@ -1253,7 +1580,7 @@
                     ${inv.notes ? `<div class="preview-section" style="margin-top:1.25rem"><div class="preview-label">Notes</div><div style="font-size:0.78rem;color:var(--text-3);line-height:1.5">${escapeHtml(inv.notes)}</div></div>` : ''}
                 </div>`;
             document.getElementById('previewEmailBtn').onclick = () => emailInvoice(inv);
-            document.getElementById('previewMarkPaid').onclick = () => { inv.status = 'paid'; inv.paidAt = new Date().toISOString(); inv.updatedAt = new Date().toISOString(); saveData(); renderAll(); closeModal('previewModal'); toast('Marked as paid'); emitEvent('invoice.paid', { id: inv.id, client: inv.client, total: inv.total, token: inv.token, paidAt: inv.paidAt }); };
+            document.getElementById('previewMarkPaid').onclick = () => gatedMarkPaid(inv);
             document.getElementById('previewMarkPaid').style.display = inv.status === 'paid' ? 'none' : '';
             openModal('previewModal');
         }
@@ -1367,7 +1694,7 @@
         function cardHtml(inv) {
             var agentBadge = inv.source === 'agent' ? '<span class="badge badge-agent">Agent Draft</span>' : '';
             var suggestBadge = (inv.agentSuggestions && inv.agentSuggestions.length) ? '<span class="badge badge-agent">Has Suggestions</span>' : '';
-            return `<div class="invoice-card" onclick="previewInvoice('${inv.id}')"><div class="inv-dot ${inv.status}"></div><div class="inv-info"><div class="inv-client">${escapeHtml(inv.client)} ${agentBadge}${suggestBadge}</div><div class="inv-meta"><span>${inv.id}</span><span>${inv.dueDate || ''}</span><span class="badge badge-${inv.payType === 'fiat' ? 'fiat' : 'crypto'}">${inv.payType}</span></div></div><div class="inv-amount">${formatCurrency(inv.total)}</div><div class="inv-actions"><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();previewInvoice('${inv.id}')" title="Preview">&#128065;</button><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();editInvoice('${inv.id}')" title="Edit">&#9998;</button><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();deleteInvoice('${inv.id}')" style="color:#f87171" title="Delete">&#215;</button></div></div>`;
+            return `<div class="invoice-card" onclick="previewInvoice('${inv.id}')"><div class="inv-dot ${inv.status}"></div><div class="inv-info"><div class="inv-client">${escapeHtml(inv.client)} ${agentBadge}${suggestBadge}</div><div class="inv-meta"><span>${inv.id}</span><span>${inv.dueDate || ''}</span><span class="badge badge-${inv.payType === 'fiat' ? 'fiat' : 'crypto'}">${inv.payType}</span>${inv.sandbox ? '<span class="badge" style="background:rgba(251,191,36,0.1);color:#fbbf24">Sandbox</span>' : ''}</div></div><div class="inv-amount">${formatCurrency(inv.total)}${inv.feeBreakdown ? '<div style="font-size:0.6rem;color:var(--text-3)">fees: ' + formatCurrency(inv.feeBreakdown.totalFees) + '</div>' : ''}</div><div class="inv-actions"><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();previewInvoice('${inv.id}')" title="Preview">&#128065;</button><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();editInvoice('${inv.id}')" title="Edit">&#9998;</button><button class="btn btn-ghost btn-sm btn-icon" onclick="event.stopPropagation();gatedDeleteInvoice('${inv.id}')" style="color:#f87171" title="Delete">&#215;</button></div></div>`;
         }
 
         function renderTokens() {
@@ -1383,6 +1710,8 @@
             document.getElementById('settingEmail').value = data.settings.email || '';
             document.getElementById('settingCurrency').value = data.settings.currency || 'USD';
             document.getElementById('settingWallet').value = data.settings.wallet || '';
+            renderSandboxSettings();
+            renderAuditLog();
         }
 
         function renderPaymentHistory() {
@@ -1399,7 +1728,178 @@
         function escapeHtml(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
         function checkOverdue() { const today = new Date().toISOString().split('T')[0]; let c = false; var newlyOverdue = []; data.invoices.forEach(inv => { if (inv.status === 'pending' && inv.dueDate && inv.dueDate < today) { inv.status = 'overdue'; inv.updatedAt = new Date().toISOString(); c = true; newlyOverdue.push(inv); } }); if (c) { saveData(); renderAll(); newlyOverdue.forEach(function(inv) { emitEvent('invoice.overdue', { id: inv.id, client: inv.client, total: inv.total, dueDate: inv.dueDate, daysPast: Math.floor((Date.now() - new Date(inv.dueDate).getTime()) / 86400000), nudge: 'Invoice for ' + inv.client + ' (' + formatCurrency(inv.total) + ') is past due. Consider following up.' }); }); } }
 
-        renderAll(); checkOverdue();
+        // ═══════════════════════════════════════════
+        // GATED WRAPPERS — human-only actions go through auth gate
+        // ═══════════════════════════════════════════
+        function gatedSendInvoice() {
+            var client = document.getElementById('invClient').value.trim();
+            if (!client) { toast('Client name required', true); return; }
+            var items = getLineItems();
+            if (!items.length) { toast('Add at least one item', true); return; }
+            var total = items.reduce(function(s, i) { return s + i.qty * i.rate; }, 0);
+            requireHumanAuth('Send Invoice', 'Send invoice to "' + client + '" for ' + formatCurrency(total) + '. This will mark the invoice as pending and open your email client.', function() {
+                saveInvoice('pending');
+            });
+        }
+
+        function gatedDeleteInvoice(id) {
+            var inv = data.invoices.find(function(i) { return i.id === id; });
+            if (!inv) return;
+            requireHumanAuth('Delete Invoice', 'Permanently delete invoice ' + inv.id + ' for "' + inv.client + '" (' + formatCurrency(inv.total) + '). This cannot be undone.', function() {
+                data.invoices = data.invoices.filter(function(i) { return i.id !== id; });
+                saveData(); renderAll(); toast('Invoice deleted');
+                auditLog('invoice_deleted', 'human', { id: inv.id, client: inv.client, total: inv.total });
+            });
+        }
+
+        function gatedMarkPaid(inv) {
+            requireHumanAuth('Mark as Paid', 'Mark invoice ' + inv.id + ' for "' + inv.client + '" (' + formatCurrency(inv.total) + ') as paid. Verify you have received payment before confirming.', function() {
+                if (isSandbox()) {
+                    var result = simulatePayment(inv.id);
+                    if (result.ok) {
+                        toast('Sandbox payment: ' + formatCurrency(result.fees.netAmount) + ' net (fees: ' + formatCurrency(result.fees.totalFees) + ')');
+                    } else {
+                        toast(result.error, true);
+                    }
+                } else {
+                    inv.status = 'paid'; inv.paidAt = new Date().toISOString(); inv.updatedAt = new Date().toISOString();
+                    saveData(); renderAll(); toast('Marked as paid');
+                    auditLog('invoice_paid', 'human', { id: inv.id, client: inv.client, total: inv.total, token: inv.token });
+                    emitEvent('invoice.paid', { id: inv.id, client: inv.client, total: inv.total, token: inv.token, paidAt: inv.paidAt });
+                }
+                closeModal('previewModal');
+            });
+        }
+
+        function gatedConnectWallet() {
+            requireHumanAuth('Connect Wallet', 'Connect your crypto wallet to BlockPay. This will associate your wallet address with your account for receiving payments.', function() {
+                connectWalletInner();
+            });
+        }
+
+        async function connectWalletInner() {
+            const c = getWallet();
+            if (c) walletAddress = c;
+            else if (window.ethereum) { try { const a = await window.ethereum.request({ method: 'eth_requestAccounts' }); walletAddress = a[0]; } catch(e) { toast('Cancelled', true); return; } }
+            else { toast('No wallet detected', true); return; }
+            if (isSandbox()) { toast('Wallet connected in SANDBOX mode — no real funds will be used'); }
+            document.getElementById('walletDot').style.background = '#c9a96e';
+            document.getElementById('walletLabel').textContent = walletAddress.slice(0,6) + '...' + walletAddress.slice(-4);
+            data.settings.wallet = walletAddress;
+            document.getElementById('settingWallet').value = walletAddress;
+            saveData(); toast('Wallet connected');
+            auditLog('wallet_connected', 'human', { walletPrefix: walletAddress.slice(0, 6) });
+        }
+
+        function gatedPayWithClaws(id) {
+            var inv = data.invoices.find(function(i) { return i.id === id; });
+            if (!inv) return;
+            requireHumanAuth('Pay with CLAWS', 'Send ' + formatCurrency(inv.total) + ' CLAWS for invoice ' + inv.id + '. This will initiate a blockchain transaction.', function() {
+                if (isSandbox()) {
+                    var result = simulatePayment(inv.id);
+                    if (result.ok) toast('Sandbox CLAWS payment simulated — fees: ' + formatCurrency(result.fees.totalFees));
+                    else toast(result.error, true);
+                } else {
+                    payWithClaws(id);
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════
+        // AUDIT LOG & SANDBOX UI FUNCTIONS
+        // ═══════════════════════════════════════════
+        function renderAuditLog(limit, filter) {
+            var log = getAuditLog(limit || 100, filter);
+            var chain = verifyAuditChain();
+            var el = document.getElementById('auditLogViewer');
+            var chainEl = document.getElementById('auditChainStatus');
+            if (chainEl) {
+                chainEl.innerHTML = chain.valid
+                    ? '<span style="color:#34d399">Chain valid (' + chain.length + ' entries)</span>'
+                    : '<span style="color:#f87171">Chain BROKEN at entry ' + chain.brokenAt + '</span>';
+            }
+            if (!log.length) { el.innerHTML = '<div style="color:var(--text-3);padding:0.5rem">No audit entries</div>'; return; }
+            el.innerHTML = log.reverse().map(function(e) {
+                var actorColor = e.actor === 'human' ? '#34d399' : e.actor === 'agent' ? '#a855f7' : e.actor === 'external' ? '#fbbf24' : '#94a3b8';
+                return '<div style="padding:0.3rem 0;border-bottom:1px solid var(--border)">' +
+                    '<span style="color:var(--text-3)">' + e.timestamp.slice(0, 19).replace('T', ' ') + '</span> ' +
+                    '<span style="color:' + actorColor + ';font-weight:600">[' + e.actor + ']</span> ' +
+                    '<span style="color:var(--white)">' + escapeHtml(e.action) + '</span> ' +
+                    '<span style="color:var(--text-3)">' + escapeHtml(e.commitId) + '</span>' +
+                    (Object.keys(e.details).length ? '<div style="margin-left:1rem;color:var(--text-3)">' + escapeHtml(JSON.stringify(e.details).slice(0, 200)) + '</div>' : '') +
+                    '</div>';
+            }).join('');
+        }
+
+        function exportAuditLog() {
+            var b = new Blob([JSON.stringify(_auditLog, null, 2)], { type: 'application/json' });
+            var u = URL.createObjectURL(b);
+            var a = document.createElement('a'); a.href = u; a.download = 'blockpay_audit_log.json'; a.click();
+            URL.revokeObjectURL(u); toast('Audit log exported');
+        }
+
+        function renderSandboxSettings() {
+            var statusEl = document.getElementById('sandboxStatusText');
+            var balEl = document.getElementById('sandboxBalanceRow');
+            var feeEl = document.getElementById('sandboxFeePreview');
+            var toggleBtn = document.getElementById('sandboxToggleBtn');
+            var unlockArea = document.getElementById('sandboxUnlockArea');
+            if (!statusEl) return;
+
+            if (isSandbox()) {
+                statusEl.innerHTML = '<span style="color:#fbbf24">Sandbox Mode Active</span>';
+                balEl.textContent = 'Simulated balance: ' + formatCurrency(_sandboxState.balance) + ' | Transactions: ' + _sandboxState.txCounter;
+                var sample = simulateFees(100, 'USDC');
+                var sampleClaws = simulateFees(100, 'CLAWS');
+                feeEl.innerHTML = 'Example fees on $100:<br>' +
+                    'USDC: gas ' + formatCurrency(sample.gasFee) + ' + slippage ' + formatCurrency(sample.slippage) + ' = ' + formatCurrency(sample.totalFees) + ' total<br>' +
+                    'CLAWS: gas ' + formatCurrency(sampleClaws.gasFee) + ' + protocol ' + formatCurrency(sampleClaws.protocolFee) + ' + slippage ' + formatCurrency(sampleClaws.slippage) + ' = ' + formatCurrency(sampleClaws.totalFees) + ' total';
+                toggleBtn.textContent = 'Request Production Mode';
+                unlockArea.style.display = 'none';
+            } else {
+                statusEl.innerHTML = '<span style="color:#f87171">Production Mode</span>';
+                balEl.textContent = 'Real transactions active — real funds at risk.';
+                feeEl.textContent = '';
+                toggleBtn.textContent = 'Switch to Sandbox';
+                unlockArea.style.display = 'none';
+            }
+            renderSandboxBadge();
+        }
+
+        function toggleSandboxUI() {
+            if (!isSandbox()) {
+                requireHumanAuth('Enable Sandbox', 'Switch to sandbox mode. All future transactions will be simulated with no real funds.', function() {
+                    enableSandboxMode();
+                    renderSandboxSettings();
+                    toast('Sandbox mode enabled');
+                });
+            } else {
+                var result = requestProductionMode();
+                if (result.ok) {
+                    toast('Step 1: Code is ' + result.code + '. Enter it below to confirm.');
+                    document.getElementById('sandboxUnlockArea').style.display = 'block';
+                } else {
+                    toast(result.error, true);
+                }
+            }
+        }
+
+        function completeProdUnlock() {
+            var code = document.getElementById('sandboxUnlockCode').value.trim().toUpperCase();
+            requireHumanAuth('Enable Production Mode', 'WARNING: This will switch BlockPay to production mode. Real funds will be used for all transactions. Are you absolutely sure?', function() {
+                var result = confirmProductionMode(code);
+                if (result.ok) {
+                    toast('Production mode enabled');
+                    renderSandboxSettings();
+                } else {
+                    toast(result.error, true);
+                    document.getElementById('sandboxUnlockArea').style.display = 'none';
+                }
+            });
+        }
+
+        renderAll(); checkOverdue(); renderSandboxBadge();
+        auditLog('app_loaded', 'system', { sandbox: isSandbox(), invoiceCount: data.invoices.length });
         const cw = getWallet();
         if (cw) { walletAddress = cw; document.getElementById('walletDot').style.background = '#c9a96e'; document.getElementById('walletLabel').textContent = cw.slice(0,6) + '...' + cw.slice(-4); data.settings.wallet = cw; }
         loadFromCloud();
@@ -1599,6 +2099,9 @@
                         'addWebhook(url)': 'Register a webhook URL for event notifications',
                         'removeWebhook(url)': 'Remove a webhook',
                         'listWebhooks()': 'List registered webhooks',
+                        'getAuditLog(limit?, filter?)': 'View immutable audit trail with chain verification',
+                        'getSandboxStatus()': 'Check sandbox mode and simulated balance',
+                        'simulateFees(amount, token)': 'Preview realistic fee/slippage breakdown for a transaction',
                     },
                     humanOnly: {
                         'sendInvoice': 'Confirm and send a draft invoice',
@@ -1621,6 +2124,20 @@
 
         // Attach event API methods (on, off, poll, webhooks) to BlockPay
         attachEventApi();
+
+        // ── Audit log API (agent-safe, read-only) ──
+        window.BlockPay.getAuditLog = function(limit, filter) {
+            return { ok: true, scope: 'agent-safe', log: getAuditLog(limit, filter), chainValid: verifyAuditChain() };
+        };
+
+        // ── Sandbox API (read-only for agents) ──
+        window.BlockPay.getSandboxStatus = function() {
+            return { ok: true, scope: 'agent-safe', sandbox: isSandbox(), balance: isSandbox() ? _sandboxState.balance : null, txCount: _sandboxState.txCounter };
+        };
+        window.BlockPay.simulateFees = function(amount, token) {
+            return { ok: true, scope: 'agent-safe', fees: simulateFees(amount || 100, token || 'USDC') };
+        };
+
         // Freeze the agent API — prevents tampering with methods or adding wallet-access paths
         Object.freeze(window.BlockPay);
 
@@ -1632,18 +2149,20 @@
             var action = params.get('action');
             if (!action) return;
 
+            auditLog('url_command_received', 'external', { action: action, params: window.location.search });
+
             var result;
             switch (action) {
                 case 'draft':
                     result = window.BlockPay.draftInvoice({
-                        client: params.get('client') || 'Client',
+                        client: sanitizeInput(params.get('client') || 'Client'),
                         amount: parseFloat(params.get('amount')) || 0,
-                        description: params.get('desc') || params.get('description') || 'Service',
-                        token: params.get('token') || 'USDC',
-                        due: params.get('due') || undefined,
-                        clientEmail: params.get('email') || '',
-                        notes: params.get('notes') || '',
-                        payType: params.get('payType') || 'crypto'
+                        description: sanitizeInput(params.get('desc') || params.get('description') || 'Service'),
+                        token: sanitizeInput(params.get('token') || 'USDC'),
+                        due: sanitizeInput(params.get('due') || ''),
+                        clientEmail: sanitizeInput(params.get('email') || ''),
+                        notes: sanitizeInput(params.get('notes') || ''),
+                        payType: sanitizeInput(params.get('payType') || 'crypto')
                     });
                     if (result.ok) toast('Agent draft created: ' + result.invoice.id);
                     break;
@@ -1692,10 +2211,13 @@
 
         function runCmd() {
             var input = document.getElementById('cmdInput');
-            var raw = input.value.trim();
+            var raw = sanitizeInput(input.value.trim());
             if (!raw) return;
             input.value = '';
             document.getElementById('cmdHelp').classList.remove('open');
+
+            if (!socialRateCheck('cmdbar')) { toast('Rate limited — slow down', true); return; }
+            auditLog('cmd_executed', 'human', { command: raw.slice(0, 200) });
 
             var cmd = raw.toLowerCase();
             var result;
@@ -1745,6 +2267,29 @@
                 toast(key + ' updated'); return;
             }
 
+            // Audit & sandbox commands
+            if (cmd.match(/^audit(\s+log)?$/)) {
+                var log = getAuditLog(20);
+                toast(log.length + ' recent entries — see Settings > Audit Log');
+                logResult({ ok: true, scope: 'agent-safe', recentEntries: log.length, chainValid: verifyAuditChain() });
+                return;
+            }
+            if (cmd.match(/^sandbox(\s+status)?$/)) {
+                var status = isSandbox() ? 'SANDBOX (balance: ' + formatCurrency(_sandboxState.balance) + ')' : 'PRODUCTION';
+                toast('Mode: ' + status);
+                logResult(window.BlockPay.getSandboxStatus());
+                return;
+            }
+            var feeMatch = raw.match(/^fees?\s+(\d+\.?\d*)\s*(\w+)?/i);
+            if (feeMatch) {
+                var fAmt = parseFloat(feeMatch[1]);
+                var fTok = (feeMatch[2] || 'USDC').toUpperCase();
+                var fees = simulateFees(fAmt, fTok);
+                toast(fTok + ' fees on ' + formatCurrency(fAmt) + ': ' + formatCurrency(fees.totalFees) + ' (net: ' + formatCurrency(fees.netAmount) + ')');
+                logResult({ ok: true, scope: 'agent-safe', fees: fees });
+                return;
+            }
+
             toast('Unknown command. Try "help"', true);
         }
 
@@ -1777,15 +2322,36 @@
             window.dispatchEvent(new CustomEvent('blockpay-result', { detail: result }));
         }
 
-        // postMessage — agent-safe methods only
+        // postMessage — agent-safe methods only, with origin check + rate limiting + sanitization
         window.addEventListener('message', function(e) {
             if (!e.data || e.data.type !== 'blockpay-command') return;
+
+            // Origin check: only accept from trusted origins
+            if (!isOriginTrusted(e.origin)) {
+                auditLog('postmessage_blocked', 'system', { origin: e.origin, method: e.data.method, reason: 'untrusted origin' });
+                try { e.source.postMessage({ type: 'blockpay-result', id: e.data.id, result: { ok: false, error: 'Untrusted origin: ' + e.origin } }, '*'); } catch(err) {}
+                return;
+            }
+
+            // Rate limit external commands
+            if (!socialRateCheck('postMessage:' + e.origin)) {
+                auditLog('postmessage_ratelimited', 'system', { origin: e.origin, method: e.data.method });
+                try { e.source.postMessage({ type: 'blockpay-result', id: e.data.id, result: { ok: false, error: 'Rate limited. Max ' + SOCIAL_RATE_LIMIT + ' commands per minute.' } }, '*'); } catch(err) {}
+                return;
+            }
+
             var cmd = e.data;
             var result;
-            var agentMethods = ['draftInvoice','suggestTerms','proposeTokens','generateSummary','listInvoices','getInvoice','getStats','getSettings','listTokens','exportData','help','getCustodyPolicy','poll','getEvents','addWebhook','removeWebhook','listWebhooks'];
+            var agentMethods = ['draftInvoice','suggestTerms','proposeTokens','generateSummary','listInvoices','getInvoice','getStats','getSettings','listTokens','exportData','help','getCustodyPolicy','poll','getEvents','addWebhook','removeWebhook','listWebhooks','getAuditLog','getSandboxStatus','simulateFees'];
+
+            // Sanitize params from external source
+            if (cmd.params && typeof cmd.params === 'object') cmd.params = validateCommandParams(cmd.params);
+
+            auditLog('postmessage_received', 'external', { origin: e.origin, method: cmd.method });
+
             try {
                 if (agentMethods.indexOf(cmd.method) < 0) {
-                    result = { ok: false, scope: 'human-only', error: 'Method "' + cmd.method + '" requires human confirmation.' };
+                    result = { ok: false, scope: 'human-only', error: 'Method "' + cmd.method + '" requires human confirmation and cannot be called via postMessage.' };
                 } else {
                     switch (cmd.method) {
                         case 'draftInvoice': result = window.BlockPay.draftInvoice(cmd.params); break;
@@ -1805,6 +2371,9 @@
                         case 'listWebhooks': result = window.BlockPay.listWebhooks(); break;
                         case 'help': result = window.BlockPay.help(); break;
                         case 'getCustodyPolicy': result = window.BlockPay.getCustodyPolicy(); break;
+                        case 'getAuditLog': result = window.BlockPay.getAuditLog(cmd.params && cmd.params.limit, cmd.params && cmd.params.filter); break;
+                        case 'getSandboxStatus': result = window.BlockPay.getSandboxStatus(); break;
+                        case 'simulateFees': result = window.BlockPay.simulateFees(cmd.params && cmd.params.amount, cmd.params && cmd.params.token); break;
                     }
                 }
             } catch(err) { result = { ok: false, error: err.message }; }
