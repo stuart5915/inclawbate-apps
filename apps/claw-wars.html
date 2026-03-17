@@ -1965,785 +1965,1285 @@ const _seaweed = (x,h,c) => `<path d="M${x} 95 Q${x-6} ${95-h/2} ${x+3} ${95-h} 
 const _rock = (x,y,w,c) => `<ellipse cx="${x}" cy="${y}" rx="${w}" ry="${w*0.4}" fill="${c||'#2a2a3a'}"/>`;
 const _star = (x,y,s,c) => `<polygon points="${x},${y-s} ${x+s*0.4},${y-s*0.3} ${x+s},${y} ${x+s*0.4},${y+s*0.3} ${x},${y+s} ${x-s*0.4},${y+s*0.3} ${x-s},${y} ${x-s*0.4},${y-s*0.3}" fill="${c}" opacity="0.6"/>`;
 const _wave = (y,c,w) => `<path d="M0 ${y} Q15 ${y-8} 30 ${y} Q45 ${y+8} 60 ${y} Q75 ${y-8} 90 ${y} Q105 ${y+8} 120 ${y}" stroke="${c}" fill="none" stroke-width="${w||1.5}" opacity="0.4"/>`;
+// Badass effect helpers
+const _bolt = (x1,y1,x2,y2,c,w) => {const mx=(x1+x2)/2+((Math.random()>0.5?1:-1)*8),my=(y1+y2)/2+((Math.random()>0.5?1:-1)*6);return `<path d="M${x1} ${y1} L${mx-3} ${my} L${mx+4} ${my+2} L${x2} ${y2}" stroke="${c||'#fff'}" fill="none" stroke-width="${w||1.5}" opacity="0.8"/>`};
+const _crack = (x,y,s,c) => `<g opacity="0.6"><path d="M${x} ${y} l${s*0.6} ${s*0.3} l${-s*0.2} ${s*0.5} l${s*0.4} ${s*0.2}" stroke="${c||'#ff4040'}" fill="none" stroke-width="1.2"/><path d="M${x} ${y} l${-s*0.4} ${s*0.6} l${s*0.3} ${s*0.3}" stroke="${c||'#ff4040'}" fill="none" stroke-width="0.8"/></g>`;
+const _flame = (x,y,h,c) => `<g><path d="M${x} ${y} Q${x-h*0.3} ${y-h*0.5} ${x+h*0.1} ${y-h} Q${x+h*0.15} ${y-h*0.6} ${x+h*0.3} ${y-h*0.8} Q${x+h*0.2} ${y-h*0.3} ${x+h*0.4} ${y}" fill="${c||'#ff4400'}" opacity="0.7"><animate attributeName="d" values="M${x} ${y} Q${x-h*0.3} ${y-h*0.5} ${x+h*0.1} ${y-h} Q${x+h*0.15} ${y-h*0.6} ${x+h*0.3} ${y-h*0.8} Q${x+h*0.2} ${y-h*0.3} ${x+h*0.4} ${y};M${x} ${y} Q${x-h*0.2} ${y-h*0.6} ${x-h*0.05} ${y-h*0.9} Q${x+h*0.2} ${y-h*0.7} ${x+h*0.25} ${y-h*0.85} Q${x+h*0.15} ${y-h*0.4} ${x+h*0.35} ${y};M${x} ${y} Q${x-h*0.3} ${y-h*0.5} ${x+h*0.1} ${y-h} Q${x+h*0.15} ${y-h*0.6} ${x+h*0.3} ${y-h*0.8} Q${x+h*0.2} ${y-h*0.3} ${x+h*0.4} ${y}" dur="0.6s" repeatCount="indefinite"/></path></g>`;
+const _slash = (x1,y1,x2,y2,c) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c||'#fff'}" stroke-width="2" stroke-linecap="round" opacity="0.7"><animate attributeName="opacity" values="0;0.9;0" dur="0.4s" repeatCount="indefinite"/></line>`;
+const _scar = (x,y,l,a) => `<g transform="rotate(${a||0} ${x} ${y})"><path d="M${x-l} ${y} Q${x-l*0.3} ${y-2} ${x} ${y+1} Q${x+l*0.3} ${y+3} ${x+l} ${y}" stroke="#ff3030" fill="none" stroke-width="1.2" opacity="0.5"/></g>`;
+const _speedLine = (x,y,l,a,c) => `<line x1="${x}" y1="${y}" x2="${x+l*Math.cos(a*Math.PI/180)}" y2="${y+l*Math.sin(a*Math.PI/180)}" stroke="${c||'#fff'}" stroke-width="0.8" opacity="0.3"/>`;
+const _spike = (x,y,h,a,c) => `<polygon points="${x},${y-h} ${x-h*0.25},${y} ${x+h*0.25},${y}" fill="${c||'#444'}" transform="rotate(${a||0} ${x} ${y})" opacity="0.8"/>`;
 
 // Each card ID maps to a unique SVG scene
 const CARD_ART = {
-    // === 1: Claw Recruit — small lobster at reef academy, coral pillars, bubbles ===
+    // === 1: Claw Recruit — battle-ready young warrior, fists raised, war cry ===
     1: `<svg viewBox="0 0 120 100">
-        <rect x="0" y="70" width="120" height="30" fill="#1a3848" rx="2"/>
-        ${_seaweed(15,35,'#2a6848')}${_seaweed(100,28,'#1a5838')}
-        ${_rock(30,88,14,'#2a3040')}${_rock(85,90,12,'#222838')}
-        <rect x="90" y="50" width="8" height="40" rx="3" fill="#c06040" opacity="0.4"/>
-        <rect x="22" y="55" width="7" height="35" rx="3" fill="#b05838" opacity="0.35"/>
-        <g transform="translate(42,28) scale(0.65)">
-            <ellipse cx="30" cy="40" rx="12" ry="16" fill="#d06848"/>
-            <circle cx="30" cy="22" r="9" fill="#c85840"/>
-            <path d="M22 28 L10 18 L4 12 L9 20 L5 26 L15 22Z" fill="#e07050"/>
-            <path d="M38 28 L50 18 L56 12 L51 20 L55 26 L45 22Z" fill="#e07050"/>
-            <path d="M24 54 L22 62 L27 59 L30 65 L33 59 L38 62 L36 54Z" fill="#c85840"/>
-            <circle cx="26" cy="19" r="2" fill="white"/><circle cx="34" cy="19" r="2" fill="white"/>
-            <circle cx="26" cy="19" r="1" fill="#111"/><circle cx="34" cy="19" r="1" fill="#111"/>
-            <path d="M26 14 Q20 4 14 2" stroke="#c85840" fill="none" stroke-width="1.5"/>
-            <path d="M34 14 Q40 4 46 2" stroke="#c85840" fill="none" stroke-width="1.5"/>
-            <line x1="24" y1="48" x2="16" y2="58" stroke="#c85840" stroke-width="1.5"/>
-            <line x1="36" y1="48" x2="44" y2="58" stroke="#c85840" stroke-width="1.5"/>
+        <radialGradient id="cr1" cx="50%" cy="60%"><stop offset="0%" stop-color="#1a3050"/><stop offset="100%" stop-color="#060d18"/></radialGradient>
+        <rect width="120" height="100" fill="url(#cr1)"/>
+        <rect x="0" y="72" width="120" height="28" fill="#0c1828"/>
+        ${_crack(15,72,12,'#3080c0')}${_crack(85,75,10,'#2868a0')}
+        <g transform="translate(22,4) scale(1.1)">
+            <ellipse cx="40" cy="48" rx="16" ry="22" fill="#d06848"/>
+            <circle cx="40" cy="26" r="12" fill="#c85840"/>
+            <!-- Raised battle claws -->
+            <path d="M28 32 L8 10 L-4 -2 L4 12 L-6 18 L14 20Z" fill="#e07050"/>
+            <path d="M-4 -2 L-10 -8 L-2 -4Z" fill="#ff8060"/>
+            <path d="M52 32 L72 10 L84 -2 L76 12 L86 18 L66 20Z" fill="#e07050"/>
+            <path d="M84 -2 L90 -8 L82 -4Z" fill="#ff8060"/>
+            <!-- War scars -->
+            ${_scar(36,40,8,15)}${_scar(44,52,6,-10)}
+            <!-- Fierce eyes -->
+            <circle cx="34" cy="22" r="3" fill="#ff4444" opacity="0.9"><animate attributeName="r" values="2.8;3.3;2.8" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="46" cy="22" r="3" fill="#ff4444" opacity="0.9"><animate attributeName="r" values="3.3;2.8;3.3" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="34" cy="22" r="1.2" fill="white"/><circle cx="46" cy="22" r="1.2" fill="white"/>
+            <!-- Snarling mouth -->
+            <path d="M35 30 L38 32 L40 30 L42 32 L45 30" stroke="#ff6040" fill="none" stroke-width="1.5"/>
+            <!-- Battle-hardened antennae -->
+            <path d="M34 16 Q22 -2 10 -8" stroke="#c85840" fill="none" stroke-width="2.5"/>
+            <path d="M46 16 Q58 -2 70 -8" stroke="#c85840" fill="none" stroke-width="2.5"/>
+            <path d="M30 68 L26 82 L34 78 L40 86 L46 78 L54 82 L50 68Z" fill="#a84030"/>
+            <line x1="30" y1="58" x2="20" y2="72" stroke="#a84030" stroke-width="2"/>
+            <line x1="50" y1="58" x2="60" y2="72" stroke="#a84030" stroke-width="2"/>
         </g>
-        ${_bub(70,30,2.5)}${_bub(55,18,1.8)}${_bub(80,42,1.5)}${_bub(35,12,2)}
+        <!-- Battle energy -->
+        <circle cx="60" cy="45" r="35" fill="#ff4444" opacity="0.04"><animate attributeName="r" values="30;38;30" dur="2s" repeatCount="indefinite"/></circle>
     </svg>`,
 
-    // === 2: Tidal Crawler — side-view lobster riding a current, motion lines ===
+    // === 2: Tidal Crawler — charging through crashing waves, jaws wide, speed lines ===
     2: `<svg viewBox="0 0 120 100">
-        ${_wave(20,'#3080c0',1)}${_wave(80,'#2868a0',1)}
-        <g opacity="0.15"><path d="M0 40 L120 35" stroke="white" stroke-width="0.8"/><path d="M0 45 L120 42" stroke="white" stroke-width="0.5"/><path d="M0 50 L120 48" stroke="white" stroke-width="0.3"/></g>
-        <g transform="translate(15,25) rotate(-8)">
-            <ellipse cx="50" cy="35" rx="22" ry="13" fill="#c06040"/>
-            <ellipse cx="24" cy="32" rx="11" ry="9" fill="#b85838"/>
-            <path d="M16 26 L0 18 Q-4 28 8 30Z" fill="#d06848"/>
-            <path d="M16 36 L0 42 Q-4 32 8 34Z" fill="#d06848"/>
-            <path d="M70 30 L82 28 L90 22 L86 30 L90 36 L82 32 L70 35Z" fill="#c85840"/>
-            <circle cx="18" cy="28" r="2.5" fill="white"/><circle cx="18" cy="28" r="1.2" fill="#111"/>
-            <path d="M15 22 Q8 12 2 8" stroke="#b85838" fill="none" stroke-width="1.5"/>
-            <path d="M13 25 Q5 18 -2 16" stroke="#b85838" fill="none" stroke-width="1.2"/>
-            <line x1="34" y1="44" x2="28" y2="54" stroke="#b85838" stroke-width="1.5"/>
-            <line x1="42" y1="46" x2="38" y2="56" stroke="#b85838" stroke-width="1.5"/>
-            <line x1="50" y1="46" x2="50" y2="57" stroke="#b85838" stroke-width="1.5"/>
-            <line x1="58" y1="44" x2="62" y2="54" stroke="#b85838" stroke-width="1.5"/>
+        <radialGradient id="tc2" cx="30%" cy="50%"><stop offset="0%" stop-color="#103050"/><stop offset="100%" stop-color="#040c18"/></radialGradient>
+        <rect width="120" height="100" fill="url(#tc2)"/>
+        <!-- Violent speed lines -->
+        <g opacity="0.4">${_speedLine(85,20,30,175,'#60c0ff')}${_speedLine(90,35,28,178,'#4090d0')}${_speedLine(88,50,32,176,'#50a0e0')}${_speedLine(92,65,26,180,'#3080c0')}${_speedLine(95,15,25,172,'#70d0ff')}${_speedLine(100,45,22,179,'#5090d0')}${_speedLine(87,75,30,177,'#4080c0')}</g>
+        <!-- Crashing wave spray -->
+        <path d="M0 30 Q20 15 35 25 Q50 38 55 20 Q60 10 70 22 L50 55 L0 60Z" fill="#2088c8" opacity="0.4"/>
+        <path d="M0 40 Q15 28 30 35 Q45 45 50 30" fill="white" opacity="0.08"/>
+        <!-- Charging lobster -->
+        <g transform="translate(2,18) rotate(-12 50 40)">
+            <ellipse cx="45" cy="42" rx="24" ry="16" fill="#c06040"/>
+            <circle cx="20" cy="38" r="13" fill="#b85838"/>
+            <!-- Massive snapping claws -->
+            <path d="M12 30 L-10 14 L-22 4 L-12 18 L-24 28 L0 22Z" fill="#e07050"/>
+            <path d="M-22 4 L-30 -4 L-18 2Z" fill="#ff8868"/>
+            <path d="M12 46 L-10 56 L-22 64 L-12 52 L-24 44 L0 50Z" fill="#e07050"/>
+            <path d="M-22 64 L-30 72 L-18 62Z" fill="#ff8868"/>
+            <!-- Armored tail -->
+            <path d="M68 36 L82 34 L94 28 L90 36 L96 40 L90 42 L94 50 L82 44 L68 46Z" fill="#c85840"/>
+            ${_spike(90,28,8,0,'#a84030')}${_spike(96,40,6,90,'#a84030')}${_spike(90,50,7,180,'#a84030')}
+            <!-- Fierce eye -->
+            <circle cx="14" cy="34" r="4" fill="#ff3030" opacity="0.9"><animate attributeName="opacity" values="0.7;1;0.7" dur="0.8s" repeatCount="indefinite"/></circle>
+            <circle cx="14" cy="34" r="1.8" fill="white"/>
+            <!-- Snarl -->
+            <path d="M8 40 L4 42 L6 38 L2 40" stroke="#ff6040" fill="none" stroke-width="1"/>
+            <!-- Antennae swept back -->
+            <path d="M10 30 Q-2 22 -10 24" stroke="#b85838" fill="none" stroke-width="2.5"/>
+            <path d="M8 34 Q-4 28 -12 30" stroke="#b85838" fill="none" stroke-width="2"/>
+            <line x1="34" y1="54" x2="30" y2="62" stroke="#b85838" stroke-width="2"/>
+            <line x1="42" y1="55" x2="40" y2="64" stroke="#b85838" stroke-width="2"/>
+            <line x1="50" y1="54" x2="52" y2="64" stroke="#b85838" stroke-width="2"/>
+            <line x1="58" y1="52" x2="62" y2="60" stroke="#b85838" stroke-width="2"/>
         </g>
-        <g opacity="0.2"><line x1="95" y1="30" x2="115" y2="28" stroke="white" stroke-width="1"/><line x1="90" y1="38" x2="118" y2="36" stroke="white" stroke-width="0.7"/><line x1="92" y1="45" x2="116" y2="44" stroke="white" stroke-width="0.5"/></g>
-        ${_bub(100,20,2)}${_bub(108,50,1.5)}
+        <!-- Impact spray -->
+        ${_bub(75,18,2.5)}${_bub(70,30,2)}${_bub(82,40,1.5)}
     </svg>`,
 
-    // === 3: Reef Sentinel — upright lobster with spear, coral reef behind ===
+    // === 3: Reef Sentinel — battle stance, bloody spear, shattered coral battlefield ===
     3: `<svg viewBox="0 0 120 100">
-        <path d="M0 75 Q20 68 40 72 Q60 78 80 70 Q100 65 120 72 L120 100 L0 100Z" fill="#1a3848"/>
-        <path d="M80 40 Q85 25 82 15 Q90 20 92 35 Q95 18 100 28 Q96 38 90 42Z" fill="#c05040" opacity="0.4"/>
-        <path d="M15 50 Q18 38 14 28 Q22 35 20 48Z" fill="#c86848" opacity="0.35"/>
-        ${_seaweed(25,30,'#2a7050')}${_seaweed(95,22,'#1a5838')}
-        <g transform="translate(38,8)">
-            <ellipse cx="28" cy="55" rx="14" ry="20" fill="#cc5540"/>
-            <circle cx="28" cy="34" r="10" fill="#c04c38"/>
-            <path d="M19 42 L6 32 L0 24 L5 32 L0 40 L10 36Z" fill="#d06048"/>
-            <path d="M37 42 L50 32 L56 24 L51 32 L56 40 L46 36Z" fill="#d06048"/>
-            <path d="M20 73 L18 84 L24 80 L28 88 L32 80 L38 84 L36 73Z" fill="#b84830"/>
-            <circle cx="23" cy="31" r="2.5" fill="white"/><circle cx="33" cy="31" r="2.5" fill="white"/>
-            <circle cx="23" cy="31" r="1.2" fill="#111"/><circle cx="33" cy="31" r="1.2" fill="#111"/>
-            <path d="M23 24 Q15 10 8 5" stroke="#c04c38" fill="none" stroke-width="1.5"/>
-            <path d="M33 24 Q41 10 48 5" stroke="#c04c38" fill="none" stroke-width="1.5"/>
-            <line x1="20" y1="64" x2="12" y2="76" stroke="#b84830" stroke-width="1.5"/>
-            <line x1="24" y1="68" x2="18" y2="80" stroke="#b84830" stroke-width="1.5"/>
-            <line x1="36" y1="64" x2="44" y2="76" stroke="#b84830" stroke-width="1.5"/>
-            <line x1="32" y1="68" x2="38" y2="80" stroke="#b84830" stroke-width="1.5"/>
+        <radialGradient id="rs3" cx="50%" cy="50%"><stop offset="0%" stop-color="#183858"/><stop offset="100%" stop-color="#060c18"/></radialGradient>
+        <rect width="120" height="100" fill="url(#rs3)"/>
+        <!-- Destroyed reef -->
+        <path d="M0 72 Q20 65 40 70 Q60 78 80 68 Q100 62 120 70 L120 100 L0 100Z" fill="#0c1828"/>
+        <path d="M85 35 Q90 18 86 8 Q94 14 96 30 Q100 12 104 24 Q98 35 92 38Z" fill="#ff4030" opacity="0.3"/>
+        ${_crack(10,72,15,'#c04030')}${_crack(70,70,12,'#b03828')}
+        <!-- Sentinel in commanding pose -->
+        <g transform="translate(24,2) scale(1.1)">
+            <ellipse cx="34" cy="52" rx="17" ry="24" fill="#cc5540"/>
+            <!-- Armored plates -->
+            <path d="M20 44 L34 30 L48 44 L42 46 L34 36 L26 46Z" fill="#ff6848" opacity="0.4"/>
+            <ellipse cx="34" cy="52" rx="13" ry="18" fill="none" stroke="#ff4030" stroke-width="1" stroke-dasharray="3 2" opacity="0.4"/>
+            <circle cx="34" cy="30" r="12" fill="#c04c38"/>
+            <!-- Aggressive claws up -->
+            <path d="M22 38 L4 22 L-8 10 L-2 24 L-10 32 L10 28Z" fill="#e06048"/>
+            <path d="M-8 10 L-14 4 L-6 8Z" fill="#ff7060"/>
+            <path d="M46 38 L64 22 L76 10 L70 24 L78 32 L58 28Z" fill="#e06048"/>
+            <path d="M76 10 L82 4 L74 8Z" fill="#ff7060"/>
+            <!-- Glowing war eyes -->
+            <circle cx="28" cy="26" r="3" fill="#ff2020"><animate attributeName="opacity" values="0.7;1;0.7" dur="1s" repeatCount="indefinite"/></circle>
+            <circle cx="40" cy="26" r="3" fill="#ff2020"><animate attributeName="opacity" values="1;0.7;1" dur="1s" repeatCount="indefinite"/></circle>
+            <circle cx="28" cy="26" r="1.2" fill="white"/><circle cx="40" cy="26" r="1.2" fill="white"/>
+            ${_scar(30,44,10,20)}
+            <path d="M28 20 Q18 4 8 -2" stroke="#c04c38" fill="none" stroke-width="2.5"/>
+            <path d="M40 20 Q50 4 60 -2" stroke="#c04c38" fill="none" stroke-width="2.5"/>
+            <path d="M26 74 L22 86 L30 82 L34 90 L38 82 L46 86 L42 74Z" fill="#a84030"/>
         </g>
-        <line x1="75" y1="5" x2="75" y2="72" stroke="#a09070" stroke-width="2"/>
-        <polygon points="72,5 75,0 78,5 76,5 76,12 74,12 74,5" fill="#c8a848"/>
+        <!-- Blood-tipped spear -->
+        <line x1="80" y1="2" x2="80" y2="72" stroke="#808090" stroke-width="2.5"/>
+        <polygon points="76,2 80,-6 84,2 82,2 82,10 78,10 78,2" fill="#c02020"/>
+        <path d="M78 10 L82 10" stroke="#c02020" stroke-width="1.5"/>
+        <circle cx="80" cy="0" r="3" fill="#ff0000" opacity="0.2"><animate attributeName="r" values="2;4;2" dur="1.5s" repeatCount="indefinite"/></circle>
     </svg>`,
 
-    // === 4: Abyssal Pincer — menacing lobster in dark abyss, glowing eyes, huge claws ===
+    // === 4: Abyssal Pincer — towering nightmare, massive crushing claws, void eyes ===
     4: `<svg viewBox="0 0 120 100">
-        <radialGradient id="ab4" cx="50%" cy="40%"><stop offset="0%" stop-color="#1a0a30"/><stop offset="100%" stop-color="#050010"/></radialGradient>
+        <radialGradient id="ab4" cx="50%" cy="40%"><stop offset="0%" stop-color="#1a0a30"/><stop offset="100%" stop-color="#020008"/></radialGradient>
         <rect width="120" height="100" fill="url(#ab4)"/>
-        <g transform="translate(22,12)">
-            <ellipse cx="40" cy="52" rx="18" ry="24" fill="#7040a0"/>
-            <circle cx="40" cy="28" r="12" fill="#6838a0"/>
-            <path d="M28 38 L4 22 L-8 10 L0 24 L-10 34 L12 28Z" fill="#9050c0"/>
-            <path d="M52 38 L76 22 L88 10 L80 24 L90 34 L68 28Z" fill="#9050c0"/>
-            <path d="M-8 10 L-14 4 L-6 8Z" fill="#a060d0"/>
-            <path d="M-10 34 L-16 38 L-8 32Z" fill="#a060d0"/>
-            <path d="M88 10 L94 4 L86 8Z" fill="#a060d0"/>
-            <path d="M90 34 L96 38 L88 32Z" fill="#a060d0"/>
-            <path d="M32 74 L28 88 L36 82 L40 92 L44 82 L52 88 L48 74Z" fill="#5c30a0"/>
-            <circle cx="34" cy="24" r="3.5" fill="#ff50ff" opacity="0.9"/>
-            <circle cx="46" cy="24" r="3.5" fill="#ff50ff" opacity="0.9"/>
-            <circle cx="34" cy="24" r="1.5" fill="white"/>
-            <circle cx="46" cy="24" r="1.5" fill="white"/>
-            <path d="M34 18 Q24 2 14 -2" stroke="#7040a0" fill="none" stroke-width="2"/>
-            <path d="M46 18 Q56 2 66 -2" stroke="#7040a0" fill="none" stroke-width="2"/>
+        <!-- Void energy pulsing -->
+        <circle cx="60" cy="45" r="40" fill="#8040ff" opacity="0.04"><animate attributeName="r" values="35;45;35" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="45" r="28" fill="#a060ff" opacity="0.03"><animate attributeName="r" values="30;24;30" dur="2s" repeatCount="indefinite"/></circle>
+        <g transform="translate(14,4) scale(1.15)">
+            <!-- Massive body -->
+            <ellipse cx="40" cy="48" rx="20" ry="26" fill="#7040a0"/>
+            ${_spike(20,28,10,200,'#5030a0')}${_spike(60,28,10,340,'#5030a0')}${_spike(22,55,8,220,'#4828a0')}${_spike(58,55,8,320,'#4828a0')}
+            <circle cx="40" cy="24" r="14" fill="#6838a0"/>
+            <!-- MASSIVE crushing claws -->
+            <path d="M26 34 L-2 14 L-18 -2 L-8 16 L-22 28 L4 22Z" fill="#9050c0"/>
+            <path d="M-18 -2 L-26 -10 L-14 -4Z" fill="#a868e0"/>
+            <path d="M-22 28 L-30 34 L-18 26Z" fill="#a868e0"/>
+            <path d="M54 34 L82 14 L98 -2 L88 16 L102 28 L76 22Z" fill="#9050c0"/>
+            <path d="M98 -2 L106 -10 L94 -4Z" fill="#a868e0"/>
+            <path d="M102 28 L110 34 L98 26Z" fill="#a868e0"/>
+            <!-- Sinister void eyes -->
+            <circle cx="34" cy="20" r="4.5" fill="#ff00ff" opacity="0.9"><animate attributeName="r" values="4;5;4" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="46" cy="20" r="4.5" fill="#ff00ff" opacity="0.9"><animate attributeName="r" values="5;4;5" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="34" cy="20" r="2" fill="white"/><circle cx="46" cy="20" r="2" fill="white"/>
+            <!-- Fanged mouth -->
+            <path d="M35 28 L37 32 L40 28 L43 32 L45 28" stroke="#c060ff" fill="none" stroke-width="1.5"/>
+            <path d="M34 16 Q22 -2 10 -8" stroke="#7040a0" fill="none" stroke-width="2.5"/>
+            <path d="M46 16 Q58 -2 70 -8" stroke="#7040a0" fill="none" stroke-width="2.5"/>
+            <path d="M32 72 L28 86 L36 80 L40 90 L44 80 L52 86 L48 72Z" fill="#5c30a0"/>
         </g>
-        <g opacity="0.08"><circle cx="20" cy="80" r="15" fill="#8040c0"/><circle cx="95" cy="75" r="12" fill="#6030a0"/></g>
     </svg>`,
 
-    // === 5: Shell Knight — heavily armored lobster, shield-like shell, rocky ground ===
+    // === 5: Shell Knight — fortress stance, massive armored shell, ground cracking beneath ===
     5: `<svg viewBox="0 0 120 100">
-        <rect x="0" y="72" width="120" height="28" fill="#2a1a08" rx="2"/>
-        ${_rock(25,82,15,'#3a2a18')}${_rock(80,85,18,'#302010')}${_rock(55,88,10,'#382818')}
-        <g transform="translate(30,8)">
-            <ellipse cx="30" cy="52" rx="18" ry="24" fill="#b88030"/>
-            <ellipse cx="30" cy="52" rx="14" ry="20" fill="none" stroke="#d0a040" stroke-width="1.5" stroke-dasharray="4 2"/>
-            <path d="M14 48 L30 28 L46 48 L40 50 L30 36 L20 50Z" fill="#c89040" opacity="0.5"/>
-            <circle cx="30" cy="30" r="11" fill="#a87028"/>
-            <path d="M20 38 L6 28 L0 22 L5 30 L0 38 L10 34Z" fill="#c89838"/>
-            <path d="M40 38 L54 28 L60 22 L55 30 L60 38 L50 34Z" fill="#c89838"/>
-            <path d="M22 74 L20 86 L26 82 L30 90 L34 82 L40 86 L38 74Z" fill="#987020"/>
-            <circle cx="25" cy="27" r="2.5" fill="white"/><circle cx="35" cy="27" r="2.5" fill="white"/>
-            <circle cx="25" cy="27" r="1.2" fill="#111"/><circle cx="35" cy="27" r="1.2" fill="#111"/>
-            <path d="M25 20 Q18 8 10 4" stroke="#a87028" fill="none" stroke-width="1.5"/>
-            <path d="M35 20 Q42 8 50 4" stroke="#a87028" fill="none" stroke-width="1.5"/>
-            <line x1="22" y1="64" x2="14" y2="76" stroke="#987020" stroke-width="1.5"/>
-            <line x1="38" y1="64" x2="46" y2="76" stroke="#987020" stroke-width="1.5"/>
+        <radialGradient id="sk5" cx="50%" cy="60%"><stop offset="0%" stop-color="#2a1a08"/><stop offset="100%" stop-color="#0a0804"/></radialGradient>
+        <rect width="120" height="100" fill="url(#sk5)"/>
+        <rect x="0" y="72" width="120" height="28" fill="#1a0e04"/>
+        <!-- Ground cracking from weight -->
+        ${_crack(25,74,20,'#c89040')}${_crack(70,76,18,'#b88030')}${_crack(50,78,12,'#a87028')}
+        <g transform="translate(20,2) scale(1.15)">
+            <!-- Heavy armored body -->
+            <ellipse cx="34" cy="48" rx="20" ry="26" fill="#c89040"/>
+            <!-- Shield plating -->
+            <path d="M16 42 L34 22 L52 42 L46 45 L34 30 L22 45Z" fill="#daa850" opacity="0.6"/>
+            <ellipse cx="34" cy="48" rx="16" ry="22" fill="none" stroke="#e0b848" stroke-width="2"/>
+            <ellipse cx="34" cy="48" rx="10" ry="14" fill="none" stroke="#d0a040" stroke-width="1.5" opacity="0.5"/>
+            <!-- Cross emblem -->
+            <line x1="34" y1="38" x2="34" y2="58" stroke="#ffd050" stroke-width="1.5" opacity="0.4"/>
+            <line x1="26" y1="48" x2="42" y2="48" stroke="#ffd050" stroke-width="1.5" opacity="0.4"/>
+            <circle cx="34" cy="26" r="12" fill="#a87028"/>
+            <!-- Armored head ridges -->
+            ${_spike(28,16,6,350,'#c89040')}${_spike(40,16,6,10,'#c89040')}
+            <!-- Iron claws -->
+            <path d="M22 36 L4 24 L-4 18 L2 26 L-4 34 L12 28Z" fill="#d8a848"/>
+            <path d="M46 36 L64 24 L72 18 L66 26 L72 34 L56 28Z" fill="#d8a848"/>
+            <!-- Stoic warrior eyes -->
+            <circle cx="28" cy="23" r="3" fill="#ffd040" opacity="0.8"/>
+            <circle cx="40" cy="23" r="3" fill="#ffd040" opacity="0.8"/>
+            <circle cx="28" cy="23" r="1.5" fill="#111"/><circle cx="40" cy="23" r="1.5" fill="#111"/>
+            <path d="M28 16 Q18 2 8 -2" stroke="#a87028" fill="none" stroke-width="2"/>
+            <path d="M40 16 Q50 2 60 -2" stroke="#a87028" fill="none" stroke-width="2"/>
+            <path d="M26 72 L22 86 L30 82 L34 90 L38 82 L46 86 L42 72Z" fill="#886018"/>
         </g>
     </svg>`,
 
-    // === 6: Molt Striker — lobster mid-shed, cracked shell flying off, energy glow ===
+    // === 6: Molt Striker — explosive shell burst, raw power emerging, energy shockwave ===
     6: `<svg viewBox="0 0 120 100">
-        ${_wave(85,'#1a5050',1)}
-        <g transform="translate(32,14)">
-            <ellipse cx="28" cy="48" rx="14" ry="20" fill="#40b888"/>
-            <circle cx="28" cy="28" r="10" fill="#38a878"/>
-            <path d="M18 36 L4 26 L-2 20 L4 28 L-2 36 L10 32Z" fill="#50c8a0"/>
-            <path d="M38 36 L52 26 L58 20 L52 28 L58 36 L46 32Z" fill="#50c8a0"/>
-            <path d="M20 66 L18 78 L24 74 L28 82 L32 74 L38 78 L36 66Z" fill="#30a070"/>
-            <circle cx="23" cy="25" r="2" fill="white"/><circle cx="33" cy="25" r="2" fill="white"/>
-            <circle cx="23" cy="25" r="1" fill="#111"/><circle cx="33" cy="25" r="1" fill="#111"/>
-            <path d="M23 20 Q16 8 10 4" stroke="#38a878" fill="none" stroke-width="1.5"/>
-            <path d="M33 20 Q40 8 46 4" stroke="#38a878" fill="none" stroke-width="1.5"/>
+        <radialGradient id="ms6" cx="50%" cy="45%"><stop offset="0%" stop-color="#0a2830"/><stop offset="100%" stop-color="#040c10"/></radialGradient>
+        <rect width="120" height="100" fill="url(#ms6)"/>
+        <!-- Shockwave rings -->
+        <circle cx="60" cy="45" r="30" fill="none" stroke="#80ffc0" stroke-width="1.5" opacity="0.3"><animate attributeName="r" values="20;40;20" dur="1.2s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0;0.5" dur="1.2s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="45" r="22" fill="none" stroke="#60e0a0" stroke-width="1" opacity="0.2"><animate attributeName="r" values="30;15;30" dur="1.2s" repeatCount="indefinite"/></circle>
+        <!-- Shell fragments exploding outward -->
+        <path d="M85 15 Q90 10 92 18 Q96 12 94 24 L86 22Z" fill="#308868" opacity="0.6" transform="rotate(25 88 18)"/>
+        <path d="M15 20 Q10 14 12 24 L20 22Z" fill="#308868" opacity="0.5" transform="rotate(-30 14 20)"/>
+        <path d="M90 65 Q96 60 94 70 L88 66Z" fill="#288060" opacity="0.4" transform="rotate(45 92 65)"/>
+        <path d="M20 70 Q14 66 18 74 L24 70Z" fill="#288060" opacity="0.45" transform="rotate(-40 18 70)"/>
+        <!-- Newly emerged beast -->
+        <g transform="translate(24,8) scale(1.1)">
+            <ellipse cx="32" cy="48" rx="16" ry="22" fill="#40d898"/>
+            <!-- Raw exposed muscle texture -->
+            <path d="M22 40 L32 32 L42 40 L38 42 L32 36 L26 42Z" fill="#60ffb0" opacity="0.3"/>
+            <circle cx="32" cy="28" r="11" fill="#38c888"/>
+            <!-- Power stance claws -->
+            <path d="M20 36 L2 18 L-8 8 L0 20 L-10 30 L10 24Z" fill="#50e8a8"/>
+            <path d="M-8 8 L-14 2 L-6 6Z" fill="#70ffc0"/>
+            <path d="M44 36 L62 18 L72 8 L64 20 L74 30 L54 24Z" fill="#50e8a8"/>
+            <path d="M72 8 L78 2 L70 6Z" fill="#70ffc0"/>
+            <!-- Fierce green eyes -->
+            <circle cx="26" cy="24" r="3" fill="#00ff80"><animate attributeName="r" values="2.5;3.5;2.5" dur="0.8s" repeatCount="indefinite"/></circle>
+            <circle cx="38" cy="24" r="3" fill="#00ff80"><animate attributeName="r" values="3.5;2.5;3.5" dur="0.8s" repeatCount="indefinite"/></circle>
+            <circle cx="26" cy="24" r="1.2" fill="#111"/><circle cx="38" cy="24" r="1.2" fill="#111"/>
+            <path d="M26 18 Q16 2 8 -4" stroke="#38c888" fill="none" stroke-width="2.5"/>
+            <path d="M38 18 Q48 2 56 -4" stroke="#38c888" fill="none" stroke-width="2.5"/>
+            <path d="M24 68 L22 80 L28 76 L32 84 L36 76 L42 80 L40 68Z" fill="#28a070"/>
         </g>
-        <path d="M78 20 Q85 15 90 22 Q95 18 92 28 L82 26Z" fill="#308868" opacity="0.5" transform="rotate(15 85 22)"/>
-        <path d="M18 55 Q12 50 15 44 L24 48Z" fill="#308868" opacity="0.4" transform="rotate(-20 18 50)"/>
-        <g opacity="0.3">
-            <circle cx="60" cy="45" r="22" fill="none" stroke="#80ffc0" stroke-width="1"><animate attributeName="r" values="18;24;18" dur="1.5s" repeatCount="indefinite"/></circle>
-        </g>
-        ${_bub(75,35,2)}${_bub(85,50,1.5)}
+        <!-- Energy particles -->
+        ${_star(15,40,2.5,'#80ffc0')}${_star(100,35,2,'#60e0a0')}${_star(95,70,1.8,'#70ffb0')}
     </svg>`,
 
-    // === 7: Coral Witch — mystical lobster with hat, surrounded by magic coral ===
+    // === 7: Coral Witch — dark sorceress, swirling hex magic, glowing sigils ===
     7: `<svg viewBox="0 0 120 100">
-        <path d="M0 80 Q30 72 60 78 Q90 84 120 76 L120 100 L0 100Z" fill="#1a2040"/>
-        <path d="M10 45 Q14 20 18 30 Q22 10 26 35 Q30 15 28 45Z" fill="#e060a0" opacity="0.35"/>
-        <path d="M88 50 Q92 28 96 40 Q100 22 98 50Z" fill="#d050a0" opacity="0.3"/>
-        <g transform="translate(34,18)">
-            <polygon points="26,0 18,18 34,18" fill="#9030a0"/>
-            <ellipse cx="26" cy="20" rx="12" ry="3" fill="#7020a0"/>
-            <circle cx="26" cy="12" r="2" fill="#ff80ff"/>
-            <ellipse cx="26" cy="46" rx="13" ry="18" fill="#c050a0"/>
-            <circle cx="26" cy="28" r="9" fill="#b04890"/>
-            <path d="M18 34 L6 26 L2 22 L6 28 L2 34 L12 30Z" fill="#d060b0"/>
-            <path d="M34 34 L46 26 L50 22 L46 28 L50 34 L40 30Z" fill="#d060b0"/>
-            <path d="M20 62 L18 72 L23 69 L26 76 L29 69 L34 72 L32 62Z" fill="#a04080"/>
-            <circle cx="22" cy="25" r="2" fill="#ff80ff"/><circle cx="30" cy="25" r="2" fill="#ff80ff"/>
-            <circle cx="22" cy="25" r="1" fill="white"/><circle cx="30" cy="25" r="1" fill="white"/>
+        <radialGradient id="cw7" cx="50%" cy="50%"><stop offset="0%" stop-color="#1a0830"/><stop offset="100%" stop-color="#060010"/></radialGradient>
+        <rect width="120" height="100" fill="url(#cw7)"/>
+        <!-- Hex circle -->
+        <circle cx="60" cy="52" r="38" fill="none" stroke="#ff40c0" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 60 52" to="360 60 52" dur="10s" repeatCount="indefinite"/></circle>
+        <!-- Cursed coral pillars -->
+        <path d="M8 40 Q12 15 16 25 Q20 5 24 30 Q28 10 26 40Z" fill="#ff2080" opacity="0.4"/>
+        <path d="M92 45 Q96 20 100 35 Q104 12 102 45Z" fill="#e01880" opacity="0.35"/>
+        <g transform="translate(28,8) scale(1.1)">
+            <!-- Witch hat - larger, more ominous -->
+            <polygon points="30,-8 16,18 44,18" fill="#8020a0"/>
+            <polygon points="30,-8 26,8 34,8" fill="#a030c0" opacity="0.4"/>
+            <ellipse cx="30" cy="18" rx="18" ry="4" fill="#6018a0"/>
+            <circle cx="30" cy="4" r="3" fill="#ff40ff"><animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/></circle>
+            <!-- Body -->
+            <ellipse cx="30" cy="48" rx="15" ry="20" fill="#c050a0"/>
+            <circle cx="30" cy="28" r="11" fill="#b04890"/>
+            <!-- Conjuring claws with dark energy -->
+            <path d="M18 36 L2 22 L-6 14 L2 24 L-6 32 L10 28Z" fill="#e060b8"/>
+            <circle cx="-6" cy="14" r="4" fill="#ff20ff" opacity="0.3"><animate attributeName="r" values="3;5;3" dur="1.5s" repeatCount="indefinite"/></circle>
+            <path d="M42 36 L58 22 L66 14 L58 24 L66 32 L50 28Z" fill="#e060b8"/>
+            <circle cx="66" cy="14" r="4" fill="#ff20ff" opacity="0.3"><animate attributeName="r" values="5;3;5" dur="1.5s" repeatCount="indefinite"/></circle>
+            <!-- Sinister glowing eyes -->
+            <circle cx="24" cy="24" r="2.5" fill="#ff40ff"><animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="36" cy="24" r="2.5" fill="#ff40ff"><animate attributeName="opacity" values="1;0.6;1" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="24" cy="24" r="1" fill="white"/><circle cx="36" cy="24" r="1" fill="white"/>
+            <path d="M22 66 L20 76 L25 72 L30 80 L35 72 L40 76 L38 66Z" fill="#a04080"/>
         </g>
-        ${_star(20,65,3,'#ff80ff')}${_star(95,42,2.5,'#e060c0')}${_star(75,70,2,'#d050b0')}
+        <!-- Floating hex symbols -->
+        ${_star(18,68,3,'#ff60e0')}${_star(100,40,3,'#e040c0')}${_star(50,85,2,'#d030b0')}
     </svg>`,
 
-    // === 8: Antenna Oracle — golden lobster with glowing antennae, third eye ===
+    // === 8: Antenna Oracle — all-seeing prophet, blazing third eye, cosmic antennae ===
     8: `<svg viewBox="0 0 120 100">
-        <radialGradient id="ao8" cx="50%" cy="35%"><stop offset="0%" stop-color="#3a3018"/><stop offset="100%" stop-color="#18180c"/></radialGradient>
+        <radialGradient id="ao8" cx="50%" cy="35%"><stop offset="0%" stop-color="#3a3018"/><stop offset="100%" stop-color="#0c0c04"/></radialGradient>
         <rect width="120" height="100" fill="url(#ao8)"/>
-        <g transform="translate(32,18)">
-            <ellipse cx="28" cy="46" rx="14" ry="20" fill="#d0b030"/>
-            <circle cx="28" cy="26" r="10" fill="#c0a028"/>
-            <circle cx="28" cy="18" r="4" fill="#ffe860" opacity="0.6"/>
-            <circle cx="28" cy="18" r="2" fill="white" opacity="0.8"/>
-            <path d="M18 34 L6 24 L0 18 L6 26 L0 34 L12 28Z" fill="#e0c040"/>
-            <path d="M38 34 L50 24 L56 18 L50 26 L56 34 L44 28Z" fill="#e0c040"/>
-            <path d="M20 64 L18 74 L24 70 L28 78 L32 70 L38 74 L36 64Z" fill="#b09020"/>
-            <circle cx="23" cy="23" r="2" fill="white"/><circle cx="33" cy="23" r="2" fill="white"/>
-            <circle cx="23" cy="23" r="1" fill="#111"/><circle cx="33" cy="23" r="1" fill="#111"/>
-            <path d="M24 16 Q12 -2 4 -6" stroke="#e0c040" fill="none" stroke-width="2"/>
-            <path d="M32 16 Q44 -2 52 -6" stroke="#e0c040" fill="none" stroke-width="2"/>
-            <circle cx="4" cy="-6" r="3" fill="#ffe860" opacity="0.7"><animate attributeName="opacity" values="0.4;0.9;0.4" dur="2s" repeatCount="indefinite"/></circle>
-            <circle cx="52" cy="-6" r="3" fill="#ffe860" opacity="0.7"><animate attributeName="opacity" values="0.9;0.4;0.9" dur="2s" repeatCount="indefinite"/></circle>
+        <!-- Cosmic rays from antennae -->
+        <g opacity="0.15">
+            <line x1="22" y1="2" x2="0" y2="0" stroke="#ffe040" stroke-width="1.5"/>
+            <line x1="22" y1="2" x2="10" y2="18" stroke="#ffe040" stroke-width="1"/>
+            <line x1="22" y1="2" x2="5" y2="30" stroke="#ffd020" stroke-width="0.8"/>
+            <line x1="98" y1="2" x2="120" y2="0" stroke="#ffe040" stroke-width="1.5"/>
+            <line x1="98" y1="2" x2="110" y2="18" stroke="#ffe040" stroke-width="1"/>
+            <line x1="98" y1="2" x2="115" y2="30" stroke="#ffd020" stroke-width="0.8"/>
+        </g>
+        <g transform="translate(24,12) scale(1.15)">
+            <ellipse cx="32" cy="46" rx="16" ry="22" fill="#d8b830"/>
+            <circle cx="32" cy="24" r="12" fill="#c8a828"/>
+            <!-- Third eye - blazing -->
+            <circle cx="32" cy="14" r="6" fill="#ff8800" opacity="0.5"><animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="32" cy="14" r="4" fill="#ffe860" opacity="0.7"/>
+            <circle cx="32" cy="14" r="2" fill="white" opacity="0.9"/>
+            <!-- Power claws -->
+            <path d="M20 32 L2 18 L-6 10 L2 22 L-6 30 L12 24Z" fill="#e8c840"/>
+            <path d="M44 32 L62 18 L70 10 L62 22 L70 30 L52 24Z" fill="#e8c840"/>
+            <!-- Piercing eyes -->
+            <circle cx="26" cy="21" r="2.5" fill="#ffe040" opacity="0.9"/>
+            <circle cx="38" cy="21" r="2.5" fill="#ffe040" opacity="0.9"/>
+            <circle cx="26" cy="21" r="1.2" fill="#111"/><circle cx="38" cy="21" r="1.2" fill="#111"/>
+            <!-- Blazing antennae -->
+            <path d="M28 14 Q14 -6 2 -12" stroke="#e0c040" fill="none" stroke-width="3"/>
+            <path d="M36 14 Q50 -6 62 -12" stroke="#e0c040" fill="none" stroke-width="3"/>
+            <circle cx="2" cy="-12" r="5" fill="#ffe860" opacity="0.8"><animate attributeName="r" values="4;6;4" dur="1s" repeatCount="indefinite"/></circle>
+            <circle cx="62" cy="-12" r="5" fill="#ffe860" opacity="0.8"><animate attributeName="r" values="6;4;6" dur="1s" repeatCount="indefinite"/></circle>
+            <circle cx="2" cy="-12" r="2" fill="white"/>
+            <circle cx="62" cy="-12" r="2" fill="white"/>
+            <path d="M24 66 L22 76 L28 72 L32 80 L36 72 L42 76 L40 66Z" fill="#b09020"/>
         </g>
     </svg>`,
 
-    // === 9: Deep Sea Berserker — raging lobster, scars, red aura, jagged pose ===
+    // === 9: Deep Sea Berserker — unhinged rage, blood-red aura, destroying everything ===
     9: `<svg viewBox="0 0 120 100">
-        <radialGradient id="db9" cx="50%" cy="50%"><stop offset="0%" stop-color="#300818"/><stop offset="100%" stop-color="#0d0820"/></radialGradient>
+        <radialGradient id="db9" cx="50%" cy="50%"><stop offset="0%" stop-color="#400818"/><stop offset="100%" stop-color="#0a0208"/></radialGradient>
         <rect width="120" height="100" fill="url(#db9)"/>
-        <circle cx="60" cy="50" r="35" fill="#c02020" opacity="0.08"><animate attributeName="r" values="32;38;32" dur="1s" repeatCount="indefinite"/></circle>
-        <g transform="translate(26,10)">
-            <ellipse cx="34" cy="50" rx="17" ry="24" fill="#c03030"/>
-            <circle cx="34" cy="28" r="12" fill="#b02828"/>
-            <path d="M22 38 L2 20 L-12 8 L-4 22 L-14 34 L8 28Z" fill="#e04040"/>
-            <path d="M46 38 L66 20 L80 8 L72 22 L82 34 L60 28Z" fill="#e04040"/>
-            <path d="M-12 8 L-18 2 L-10 6Z" fill="#ff5050"/>
-            <path d="M80 8 L86 2 L78 6Z" fill="#ff5050"/>
-            <path d="M26 72 L24 86 L30 82 L34 90 L38 82 L44 86 L42 72Z" fill="#a02020"/>
-            <circle cx="28" cy="24" r="3" fill="#ff4040"/><circle cx="40" cy="24" r="3" fill="#ff4040"/>
-            <circle cx="28" cy="24" r="1.5" fill="white"/><circle cx="40" cy="24" r="1.5" fill="white"/>
-            <line x1="24" y1="36" x2="44" y2="32" stroke="#ff6060" stroke-width="0.8" opacity="0.6"/>
-            <line x1="26" y1="50" x2="32" y2="48" stroke="#ff6060" stroke-width="0.8" opacity="0.5"/>
-            <path d="M28 18 Q18 2 10 -2" stroke="#b02828" fill="none" stroke-width="2"/>
-            <path d="M40 18 Q50 2 58 -2" stroke="#b02828" fill="none" stroke-width="2"/>
+        <!-- Rage aura -->
+        <circle cx="60" cy="45" r="38" fill="#ff0000" opacity="0.06"><animate attributeName="r" values="32;42;32" dur="0.7s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="45" r="28" fill="#ff2020" opacity="0.04"><animate attributeName="r" values="30;22;30" dur="0.5s" repeatCount="indefinite"/></circle>
+        <g transform="translate(16,4) scale(1.2)">
+            <ellipse cx="36" cy="48" rx="18" ry="24" fill="#c03030"/>
+            <!-- Spiked shell from rage -->
+            ${_spike(20,30,10,200,'#a02020')}${_spike(52,30,10,340,'#a02020')}${_spike(18,50,8,210,'#901818')}${_spike(54,50,8,330,'#901818')}
+            <circle cx="36" cy="26" r="13" fill="#b02828"/>
+            <!-- Berserker roar mouth -->
+            <path d="M28 34 L32 38 L36 34 L40 38 L44 34" stroke="#ff4040" fill="none" stroke-width="2"/>
+            <path d="M30 36 L34 32 L38 36 L42 32" stroke="#ff6060" fill="none" stroke-width="1" opacity="0.5"/>
+            <!-- Massive claws ripping -->
+            <path d="M22 36 L-2 14 L-16 -2 L-6 16 L-20 28 L6 22Z" fill="#e04040"/>
+            <path d="M-16 -2 L-24 -10 L-12 -4Z" fill="#ff5050"/>
+            <path d="M-20 28 L-28 34 L-16 26Z" fill="#ff5050"/>
+            <path d="M50 36 L74 14 L88 -2 L78 16 L92 28 L66 22Z" fill="#e04040"/>
+            <path d="M88 -2 L96 -10 L84 -4Z" fill="#ff5050"/>
+            <!-- Blood-rage eyes -->
+            <circle cx="30" cy="22" r="3.5" fill="#ff0000"><animate attributeName="r" values="3;4;3" dur="0.4s" repeatCount="indefinite"/></circle>
+            <circle cx="42" cy="22" r="3.5" fill="#ff0000"><animate attributeName="r" values="4;3;4" dur="0.4s" repeatCount="indefinite"/></circle>
+            <circle cx="30" cy="22" r="1.5" fill="white"/><circle cx="42" cy="22" r="1.5" fill="white"/>
+            <!-- Battle scars everywhere -->
+            ${_scar(32,42,12,10)}${_scar(38,55,8,-15)}${_scar(28,60,10,25)}
+            <path d="M30 18 Q18 -2 8 -8" stroke="#b02828" fill="none" stroke-width="2.5"/>
+            <path d="M42 18 Q54 -2 64 -8" stroke="#b02828" fill="none" stroke-width="2.5"/>
+            <path d="M28 70 L26 82 L32 78 L36 86 L40 78 L46 82 L44 70Z" fill="#901818"/>
         </g>
+        <!-- Slash marks in the air -->
+        ${_slash(8,20,40,60,'#ff4040')}${_slash(80,15,112,55,'#ff3030')}
     </svg>`,
 
-    // === 10: Hermit Lobster — lobster in large spiral shell, peeping out ===
+    // === 10: Hermit Lobster — fortress shell bristling with spikes, one furious eye ===
     10: `<svg viewBox="0 0 120 100">
-        <rect x="0" y="75" width="120" height="25" fill="#281a08"/>
-        ${_rock(20,84,12,'#382818')}${_rock(90,86,10,'#302010')}
-        <g transform="translate(25,15)">
-            <ellipse cx="45" cy="50" rx="30" ry="28" fill="#a08040"/>
-            <ellipse cx="45" cy="50" rx="24" ry="22" fill="#8a6830"/>
-            <path d="M45 28 Q58 32 62 45 Q64 58 55 65 Q45 70 38 62 Q32 54 38 45 Q42 38 48 38" fill="none" stroke="#c0a050" stroke-width="2"/>
-            <path d="M48 38 Q52 42 50 48 Q48 54 44 52" fill="none" stroke="#b89040" stroke-width="1.5"/>
-            <circle cx="18" cy="44" r="7" fill="#906830"/>
-            <circle cx="14" cy="41" r="2" fill="white"/><circle cx="14" cy="41" r="1" fill="#111"/>
-            <path d="M12 38 Q6 30 2 26" stroke="#906830" fill="none" stroke-width="1.5"/>
-            <path d="M10 40 Q4 34 0 32" stroke="#906830" fill="none" stroke-width="1.2"/>
-            <path d="M15 50 L4 52 L0 48 L5 50 L0 46 L10 48Z" fill="#a07838"/>
+        <radialGradient id="hl10" cx="50%" cy="60%"><stop offset="0%" stop-color="#281a08"/><stop offset="100%" stop-color="#0a0604"/></radialGradient>
+        <rect width="120" height="100" fill="url(#hl10)"/>
+        <rect x="0" y="75" width="120" height="25" fill="#140c04"/>
+        ${_crack(30,76,14,'#a08040')}${_crack(80,78,12,'#907030')}
+        <g transform="translate(15,10) scale(1.1)">
+            <!-- Massive spiked shell -->
+            <ellipse cx="50" cy="48" rx="34" ry="30" fill="#a08040"/>
+            <ellipse cx="50" cy="48" rx="28" ry="24" fill="#8a6830"/>
+            <!-- Armor spikes -->
+            ${_spike(50,20,12,0,'#c0a050')}${_spike(30,28,10,330,'#b89040')}${_spike(70,28,10,30,'#b89040')}${_spike(22,45,8,300,'#a88038')}${_spike(78,45,8,60,'#a88038')}
+            <!-- Spiral detail -->
+            <path d="M50 28 Q65 32 68 48 Q70 62 58 68 Q48 72 40 64 Q34 56 40 48 Q44 42 50 42" fill="none" stroke="#c0a050" stroke-width="2.5"/>
+            <path d="M52 42 Q56 46 54 52 Q52 58 48 55" fill="none" stroke="#b89040" stroke-width="2"/>
+            <!-- Angry peeping face -->
+            <circle cx="16" cy="44" r="9" fill="#a07838"/>
+            <circle cx="12" cy="40" r="3" fill="#ff8800" opacity="0.9"><animate attributeName="opacity" values="0.6;1;0.6" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="12" cy="40" r="1.5" fill="white"/>
+            <!-- Snarl -->
+            <path d="M8 46 L12 48 L16 46" stroke="#c09040" fill="none" stroke-width="1.5"/>
+            <!-- Battle claw extending -->
+            <path d="M10 48 L-6 56 L-14 62 L-6 54 L-16 48 L0 50Z" fill="#c09840"/>
+            <path d="M-14 62 L-20 68 L-12 60Z" fill="#d0a848"/>
+            <!-- Broken antennae -->
+            <path d="M10 36 Q2 26 -4 22" stroke="#a07838" fill="none" stroke-width="2.5"/>
+            <path d="M8 38 Q0 30 -6 28" stroke="#a07838" fill="none" stroke-width="2"/>
         </g>
-        ${_bub(85,30,2)}${_bub(78,20,1.5)}
     </svg>`,
 
-    // === 11: Pincer Duelist — fencing stance, rapier-like claw, formal ===
+    // === 11: Pincer Duelist — lethal blade stance, sparking rapier claw, deadly precision ===
     11: `<svg viewBox="0 0 120 100">
-        ${_wave(88,'#183848',1.5)}
-        <g transform="translate(30,8)">
-            <ellipse cx="30" cy="52" rx="14" ry="20" fill="#4090c0"/>
-            <circle cx="30" cy="32" r="10" fill="#3880b0"/>
-            <path d="M20 40 L-5 20 L-10 5" stroke="#60b8e8" fill="none" stroke-width="2.5" stroke-linecap="round"/>
-            <circle cx="-10" cy="5" r="2" fill="#80d0ff"/>
-            <path d="M40 40 L55 50 L50 42Z" fill="#50a8d8"/>
-            <path d="M22 70 L20 82 L26 78 L30 86 L34 78 L40 82 L38 70Z" fill="#2870a0"/>
-            <circle cx="25" cy="29" r="2" fill="white"/><circle cx="35" cy="29" r="2" fill="white"/>
-            <circle cx="25" cy="29" r="1" fill="#111"/><circle cx="35" cy="29" r="1" fill="#111"/>
-            <path d="M25 22 Q16 8 8 4" stroke="#3880b0" fill="none" stroke-width="1.5"/>
-            <path d="M35 22 Q44 8 52 4" stroke="#3880b0" fill="none" stroke-width="1.5"/>
-            <line x1="22" y1="62" x2="15" y2="74" stroke="#2870a0" stroke-width="1.5"/>
-            <line x1="38" y1="62" x2="45" y2="74" stroke="#2870a0" stroke-width="1.5"/>
+        <radialGradient id="pd11" cx="50%" cy="50%"><stop offset="0%" stop-color="#102840"/><stop offset="100%" stop-color="#040810"/></radialGradient>
+        <rect width="120" height="100" fill="url(#pd11)"/>
+        <!-- Blade trail arcs -->
+        <path d="M15 12 Q10 25 20 40 Q30 55 25 70" stroke="#60c0ff" fill="none" stroke-width="1" opacity="0.25"><animate attributeName="opacity" values="0.1;0.4;0.1" dur="1.5s" repeatCount="indefinite"/></path>
+        <path d="M18 8 Q12 22 22 38 Q32 52 27 66" stroke="#80d0ff" fill="none" stroke-width="0.6" opacity="0.15"/>
+        <g transform="translate(26,4) scale(1.12)">
+            <ellipse cx="32" cy="52" rx="15" ry="22" fill="#4090c0"/>
+            <circle cx="32" cy="32" r="11" fill="#3880b0"/>
+            <!-- Rapier claw extended - long, deadly -->
+            <path d="M22 38 L-2 14 L-12 -2" stroke="#80d0ff" fill="none" stroke-width="3" stroke-linecap="round"/>
+            <path d="M-12 -2 L-16 -8 L-10 -4 L-14 0 L-10 -2Z" fill="#a0e0ff"/>
+            <!-- Blade glint -->
+            <circle cx="-12" cy="-2" r="3" fill="#c0f0ff" opacity="0.4"><animate attributeName="opacity" values="0.1;0.6;0.1" dur="0.8s" repeatCount="indefinite"/></circle>
+            <!-- Guard claw -->
+            <path d="M42 40 L58 50 L54 42 L62 46 L56 38Z" fill="#50a8d8"/>
+            <!-- Cold focused eyes -->
+            <circle cx="26" cy="29" r="2.5" fill="#40c0ff" opacity="0.9"/>
+            <circle cx="38" cy="29" r="2.5" fill="#40c0ff" opacity="0.9"/>
+            <circle cx="26" cy="29" r="1.2" fill="white"/><circle cx="38" cy="29" r="1.2" fill="white"/>
+            <!-- Determined expression -->
+            <path d="M29 36 L32 34 L35 36" stroke="#60b0e0" fill="none" stroke-width="1"/>
+            <path d="M26 22 Q16 6 8 0" stroke="#3880b0" fill="none" stroke-width="2"/>
+            <path d="M38 22 Q48 6 56 0" stroke="#3880b0" fill="none" stroke-width="2"/>
+            <path d="M24 72 L22 82 L28 78 L32 86 L36 78 L42 82 L40 72Z" fill="#2870a0"/>
+            <line x1="24" y1="62" x2="16" y2="74" stroke="#2870a0" stroke-width="2"/>
+            <line x1="40" y1="62" x2="48" y2="74" stroke="#2870a0" stroke-width="2"/>
         </g>
-        <line x1="20" y1="13" x2="20" y2="70" stroke="#a0a0b0" stroke-width="1" opacity="0.3"/>
     </svg>`,
 
-    // === 12: Phosphor Shrimp — tiny glowing shrimp, bioluminescent, particles ===
+    // === 12: Phosphor Shrimp — blazing bioluminescent war beacon, blinding radiance ===
     12: `<svg viewBox="0 0 120 100">
-        <radialGradient id="ps12" cx="50%" cy="50%"><stop offset="0%" stop-color="#282008"/><stop offset="100%" stop-color="#0a0804"/></radialGradient>
+        <radialGradient id="ps12" cx="50%" cy="50%"><stop offset="0%" stop-color="#282008"/><stop offset="100%" stop-color="#060400"/></radialGradient>
         <rect width="120" height="100" fill="url(#ps12)"/>
-        <g transform="translate(30,22)">
-            <path d="M30 32 Q42 24 52 32 Q58 40 48 48 Q36 52 28 46 Q22 40 30 32Z" fill="#e0d040"/>
-            <circle cx="24" cy="36" r="6" fill="#d0c030"/>
-            <circle cx="20" cy="34" r="1.8" fill="white"/><circle cx="20" cy="34" r="0.8" fill="#111"/>
-            <path d="M18 32 Q12 26 8 24" stroke="#d0c030" fill="none" stroke-width="1.2"/>
-            <path d="M56 36 L64 38 L68 34 L62 37Z" fill="#c0b020"/>
-            <path d="M52 42 L58 48 L62 44 L56 44Z" fill="#c0b020"/>
-            <line x1="32" y1="48" x2="28" y2="55" stroke="#c0b020" stroke-width="1"/>
-            <line x1="38" y1="50" x2="36" y2="57" stroke="#c0b020" stroke-width="1"/>
-            <line x1="44" y1="48" x2="44" y2="55" stroke="#c0b020" stroke-width="1"/>
+        <!-- Blinding radiance -->
+        <circle cx="60" cy="48" r="35" fill="#ffe840" opacity="0.05"><animate attributeName="r" values="30;40;30" dur="1.5s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="48" r="22" fill="#fff880" opacity="0.04"><animate attributeName="r" values="25;18;25" dur="1s" repeatCount="indefinite"/></circle>
+        <!-- Light rays bursting out -->
+        <g opacity="0.2">
+            <line x1="60" y1="48" x2="10" y2="10" stroke="#ffe860" stroke-width="1.5"/><line x1="60" y1="48" x2="110" y2="8" stroke="#ffe860" stroke-width="1.5"/>
+            <line x1="60" y1="48" x2="5" y2="60" stroke="#ffd040" stroke-width="1"/><line x1="60" y1="48" x2="115" y2="55" stroke="#ffd040" stroke-width="1"/>
+            <line x1="60" y1="48" x2="20" y2="90" stroke="#ffcc30" stroke-width="0.8"/><line x1="60" y1="48" x2="100" y2="92" stroke="#ffcc30" stroke-width="0.8"/>
+            <line x1="60" y1="48" x2="60" y2="2" stroke="#ffe860" stroke-width="1.2"/><line x1="60" y1="48" x2="60" y2="98" stroke="#ffd040" stroke-width="0.8"/>
         </g>
-        <circle cx="60" cy="50" r="18" fill="#ffe840" opacity="0.06"><animate attributeName="r" values="15;22;15" dur="3s" repeatCount="indefinite"/></circle>
-        ${_star(20,25,2,'#ffe860')}${_star(90,35,1.5,'#ffd840')}${_star(80,70,2,'#ffe860')}${_star(30,75,1.8,'#ffd840')}${_star(50,15,1.5,'#ffe860')}${_star(100,55,1.2,'#ffd840')}
+        <g transform="translate(28,22) scale(1.1)">
+            <!-- Larger war shrimp -->
+            <path d="M28 28 Q44 18 56 28 Q64 38 52 48 Q38 54 26 46 Q18 38 28 28Z" fill="#f0e040"/>
+            <circle cx="22" cy="34" r="8" fill="#e0d030"/>
+            <!-- War eyes -->
+            <circle cx="18" cy="30" r="2.5" fill="#fff" opacity="0.9"/><circle cx="18" cy="30" r="1.2" fill="#111"/>
+            <!-- Electrified antennae -->
+            <path d="M14 28 Q6 18 0 14" stroke="#ffe040" fill="none" stroke-width="2.5"/>
+            <circle cx="0" cy="14" r="3" fill="#fff880" opacity="0.7"><animate attributeName="r" values="2;4;2" dur="0.5s" repeatCount="indefinite"/></circle>
+            <!-- Armored tail -->
+            <path d="M60 32 L70 34 L78 28 L74 34 L80 38 L74 40 L78 46 L70 42 L60 44Z" fill="#d0c020"/>
+            ${_spike(78,28,6,30,'#c0b018')}${_spike(80,38,5,90,'#c0b018')}${_spike(78,46,6,150,'#c0b018')}
+            <line x1="32" y1="50" x2="28" y2="58" stroke="#c0b020" stroke-width="1.5"/>
+            <line x1="40" y1="52" x2="38" y2="60" stroke="#c0b020" stroke-width="1.5"/>
+            <line x1="48" y1="50" x2="50" y2="58" stroke="#c0b020" stroke-width="1.5"/>
+        </g>
     </svg>`,
 
-    // === 13: Barnacle Parasite — sinister dark lobster with barnacles attached ===
+    // === 13: Barnacle Parasite — nightmarish host-drainer, tendrils, corrupting aura ===
     13: `<svg viewBox="0 0 120 100">
-        <rect width="120" height="100" fill="#0c0418"/>
-        <g transform="translate(35,20)">
-            <ellipse cx="25" cy="42" rx="13" ry="18" fill="#6838a0"/>
-            <circle cx="25" cy="24" r="9" fill="#5c3090"/>
-            <path d="M17 30 L6 22 L2 18 L6 24 L2 30 L12 26Z" fill="#7848b0"/>
-            <path d="M33 30 L44 22 L48 18 L44 24 L48 30 L38 26Z" fill="#7848b0"/>
-            <path d="M19 58 L17 68 L22 64 L25 72 L28 64 L33 68 L31 58Z" fill="#4c2880"/>
-            <circle cx="21" cy="21" r="2" fill="#c080ff"/><circle cx="29" cy="21" r="2" fill="#c080ff"/>
-            <circle cx="21" cy="21" r="1" fill="white"/><circle cx="29" cy="21" r="1" fill="white"/>
-            <circle cx="16" cy="38" r="3.5" fill="#4a4a5a" stroke="#606070" stroke-width="0.8"/>
-            <circle cx="34" cy="44" r="3" fill="#4a4a5a" stroke="#606070" stroke-width="0.8"/>
-            <circle cx="22" cy="52" r="2.5" fill="#505060" stroke="#606070" stroke-width="0.8"/>
-            <circle cx="30" cy="36" r="2" fill="#484858" stroke="#606070" stroke-width="0.8"/>
-            <path d="M21 16 Q14 4 8 0" stroke="#5c3090" fill="none" stroke-width="1.5"/>
-            <path d="M29 16 Q36 4 42 0" stroke="#5c3090" fill="none" stroke-width="1.5"/>
+        <rect width="120" height="100" fill="#060210"/>
+        <!-- Corruption spreading -->
+        <circle cx="60" cy="50" r="30" fill="#4020a0" opacity="0.06"><animate attributeName="r" values="28;34;28" dur="3s" repeatCount="indefinite"/></circle>
+        <!-- Corruption tendrils reaching out -->
+        <g opacity="0.25">
+            <path d="M60 50 Q30 20 10 15" stroke="#8040c0" fill="none" stroke-width="1.5" stroke-dasharray="3 2"><animate attributeName="stroke-dashoffset" values="0;10" dur="2s" repeatCount="indefinite"/></path>
+            <path d="M60 50 Q90 20 110 18" stroke="#7038b0" fill="none" stroke-width="1.2" stroke-dasharray="3 2"><animate attributeName="stroke-dashoffset" values="0;10" dur="2.5s" repeatCount="indefinite"/></path>
+            <path d="M60 50 Q25 70 8 85" stroke="#6030a0" fill="none" stroke-width="1" stroke-dasharray="3 2"><animate attributeName="stroke-dashoffset" values="0;10" dur="3s" repeatCount="indefinite"/></path>
+            <path d="M60 50 Q95 75 112 88" stroke="#6830a0" fill="none" stroke-width="1" stroke-dasharray="3 2"><animate attributeName="stroke-dashoffset" values="0;10" dur="2.8s" repeatCount="indefinite"/></path>
+        </g>
+        <g transform="translate(26,12) scale(1.15)">
+            <ellipse cx="28" cy="42" rx="15" ry="20" fill="#6838a0"/>
+            <circle cx="28" cy="22" r="11" fill="#5c3090"/>
+            <!-- Parasitic claws -->
+            <path d="M18 28 L2 16 L-6 8 L2 20 L-6 28 L10 22Z" fill="#7848b0"/>
+            <path d="M38 28 L54 16 L62 8 L54 20 L62 28 L46 22Z" fill="#7848b0"/>
+            <!-- Pulsating barnacles -->
+            <circle cx="16" cy="36" r="4.5" fill="#3a3a50" stroke="#606078" stroke-width="1"><animate attributeName="r" values="4;5;4" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="40" cy="42" r="4" fill="#3a3a50" stroke="#606078" stroke-width="1"><animate attributeName="r" values="4.5;3.5;4.5" dur="1.8s" repeatCount="indefinite"/></circle>
+            <circle cx="24" cy="54" r="3.5" fill="#404058" stroke="#606078" stroke-width="1"><animate attributeName="r" values="3;4;3" dur="2.2s" repeatCount="indefinite"/></circle>
+            <circle cx="34" cy="34" r="3" fill="#383850" stroke="#606078" stroke-width="1"/>
+            <circle cx="20" cy="46" r="2.5" fill="#383850" stroke="#585870" stroke-width="0.8"/>
+            <!-- Toxic glowing eyes -->
+            <circle cx="22" cy="18" r="2.5" fill="#c080ff"><animate attributeName="opacity" values="0.5;1;0.5" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="34" cy="18" r="2.5" fill="#c080ff"><animate attributeName="opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="22" cy="18" r="1" fill="white"/><circle cx="34" cy="18" r="1" fill="white"/>
+            <path d="M22 12 Q12 -2 4 -6" stroke="#5c3090" fill="none" stroke-width="2"/>
+            <path d="M34 12 Q44 -2 52 -6" stroke="#5c3090" fill="none" stroke-width="2"/>
+            <path d="M22 60 L20 70 L25 66 L28 74 L31 66 L36 70 L34 60Z" fill="#4c2880"/>
         </g>
     </svg>`,
 
-    // === 14: Tide Caller — lobster with conch horn, musical waves emanating ===
+    // === 14: Tide Caller — war horn blasting, tidal shockwave, commanding the ocean ===
     14: `<svg viewBox="0 0 120 100">
-        ${_wave(82,'#1a5868',1.2)}
-        <g transform="translate(38,15)">
-            <ellipse cx="25" cy="48" rx="13" ry="18" fill="#38a8c8"/>
-            <circle cx="25" cy="30" r="9" fill="#3098b8"/>
-            <path d="M34 38 L48 28 L56 22 L50 30 L56 38 L44 32Z" fill="#48c0e0"/>
-            <path d="M16 38 L12 32 Q6 28 4 35 Q2 42 8 40Z" fill="#48c0e0"/>
-            <path d="M19 64 L17 74 L22 70 L25 78 L28 70 L33 74 L31 64Z" fill="#2888a8"/>
-            <circle cx="20" cy="27" r="2" fill="white"/><circle cx="30" cy="27" r="2" fill="white"/>
-            <circle cx="20" cy="27" r="1" fill="#111"/><circle cx="30" cy="27" r="1" fill="#111"/>
-            <path d="M20 22 Q12 8 6 4" stroke="#3098b8" fill="none" stroke-width="1.5"/>
-            <path d="M30 22 Q38 8 44 4" stroke="#3098b8" fill="none" stroke-width="1.5"/>
+        <radialGradient id="tc14" cx="30%" cy="50%"><stop offset="0%" stop-color="#0a2838"/><stop offset="100%" stop-color="#040810"/></radialGradient>
+        <rect width="120" height="100" fill="url(#tc14)"/>
+        <!-- Massive tidal shockwave -->
+        <g opacity="0.35">
+            <path d="M0 30 Q30 15 60 28 Q90 42 120 25" stroke="#40c0ff" fill="none" stroke-width="2"><animate attributeName="d" values="M0 30 Q30 15 60 28 Q90 42 120 25;M0 35 Q30 20 60 32 Q90 46 120 30;M0 30 Q30 15 60 28 Q90 42 120 25" dur="1.5s" repeatCount="indefinite"/></path>
+            <path d="M0 45 Q30 30 60 42 Q90 55 120 40" stroke="#3090d0" fill="none" stroke-width="1.5"><animate attributeName="d" values="M0 45 Q30 30 60 42 Q90 55 120 40;M0 50 Q30 35 60 46 Q90 58 120 44;M0 45 Q30 30 60 42 Q90 55 120 40" dur="1.8s" repeatCount="indefinite"/></path>
+            <path d="M0 60 Q30 50 60 58 Q90 68 120 55" stroke="#2878b0" fill="none" stroke-width="1"><animate attributeName="d" values="M0 60 Q30 50 60 58 Q90 68 120 55;M0 64 Q30 54 60 62 Q90 72 120 58;M0 60 Q30 50 60 58 Q90 68 120 55" dur="2s" repeatCount="indefinite"/></path>
         </g>
-        <path d="M28 40 Q20 35 18 28 Q16 20 22 22 Q28 24 26 30Z" fill="#c0a060"/>
-        <g opacity="0.3" stroke="#80d0ff" fill="none" stroke-width="1">
-            <path d="M16 25 Q8 20 4 14"><animate attributeName="opacity" values="0.1;0.5;0.1" dur="2s" repeatCount="indefinite"/></path>
-            <path d="M14 30 Q4 24 -2 18"><animate attributeName="opacity" values="0.5;0.1;0.5" dur="2s" repeatCount="indefinite"/></path>
-        </g>
-        <text x="6" y="20" fill="#80d0ff" font-size="8" opacity="0.3">~</text>
-        <text x="2" y="30" fill="#80d0ff" font-size="6" opacity="0.2">~</text>
-    </svg>`,
-
-    // === 15: Larval Drifter — tiny baby lobster, translucent, drifting in current ===
-    15: `<svg viewBox="0 0 120 100">
-        ${_wave(25,'#2070a0',0.8)}${_wave(45,'#1860a0',0.6)}${_wave(65,'#2070a0',0.5)}
-        <g transform="translate(40,30)" opacity="0.85">
-            <ellipse cx="20" cy="22" rx="8" ry="11" fill="#68a8c8"/>
-            <circle cx="20" cy="12" r="6" fill="#5898b8"/>
-            <path d="M15 16 L8 12 L5 10 L7 14 L5 18 L11 15Z" fill="#78b8d8"/>
-            <path d="M25 16 L32 12 L35 10 L33 14 L35 18 L29 15Z" fill="#78b8d8"/>
-            <path d="M16 32 L15 38 L18 36 L20 40 L22 36 L25 38 L24 32Z" fill="#4888a8"/>
-            <circle cx="17" cy="10" r="1.5" fill="white"/><circle cx="23" cy="10" r="1.5" fill="white"/>
-            <circle cx="17" cy="10" r="0.7" fill="#111"/><circle cx="23" cy="10" r="0.7" fill="#111"/>
-            <path d="M17 6 Q12 -2 8 -4" stroke="#5898b8" fill="none" stroke-width="1"/>
-            <path d="M23 6 Q28 -2 32 -4" stroke="#5898b8" fill="none" stroke-width="1"/>
-        </g>
-        <circle cx="60" cy="50" r="15" fill="#80c0e0" opacity="0.05"/>
-        ${_bub(30,50,2.5)}${_bub(80,35,2)}${_bub(70,60,1.5)}${_bub(45,75,1.8)}${_bub(90,55,1.2)}
-    </svg>`,
-
-    // === 16: Thermidor the Blaze — massive fire lobster, wreathed in flame ===
-    16: `<svg viewBox="0 0 120 100">
-        <radialGradient id="th16" cx="50%" cy="50%"><stop offset="0%" stop-color="#401008"/><stop offset="100%" stop-color="#100400"/></radialGradient>
-        <rect width="120" height="100" fill="url(#th16)"/>
-        <g opacity="0.5">
-            <ellipse cx="60" cy="80" rx="40" ry="8" fill="#ff4400" opacity="0.2"/>
-            <ellipse cx="40" cy="20" rx="12" ry="20" fill="#ff6600" opacity="0.3"><animate attributeName="ry" values="18;24;18" dur="0.7s" repeatCount="indefinite"/></ellipse>
-            <ellipse cx="80" cy="25" rx="10" ry="18" fill="#ff4400" opacity="0.25"><animate attributeName="ry" values="16;22;16" dur="0.6s" repeatCount="indefinite"/></ellipse>
-            <ellipse cx="60" cy="15" rx="8" ry="14" fill="#ffaa00" opacity="0.2"><animate attributeName="ry" values="12;16;12" dur="0.5s" repeatCount="indefinite"/></ellipse>
-        </g>
-        <g transform="translate(26,14)">
-            <ellipse cx="34" cy="48" rx="16" ry="22" fill="#e05020"/>
-            <circle cx="34" cy="28" r="11" fill="#d04818"/>
-            <path d="M24 36 L8 24 L0 16 L6 26 L0 34 L14 28Z" fill="#ff6830"/>
-            <path d="M44 36 L60 24 L68 16 L62 26 L68 34 L54 28Z" fill="#ff6830"/>
-            <path d="M26 68 L24 80 L30 76 L34 84 L38 76 L44 80 L42 68Z" fill="#c04018"/>
-            <circle cx="28" cy="24" r="3" fill="#ff8844"/><circle cx="40" cy="24" r="3" fill="#ff8844"/>
-            <circle cx="28" cy="24" r="1.5" fill="#ffcc00"/><circle cx="40" cy="24" r="1.5" fill="#ffcc00"/>
-            <path d="M28 18 Q18 4 10 0" stroke="#d04818" fill="none" stroke-width="2"/>
-            <path d="M40 18 Q50 4 58 0" stroke="#d04818" fill="none" stroke-width="2"/>
-        </g>
-    </svg>`,
-
-    // === 17: Glacial Lobster — ice-encrusted lobster, frozen spikes, frost breath ===
-    17: `<svg viewBox="0 0 120 100">
-        <radialGradient id="gl17" cx="50%" cy="50%"><stop offset="0%" stop-color="#102838"/><stop offset="100%" stop-color="#040c18"/></radialGradient>
-        <rect width="120" height="100" fill="url(#gl17)"/>
-        <g transform="translate(28,12)">
-            <ellipse cx="32" cy="50" rx="16" ry="22" fill="#60c8e8"/>
-            <circle cx="32" cy="30" r="11" fill="#50b8d8"/>
-            <path d="M22 38 L6 26 L0 18 L6 28 L0 36 L14 30Z" fill="#78d8f0"/>
-            <path d="M42 38 L58 26 L64 18 L58 28 L64 36 L50 30Z" fill="#78d8f0"/>
-            <path d="M24 70 L22 82 L28 78 L32 86 L36 78 L42 82 L40 70Z" fill="#40a8c8"/>
-            <circle cx="27" cy="27" r="2.5" fill="#c0f0ff"/><circle cx="37" cy="27" r="2.5" fill="#c0f0ff"/>
-            <circle cx="27" cy="27" r="1.2" fill="white"/><circle cx="37" cy="27" r="1.2" fill="white"/>
-            <polygon points="12,14 16,22 20,12 18,20 24,16" fill="#aaeeff" opacity="0.5"/>
-            <polygon points="44,16 48,10 50,20 46,14 52,18" fill="#88ddff" opacity="0.5"/>
-            <polygon points="16,58 12,64 18,62" fill="#aaeeff" opacity="0.4"/>
-            <polygon points="48,56 52,62 46,60" fill="#88ddff" opacity="0.4"/>
-            <path d="M28 22 Q18 6 10 2" stroke="#50b8d8" fill="none" stroke-width="1.8"/>
-            <path d="M36 22 Q46 6 54 2" stroke="#50b8d8" fill="none" stroke-width="1.8"/>
-        </g>
-        <g opacity="0.15"><path d="M12 20 L0 12" stroke="white" stroke-width="1"/><path d="M8 28 L-4 22" stroke="white" stroke-width="0.7"/></g>
-    </svg>`,
-
-    // === 18: Brood Mother — large nurturing lobster, eggs underneath, smaller lobsters ===
-    18: `<svg viewBox="0 0 120 100">
-        <path d="M0 78 Q30 70 60 76 Q90 82 120 74 L120 100 L0 100Z" fill="#1a2040"/>
-        <g transform="translate(22,6)">
-            <ellipse cx="38" cy="50" rx="20" ry="26" fill="#c060a0"/>
-            <circle cx="38" cy="26" r="12" fill="#b05090"/>
-            <path d="M26 36 L10 24 L2 16 L8 26 L2 34 L16 28Z" fill="#d070b0"/>
-            <path d="M50 36 L66 24 L74 16 L68 26 L74 34 L60 28Z" fill="#d070b0"/>
-            <path d="M30 74 L26 86 L34 82 L38 90 L42 82 L50 86 L46 74Z" fill="#a04880"/>
-            <circle cx="32" cy="22" r="3" fill="white"/><circle cx="44" cy="22" r="3" fill="white"/>
-            <circle cx="32" cy="22" r="1.5" fill="#111"/><circle cx="44" cy="22" r="1.5" fill="#111"/>
-            <g opacity="0.7">
-                <circle cx="30" cy="65" r="3" fill="#e888c8"/><circle cx="38" cy="68" r="3.5" fill="#e080c0"/>
-                <circle cx="46" cy="65" r="3" fill="#e888c8"/><circle cx="34" cy="72" r="2.5" fill="#d878b8"/>
-                <circle cx="42" cy="72" r="2.5" fill="#d878b8"/>
+        <g transform="translate(30,10) scale(1.1)">
+            <ellipse cx="30" cy="48" rx="15" ry="20" fill="#38b0d0"/>
+            <circle cx="30" cy="28" r="11" fill="#3098b8"/>
+            <!-- War horn held high -->
+            <path d="M42 34 L58 22 L68 16 L60 28 L70 36 L52 30Z" fill="#50c8e8"/>
+            <path d="M68 16 Q78 10 82 8" stroke="#c0a060" fill="none" stroke-width="3" stroke-linecap="round"/>
+            <path d="M82 8 Q88 4 90 2 Q86 8 92 12 Q84 10 82 8Z" fill="#d0b070"/>
+            <!-- Sonic blast from horn -->
+            <g opacity="0.3">
+                <circle cx="92" cy="8" r="6" fill="none" stroke="#80d0ff" stroke-width="1.5"><animate attributeName="r" values="4;10;4" dur="0.8s" repeatCount="indefinite"/></circle>
+                <circle cx="92" cy="8" r="10" fill="none" stroke="#60b0e0" stroke-width="1"><animate attributeName="r" values="8;16;8" dur="0.8s" repeatCount="indefinite"/></circle>
             </g>
-            <path d="M32 16 Q22 2 14 -2" stroke="#b05090" fill="none" stroke-width="2"/>
-            <path d="M44 16 Q54 2 62 -2" stroke="#b05090" fill="none" stroke-width="2"/>
+            <!-- Guard claw -->
+            <path d="M18 36 L4 24 L-4 16 L4 26 L-4 34 L10 28Z" fill="#50c8e8"/>
+            <!-- Commanding eyes -->
+            <circle cx="24" cy="24" r="2.5" fill="#80f0ff" opacity="0.9"/><circle cx="36" cy="24" r="2.5" fill="#80f0ff" opacity="0.9"/>
+            <circle cx="24" cy="24" r="1.2" fill="white"/><circle cx="36" cy="24" r="1.2" fill="white"/>
+            <path d="M24 18 Q14 2 6 -4" stroke="#3098b8" fill="none" stroke-width="2.5"/>
+            <path d="M36 18 Q46 2 54 -4" stroke="#3098b8" fill="none" stroke-width="2.5"/>
+            <path d="M22 66 L20 76 L26 72 L30 80 L34 72 L40 76 L38 66Z" fill="#2888a8"/>
         </g>
-        <g transform="translate(8,70) scale(0.3)"><ellipse cx="20" cy="20" rx="8" ry="10" fill="#d070a0"/><circle cx="20" cy="10" r="5" fill="#c06090"/></g>
-        <g transform="translate(88,72) scale(0.25)"><ellipse cx="20" cy="20" rx="8" ry="10" fill="#d070a0"/><circle cx="20" cy="10" r="5" fill="#c06090"/></g>
     </svg>`,
 
-    // === 19: Abyssal Lurker — half-hidden lobster in pitch dark, one glowing eye ===
+    // === 15: Larval Drifter — eerie phantom larva, phasing through dimensions, ghostly ===
+    15: `<svg viewBox="0 0 120 100">
+        <radialGradient id="ld15" cx="50%" cy="50%"><stop offset="0%" stop-color="#102030"/><stop offset="100%" stop-color="#040808"/></radialGradient>
+        <rect width="120" height="100" fill="url(#ld15)"/>
+        <!-- Dimensional rift -->
+        <ellipse cx="60" cy="50" rx="35" ry="30" fill="none" stroke="#60b0e0" stroke-width="0.8" stroke-dasharray="4 3" opacity="0.2"><animateTransform attributeName="transform" type="rotate" from="0 60 50" to="360 60 50" dur="12s" repeatCount="indefinite"/></ellipse>
+        <!-- Phase trails -->
+        <g opacity="0.15">
+            <g transform="translate(30,28)"><ellipse cx="20" cy="22" rx="8" ry="11" fill="#68a8c8"/><circle cx="20" cy="12" r="6" fill="#5898b8"/></g>
+            <g transform="translate(70,32)"><ellipse cx="20" cy="22" rx="8" ry="11" fill="#68a8c8"/><circle cx="20" cy="12" r="6" fill="#5898b8"/></g>
+        </g>
+        <!-- Main spectral form -->
+        <g transform="translate(38,24)" opacity="0.9">
+            <ellipse cx="22" cy="26" rx="12" ry="16" fill="#68b8d8"/>
+            <circle cx="22" cy="14" r="8" fill="#5898c0"/>
+            <!-- Spectral claws -->
+            <path d="M14 18 L2 10 L-4 4 L2 12 L-4 18 L8 14Z" fill="#88d0f0"/>
+            <path d="M30 18 L42 10 L48 4 L42 12 L48 18 L36 14Z" fill="#88d0f0"/>
+            <!-- Piercing spirit eyes -->
+            <circle cx="18" cy="11" r="2.5" fill="#c0f0ff"><animate attributeName="opacity" values="0.5;1;0.5" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="26" cy="11" r="2.5" fill="#c0f0ff"><animate attributeName="opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="18" cy="11" r="1" fill="white"/><circle cx="26" cy="11" r="1" fill="white"/>
+            <path d="M18 6 Q12 -4 6 -8" stroke="#5898c0" fill="none" stroke-width="1.5"/>
+            <path d="M26 6 Q32 -4 38 -8" stroke="#5898c0" fill="none" stroke-width="1.5"/>
+            <path d="M18 40 L16 48 L20 45 L22 50 L24 45 L28 48 L26 40Z" fill="#4888a8"/>
+        </g>
+        <!-- Spectral particles -->
+        <circle cx="25" cy="40" r="2" fill="#80d0f0" opacity="0.3"><animate attributeName="cy" values="42;38;42" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="95" cy="50" r="1.5" fill="#60b8e0" opacity="0.2"><animate attributeName="cy" values="52;48;52" dur="2.5s" repeatCount="indefinite"/></circle>
+        <circle cx="80" cy="30" r="2" fill="#70c0e8" opacity="0.25"><animate attributeName="cy" values="32;28;32" dur="3.5s" repeatCount="indefinite"/></circle>
+    </svg>`,
+
+    // === 16: Thermidor the Blaze — volcanic inferno titan, wreathed in hellfire ===
+    16: `<svg viewBox="0 0 120 100">
+        <radialGradient id="th16" cx="50%" cy="50%"><stop offset="0%" stop-color="#501008"/><stop offset="100%" stop-color="#080200"/></radialGradient>
+        <rect width="120" height="100" fill="url(#th16)"/>
+        <!-- Lava ground -->
+        <rect x="0" y="80" width="120" height="20" fill="#200800"/>
+        <g opacity="0.3"><line x1="10" y1="85" x2="30" y2="84" stroke="#ff4400" stroke-width="2"/><line x1="50" y1="88" x2="80" y2="86" stroke="#ff6600" stroke-width="1.5"/><line x1="90" y1="84" x2="115" y2="86" stroke="#ff4400" stroke-width="1.5"/></g>
+        <!-- Massive flame pillars -->
+        ${_flame(10,80,50,'#ff2200')}${_flame(100,82,45,'#ff4400')}${_flame(30,85,35,'#ff6600')}${_flame(80,84,38,'#ff3300')}
+        <!-- Fire aura -->
+        <circle cx="60" cy="45" r="38" fill="#ff4400" opacity="0.06"><animate attributeName="r" values="32;42;32" dur="0.6s" repeatCount="indefinite"/></circle>
+        <g transform="translate(16,4) scale(1.2)">
+            <ellipse cx="36" cy="46" rx="18" ry="24" fill="#e05020"/>
+            <!-- Flame armor plating -->
+            <path d="M20 38 L36 22 L52 38 L46 40 L36 28 L26 40Z" fill="#ff7840" opacity="0.5"/>
+            <circle cx="36" cy="24" r="13" fill="#d04818"/>
+            <!-- Blazing horns -->
+            ${_spike(24,14,12,340,'#ff4400')}${_spike(48,14,12,20,'#ff4400')}
+            <circle cx="24" cy="6" r="3" fill="#ffaa00" opacity="0.5"><animate attributeName="r" values="2;4;2" dur="0.5s" repeatCount="indefinite"/></circle>
+            <circle cx="48" cy="6" r="3" fill="#ffaa00" opacity="0.5"><animate attributeName="r" values="4;2;4" dur="0.5s" repeatCount="indefinite"/></circle>
+            <!-- Inferno claws -->
+            <path d="M22 34 L2 16 L-10 4 L0 18 L-12 30 L10 24Z" fill="#ff6830"/>
+            <path d="M-10 4 L-18 -4 L-8 2Z" fill="#ffaa40"/>
+            <path d="M50 34 L70 16 L82 4 L72 18 L84 30 L62 24Z" fill="#ff6830"/>
+            <path d="M82 4 L90 -4 L80 2Z" fill="#ffaa40"/>
+            <!-- Molten eyes -->
+            <circle cx="30" cy="20" r="3.5" fill="#ff8800"><animate attributeName="r" values="3;4;3" dur="0.5s" repeatCount="indefinite"/></circle>
+            <circle cx="42" cy="20" r="3.5" fill="#ff8800"><animate attributeName="r" values="4;3;4" dur="0.5s" repeatCount="indefinite"/></circle>
+            <circle cx="30" cy="20" r="1.5" fill="#ffee00"/><circle cx="42" cy="20" r="1.5" fill="#ffee00"/>
+            <path d="M30 14 Q18 -2 8 -8" stroke="#d04818" fill="none" stroke-width="2.5"/>
+            <path d="M42 14 Q54 -2 64 -8" stroke="#d04818" fill="none" stroke-width="2.5"/>
+            <path d="M28 68 L26 80 L32 76 L36 84 L40 76 L46 80 L44 68Z" fill="#a03010"/>
+        </g>
+    </svg>`,
+
+    // === 17: Glacial Lobster — frozen death lord, ice spear claws, blizzard storm ===
+    17: `<svg viewBox="0 0 120 100">
+        <radialGradient id="gl17" cx="50%" cy="50%"><stop offset="0%" stop-color="#102838"/><stop offset="100%" stop-color="#020610"/></radialGradient>
+        <rect width="120" height="100" fill="url(#gl17)"/>
+        <!-- Blizzard particles -->
+        <g opacity="0.3">
+            <circle cx="15" cy="20" r="1.5" fill="white"><animate attributeName="cx" values="15;25;15" dur="3s" repeatCount="indefinite"/><animate attributeName="cy" values="20;30;20" dur="3s" repeatCount="indefinite"/></circle>
+            <circle cx="90" cy="15" r="1" fill="white"><animate attributeName="cx" values="90;100;90" dur="2.5s" repeatCount="indefinite"/><animate attributeName="cy" values="15;28;15" dur="2.5s" repeatCount="indefinite"/></circle>
+            <circle cx="50" cy="10" r="1.2" fill="white"><animate attributeName="cx" values="50;60;50" dur="4s" repeatCount="indefinite"/><animate attributeName="cy" values="10;22;10" dur="4s" repeatCount="indefinite"/></circle>
+            <circle cx="105" cy="40" r="1" fill="white"><animate attributeName="cx" values="105;115;105" dur="3.5s" repeatCount="indefinite"/></circle>
+            <circle cx="8" cy="55" r="1.3" fill="white"><animate attributeName="cx" values="8;18;8" dur="2.8s" repeatCount="indefinite"/></circle>
+        </g>
+        <!-- Frozen ground -->
+        <rect x="0" y="78" width="120" height="22" fill="#0a1828"/>
+        <path d="M0 78 L120 78" stroke="#80d0ff" stroke-width="0.8" opacity="0.3"/>
+        <g transform="translate(20,6) scale(1.15)">
+            <ellipse cx="34" cy="48" rx="18" ry="24" fill="#60c8e8"/>
+            <circle cx="34" cy="26" r="13" fill="#50b8d8"/>
+            <!-- Ice crown spikes -->
+            ${_spike(22,16,14,340,'#aaeeff')}${_spike(34,12,16,0,'#bbf0ff')}${_spike(46,16,14,20,'#aaeeff')}
+            <!-- Frozen claws - ice blade shape -->
+            <path d="M22 36 L2 18 L-10 4 L-4 20 L-14 32 L10 26Z" fill="#78d8f0"/>
+            <path d="M-10 4 L-18 -6 L-8 2Z" fill="#aaeeff"/>
+            <path d="M46 36 L66 18 L78 4 L72 20 L82 32 L58 26Z" fill="#78d8f0"/>
+            <path d="M78 4 L86 -6 L76 2Z" fill="#aaeeff"/>
+            <!-- Frost breath -->
+            <g opacity="0.2">
+                <path d="M28 32 Q18 28 8 32 Q-2 36 -8 32" stroke="#c0f0ff" fill="none" stroke-width="2"><animate attributeName="opacity" values="0.1;0.3;0.1" dur="1.5s" repeatCount="indefinite"/></path>
+            </g>
+            <!-- Cold dead eyes -->
+            <circle cx="28" cy="22" r="3" fill="#c0f0ff" opacity="0.9"/>
+            <circle cx="40" cy="22" r="3" fill="#c0f0ff" opacity="0.9"/>
+            <circle cx="28" cy="22" r="1.2" fill="white"/><circle cx="40" cy="22" r="1.2" fill="white"/>
+            <path d="M28 18 Q18 2 8 -4" stroke="#50b8d8" fill="none" stroke-width="2.5"/>
+            <path d="M40 18 Q50 2 60 -4" stroke="#50b8d8" fill="none" stroke-width="2.5"/>
+            <path d="M26 70 L24 82 L30 78 L34 86 L38 78 L44 82 L42 70Z" fill="#40a8c8"/>
+        </g>
+    </svg>`,
+
+    // === 18: Brood Mother — terrifying matriarch, protective rage, swarm emerging ===
+    18: `<svg viewBox="0 0 120 100">
+        <radialGradient id="bm18" cx="50%" cy="50%"><stop offset="0%" stop-color="#200830"/><stop offset="100%" stop-color="#060010"/></radialGradient>
+        <rect width="120" height="100" fill="url(#bm18)"/>
+        <!-- Protective rage aura -->
+        <circle cx="60" cy="48" r="42" fill="#ff40a0" opacity="0.04"><animate attributeName="r" values="38;46;38" dur="1.5s" repeatCount="indefinite"/></circle>
+        <g transform="translate(14,0) scale(1.15)">
+            <!-- Massive body -->
+            <ellipse cx="40" cy="46" rx="22" ry="28" fill="#c060a0"/>
+            <circle cx="40" cy="20" r="14" fill="#b05090"/>
+            <!-- Aggressive protective claws -->
+            <path d="M26 30 L4 14 L-10 2 L0 16 L-12 28 L12 22Z" fill="#d870b8"/>
+            <path d="M-10 2 L-18 -6 L-8 0Z" fill="#e880c8"/>
+            <path d="M54 30 L76 14 L90 2 L80 16 L92 28 L68 22Z" fill="#d870b8"/>
+            <path d="M90 2 L98 -6 L88 0Z" fill="#e880c8"/>
+            <!-- Furious mother eyes -->
+            <circle cx="34" cy="16" r="3.5" fill="#ff2080"><animate attributeName="r" values="3;4;3" dur="0.8s" repeatCount="indefinite"/></circle>
+            <circle cx="46" cy="16" r="3.5" fill="#ff2080"><animate attributeName="r" values="4;3;4" dur="0.8s" repeatCount="indefinite"/></circle>
+            <circle cx="34" cy="16" r="1.5" fill="white"/><circle cx="46" cy="16" r="1.5" fill="white"/>
+            <!-- Snarl -->
+            <path d="M36 24 L38 28 L40 24 L42 28 L44 24" stroke="#ff60b0" fill="none" stroke-width="1.5"/>
+            <!-- Egg sac glowing with power -->
+            <g opacity="0.8">
+                <circle cx="32" cy="62" r="4" fill="#ff68c8"><animate attributeName="r" values="3.5;4.5;3.5" dur="2s" repeatCount="indefinite"/></circle>
+                <circle cx="40" cy="66" r="4.5" fill="#ff50b8"><animate attributeName="r" values="4;5;4" dur="1.8s" repeatCount="indefinite"/></circle>
+                <circle cx="48" cy="62" r="4" fill="#ff68c8"><animate attributeName="r" values="4.5;3.5;4.5" dur="2.2s" repeatCount="indefinite"/></circle>
+                <circle cx="36" cy="72" r="3.5" fill="#e058b0"/><circle cx="44" cy="72" r="3.5" fill="#e058b0"/>
+            </g>
+            <path d="M34 10 Q22 -6 12 -10" stroke="#b05090" fill="none" stroke-width="2.5"/>
+            <path d="M46 10 Q58 -6 68 -10" stroke="#b05090" fill="none" stroke-width="2.5"/>
+            <path d="M32 76 L28 88 L36 84 L40 92 L44 84 L52 88 L48 76Z" fill="#a04880"/>
+        </g>
+        <!-- Swarming babies -->
+        <g transform="translate(4,76) scale(0.35)"><ellipse cx="20" cy="15" rx="8" ry="10" fill="#d870b0"/><circle cx="20" cy="6" r="5" fill="#c06098"/><circle cx="16" cy="4" r="1.5" fill="#ff80d0"/></g>
+        <g transform="translate(92,74) scale(0.3)"><ellipse cx="20" cy="15" rx="8" ry="10" fill="#d870b0"/><circle cx="20" cy="6" r="5" fill="#c06098"/><circle cx="24" cy="4" r="1.5" fill="#ff80d0"/></g>
+        <g transform="translate(48,82) scale(0.25)" opacity="0.7"><ellipse cx="20" cy="15" rx="8" ry="10" fill="#d870b0"/><circle cx="20" cy="6" r="5" fill="#c06098"/></g>
+    </svg>`,
+
+    // === 19: Abyssal Lurker — nightmare in the void, barely visible, multiple glowing eyes ===
     19: `<svg viewBox="0 0 120 100">
-        <rect width="120" height="100" fill="#050010"/>
-        <ellipse cx="60" cy="90" rx="50" ry="15" fill="#0a0020"/>
-        <g transform="translate(30,30)" opacity="0.6">
-            <ellipse cx="30" cy="30" rx="15" ry="20" fill="#4020808"/>
-            <circle cx="30" cy="14" r="10" fill="#381870"/>
+        <rect width="120" height="100" fill="#020008"/>
+        <!-- Void darkness -->
+        <ellipse cx="60" cy="90" rx="55" ry="15" fill="#0a0018"/>
+        <!-- Barely visible form -->
+        <g transform="translate(22,20)" opacity="0.35">
+            <ellipse cx="38" cy="38" rx="20" ry="26" fill="#280850"/>
+            <circle cx="38" cy="16" r="14" fill="#200840"/>
         </g>
-        <g transform="translate(30,30)">
-            <path d="M20 22 L6 14 L0 8 L6 16 L0 24 L12 18Z" fill="#5830a0" opacity="0.5"/>
-            <circle cx="24" cy="11" r="3.5" fill="#a040ff" opacity="0.9"><animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/></circle>
-            <circle cx="24" cy="11" r="1.5" fill="white"/>
-            <circle cx="36" cy="11" r="2.5" fill="#6020c0" opacity="0.3"/>
-            <path d="M24 4 Q16 -8 8 -12" stroke="#4020a0" fill="none" stroke-width="1.5" opacity="0.4"/>
-            <path d="M36 4 Q44 -8 52 -12" stroke="#4020a0" fill="none" stroke-width="1.5" opacity="0.3"/>
+        <!-- The form emerges from darkness -->
+        <g transform="translate(22,20)">
+            <!-- Shadowy claws reaching out -->
+            <path d="M26 24 L8 12 L-4 2 L6 14 L-6 24 L16 18Z" fill="#4020a0" opacity="0.5"/>
+            <path d="M-4 2 L-12 -6 L-2 0Z" fill="#5030c0" opacity="0.4"/>
+            <path d="M50 24 L68 12 L80 2 L70 14 L82 24 L60 18Z" fill="#4020a0" opacity="0.5"/>
+            <path d="M80 2 L88 -6 L78 0Z" fill="#5030c0" opacity="0.4"/>
+            <!-- Multiple sinister eyes in the dark -->
+            <circle cx="30" cy="12" r="4" fill="#a040ff" opacity="0.9"><animate attributeName="opacity" values="0.5;1;0.5" dur="3s" repeatCount="indefinite"/></circle>
+            <circle cx="30" cy="12" r="1.8" fill="white"/>
+            <circle cx="46" cy="12" r="3.5" fill="#8030e0" opacity="0.6"><animate attributeName="opacity" values="0.3;0.7;0.3" dur="4s" repeatCount="indefinite"/></circle>
+            <circle cx="46" cy="12" r="1.5" fill="white" opacity="0.7"/>
+            <!-- Extra smaller eyes -->
+            <circle cx="24" cy="20" r="2" fill="#6020c0" opacity="0.4"><animate attributeName="opacity" values="0.2;0.5;0.2" dur="5s" repeatCount="indefinite"/></circle>
+            <circle cx="52" cy="18" r="1.8" fill="#5818b0" opacity="0.3"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="4.5s" repeatCount="indefinite"/></circle>
+            <!-- Antennae like shadow tendrils -->
+            <path d="M28 4 Q16 -12 4 -18" stroke="#3018a0" fill="none" stroke-width="2" opacity="0.4"/>
+            <path d="M48 4 Q60 -12 72 -18" stroke="#3018a0" fill="none" stroke-width="2" opacity="0.3"/>
         </g>
-        <g opacity="0.06"><circle cx="30" cy="60" r="20" fill="#6030c0"/><circle cx="85" cy="50" r="15" fill="#4020a0"/></g>
+        <!-- Ambient void glow -->
+        <g opacity="0.04"><circle cx="25" cy="65" r="22" fill="#6030c0"/><circle cx="90" cy="55" r="18" fill="#4020a0"/></g>
     </svg>`,
 
-    // === 20: Coconut Crab King — massive crab-lobster with coconut shell crown, on beach ===
+    // === 20: Coconut Crab King — colossal armored warlord, throne of crushed shells ===
     20: `<svg viewBox="0 0 120 100">
-        <rect x="0" y="65" width="120" height="35" fill="#c0a060" opacity="0.3"/>
-        <rect x="0" y="72" width="120" height="28" fill="#2a1a00"/>
-        ${_rock(22,80,14,'#3a2808')}${_rock(90,82,12,'#342408')}
-        <g transform="translate(24,8)">
-            <ellipse cx="36" cy="52" rx="22" ry="26" fill="#c09040"/>
-            <circle cx="36" cy="28" r="13" fill="#b08038"/>
-            <circle cx="36" cy="16" r="8" fill="#6a4020" stroke="#8a5830" stroke-width="1.5"/>
-            <path d="M30 14 L36 8 L42 14" fill="none" stroke="#a06828" stroke-width="1"/>
-            <path d="M22 40 L2 24 L-10 14 L-2 26 L-12 38 L10 30Z" fill="#d0a050"/>
-            <path d="M50 40 L70 24 L82 14 L74 26 L84 38 L62 30Z" fill="#d0a050"/>
-            <path d="M28 76 L24 88 L32 84 L36 92 L40 84 L48 88 L44 76Z" fill="#a07830"/>
-            <circle cx="30" cy="24" r="3" fill="white"/><circle cx="42" cy="24" r="3" fill="white"/>
-            <circle cx="30" cy="24" r="1.5" fill="#111"/><circle cx="42" cy="24" r="1.5" fill="#111"/>
-            <path d="M30 18 Q20 4 12 0" stroke="#b08038" fill="none" stroke-width="2"/>
-            <path d="M42 18 Q52 4 60 0" stroke="#b08038" fill="none" stroke-width="2"/>
+        <radialGradient id="ck20" cx="50%" cy="60%"><stop offset="0%" stop-color="#2a1a00"/><stop offset="100%" stop-color="#0a0800"/></radialGradient>
+        <rect width="120" height="100" fill="url(#ck20)"/>
+        <!-- Destroyed terrain -->
+        <rect x="0" y="72" width="120" height="28" fill="#140c00"/>
+        ${_crack(15,74,18,'#c09040')}${_crack(80,76,16,'#b08030')}${_crack(50,78,14,'#a07028')}
+        <g transform="translate(14,2) scale(1.2)">
+            <!-- Massive armored body -->
+            <ellipse cx="40" cy="48" rx="24" ry="28" fill="#c89840"/>
+            <circle cx="40" cy="22" r="15" fill="#b88838"/>
+            <!-- Crown - battle-worn coconut shell with spikes -->
+            <circle cx="40" cy="10" r="10" fill="#6a4020" stroke="#a06828" stroke-width="2"/>
+            <path d="M32 6 L40 -4 L48 6" fill="none" stroke="#d0a040" stroke-width="2"/>
+            ${_spike(34,2,8,340,'#c09040')}${_spike(46,2,8,20,'#c09040')}${_spike(40,-4,6,0,'#d0a848')}
+            <!-- MASSIVE war claws -->
+            <path d="M24 34 L-2 16 L-18 2 L-6 18 L-20 32 L8 24Z" fill="#d8a850"/>
+            <path d="M-18 2 L-28 -8 L-14 0Z" fill="#e8b860"/>
+            <path d="M-20 32 L-28 38 L-16 30Z" fill="#e8b860"/>
+            <path d="M56 34 L82 16 L98 2 L86 18 L100 32 L72 24Z" fill="#d8a850"/>
+            <path d="M98 2 L108 -8 L94 0Z" fill="#e8b860"/>
+            <!-- Battle scars -->
+            ${_scar(36,40,12,10)}${_scar(44,54,10,-15)}
+            <!-- Fierce king eyes -->
+            <circle cx="34" cy="18" r="3.5" fill="#ff8800"><animate attributeName="opacity" values="0.7;1;0.7" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="46" cy="18" r="3.5" fill="#ff8800"><animate attributeName="opacity" values="1;0.7;1" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="34" cy="18" r="1.5" fill="#ffcc00"/><circle cx="46" cy="18" r="1.5" fill="#ffcc00"/>
+            <path d="M34 12 Q22 -4 12 -8" stroke="#b88838" fill="none" stroke-width="2.5"/>
+            <path d="M46 12 Q58 -4 68 -8" stroke="#b88838" fill="none" stroke-width="2.5"/>
+            <path d="M32 74 L28 86 L36 82 L40 90 L44 82 L52 86 L48 74Z" fill="#a07828"/>
         </g>
     </svg>`,
 
-    // === 21: Leviathan Lobster — colossal ritual lobster, ancient symbols, deep ocean ===
+    // === 21: Leviathan Lobster — colossal ancient god rising, ritual circles blazing ===
     21: `<svg viewBox="0 0 120 100">
-        <radialGradient id="lv21" cx="50%" cy="40%"><stop offset="0%" stop-color="#102848"/><stop offset="100%" stop-color="#020810"/></radialGradient>
+        <radialGradient id="lv21" cx="50%" cy="40%"><stop offset="0%" stop-color="#102848"/><stop offset="100%" stop-color="#010408"/></radialGradient>
         <rect width="120" height="100" fill="url(#lv21)"/>
-        <circle cx="60" cy="50" r="40" fill="none" stroke="#3060a0" stroke-width="0.8" stroke-dasharray="5 3" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 60 50" to="360 60 50" dur="20s" repeatCount="indefinite"/></circle>
-        <circle cx="60" cy="50" r="32" fill="none" stroke="#4080c0" stroke-width="0.5" stroke-dasharray="3 4" opacity="0.2"><animateTransform attributeName="transform" type="rotate" from="360 60 50" to="0 60 50" dur="15s" repeatCount="indefinite"/></circle>
-        <g transform="translate(20,8) scale(1.05)">
-            <ellipse cx="40" cy="50" rx="20" ry="26" fill="#3878c0"/>
-            <circle cx="40" cy="26" r="13" fill="#3070b0"/>
-            <path d="M28 36 L8 20 L-4 8 L4 22 L-6 34 L18 26Z" fill="#4888d0"/>
-            <path d="M52 36 L72 20 L84 8 L76 22 L86 34 L62 26Z" fill="#4888d0"/>
-            <path d="M-4 8 L-10 2 L-2 6Z" fill="#58a0e0"/><path d="M84 8 L90 2 L82 6Z" fill="#58a0e0"/>
-            <path d="M32 74 L28 88 L36 82 L40 92 L44 82 L52 88 L48 74Z" fill="#2860a0"/>
-            <circle cx="34" cy="22" r="3.5" fill="#80c0ff" opacity="0.8"/>
-            <circle cx="46" cy="22" r="3.5" fill="#80c0ff" opacity="0.8"/>
-            <circle cx="34" cy="22" r="1.5" fill="white"/><circle cx="46" cy="22" r="1.5" fill="white"/>
-            <path d="M34 16 Q22 -2 12 -6" stroke="#3070b0" fill="none" stroke-width="2.5"/>
-            <path d="M46 16 Q58 -2 68 -6" stroke="#3070b0" fill="none" stroke-width="2.5"/>
+        <!-- Massive ritual circles -->
+        <circle cx="60" cy="48" r="44" fill="none" stroke="#3060a0" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.3"><animateTransform attributeName="transform" type="rotate" from="0 60 48" to="360 60 48" dur="15s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="48" r="36" fill="none" stroke="#4080c0" stroke-width="1" stroke-dasharray="3 4" opacity="0.25"><animateTransform attributeName="transform" type="rotate" from="360 60 48" to="0 60 48" dur="10s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="48" r="28" fill="none" stroke="#50a0e0" stroke-width="0.8" opacity="0.15"><animateTransform attributeName="transform" type="rotate" from="0 60 48" to="360 60 48" dur="8s" repeatCount="indefinite"/></circle>
+        <!-- Power glow -->
+        <circle cx="60" cy="42" r="30" fill="#4080d0" opacity="0.05"><animate attributeName="r" values="26;34;26" dur="3s" repeatCount="indefinite"/></circle>
+        <g transform="translate(12,2) scale(1.2)">
+            <!-- MASSIVE body -->
+            <ellipse cx="40" cy="46" rx="22" ry="28" fill="#3878c0"/>
+            <circle cx="40" cy="18" r="16" fill="#3070b0"/>
+            <!-- God-tier claws -->
+            <path d="M24 28 L-2 8 L-18 -8 L-6 10 L-22 24 L8 16Z" fill="#4888d0"/>
+            <path d="M-18 -8 L-26 -16 L-14 -10Z" fill="#68b0f0"/>
+            <path d="M-22 24 L-30 30 L-18 22Z" fill="#68b0f0"/>
+            <path d="M56 28 L82 8 L98 -8 L86 10 L102 24 L72 16Z" fill="#4888d0"/>
+            <path d="M98 -8 L106 -16 L94 -10Z" fill="#68b0f0"/>
+            <!-- Ancient sigil on chest -->
+            <circle cx="40" cy="46" r="10" fill="none" stroke="#80c0ff" stroke-width="1" opacity="0.4"/>
+            <polygon points="40,38 43,44 50,44 44,48 46,54 40,50 34,54 36,48 30,44 37,44" fill="#4080c0" opacity="0.3"/>
+            <!-- Ancient god eyes -->
+            <circle cx="34" cy="14" r="4" fill="#80c0ff" opacity="0.9"><animate attributeName="r" values="3.5;4.5;3.5" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="46" cy="14" r="4" fill="#80c0ff" opacity="0.9"><animate attributeName="r" values="4.5;3.5;4.5" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="34" cy="14" r="1.8" fill="white"/><circle cx="46" cy="14" r="1.8" fill="white"/>
+            <path d="M34 8 Q20 -10 8 -16" stroke="#3070b0" fill="none" stroke-width="3"/>
+            <path d="M46 8 Q60 -10 72 -16" stroke="#3070b0" fill="none" stroke-width="3"/>
+            <path d="M32 72 L28 86 L36 80 L40 90 L44 80 L52 86 L48 72Z" fill="#2860a0"/>
         </g>
-        ${_star(15,20,2,'#4080d0')}${_star(100,30,2.5,'#3878c0')}${_star(18,75,1.8,'#3068b0')}${_star(98,72,1.5,'#4080d0')}
+        <!-- Arcane runes floating -->
+        ${_star(10,18,3,'#4080d0')}${_star(108,22,3.5,'#3878c0')}${_star(14,78,2.5,'#3068b0')}${_star(104,76,2,'#4080d0')}
     </svg>`,
 
-    // === 22: Emperor Crustacean — regal fusion beast, dual-colored, cape-like tail ===
+    // === 22: Emperor Crustacean — supreme fusion overlord, dark energy cape, crown ===
     22: `<svg viewBox="0 0 120 100">
-        <radialGradient id="ec22" cx="50%" cy="40%"><stop offset="0%" stop-color="#280838"/><stop offset="100%" stop-color="#080010"/></radialGradient>
+        <radialGradient id="ec22" cx="50%" cy="40%"><stop offset="0%" stop-color="#280838"/><stop offset="100%" stop-color="#040008"/></radialGradient>
         <rect width="120" height="100" fill="url(#ec22)"/>
-        <circle cx="60" cy="50" r="38" fill="#a040d0" opacity="0.06"/>
-        <g transform="translate(18,4) scale(1.08)">
-            <path d="M30 76 L20 92 L32 88 L40 98 L48 88 L60 92 L50 76Z" fill="#8030b0"/>
-            <path d="M20 92 L10 95 L20 90" fill="#a040d0" opacity="0.5"/>
-            <path d="M60 92 L70 95 L60 90" fill="#a040d0" opacity="0.5"/>
-            <ellipse cx="40" cy="50" rx="20" ry="26" fill="#b040d0"/>
-            <circle cx="40" cy="26" r="14" fill="#a038c0"/>
-            <path d="M40 12 L36 4 L40 8 L44 2 L44 10" fill="#ffd700" stroke="#cc9900" stroke-width="0.5"/>
-            <path d="M26 38 L4 20 L-10 6 L0 22 L-12 36 L14 28Z" fill="#c858e8"/>
-            <path d="M54 38 L76 20 L90 6 L80 22 L92 36 L66 28Z" fill="#c858e8"/>
-            <path d="M-10 6 L-16 0 L-8 4Z" fill="#d868f0"/>
-            <path d="M90 6 L96 0 L88 4Z" fill="#d868f0"/>
-            <circle cx="34" cy="22" r="3.5" fill="#ff60ff" opacity="0.9"/>
-            <circle cx="46" cy="22" r="3.5" fill="#ff60ff" opacity="0.9"/>
-            <circle cx="34" cy="22" r="1.5" fill="white"/><circle cx="46" cy="22" r="1.5" fill="white"/>
-            <path d="M34 14 Q22 -2 12 -6" stroke="#a038c0" fill="none" stroke-width="2"/>
-            <path d="M46 14 Q58 -2 68 -6" stroke="#a038c0" fill="none" stroke-width="2"/>
+        <!-- Imperial energy -->
+        <circle cx="60" cy="46" r="42" fill="#a040d0" opacity="0.04"><animate attributeName="r" values="38;46;38" dur="2s" repeatCount="indefinite"/></circle>
+        <g transform="translate(10,0) scale(1.2)">
+            <!-- Dark energy cape -->
+            <path d="M28 72 L14 94 L30 88 L42 98 L54 88 L70 94 L56 72Z" fill="#6020a0" opacity="0.6"/>
+            <path d="M14 94 L2 98 L14 92" fill="#8030c0" opacity="0.3"/>
+            <path d="M70 94 L82 98 L70 92" fill="#8030c0" opacity="0.3"/>
+            <!-- Armored body -->
+            <ellipse cx="42" cy="48" rx="22" ry="28" fill="#b040d0"/>
+            <!-- Power plating -->
+            <path d="M24 40 L42 22 L60 40 L54 42 L42 28 L30 42Z" fill="#c858e8" opacity="0.4"/>
+            <circle cx="42" cy="20" r="16" fill="#a038c0"/>
+            <!-- Emperor's crown - golden spikes -->
+            <path d="M30 8 L34 -4 L38 6 L42 -6 L46 6 L50 -4 L54 8" fill="#ffd700" stroke="#cc9900" stroke-width="1"/>
+            <circle cx="42" cy="-2" r="3" fill="#ff4400" opacity="0.6"/>
+            <!-- Royal war claws -->
+            <path d="M28 32 L4 12 L-12 -2 L-2 14 L-16 28 L12 20Z" fill="#c858e8"/>
+            <path d="M-12 -2 L-20 -10 L-10 -4Z" fill="#e080ff"/>
+            <path d="M56 32 L80 12 L96 -2 L86 14 L100 28 L72 20Z" fill="#c858e8"/>
+            <path d="M96 -2 L104 -10 L94 -4Z" fill="#e080ff"/>
+            <!-- Imperial eyes -->
+            <circle cx="36" cy="16" r="3.5" fill="#ff60ff" opacity="0.9"><animate attributeName="r" values="3;4;3" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="48" cy="16" r="3.5" fill="#ff60ff" opacity="0.9"><animate attributeName="r" values="4;3;4" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="36" cy="16" r="1.5" fill="white"/><circle cx="48" cy="16" r="1.5" fill="white"/>
+            <path d="M36 10 Q24 -6 14 -12" stroke="#a038c0" fill="none" stroke-width="2.5"/>
+            <path d="M48 10 Q60 -6 70 -12" stroke="#a038c0" fill="none" stroke-width="2.5"/>
         </g>
     </svg>`,
 
-    // === 23: Twin Claw Dragon — dragon-lobster hybrid, wings, two heads ===
+    // === 23: Twin Claw Dragon — two-headed dragon-lobster hybrid, massive wings, fire breath ===
     23: `<svg viewBox="0 0 120 100">
-        <radialGradient id="tc23" cx="50%" cy="50%"><stop offset="0%" stop-color="#200830"/><stop offset="100%" stop-color="#080010"/></radialGradient>
+        <radialGradient id="tc23" cx="50%" cy="50%"><stop offset="0%" stop-color="#200830"/><stop offset="100%" stop-color="#040008"/></radialGradient>
         <rect width="120" height="100" fill="url(#tc23)"/>
-        <g transform="translate(20,10)">
-            <path d="M20 20 L8 8 L0 18 L12 22Z" fill="#7840b0" opacity="0.5"/>
-            <path d="M60 20 L72 8 L80 18 L68 22Z" fill="#7840b0" opacity="0.5"/>
-            <ellipse cx="40" cy="48" rx="18" ry="22" fill="#9048c0"/>
-            <circle cx="26" cy="28" r="8" fill="#8040b0"/>
-            <circle cx="54" cy="28" r="8" fill="#8040b0"/>
-            <path d="M20 32 L8 24 L4 20 L8 26Z" fill="#a058d0"/>
-            <path d="M60 32 L72 24 L76 20 L72 26Z" fill="#a058d0"/>
-            <path d="M32 68 L28 82 L36 78 L40 86 L44 78 L52 82 L48 68Z" fill="#7038a0"/>
-            <circle cx="23" cy="25" r="2" fill="#d080ff"/><circle cx="29" cy="25" r="2" fill="#d080ff"/>
-            <circle cx="51" cy="25" r="2" fill="#d080ff"/><circle cx="57" cy="25" r="2" fill="#d080ff"/>
-            <circle cx="23" cy="25" r="1" fill="white"/><circle cx="29" cy="25" r="1" fill="white"/>
-            <circle cx="51" cy="25" r="1" fill="white"/><circle cx="57" cy="25" r="1" fill="white"/>
-            <path d="M22 20 Q14 8 8 4" stroke="#8040b0" fill="none" stroke-width="1.5"/>
-            <path d="M58 20 Q66 8 72 4" stroke="#8040b0" fill="none" stroke-width="1.5"/>
+        <g transform="translate(10,6) scale(1.15)">
+            <!-- Massive dragon wings -->
+            <path d="M20 22 L-2 4 L-8 14 L4 20 L-4 28 L8 24Z" fill="#7840b0" opacity="0.5"/>
+            <path d="M-2 4 L-10 -4 L-6 8Z" fill="#9050d0" opacity="0.4"/>
+            <path d="M68 22 L90 4 L96 14 L84 20 L92 28 L80 24Z" fill="#7840b0" opacity="0.5"/>
+            <path d="M90 4 L98 -4 L94 8Z" fill="#9050d0" opacity="0.4"/>
+            <!-- Powerful body -->
+            <ellipse cx="44" cy="48" rx="20" ry="24" fill="#9048c0"/>
+            ${_spike(26,32,8,210,'#7838a0')}${_spike(62,32,8,330,'#7838a0')}
+            <!-- Left head - snarling -->
+            <circle cx="26" cy="26" r="10" fill="#8040b0"/>
+            <path d="M18 30 L4 22 L-2 16 L4 24 L-2 30 L12 26Z" fill="#a058d0"/>
+            <path d="M-2 16 L-8 10 L0 14Z" fill="#b868e0"/>
+            <!-- Right head - roaring -->
+            <circle cx="62" cy="26" r="10" fill="#8040b0"/>
+            <path d="M70 30 L84 22 L90 16 L84 24 L90 30 L76 26Z" fill="#a058d0"/>
+            <path d="M90 16 L96 10 L88 14Z" fill="#b868e0"/>
+            <!-- Dragon breath -->
+            <g opacity="0.2">
+                <ellipse cx="-8" cy="20" rx="6" ry="4" fill="#d080ff"><animate attributeName="rx" values="4;8;4" dur="0.8s" repeatCount="indefinite"/></ellipse>
+                <ellipse cx="96" cy="20" rx="6" ry="4" fill="#d080ff"><animate attributeName="rx" values="8;4;8" dur="0.8s" repeatCount="indefinite"/></ellipse>
+            </g>
+            <!-- Four fierce eyes -->
+            <circle cx="22" cy="23" r="2.5" fill="#d080ff"><animate attributeName="opacity" values="0.6;1;0.6" dur="1s" repeatCount="indefinite"/></circle>
+            <circle cx="30" cy="23" r="2.5" fill="#d080ff"/>
+            <circle cx="58" cy="23" r="2.5" fill="#d080ff"/>
+            <circle cx="66" cy="23" r="2.5" fill="#d080ff"><animate attributeName="opacity" values="1;0.6;1" dur="1s" repeatCount="indefinite"/></circle>
+            <circle cx="22" cy="23" r="1" fill="white"/><circle cx="30" cy="23" r="1" fill="white"/>
+            <circle cx="58" cy="23" r="1" fill="white"/><circle cx="66" cy="23" r="1" fill="white"/>
+            <path d="M22 18 Q12 4 4 -2" stroke="#8040b0" fill="none" stroke-width="2"/>
+            <path d="M66 18 Q76 4 84 -2" stroke="#8040b0" fill="none" stroke-width="2"/>
+            <path d="M36 70 L32 82 L38 78 L44 86 L50 78 L56 82 L52 70Z" fill="#7038a0"/>
         </g>
     </svg>`,
 
-    // === 24: Poseidon's Chosen — ethereal trident-wielding lobster, ghostly glow ===
+    // === 24: Poseidon's Chosen — divine trident warrior, ocean splitting, godlike power ===
     24: `<svg viewBox="0 0 120 100">
-        <radialGradient id="pc24" cx="50%" cy="40%"><stop offset="0%" stop-color="#182840"/><stop offset="100%" stop-color="#040810"/></radialGradient>
+        <radialGradient id="pc24" cx="50%" cy="40%"><stop offset="0%" stop-color="#182840"/><stop offset="100%" stop-color="#020408"/></radialGradient>
         <rect width="120" height="100" fill="url(#pc24)"/>
-        <g opacity="0.15"><circle cx="60" cy="50" r="42" fill="#80a0e0"/><circle cx="60" cy="50" r="35" fill="#90b0f0"/></g>
-        <g transform="translate(32,10)" opacity="0.85">
-            <ellipse cx="28" cy="48" rx="15" ry="22" fill="#88b8d8"/>
-            <circle cx="28" cy="28" r="11" fill="#78a8c8"/>
-            <path d="M18 36 L4 26 L-2 18 L4 28 L-2 36 L12 30Z" fill="#98c8e0"/>
-            <path d="M38 36 L52 26 L58 18 L52 28 L58 36 L44 30Z" fill="#98c8e0"/>
-            <path d="M20 68 L18 80 L24 76 L28 84 L32 76 L38 80 L36 68Z" fill="#6898b8"/>
-            <circle cx="23" cy="25" r="2.5" fill="#c0e8ff"/><circle cx="33" cy="25" r="2.5" fill="#c0e8ff"/>
-            <circle cx="23" cy="25" r="1.2" fill="white"/><circle cx="33" cy="25" r="1.2" fill="white"/>
-            <path d="M23 18 Q14 4 8 0" stroke="#78a8c8" fill="none" stroke-width="1.8"/>
-            <path d="M33 18 Q42 4 48 0" stroke="#78a8c8" fill="none" stroke-width="1.8"/>
+        <!-- Divine aura -->
+        <circle cx="60" cy="45" r="44" fill="#80c0ff" opacity="0.04"><animate attributeName="r" values="40;48;40" dur="2.5s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="45" r="32" fill="#a0d0ff" opacity="0.03"><animate attributeName="r" values="34;28;34" dur="2s" repeatCount="indefinite"/></circle>
+        <!-- Ocean parting -->
+        <path d="M0 70 Q15 60 30 68 Q45 76 50 65" fill="#1858a0" opacity="0.3"/>
+        <path d="M70 65 Q75 76 90 68 Q105 60 120 70" fill="#1858a0" opacity="0.3"/>
+        <g transform="translate(22,4) scale(1.15)">
+            <!-- Ethereal body -->
+            <ellipse cx="32" cy="48" rx="17" ry="24" fill="#88c0e0"/>
+            <circle cx="32" cy="24" r="14" fill="#78b0d0"/>
+            <!-- Divine claws -->
+            <path d="M20 32 L2 16 L-8 4 L2 18 L-8 28 L10 22Z" fill="#a0d8f0"/>
+            <path d="M-8 4 L-14 -4 L-6 2Z" fill="#c0e8ff"/>
+            <path d="M44 32 L62 16 L72 4 L62 18 L72 28 L54 22Z" fill="#a0d8f0"/>
+            <path d="M72 4 L78 -4 L70 2Z" fill="#c0e8ff"/>
+            <!-- Divine eyes -->
+            <circle cx="26" cy="20" r="3.5" fill="#c0f0ff" opacity="0.9"><animate attributeName="r" values="3;4;3" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="38" cy="20" r="3.5" fill="#c0f0ff" opacity="0.9"><animate attributeName="r" values="4;3;4" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="26" cy="20" r="1.5" fill="white"/><circle cx="38" cy="20" r="1.5" fill="white"/>
+            <path d="M26 14 Q14 -4 6 -10" stroke="#78b0d0" fill="none" stroke-width="2.5"/>
+            <path d="M38 14 Q50 -4 58 -10" stroke="#78b0d0" fill="none" stroke-width="2.5"/>
+            <path d="M24 70 L22 82 L28 78 L32 86 L36 78 L42 82 L40 70Z" fill="#6898b8"/>
         </g>
-        <g transform="translate(82,8)">
-            <line x1="0" y1="0" x2="0" y2="70" stroke="#c0d0e0" stroke-width="2"/>
-            <path d="M-8 0 L0 -8 L8 0" fill="none" stroke="#c0d0e0" stroke-width="2"/>
-            <line x1="-8" y1="0" x2="-8" y2="-4" stroke="#c0d0e0" stroke-width="1.5"/>
-            <line x1="8" y1="0" x2="8" y2="-4" stroke="#c0d0e0" stroke-width="1.5"/>
+        <!-- GOD TRIDENT -->
+        <g transform="translate(86,2)">
+            <line x1="0" y1="4" x2="0" y2="78" stroke="#d0e0f0" stroke-width="3"/>
+            <path d="M-12 4 L0 -10 L12 4" fill="none" stroke="#d0e0f0" stroke-width="2.5"/>
+            <line x1="-12" y1="4" x2="-12" y2="-2" stroke="#d0e0f0" stroke-width="2"/>
+            <line x1="12" y1="4" x2="12" y2="-2" stroke="#d0e0f0" stroke-width="2"/>
+            <line x1="0" y1="-10" x2="0" y2="-16" stroke="#d0e0f0" stroke-width="2"/>
+            <!-- Trident power glow -->
+            <circle cx="0" cy="-10" r="6" fill="#80c0ff" opacity="0.15"><animate attributeName="r" values="4;8;4" dur="1s" repeatCount="indefinite"/></circle>
         </g>
     </svg>`,
 
-    // === 25: Abyssal Sovereign — dark synchro emperor, dark aura, commanding pose ===
+    // === 25: Abyssal Sovereign — void emperor, dark matter crown, soul-devouring presence ===
     25: `<svg viewBox="0 0 120 100">
-        <rect width="120" height="100" fill="#080010"/>
-        <circle cx="60" cy="50" r="40" fill="#4020a0" opacity="0.08"><animate attributeName="r" values="36;42;36" dur="4s" repeatCount="indefinite"/></circle>
-        <g transform="translate(24,6) scale(1.05)">
-            <ellipse cx="36" cy="50" rx="18" ry="24" fill="#6840a8"/>
-            <circle cx="36" cy="28" r="12" fill="#5c38a0"/>
-            <path d="M36 16 L32 6 L36 10 L40 4 L40 14" fill="#c0a0ff" opacity="0.6"/>
-            <path d="M24 38 L6 22 L-6 10 L2 24 L-8 36 L14 28Z" fill="#7850c0"/>
-            <path d="M48 38 L66 22 L78 10 L70 24 L80 36 L58 28Z" fill="#7850c0"/>
-            <path d="M28 72 L24 86 L32 82 L36 90 L40 82 L48 86 L44 72Z" fill="#4c2890"/>
-            <circle cx="30" cy="24" r="3" fill="#b080ff"/><circle cx="42" cy="24" r="3" fill="#b080ff"/>
-            <circle cx="30" cy="24" r="1.5" fill="white"/><circle cx="42" cy="24" r="1.5" fill="white"/>
-            <path d="M30 18 Q20 2 12 -2" stroke="#5c38a0" fill="none" stroke-width="2"/>
-            <path d="M42 18 Q52 2 60 -2" stroke="#5c38a0" fill="none" stroke-width="2"/>
+        <rect width="120" height="100" fill="#040008"/>
+        <!-- Void aura -->
+        <circle cx="60" cy="46" r="44" fill="#4020a0" opacity="0.06"><animate attributeName="r" values="38;48;38" dur="3s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="46" r="30" fill="#6040c0" opacity="0.04"><animate attributeName="r" values="34;26;34" dur="2s" repeatCount="indefinite"/></circle>
+        <!-- Dark matter particles -->
+        <g opacity="0.15">
+            <circle cx="20" cy="20" r="2" fill="#a080ff"><animate attributeName="cy" values="22;18;22" dur="4s" repeatCount="indefinite"/></circle>
+            <circle cx="100" cy="25" r="1.5" fill="#8060d0"><animate attributeName="cy" values="27;23;27" dur="3.5s" repeatCount="indefinite"/></circle>
+            <circle cx="15" cy="70" r="1.8" fill="#9070e0"><animate attributeName="cy" values="72;68;72" dur="5s" repeatCount="indefinite"/></circle>
+            <circle cx="105" cy="72" r="1.5" fill="#7050c0"><animate attributeName="cy" values="74;70;74" dur="4.5s" repeatCount="indefinite"/></circle>
         </g>
-        <g opacity="0.1"><circle cx="25" cy="80" r="12" fill="#6040c0"/><circle cx="95" cy="75" r="10" fill="#5030b0"/><circle cx="60" cy="15" r="8" fill="#7050d0"/></g>
+        <g transform="translate(14,0) scale(1.2)">
+            <ellipse cx="38" cy="48" rx="20" ry="26" fill="#6840a8"/>
+            ${_spike(20,30,10,200,'#5030a0')}${_spike(56,30,10,340,'#5030a0')}
+            <circle cx="38" cy="22" r="14" fill="#5c38a0"/>
+            <!-- Void crown -->
+            <path d="M24 12 L28 -2 L32 8 L38 -4 L44 8 L48 -2 L52 12" fill="#8060d0" opacity="0.7" stroke="#a080ff" stroke-width="0.8"/>
+            <circle cx="38" cy="0" r="2.5" fill="#c0a0ff" opacity="0.5"><animate attributeName="opacity" values="0.3;0.7;0.3" dur="2s" repeatCount="indefinite"/></circle>
+            <!-- Dominating claws -->
+            <path d="M24 32 L2 14 L-12 0 L-2 16 L-16 28 L10 22Z" fill="#7850c0"/>
+            <path d="M-12 0 L-20 -8 L-10 -2Z" fill="#9068e0"/>
+            <path d="M52 32 L74 14 L88 0 L78 16 L92 28 L66 22Z" fill="#7850c0"/>
+            <path d="M88 0 L96 -8 L86 -2Z" fill="#9068e0"/>
+            <!-- Soul-eating eyes -->
+            <circle cx="32" cy="18" r="3.5" fill="#b080ff"><animate attributeName="r" values="3;4;3" dur="1s" repeatCount="indefinite"/></circle>
+            <circle cx="44" cy="18" r="3.5" fill="#b080ff"><animate attributeName="r" values="4;3;4" dur="1s" repeatCount="indefinite"/></circle>
+            <circle cx="32" cy="18" r="1.5" fill="white"/><circle cx="44" cy="18" r="1.5" fill="white"/>
+            <path d="M32 12 Q20 -4 10 -10" stroke="#5c38a0" fill="none" stroke-width="2.5"/>
+            <path d="M44 12 Q56 -4 66 -10" stroke="#5c38a0" fill="none" stroke-width="2.5"/>
+            <path d="M30 72 L26 86 L34 82 L38 90 L42 82 L50 86 L46 72Z" fill="#4c2890"/>
+        </g>
     </svg>`,
 
     // === SPELL CARDS ===
-    // 26: Polymerization — two vortex spirals merging into one
+    // 26: Polymerization — violent fusion vortex, matter colliding, energy explosion
     26: `<svg viewBox="0 0 120 100">
-        <circle cx="35" cy="50" r="22" fill="none" stroke="#30a068" stroke-width="2" opacity="0.5"><animateTransform attributeName="transform" type="rotate" from="0 35 50" to="360 35 50" dur="6s" repeatCount="indefinite"/></circle>
-        <circle cx="85" cy="50" r="22" fill="none" stroke="#30a068" stroke-width="2" opacity="0.5"><animateTransform attributeName="transform" type="rotate" from="360 85 50" to="0 85 50" dur="6s" repeatCount="indefinite"/></circle>
-        <circle cx="35" cy="50" r="16" fill="#30a068" opacity="0.2"/>
-        <circle cx="85" cy="50" r="16" fill="#30a068" opacity="0.2"/>
-        <ellipse cx="60" cy="50" rx="20" ry="24" fill="#40d080" opacity="0.25"/>
-        <path d="M40 50 Q50 35 60 50 Q70 65 80 50" stroke="#60e8a0" fill="none" stroke-width="2" opacity="0.6"/>
-        ${_star(60,50,5,'#80ffc0')}
+        <radialGradient id="pm26" cx="50%" cy="50%"><stop offset="0%" stop-color="#082818"/><stop offset="100%" stop-color="#020804"/></radialGradient>
+        <rect width="120" height="100" fill="url(#pm26)"/>
+        <!-- Colliding vortexes -->
+        <circle cx="30" cy="50" r="24" fill="none" stroke="#30a068" stroke-width="2.5" opacity="0.5"><animateTransform attributeName="transform" type="rotate" from="0 30 50" to="360 30 50" dur="4s" repeatCount="indefinite"/></circle>
+        <circle cx="90" cy="50" r="24" fill="none" stroke="#30a068" stroke-width="2.5" opacity="0.5"><animateTransform attributeName="transform" type="rotate" from="360 90 50" to="0 90 50" dur="4s" repeatCount="indefinite"/></circle>
+        <circle cx="30" cy="50" r="18" fill="#30a068" opacity="0.15"/>
+        <circle cx="90" cy="50" r="18" fill="#30a068" opacity="0.15"/>
+        <!-- Collision explosion center -->
+        <circle cx="60" cy="50" r="18" fill="#40d080" opacity="0.15"><animate attributeName="r" values="14;22;14" dur="1s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="50" r="10" fill="#80ffc0" opacity="0.1"><animate attributeName="r" values="12;8;12" dur="0.8s" repeatCount="indefinite"/></circle>
+        <!-- Energy streams connecting -->
+        <path d="M42 48 Q50 40 58 50 Q66 60 78 48" stroke="#60e8a0" fill="none" stroke-width="2.5" opacity="0.6"><animate attributeName="d" values="M42 48 Q50 40 58 50 Q66 60 78 48;M42 52 Q50 60 58 50 Q66 40 78 52;M42 48 Q50 40 58 50 Q66 60 78 48" dur="1.5s" repeatCount="indefinite"/></path>
+        <path d="M42 52 Q50 60 58 50 Q66 40 78 52" stroke="#50d090" fill="none" stroke-width="1.5" opacity="0.4"/>
+        <!-- Power burst -->
+        ${_star(60,50,8,'#80ffc0')}
+        ${_slash(50,35,70,65,'#40d080')}${_slash(70,35,50,65,'#40d080')}
     </svg>`,
 
-    // 27: Lobster's Feast — banquet table with lobster dishes, healing aura
+    // 27: Lobster's Feast — war feast, glowing power food, battle preparation
     27: `<svg viewBox="0 0 120 100">
-        <ellipse cx="60" cy="60" rx="45" ry="20" fill="#1a3020" stroke="#2a5030" stroke-width="1"/>
-        <ellipse cx="40" cy="55" rx="12" ry="8" fill="#2a4030" stroke="#3a6040" stroke-width="0.8"/>
-        <ellipse cx="80" cy="55" rx="12" ry="8" fill="#2a4030" stroke="#3a6040" stroke-width="0.8"/>
-        <ellipse cx="60" cy="50" rx="10" ry="6" fill="#2a4030" stroke="#3a6040" stroke-width="0.8"/>
-        <path d="M37 50 Q40 40 43 50" fill="#c06040" opacity="0.7"/>
-        <path d="M77 50 Q80 40 83 50" fill="#c06040" opacity="0.7"/>
-        <circle cx="60" cy="46" r="4" fill="#d08060" opacity="0.6"/>
-        <g opacity="0.3">
-            <path d="M60 35 Q55 25 60 15" stroke="#40e080" fill="none" stroke-width="1.5"><animate attributeName="opacity" values="0.1;0.4;0.1" dur="2s" repeatCount="indefinite"/></path>
-            <path d="M50 38 Q48 30 52 22" stroke="#40e080" fill="none" stroke-width="1"><animate attributeName="opacity" values="0.3;0.1;0.3" dur="2s" repeatCount="indefinite"/></path>
-            <path d="M70 38 Q72 30 68 22" stroke="#40e080" fill="none" stroke-width="1"><animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" repeatCount="indefinite"/></path>
+        <radialGradient id="lf27" cx="50%" cy="55%"><stop offset="0%" stop-color="#102820"/><stop offset="100%" stop-color="#040c08"/></radialGradient>
+        <rect width="120" height="100" fill="url(#lf27)"/>
+        <!-- War table -->
+        <ellipse cx="60" cy="58" rx="48" ry="22" fill="#0c2018" stroke="#1a4030" stroke-width="1.5"/>
+        <ellipse cx="38" cy="52" rx="14" ry="9" fill="#142c20" stroke="#2a5038" stroke-width="1"/>
+        <ellipse cx="82" cy="52" rx="14" ry="9" fill="#142c20" stroke="#2a5038" stroke-width="1"/>
+        <ellipse cx="60" cy="48" rx="12" ry="7" fill="#142c20" stroke="#2a5038" stroke-width="1"/>
+        <!-- Glowing power food -->
+        <path d="M34 46 Q38 36 42 46" fill="#d06040" opacity="0.8"/>
+        <path d="M78 46 Q82 36 86 46" fill="#d06040" opacity="0.8"/>
+        <circle cx="60" cy="42" r="5" fill="#e08060" opacity="0.7"/>
+        <!-- Powerful healing aura -->
+        <g opacity="0.4">
+            <path d="M60 32 Q55 18 60 6" stroke="#40ff80" fill="none" stroke-width="2"><animate attributeName="opacity" values="0.1;0.5;0.1" dur="1.5s" repeatCount="indefinite"/></path>
+            <path d="M46 36 Q42 24 48 14" stroke="#40ff80" fill="none" stroke-width="1.5"><animate attributeName="opacity" values="0.3;0.1;0.3" dur="1.8s" repeatCount="indefinite"/></path>
+            <path d="M74 36 Q78 24 72 14" stroke="#40ff80" fill="none" stroke-width="1.5"><animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" repeatCount="indefinite"/></path>
         </g>
-        ${_star(60,20,3,'#40e080')}
-    </svg>`,
-
-    // 28: Ocean's Bounty — treasure chest underwater, cards/gold spilling out
-    28: `<svg viewBox="0 0 120 100">
-        ${_wave(20,'#2080b0',1)}
-        <rect x="0" y="75" width="120" height="25" fill="#102838"/>
-        <g transform="translate(30,35)">
-            <rect x="0" y="15" width="60" height="35" rx="4" fill="#6a5020" stroke="#8a6830" stroke-width="1.5"/>
-            <path d="M0 15 Q30 5 60 15" fill="#7a6028" stroke="#8a6830" stroke-width="1"/>
-            <rect x="25" y="25" width="10" height="8" rx="2" fill="#c0a040" stroke="#a08020" stroke-width="0.8"/>
-            <rect x="10" y="0" width="14" height="20" rx="2" fill="#d0d8e0" transform="rotate(-15 17 10)" opacity="0.8"/>
-            <rect x="36" y="2" width="14" height="20" rx="2" fill="#d0d8e0" transform="rotate(10 43 12)" opacity="0.7"/>
-            <circle cx="22" cy="8" r="4" fill="#ffd700" opacity="0.7"/>
-            <circle cx="45" cy="12" r="3" fill="#ffd700" opacity="0.6"/>
-            <circle cx="32" cy="4" r="2.5" fill="#ffd700" opacity="0.5"/>
-        </g>
-        ${_bub(20,30,2)}${_bub(95,25,1.5)}${_bub(80,40,2)}
-    </svg>`,
-
-    // 29: Claw Sharpening — lobster claw on whetstone, sparks
-    29: `<svg viewBox="0 0 120 100">
-        <rect x="30" y="60" width="60" height="15" rx="3" fill="#606070" stroke="#70707f" stroke-width="1"/>
-        <rect x="35" y="58" width="50" height="4" rx="1" fill="#808090"/>
-        <path d="M55 58 L40 25 L48 22 L65 56Z" fill="#50a870" opacity="0.8"/>
-        <path d="M40 25 L36 20 L44 18 L48 22Z" fill="#60c080"/>
-        <g opacity="0.6">
-            <line x1="52" y1="48" x2="42" y2="38" stroke="#ffe060" stroke-width="1"><animate attributeName="opacity" values="0;1;0" dur="0.8s" repeatCount="indefinite"/></line>
-            <line x1="54" y1="50" x2="48" y2="35" stroke="#ffcc40" stroke-width="0.8"><animate attributeName="opacity" values="0.5;0;0.5" dur="0.6s" repeatCount="indefinite"/></line>
-            <line x1="50" y1="52" x2="38" y2="42" stroke="#ffe080" stroke-width="0.6"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="0.7s" repeatCount="indefinite"/></line>
-            <circle cx="44" cy="40" r="1.5" fill="#ffe060"><animate attributeName="opacity" values="0;1;0" dur="0.5s" repeatCount="indefinite"/></circle>
-        </g>
-    </svg>`,
-
-    // 30: Coral Reef Kingdom — panoramic reef scene, coral towers, fish
-    30: `<svg viewBox="0 0 120 100">
-        <rect x="0" y="60" width="120" height="40" fill="#083028"/>
-        <path d="M10 60 Q14 35 12 25 Q18 30 20 45 Q24 30 22 60Z" fill="#e05040" opacity="0.5"/>
-        <path d="M45 60 Q50 40 48 30 Q55 38 58 48 Q60 35 62 60Z" fill="#d06848" opacity="0.45"/>
-        <path d="M90 60 Q95 42 92 34 Q98 40 100 52 Q104 38 102 60Z" fill="#c87040" opacity="0.4"/>
-        ${_seaweed(30,28,'#208050')}${_seaweed(72,24,'#188040')}${_seaweed(108,18,'#1a7048')}
+        <!-- Healing cross symbol -->
         <g opacity="0.5">
-            <path d="M35 40 L38 38 L40 42 L37 40Z" fill="#60a0d0"/>
-            <path d="M75 35 L78 33 L80 37 L77 35Z" fill="#5090c0"/>
-            <path d="M55 28 L58 26 L60 30 L57 28Z" fill="#70b0e0"/>
+            <line x1="60" y1="10" x2="60" y2="28" stroke="#60ffa0" stroke-width="2.5"/>
+            <line x1="51" y1="19" x2="69" y2="19" stroke="#60ffa0" stroke-width="2.5"/>
         </g>
-        ${_bub(25,20,2)}${_bub(65,18,1.5)}${_bub(85,25,2)}${_bub(50,12,1.2)}
-        <circle cx="60" cy="50" r="30" fill="#40d0a0" opacity="0.05"/>
     </svg>`,
 
-    // 31: Ritual of the Deep — ancient stone altar underwater, glowing runes
+    // 28: Ocean's Bounty — treasure erupting from deep, gold explosion, ancient chest
+    28: `<svg viewBox="0 0 120 100">
+        <radialGradient id="ob28" cx="50%" cy="60%"><stop offset="0%" stop-color="#102838"/><stop offset="100%" stop-color="#040810"/></radialGradient>
+        <rect width="120" height="100" fill="url(#ob28)"/>
+        <rect x="0" y="78" width="120" height="22" fill="#081828"/>
+        <!-- Ancient chest bursting open -->
+        <g transform="translate(25,32)">
+            <rect x="0" y="20" width="70" height="38" rx="4" fill="#7a5820" stroke="#a06828" stroke-width="2"/>
+            <path d="M0 20 Q35 8 70 20" fill="#8a6828" stroke="#a07830" stroke-width="1.5"/>
+            <rect x="28" y="30" width="14" height="10" rx="3" fill="#d0a040" stroke="#b08020" stroke-width="1"/>
+            <!-- Gold erupting upward -->
+            <circle cx="20" cy="2" r="5" fill="#ffd700" opacity="0.8"><animate attributeName="cy" values="4;0;4" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="50" cy="5" r="4" fill="#ffd700" opacity="0.7"><animate attributeName="cy" values="7;3;7" dur="1.8s" repeatCount="indefinite"/></circle>
+            <circle cx="35" cy="-2" r="5.5" fill="#ffe040" opacity="0.75"><animate attributeName="cy" values="0;-4;0" dur="1.3s" repeatCount="indefinite"/></circle>
+            <circle cx="15" cy="10" r="3.5" fill="#ffc820" opacity="0.6"/>
+            <circle cx="55" cy="8" r="3" fill="#ffc820" opacity="0.55"/>
+            <!-- Cards flying out -->
+            <rect x="8" y="-8" width="12" height="18" rx="2" fill="#d0d8e0" transform="rotate(-20 14 1)" opacity="0.8"/>
+            <rect x="42" y="-5" width="12" height="18" rx="2" fill="#d0d8e0" transform="rotate(15 48 4)" opacity="0.75"/>
+            <rect x="25" y="-14" width="12" height="18" rx="2" fill="#e0e4ea" transform="rotate(5 31 -5)" opacity="0.85"/>
+        </g>
+        <!-- Light rays from treasure -->
+        <g opacity="0.15">
+            <line x1="60" y1="50" x2="20" y2="10" stroke="#ffd700" stroke-width="1.5"/>
+            <line x1="60" y1="50" x2="100" y2="8" stroke="#ffd700" stroke-width="1.5"/>
+            <line x1="60" y1="50" x2="60" y2="5" stroke="#ffe040" stroke-width="1"/>
+        </g>
+    </svg>`,
+
+    // 29: Claw Sharpening — brutal grinding, intense sparks shower, glowing blade edge
+    29: `<svg viewBox="0 0 120 100">
+        <radialGradient id="cs29" cx="45%" cy="55%"><stop offset="0%" stop-color="#182008"/><stop offset="100%" stop-color="#060804"/></radialGradient>
+        <rect width="120" height="100" fill="url(#cs29)"/>
+        <!-- Heavy whetstone -->
+        <rect x="25" y="58" width="70" height="18" rx="4" fill="#505060" stroke="#606070" stroke-width="1.5"/>
+        <rect x="30" y="55" width="60" height="5" rx="2" fill="#707080"/>
+        <!-- Massive claw being sharpened -->
+        <path d="M58 55 L38 14 L48 10 L72 52Z" fill="#40c070" opacity="0.85"/>
+        <path d="M38 14 L32 6 L44 4 L48 10Z" fill="#50d888"/>
+        <!-- Glowing edge -->
+        <path d="M38 14 L58 55" stroke="#80ff80" fill="none" stroke-width="1.5" opacity="0.5"><animate attributeName="opacity" values="0.3;0.7;0.3" dur="1s" repeatCount="indefinite"/></path>
+        <!-- INTENSE spark shower -->
+        <g opacity="0.8">
+            <line x1="50" y1="45" x2="35" y2="28" stroke="#ffe060" stroke-width="1.5"><animate attributeName="opacity" values="0;1;0" dur="0.3s" repeatCount="indefinite"/></line>
+            <line x1="52" y1="48" x2="42" y2="30" stroke="#ffcc40" stroke-width="1.2"><animate attributeName="opacity" values="0.5;0;0.5" dur="0.25s" repeatCount="indefinite"/></line>
+            <line x1="48" y1="50" x2="30" y2="35" stroke="#ffe080" stroke-width="1"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="0.35s" repeatCount="indefinite"/></line>
+            <line x1="54" y1="52" x2="44" y2="32" stroke="#fff0a0" stroke-width="0.8"><animate attributeName="opacity" values="0;0.9;0" dur="0.4s" repeatCount="indefinite"/></line>
+            <line x1="46" y1="52" x2="28" y2="40" stroke="#ffe060" stroke-width="1"><animate attributeName="opacity" values="0.6;0;0.6" dur="0.28s" repeatCount="indefinite"/></line>
+            <circle cx="42" cy="36" r="2.5" fill="#ffe060"><animate attributeName="opacity" values="0;1;0" dur="0.2s" repeatCount="indefinite"/></circle>
+            <circle cx="36" cy="32" r="2" fill="#fff080"><animate attributeName="opacity" values="0.5;0;0.5" dur="0.3s" repeatCount="indefinite"/></circle>
+            <circle cx="48" cy="42" r="1.5" fill="#ffcc40"><animate attributeName="opacity" values="0;0.8;0" dur="0.35s" repeatCount="indefinite"/></circle>
+        </g>
+    </svg>`,
+
+    // 30: Coral Reef Kingdom — epic underwater kingdom, massive coral fortress, bioluminescent
+    30: `<svg viewBox="0 0 120 100">
+        <radialGradient id="crk30" cx="50%" cy="60%"><stop offset="0%" stop-color="#083028"/><stop offset="100%" stop-color="#020c08"/></radialGradient>
+        <rect width="120" height="100" fill="url(#crk30)"/>
+        <rect x="0" y="55" width="120" height="45" fill="#041810"/>
+        <!-- Massive coral fortress towers -->
+        <path d="M8 55 Q12 20 10 8 Q16 18 18 35 Q22 15 20 55Z" fill="#ff3828" opacity="0.5"/>
+        <path d="M40 55 Q46 25 44 12 Q52 22 56 38 Q58 18 60 55Z" fill="#e05040" opacity="0.45"/>
+        <path d="M85 55 Q92 28 88 15 Q96 24 98 42 Q102 22 100 55Z" fill="#d06040" opacity="0.42"/>
+        <!-- Bioluminescent glow -->
+        <circle cx="14" cy="20" r="4" fill="#ff8060" opacity="0.15"><animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite"/></circle>
+        <circle cx="50" cy="25" r="5" fill="#ff6848" opacity="0.12"><animate attributeName="r" values="4;6;4" dur="2.5s" repeatCount="indefinite"/></circle>
+        <circle cx="92" cy="28" r="4" fill="#e07050" opacity="0.13"><animate attributeName="r" values="3;5;3" dur="3s" repeatCount="indefinite"/></circle>
+        ${_seaweed(30,32,'#20a060')}${_seaweed(72,28,'#18a050')}${_seaweed(108,22,'#1a8048')}
+        <!-- Glowing fish -->
+        <g opacity="0.6">
+            <path d="M32 38 L36 36 L38 40 L34 38Z" fill="#60c0ff"><animate attributeName="opacity" values="0.3;0.7;0.3" dur="3s" repeatCount="indefinite"/></path>
+            <path d="M75 32 L79 30 L81 34 L77 32Z" fill="#50b0e0"><animate attributeName="opacity" values="0.5;0.2;0.5" dur="2.5s" repeatCount="indefinite"/></path>
+            <path d="M55 20 L59 18 L61 22 L57 20Z" fill="#70d0ff"/>
+        </g>
+        <!-- Kingdom power field -->
+        <circle cx="60" cy="45" r="35" fill="#40d0a0" opacity="0.03"><animate attributeName="r" values="32;38;32" dur="4s" repeatCount="indefinite"/></circle>
+    </svg>`,
+
+    // 31: Ritual of the Deep — blazing altar, blood sacrifice, ancient power unleashed
     31: `<svg viewBox="0 0 120 100">
-        <radialGradient id="rd31" cx="50%" cy="60%"><stop offset="0%" stop-color="#102040"/><stop offset="100%" stop-color="#040810"/></radialGradient>
+        <radialGradient id="rd31" cx="50%" cy="55%"><stop offset="0%" stop-color="#102040"/><stop offset="100%" stop-color="#020408"/></radialGradient>
         <rect width="120" height="100" fill="url(#rd31)"/>
-        <rect x="35" y="50" width="50" height="35" rx="2" fill="#2a3040" stroke="#3a4050" stroke-width="1"/>
-        <rect x="25" y="45" width="70" height="8" rx="2" fill="#303848"/>
-        <circle cx="60" cy="38" r="12" fill="none" stroke="#4080c0" stroke-width="1.5" opacity="0.6"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/></circle>
-        <polygon points="60,28 63,36 72,36 65,42 67,50 60,45 53,50 55,42 48,36 57,36" fill="#4080c0" opacity="0.4"/>
-        <g opacity="0.4" fill="#4080d0" font-size="6">
-            <text x="42" y="62">&#x2648;</text><text x="54" y="62">&#x2649;</text><text x="66" y="62">&#x264A;</text>
-            <text x="48" y="74">&#x264B;</text><text x="60" y="74">&#x264C;</text>
+        <!-- Altar -->
+        <rect x="30" y="50" width="60" height="38" rx="3" fill="#1a2838" stroke="#2a3848" stroke-width="1.5"/>
+        <rect x="20" y="44" width="80" height="10" rx="3" fill="#222e3c"/>
+        <!-- Blazing ritual fire -->
+        ${_flame(60,44,30,'#4080ff')}
+        ${_flame(50,46,22,'#3070d0')}
+        ${_flame(70,46,24,'#3878c0')}
+        <!-- Power circle -->
+        <circle cx="60" cy="36" r="16" fill="none" stroke="#4080c0" stroke-width="2" opacity="0.5"><animate attributeName="opacity" values="0.3;0.8;0.3" dur="2s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="rotate" from="0 60 36" to="360 60 36" dur="8s" repeatCount="indefinite"/></circle>
+        <!-- Ritual star -->
+        <polygon points="60,22 64,32 74,32 66,38 69,48 60,42 51,48 54,38 46,32 56,32" fill="#4080c0" opacity="0.5"><animate attributeName="opacity" values="0.3;0.6;0.3" dur="2s" repeatCount="indefinite"/></polygon>
+        <!-- Glowing runes on altar -->
+        <g opacity="0.5" fill="#4080d0" font-size="7">
+            <text x="38" y="62"><animate attributeName="opacity" values="0.2;0.6;0.2" dur="3s" repeatCount="indefinite"/>&#x2648;</text>
+            <text x="52" y="62"><animate attributeName="opacity" values="0.5;0.2;0.5" dur="2.5s" repeatCount="indefinite"/>&#x2649;</text>
+            <text x="66" y="62"><animate attributeName="opacity" values="0.3;0.7;0.3" dur="3.5s" repeatCount="indefinite"/>&#x264A;</text>
+            <text x="45" y="76"><animate attributeName="opacity" values="0.4;0.1;0.4" dur="2.8s" repeatCount="indefinite"/>&#x264B;</text>
+            <text x="60" y="76"><animate attributeName="opacity" values="0.2;0.5;0.2" dur="3.2s" repeatCount="indefinite"/>&#x264C;</text>
         </g>
-        ${_bub(20,30,2,0.08)}${_bub(100,25,1.5,0.06)}
     </svg>`,
 
-    // 32: Crustacean Fury — explosive energy burst, claw silhouette, lightning
+    // 32: Crustacean Fury — nuclear-level energy explosion, devastating lightning
     32: `<svg viewBox="0 0 120 100">
-        <radialGradient id="cf32" cx="50%" cy="50%"><stop offset="0%" stop-color="#401008"/><stop offset="100%" stop-color="#100400"/></radialGradient>
+        <radialGradient id="cf32" cx="50%" cy="50%"><stop offset="0%" stop-color="#401008"/><stop offset="100%" stop-color="#080200"/></radialGradient>
         <rect width="120" height="100" fill="url(#cf32)"/>
-        <circle cx="60" cy="50" r="30" fill="#ff4400" opacity="0.1"><animate attributeName="r" values="25;35;25" dur="0.8s" repeatCount="indefinite"/></circle>
-        <path d="M65 15 L45 45 L55 45 L50 85 L75 48 L62 48Z" fill="#ff8830" opacity="0.7"/>
-        <path d="M55 15 L40 40 L48 40 L45 70 L68 42 L58 42Z" fill="#ffcc40" opacity="0.4"/>
-        <path d="M40 50 L52 50 L48 44 L56 50" stroke="#ff6020" fill="none" stroke-width="2" opacity="0.5"/>
-        <path d="M80 50 L68 50 L72 44 L64 50" stroke="#ff6020" fill="none" stroke-width="2" opacity="0.5"/>
+        <!-- Nuclear blast -->
+        <circle cx="60" cy="50" r="35" fill="#ff4400" opacity="0.08"><animate attributeName="r" values="28;40;28" dur="0.5s" repeatCount="indefinite"/></circle>
+        <circle cx="60" cy="50" r="22" fill="#ff6600" opacity="0.06"><animate attributeName="r" values="25;18;25" dur="0.4s" repeatCount="indefinite"/></circle>
+        <!-- Massive lightning bolts -->
+        <path d="M68 8 L48 42 L58 42 L50 92 L78 48 L65 48Z" fill="#ff8830" opacity="0.8"/>
+        <path d="M56 10 L38 38 L48 38 L42 78 L72 42 L60 42Z" fill="#ffcc40" opacity="0.5"/>
+        <!-- Second bolt -->
+        <path d="M92 15 L76 45 L84 45 L78 80" stroke="#ff6020" fill="none" stroke-width="2" opacity="0.4"/>
+        <path d="M28 20 L44 48 L36 48 L42 78" stroke="#ff6020" fill="none" stroke-width="2" opacity="0.4"/>
+        <!-- Claw silhouette in the blast -->
+        <g opacity="0.4">
+            <path d="M38 50 L52 50 L48 44 L56 50" stroke="#ff4400" fill="none" stroke-width="3"/>
+            <path d="M82 50 L68 50 L72 44 L64 50" stroke="#ff4400" fill="none" stroke-width="3"/>
+        </g>
+        <!-- Shockwave ring -->
+        <circle cx="60" cy="50" r="30" fill="none" stroke="#ff8830" stroke-width="1" opacity="0.2"><animate attributeName="r" values="20;40;20" dur="0.8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.3;0;0.3" dur="0.8s" repeatCount="indefinite"/></circle>
     </svg>`,
 
-    // 33: Tidal Wave — massive wave crashing, destructive force
+    // 33: Tidal Wave — apocalyptic mega-wave, ships being destroyed, unstoppable force
     33: `<svg viewBox="0 0 120 100">
-        <rect x="0" y="70" width="120" height="30" fill="#082040"/>
-        <path d="M-10 40 Q20 20 50 30 Q70 36 80 20 Q90 8 95 18 Q100 5 110 15 L120 40 L120 70 Q90 60 60 65 Q30 70 0 65Z" fill="#2080c0" opacity="0.6"/>
-        <path d="M-5 45 Q25 30 55 38 Q75 42 85 28 Q95 16 105 26 L120 50 L120 70 Q80 62 50 68 Q20 72 0 68Z" fill="#3090d0" opacity="0.5"/>
-        <path d="M80 20 Q85 15 88 20 Q90 12 95 18" fill="white" opacity="0.25"/>
-        <path d="M95 18 Q100 10 105 16" fill="white" opacity="0.2"/>
-        <g opacity="0.3">
-            ${_bub(30,35,2)}${_bub(50,25,1.5)}${_bub(70,30,2.5)}${_bub(90,22,1.8)}
-        </g>
-        <path d="M0 65 Q30 58 60 62 Q90 66 120 60" stroke="white" fill="none" stroke-width="0.8" opacity="0.15"/>
+        <radialGradient id="tw33" cx="60%" cy="30%"><stop offset="0%" stop-color="#1060a0"/><stop offset="100%" stop-color="#040c18"/></radialGradient>
+        <rect width="120" height="100" fill="url(#tw33)"/>
+        <!-- Devastated sea floor -->
+        <rect x="0" y="75" width="120" height="25" fill="#041020"/>
+        <!-- MASSIVE wave wall -->
+        <path d="M-10 35 Q20 10 50 22 Q70 30 80 12 Q88 0 95 10 Q102 -5 110 8 L120 35 L120 75 Q90 62 60 68 Q30 74 0 68Z" fill="#2088c0" opacity="0.65"/>
+        <path d="M-5 42 Q25 22 55 32 Q75 38 85 20 Q95 8 105 18 L120 45 L120 75 Q80 65 50 70 Q20 76 0 72Z" fill="#3098d0" opacity="0.55"/>
+        <!-- Wave crest foam -->
+        <path d="M80 12 Q85 6 90 12 Q92 4 95 10" fill="white" opacity="0.3"/>
+        <path d="M95 10 Q100 2 105 8 Q108 4 112 10" fill="white" opacity="0.25"/>
+        <!-- Debris in the wave -->
+        <rect x="35" y="42" width="6" height="10" rx="1" fill="#8a6830" opacity="0.4" transform="rotate(25 38 47)"/>
+        <rect x="70" y="35" width="5" height="8" rx="1" fill="#806028" opacity="0.35" transform="rotate(-15 73 39)"/>
+        <!-- Spray particles -->
+        ${_bub(30,28,3,0.15)}${_bub(50,18,2.5,0.12)}${_bub(70,22,3.5,0.18)}${_bub(90,14,2,0.1)}${_bub(100,25,2.5,0.12)}
+        <!-- Impact foam line -->
+        <path d="M0 68 Q30 60 60 64 Q90 68 120 62" stroke="white" fill="none" stroke-width="1.2" opacity="0.2"/>
     </svg>`,
 
-    // 34: Molting Season — empty shell with spirit rising, new form emerging
+    // 34: Molting Season — violent transformation, old shell exploding, power-up aura
     34: `<svg viewBox="0 0 120 100">
-        <rect x="0" y="72" width="120" height="28" fill="#102818"/>
-        <g transform="translate(25,40)" opacity="0.5">
-            <ellipse cx="25" cy="20" rx="14" ry="18" fill="#886848" opacity="0.6"/>
-            <circle cx="25" cy="4" r="8" fill="#786038" opacity="0.5"/>
-            <path d="M14 10 L4 4 L0 0 L4 6 L0 12 L10 8Z" fill="#988858" opacity="0.4"/>
-            <path d="M36 10 L46 4 L50 0 L46 6 L50 12 L40 8Z" fill="#988858" opacity="0.4"/>
+        <radialGradient id="ms34" cx="50%" cy="50%"><stop offset="0%" stop-color="#102818"/><stop offset="100%" stop-color="#040c08"/></radialGradient>
+        <rect width="120" height="100" fill="url(#ms34)"/>
+        <rect x="0" y="76" width="120" height="24" fill="#081810"/>
+        <!-- Old shell shattering -->
+        <g transform="translate(18,38)" opacity="0.5">
+            <path d="M18 18 Q25 10 30 20 Q32 28 24 30 Q16 28 18 18Z" fill="#886848" opacity="0.5" transform="rotate(-15 24 22)"/>
+            <path d="M8 12 Q12 6 16 14 L10 16Z" fill="#786038" opacity="0.4" transform="rotate(20 12 12)"/>
+            <path d="M32 8 Q36 4 38 12 L34 14Z" fill="#808050" opacity="0.35" transform="rotate(-25 35 10)"/>
         </g>
-        <g transform="translate(55,10)" opacity="0.6">
-            <ellipse cx="15" cy="28" rx="10" ry="14" fill="#50c880" opacity="0.4"/>
-            <circle cx="15" cy="16" r="7" fill="#40b870" opacity="0.35"/>
-            <path d="M8 22 L2 18" stroke="#50c880" fill="none" stroke-width="1.5" opacity="0.3"/>
-            <path d="M22 22 L28 18" stroke="#50c880" fill="none" stroke-width="1.5" opacity="0.3"/>
+        <!-- New form ascending with power -->
+        <g transform="translate(52,6)">
+            <!-- Power aura -->
+            <circle cx="18" cy="38" r="24" fill="#40e080" opacity="0.06"><animate attributeName="r" values="20;28;20" dur="1.5s" repeatCount="indefinite"/></circle>
+            <ellipse cx="18" cy="36" rx="12" ry="18" fill="#50d888" opacity="0.6"/>
+            <circle cx="18" cy="20" r="9" fill="#40c870" opacity="0.55"/>
+            <!-- Glowing eyes of new form -->
+            <circle cx="14" cy="18" r="2" fill="#80ff80"><animate attributeName="opacity" values="0.5;1;0.5" dur="1s" repeatCount="indefinite"/></circle>
+            <circle cx="22" cy="18" r="2" fill="#80ff80"><animate attributeName="opacity" values="1;0.5;1" dur="1s" repeatCount="indefinite"/></circle>
+            <path d="M10 28 L2 24" stroke="#50d888" fill="none" stroke-width="2" opacity="0.5"/>
+            <path d="M26 28 L34 24" stroke="#50d888" fill="none" stroke-width="2" opacity="0.5"/>
         </g>
-        <path d="M50 45 Q58 30 68 25" stroke="#40e080" fill="none" stroke-width="1" stroke-dasharray="2 2" opacity="0.3">
-            <animate attributeName="opacity" values="0.1;0.4;0.1" dur="2s" repeatCount="indefinite"/>
-        </path>
-        ${_star(72,18,2,'#60e0a0')}${_star(80,28,1.5,'#50d090')}
+        <!-- Transformation energy arc -->
+        <path d="M42 50 Q52 30 62 22" stroke="#40e080" fill="none" stroke-width="2" opacity="0.4"><animate attributeName="opacity" values="0.2;0.5;0.2" dur="1.5s" repeatCount="indefinite"/></path>
+        <path d="M38 55 Q50 35 65 28" stroke="#60ffa0" fill="none" stroke-width="1" opacity="0.25"/>
+        <!-- Power particles -->
+        ${_star(78,18,3,'#60ffa0')}${_star(88,30,2.5,'#50e090')}${_star(82,42,2,'#40d080')}
     </svg>`,
 
     // === TRAP CARDS ===
-    // 35: Pincer Trap — mechanical jaw trap with lobster claws, spring-loaded
+    // 35: Pincer Trap — savage mechanical death trap, razor jaws snapping, blood-red
     35: `<svg viewBox="0 0 120 100">
-        <rect x="0" y="70" width="120" height="30" fill="#200818"/>
-        <g transform="translate(20,15)">
-            <ellipse cx="40" cy="55" rx="35" ry="8" fill="#402030" opacity="0.5"/>
-            <path d="M10 40 L40 20 L70 40" fill="none" stroke="#d04888" stroke-width="3"/>
-            <path d="M10 40 L40 60 L70 40" fill="none" stroke="#d04888" stroke-width="3"/>
-            <circle cx="10" cy="40" r="4" fill="#e05898"/><circle cx="70" cy="40" r="4" fill="#e05898"/>
-            <circle cx="40" cy="20" r="3" fill="#ff68a8"/>
-            <circle cx="40" cy="60" r="3" fill="#ff68a8"/>
-            <line x1="40" y1="60" x2="40" y2="70" stroke="#c04078" stroke-width="2"/>
-            <circle cx="40" cy="72" r="4" fill="#a03060" stroke="#c04078" stroke-width="1"/>
+        <radialGradient id="pt35" cx="50%" cy="50%"><stop offset="0%" stop-color="#200818"/><stop offset="100%" stop-color="#080208"/></radialGradient>
+        <rect width="120" height="100" fill="url(#pt35)"/>
+        <rect x="0" y="74" width="120" height="26" fill="#100408"/>
+        <!-- Danger aura -->
+        <circle cx="60" cy="42" r="28" fill="#ff2060" opacity="0.05"><animate attributeName="r" values="24;32;24" dur="1s" repeatCount="indefinite"/></circle>
+        <g transform="translate(15,10) scale(1.1)">
+            <!-- Death shadow -->
+            <ellipse cx="42" cy="58" rx="38" ry="8" fill="#301020" opacity="0.5"/>
+            <!-- MASSIVE jaw trap -->
+            <path d="M6 42 L42 16 L78 42" fill="none" stroke="#e04888" stroke-width="4"/>
+            <path d="M6 42 L42 68 L78 42" fill="none" stroke="#e04888" stroke-width="4"/>
+            <!-- Razor teeth on jaws -->
+            <path d="M18 32 L22 26 L26 34" fill="#ff68a8"/><path d="M34 22 L38 18 L42 24" fill="#ff68a8"/><path d="M50 22 L54 18 L58 24" fill="#ff68a8"/><path d="M64 32 L68 26 L72 34" fill="#ff68a8"/>
+            <path d="M18 52 L22 58 L26 50" fill="#ff68a8"/><path d="M34 62 L38 66 L42 60" fill="#ff68a8"/><path d="M50 62 L54 66 L58 60" fill="#ff68a8"/><path d="M64 52 L68 58 L72 50" fill="#ff68a8"/>
+            <!-- Hinge bolts -->
+            <circle cx="6" cy="42" r="5" fill="#e05898" stroke="#ff68a8" stroke-width="1.5"/>
+            <circle cx="78" cy="42" r="5" fill="#e05898" stroke="#ff68a8" stroke-width="1.5"/>
+            <!-- Trigger mechanism -->
+            <line x1="42" y1="68" x2="42" y2="78" stroke="#c04078" stroke-width="2.5"/>
+            <circle cx="42" cy="80" r="5" fill="#a03060" stroke="#c04078" stroke-width="1.5"/>
+            <!-- Pressure plate glow -->
+            <circle cx="42" cy="42" r="8" fill="#ff2060" opacity="0.08"><animate attributeName="r" values="6;10;6" dur="0.8s" repeatCount="indefinite"/></circle>
         </g>
-        <circle cx="60" cy="42" r="15" fill="#ff4488" opacity="0.06"/>
     </svg>`,
 
-    // 36: Shell Shield — large lobster shell used as shield, protective glow
+    // 36: Shell Shield — indestructible fortress shield, energy barrier, deflecting attacks
     36: `<svg viewBox="0 0 120 100">
-        <g transform="translate(25,10)">
-            <path d="M35 8 L60 20 L60 55 Q60 78 35 88 Q10 78 10 55 L10 20Z" fill="#8050a0" opacity="0.6" stroke="#a068c0" stroke-width="2"/>
-            <path d="M35 18 L50 26 L50 52 Q50 68 35 76 Q20 68 20 52 L20 26Z" fill="#6838a0" opacity="0.4"/>
-            <ellipse cx="35" cy="48" rx="12" ry="16" fill="#9060b0" opacity="0.3"/>
-            <path d="M35 35 Q42 40 42 48 Q42 56 35 60 Q28 56 28 48 Q28 40 35 35Z" fill="none" stroke="#c090e0" stroke-width="1" opacity="0.5"/>
+        <radialGradient id="ss36" cx="50%" cy="50%"><stop offset="0%" stop-color="#18102a"/><stop offset="100%" stop-color="#060410"/></radialGradient>
+        <rect width="120" height="100" fill="url(#ss36)"/>
+        <!-- Energy barrier field -->
+        <circle cx="60" cy="52" r="38" fill="#a070d0" opacity="0.03"><animate attributeName="r" values="34;42;34" dur="2s" repeatCount="indefinite"/></circle>
+        <g transform="translate(20,4) scale(1.1)">
+            <!-- Massive shield -->
+            <path d="M38 4 L68 18 L68 56 Q68 82 38 94 Q8 82 8 56 L8 18Z" fill="#7848a0" opacity="0.7" stroke="#a070c0" stroke-width="2.5"/>
+            <path d="M38 14 L58 24 L58 52 Q58 72 38 82 Q18 72 18 52 L18 24Z" fill="#6038a0" opacity="0.5"/>
+            <!-- Shield emblem - lobster claw -->
+            <path d="M30 42 L38 34 L46 42 L42 44 L38 38 L34 44Z" fill="#c0a0e0" opacity="0.4"/>
+            <ellipse cx="38" cy="52" rx="10" ry="14" fill="#8060b0" opacity="0.3"/>
+            <!-- Inner defense rune -->
+            <circle cx="38" cy="52" r="8" fill="none" stroke="#c090e0" stroke-width="1.5" opacity="0.4"><animateTransform attributeName="transform" type="rotate" from="0 38 52" to="360 38 52" dur="6s" repeatCount="indefinite"/></circle>
+            <!-- Deflection sparks -->
+            <g opacity="0.4">
+                ${_slash(8,30,2,22,'#c0a0ff')}${_slash(68,35,74,28,'#b090e0')}
+            </g>
         </g>
-        <circle cx="60" cy="55" r="32" fill="#a070d0" opacity="0.04"><animate attributeName="r" values="28;35;28" dur="2s" repeatCount="indefinite"/></circle>
+        <!-- Impact being deflected -->
+        <g opacity="0.3">
+            <line x1="4" y1="30" x2="18" y2="38" stroke="#ff6060" stroke-width="2"><animate attributeName="opacity" values="0;0.4;0" dur="2s" repeatCount="indefinite"/></line>
+            <line x1="6" y1="40" x2="20" y2="44" stroke="#ff4040" stroke-width="1.5"><animate attributeName="opacity" values="0.3;0;0.3" dur="1.8s" repeatCount="indefinite"/></line>
+        </g>
     </svg>`,
 
-    // 37: Lobster Pot — old wooden trap underwater, lobster inside struggling
+    // 37: Lobster Pot — nightmarish deep-sea cage, chains, prisoner clawing desperately
     37: `<svg viewBox="0 0 120 100">
-        <rect x="0" y="75" width="120" height="25" fill="#180810"/>
-        ${_wave(82,'#301828',1)}
-        <g transform="translate(20,18)">
-            <ellipse cx="40" cy="45" rx="32" ry="22" fill="none" stroke="#8a6040" stroke-width="2.5"/>
-            <ellipse cx="40" cy="45" rx="32" ry="22" fill="#4a3020" opacity="0.3"/>
-            <line x1="10" y1="45" x2="70" y2="45" stroke="#8a6040" stroke-width="1.5"/>
-            <line x1="15" y1="32" x2="65" y2="32" stroke="#8a6040" stroke-width="1"/>
-            <line x1="15" y1="58" x2="65" y2="58" stroke="#8a6040" stroke-width="1"/>
-            <line x1="20" y1="24" x2="20" y2="66" stroke="#8a6040" stroke-width="1"/>
-            <line x1="40" y1="23" x2="40" y2="67" stroke="#8a6040" stroke-width="1"/>
-            <line x1="60" y1="24" x2="60" y2="66" stroke="#8a6040" stroke-width="1"/>
-            <g transform="translate(30,35) scale(0.4)" opacity="0.7">
-                <ellipse cx="20" cy="15" rx="8" ry="12" fill="#d050a0"/>
-                <circle cx="20" cy="4" r="5" fill="#c04890"/>
-                <path d="M14 8 L6 4 L4 2 L6 6Z" fill="#e060b0"/>
-                <path d="M26 8 L34 4 L36 2 L34 6Z" fill="#e060b0"/>
+        <radialGradient id="lp37" cx="50%" cy="50%"><stop offset="0%" stop-color="#180810"/><stop offset="100%" stop-color="#060204"/></radialGradient>
+        <rect width="120" height="100" fill="url(#lp37)"/>
+        <rect x="0" y="78" width="120" height="22" fill="#0c0408"/>
+        <g transform="translate(15,14) scale(1.05)">
+            <!-- Reinforced cage -->
+            <ellipse cx="45" cy="44" rx="36" ry="24" fill="none" stroke="#906840" stroke-width="3"/>
+            <ellipse cx="45" cy="44" rx="36" ry="24" fill="#3a2010" opacity="0.3"/>
+            <!-- Heavy bars -->
+            <line x1="12" y1="44" x2="78" y2="44" stroke="#906840" stroke-width="2"/>
+            <line x1="16" y1="30" x2="74" y2="30" stroke="#906840" stroke-width="1.5"/>
+            <line x1="16" y1="58" x2="74" y2="58" stroke="#906840" stroke-width="1.5"/>
+            <line x1="22" y1="22" x2="22" y2="66" stroke="#906840" stroke-width="1.5"/>
+            <line x1="45" y1="20" x2="45" y2="68" stroke="#906840" stroke-width="1.5"/>
+            <line x1="68" y1="22" x2="68" y2="66" stroke="#906840" stroke-width="1.5"/>
+            <!-- Chains -->
+            <path d="M45 20 Q48 10 45 2 Q42 10 45 20" stroke="#808090" fill="none" stroke-width="2"/>
+            <path d="M45 2 Q48 -6 45 -12" stroke="#808090" fill="none" stroke-width="1.5"/>
+            <!-- Prisoner clawing at bars - intense -->
+            <g transform="translate(32,32) scale(0.5)">
+                <ellipse cx="22" cy="18" rx="10" ry="14" fill="#d050a0"/>
+                <circle cx="22" cy="6" r="7" fill="#c04890"/>
+                <!-- Desperate claws reaching through bars -->
+                <path d="M14 10 L-4 2 L-10 -4 L-4 4 L-10 10 L6 6Z" fill="#e868c0"/>
+                <path d="M30 10 L44 2 L50 -4 L44 4 L50 10 L34 6Z" fill="#e868c0"/>
+                <!-- Panicked eyes -->
+                <circle cx="18" cy="4" r="2" fill="#ff60d0" opacity="0.9"/>
+                <circle cx="26" cy="4" r="2" fill="#ff60d0" opacity="0.9"/>
             </g>
         </g>
     </svg>`,
 
-    // 38: Ink Cloud — squid-like ink explosion, obscuring darkness
+    // 38: Ink Cloud — choking void explosion, consuming darkness, no escape
     38: `<svg viewBox="0 0 120 100">
-        <radialGradient id="ic38" cx="50%" cy="50%"><stop offset="0%" stop-color="#0a0828"/><stop offset="100%" stop-color="#030210"/></radialGradient>
+        <radialGradient id="ic38" cx="50%" cy="50%"><stop offset="0%" stop-color="#0a0828"/><stop offset="100%" stop-color="#020108"/></radialGradient>
         <rect width="120" height="100" fill="url(#ic38)"/>
-        <g opacity="0.7">
-            <circle cx="60" cy="50" r="25" fill="#1a1040"><animate attributeName="r" values="22;28;22" dur="2s" repeatCount="indefinite"/></circle>
-            <circle cx="45" cy="40" r="18" fill="#120830" opacity="0.8"><animate attributeName="r" values="15;20;15" dur="1.8s" repeatCount="indefinite"/></circle>
-            <circle cx="75" cy="45" r="16" fill="#140a38" opacity="0.7"><animate attributeName="r" values="14;19;14" dur="2.2s" repeatCount="indefinite"/></circle>
-            <circle cx="55" cy="62" r="14" fill="#100828" opacity="0.6"/>
+        <!-- Massive ink explosion -->
+        <g opacity="0.8">
+            <circle cx="60" cy="50" r="30" fill="#0c0620"><animate attributeName="r" values="26;34;26" dur="1.5s" repeatCount="indefinite"/></circle>
+            <circle cx="40" cy="38" r="22" fill="#080418" opacity="0.85"><animate attributeName="r" values="18;25;18" dur="1.3s" repeatCount="indefinite"/></circle>
+            <circle cx="80" cy="42" r="20" fill="#0a0620" opacity="0.8"><animate attributeName="r" values="18;24;18" dur="1.7s" repeatCount="indefinite"/></circle>
+            <circle cx="50" cy="65" r="18" fill="#080420" opacity="0.7"><animate attributeName="r" values="15;21;15" dur="2s" repeatCount="indefinite"/></circle>
+            <circle cx="72" cy="62" r="16" fill="#060318" opacity="0.65"/>
+            <circle cx="35" cy="55" r="15" fill="#0a0620" opacity="0.6"/>
         </g>
-        <circle cx="60" cy="50" r="8" fill="#3020a0" opacity="0.3"/>
-        <circle cx="60" cy="50" r="3" fill="#6040d0" opacity="0.5"/>
-        <path d="M60 42 Q55 30 48 25" stroke="#4030a0" fill="none" stroke-width="1.5" opacity="0.3"/>
-        <path d="M60 42 Q65 30 72 25" stroke="#4030a0" fill="none" stroke-width="1.5" opacity="0.3"/>
+        <!-- Core void -->
+        <circle cx="60" cy="50" r="12" fill="#1a1040" opacity="0.5"/>
+        <circle cx="60" cy="50" r="5" fill="#4030a0" opacity="0.4"><animate attributeName="r" values="4;6;4" dur="1s" repeatCount="indefinite"/></circle>
+        <!-- Ink tendrils spreading -->
+        <g opacity="0.3" stroke="#2018a0" fill="none" stroke-width="2">
+            <path d="M60 42 Q50 25 40 15"><animate attributeName="d" values="M60 42 Q50 25 40 15;M60 42 Q48 28 38 18;M60 42 Q50 25 40 15" dur="3s" repeatCount="indefinite"/></path>
+            <path d="M60 42 Q70 25 80 15"><animate attributeName="d" values="M60 42 Q70 25 80 15;M60 42 Q72 28 82 18;M60 42 Q70 25 80 15" dur="3.5s" repeatCount="indefinite"/></path>
+            <path d="M55 58 Q40 70 25 80" stroke-width="1.5"/>
+            <path d="M65 58 Q80 70 95 80" stroke-width="1.5"/>
+        </g>
     </svg>`,
 
-    // 39: Tidal Ambush — underwater rocks hiding lobsters, surprise attack
+    // 39: Tidal Ambush — deadly ambush scene, warriors erupting from cover, strike moment
     39: `<svg viewBox="0 0 120 100">
-        <rect x="0" y="65" width="120" height="35" fill="#0c0418"/>
-        ${_rock(20,72,18,'#1a1028')}${_rock(60,75,22,'#181028')}${_rock(100,70,16,'#1a0c28')}
-        <g transform="translate(10,50) scale(0.35)" opacity="0.7">
-            <ellipse cx="20" cy="20" rx="10" ry="14" fill="#c050a0"/>
-            <circle cx="20" cy="8" r="6" fill="#b04890"/>
-            <circle cx="16" cy="6" r="1.5" fill="#ff80d0"/><circle cx="24" cy="6" r="1.5" fill="#ff80d0"/>
+        <radialGradient id="ta39" cx="50%" cy="65%"><stop offset="0%" stop-color="#0c0418"/><stop offset="100%" stop-color="#040108"/></radialGradient>
+        <rect width="120" height="100" fill="url(#ta39)"/>
+        <rect x="0" y="62" width="120" height="38" fill="#080210"/>
+        <!-- Ambush rocks -->
+        ${_rock(18,68,20,'#1a1028')}${_rock(60,72,24,'#181028')}${_rock(102,66,18,'#1a0c28')}
+        <!-- Warriors ERUPTING from cover -->
+        <g transform="translate(2,40) scale(0.45)">
+            <ellipse cx="22" cy="22" rx="12" ry="16" fill="#c050a0"/>
+            <circle cx="22" cy="8" r="8" fill="#b04890"/>
+            <!-- Attack claw extended -->
+            <path d="M14 12 L-4 2 L-12 -6 L-4 4 L-14 10 L4 8Z" fill="#e060b0"/>
+            <path d="M-12 -6 L-18 -12 L-10 -8Z" fill="#ff70c0"/>
+            <circle cx="18" cy="6" r="2" fill="#ff80d0"/><circle cx="26" cy="6" r="2" fill="#ff80d0"/>
         </g>
-        <g transform="translate(75,48) scale(0.35)" opacity="0.6">
-            <ellipse cx="20" cy="20" rx="10" ry="14" fill="#c050a0"/>
-            <circle cx="20" cy="8" r="6" fill="#b04890"/>
-            <circle cx="16" cy="6" r="1.5" fill="#ff80d0"/><circle cx="24" cy="6" r="1.5" fill="#ff80d0"/>
+        <g transform="translate(74,38) scale(0.45)">
+            <ellipse cx="22" cy="22" rx="12" ry="16" fill="#c050a0"/>
+            <circle cx="22" cy="8" r="8" fill="#b04890"/>
+            <path d="M30 12 L48 2 L56 -6 L48 4 L58 10 L40 8Z" fill="#e060b0"/>
+            <path d="M56 -6 L62 -12 L54 -8Z" fill="#ff70c0"/>
+            <circle cx="18" cy="6" r="2" fill="#ff80d0"/><circle cx="26" cy="6" r="2" fill="#ff80d0"/>
         </g>
-        <path d="M30 55 L90 55" stroke="#ff40a0" stroke-width="0.5" stroke-dasharray="2 4" opacity="0.3"/>
-        <text x="52" y="42" fill="#ff60c0" font-size="16" opacity="0.2" font-weight="900">!</text>
+        <!-- Ambush target area -->
+        <path d="M25 52 L95 52" stroke="#ff40a0" stroke-width="1" stroke-dasharray="3 3" opacity="0.3"/>
+        <!-- STRIKE indicators -->
+        <g opacity="0.4">
+            ${_slash(35,42,55,58,'#ff60c0')}${_slash(65,42,85,58,'#ff60c0')}
+        </g>
+        <!-- Warning icon -->
+        <text x="54" y="38" fill="#ff40a0" font-size="20" opacity="0.35" font-weight="900">!</text>
     </svg>`,
 
-    // 40: Mirror Tide — reflective water surface, card image reflected and shattered
+    // 40: Mirror Tide — dimensional mirror shattering, reality cracking, paradox energy
     40: `<svg viewBox="0 0 120 100">
-        <radialGradient id="mt40" cx="50%" cy="50%"><stop offset="0%" stop-color="#181028"/><stop offset="100%" stop-color="#060410"/></radialGradient>
+        <radialGradient id="mt40" cx="50%" cy="50%"><stop offset="0%" stop-color="#181028"/><stop offset="100%" stop-color="#040208"/></radialGradient>
         <rect width="120" height="100" fill="url(#mt40)"/>
-        <ellipse cx="60" cy="50" rx="35" ry="40" fill="#d050b0" opacity="0.06" stroke="#c040a0" stroke-width="1.5"/>
-        <line x1="10" y1="50" x2="110" y2="50" stroke="#e080d0" stroke-width="0.5" opacity="0.3"/>
-        <g opacity="0.5" transform="translate(40,18)">
-            <rect x="0" y="0" width="22" height="30" rx="2" fill="#2a1a3a" stroke="#6040a0" stroke-width="1"/>
-            <rect x="3" y="3" width="16" height="12" fill="#3a2a4a"/>
+        <!-- Shattering mirror frame -->
+        <ellipse cx="60" cy="50" rx="38" ry="42" fill="none" stroke="#c040a0" stroke-width="2" opacity="0.4"/>
+        <!-- Mirror surface -->
+        <ellipse cx="60" cy="50" rx="32" ry="36" fill="#d050b0" opacity="0.04"/>
+        <!-- Reflection line -->
+        <line x1="8" y1="50" x2="112" y2="50" stroke="#e080d0" stroke-width="1" opacity="0.3"/>
+        <!-- Original card - above -->
+        <g opacity="0.6" transform="translate(38,14)">
+            <rect x="0" y="0" width="24" height="32" rx="3" fill="#2a1a3a" stroke="#7050b0" stroke-width="1.5"/>
+            <rect x="3" y="3" width="18" height="14" fill="#3a2a4a"/>
+            <circle cx="12" cy="10" r="4" fill="#8060c0" opacity="0.4"/>
         </g>
-        <g opacity="0.3" transform="translate(40,52) scale(1,-1) translate(0,-80)">
-            <rect x="0" y="0" width="22" height="30" rx="2" fill="#2a1a3a" stroke="#6040a0" stroke-width="1"/>
-            <rect x="3" y="3" width="16" height="12" fill="#3a2a4a"/>
+        <!-- Reflected card - below, distorted -->
+        <g opacity="0.35" transform="translate(38,54) scale(1,-1) translate(0,-86)">
+            <rect x="0" y="0" width="24" height="32" rx="3" fill="#2a1a3a" stroke="#7050b0" stroke-width="1.5"/>
+            <rect x="3" y="3" width="18" height="14" fill="#3a2a4a"/>
+            <circle cx="12" cy="10" r="4" fill="#8060c0" opacity="0.4"/>
         </g>
+        <!-- MASSIVE shattering cracks -->
+        ${_crack(48,35,22,'#ff60ff')}${_crack(62,42,18,'#e050e0')}${_crack(55,55,20,'#d040d0')}
+        <!-- Shatter lines radiating -->
         <g opacity="0.5">
-            <line x1="52" y1="40" x2="48" y2="32" stroke="#ff80ff" stroke-width="1"/>
-            <line x1="58" y1="38" x2="62" y2="28" stroke="#ff80ff" stroke-width="0.8"/>
-            <line x1="55" y1="42" x2="55" y2="30" stroke="#e060e0" stroke-width="0.6"/>
+            <line x1="60" y1="40" x2="42" y2="22" stroke="#ff80ff" stroke-width="1.5"/>
+            <line x1="60" y1="40" x2="78" y2="20" stroke="#ff80ff" stroke-width="1.2"/>
+            <line x1="60" y1="40" x2="30" y2="36" stroke="#e060e0" stroke-width="1"/>
+            <line x1="60" y1="40" x2="88" y2="34" stroke="#e060e0" stroke-width="1"/>
+            <line x1="60" y1="40" x2="60" y2="12" stroke="#d050d0" stroke-width="0.8"/>
         </g>
-        ${_star(25,30,2,'#d060c0')}${_star(90,35,2.5,'#c050b0')}${_star(30,70,1.5,'#e070d0')}${_star(85,68,2,'#d060c0')}
+        <!-- Paradox energy particles -->
+        ${_star(22,25,3,'#e060d0')}${_star(96,30,3.5,'#d050c0')}${_star(24,72,2.5,'#e870e0')}${_star(92,70,3,'#d860d0')}
+        <!-- Reality distortion -->
+        <circle cx="60" cy="42" r="8" fill="#ff40ff" opacity="0.06"><animate attributeName="r" values="6;10;6" dur="1.5s" repeatCount="indefinite"/></circle>
     </svg>`
 };
 
