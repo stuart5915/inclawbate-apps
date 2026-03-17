@@ -1,0 +1,4462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Claw Wars</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* @property for Chromium holo-angle animation */
+        @property --holo-angle {
+            syntax: '<angle>';
+            inherits: false;
+            initial-value: 135deg;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: #06060b;
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            touch-action: manipulation;
+        }
+        button { font-family: 'Nunito', sans-serif; cursor: pointer; border: none; outline: none; min-height: 44px; min-width: 44px; }
+        .screen { display: none; min-height: 100vh; }
+        .screen.active { display: flex; flex-direction: column; }
+
+        /* ===== WALLET CONNECT MODAL ===== */
+        .wallet-modal-overlay {
+            display: none;
+            position: fixed;
+            top:0;left:0;right:0;bottom:0;
+            background: rgba(0,0,0,0.92);
+            z-index: 300;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .wallet-modal-overlay.active { display: flex; }
+        .wallet-modal {
+            background: #10131a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 32px 24px;
+            max-width: 380px;
+            width: 100%;
+            text-align: center;
+        }
+        .wallet-modal h2 {
+            font-size: 22px;
+            font-weight: 900;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #ffc832, #e6a800);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .wallet-modal .wallet-subtitle {
+            font-size: 13px;
+            color: #8892a8;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .wallet-modal input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.05);
+            color: #e2e8f0;
+            font-family: 'Nunito', monospace;
+            font-size: 14px;
+            margin-bottom: 6px;
+            outline: none;
+            min-height: 44px;
+        }
+        .wallet-modal input:focus {
+            border-color: rgba(255,200,50,0.5);
+        }
+        .wallet-modal .wallet-error {
+            font-size: 11px;
+            color: #e74c3c;
+            min-height: 18px;
+            margin-bottom: 8px;
+        }
+        .wallet-modal .wallet-connect-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffc832, #e6a800);
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            min-height: 48px;
+        }
+        .wallet-modal .wallet-skip-btn {
+            background: none;
+            border: none;
+            color: #8892a8;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: underline;
+            min-height: 44px;
+            padding: 8px 16px;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        /* ===== TITLE SCREEN ===== */
+        #title-screen {
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at 50% 30%, #0a1628 0%, #06060b 70%);
+            position: relative;
+            overflow: hidden;
+        }
+        #title-screen::before {
+            content: '';
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(220,40,40,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(40,100,220,0.08) 0%, transparent 50%);
+            animation: titlePulse 8s ease-in-out infinite alternate;
+        }
+        @keyframes titlePulse {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .title-logo {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .title-logo h1 {
+            font-size: 52px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #ff4444 0%, #ff8844 25%, #ffcc44 50%, #ff8844 75%, #ff4444 100%);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleShimmer 3s linear infinite;
+            text-shadow: none;
+            filter: drop-shadow(0 0 20px rgba(255,100,50,0.3));
+        }
+        @keyframes titleShimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+        .title-logo .subtitle {
+            font-size: 14px;
+            color: #8892a8;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+        .title-lobster {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 10px;
+        }
+        .menu-buttons {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 260px;
+        }
+        .menu-btn {
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+        }
+        .menu-btn:active { transform: scale(0.96); }
+        .menu-btn.primary {
+            background: linear-gradient(135deg, #c0392b, #e74c3c);
+            color: white;
+            box-shadow: 0 4px 15px rgba(231,76,60,0.3);
+        }
+        .menu-btn.secondary {
+            background: rgba(255,255,255,0.06);
+            color: #a0aec0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .menu-btn.secondary:active { background: rgba(255,255,255,0.1); }
+        .coin-display {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(80,200,80,0.1);
+            border: 1px solid rgba(80,200,80,0.3);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            color: #50c850;
+            font-size: 14px;
+            z-index: 2;
+        }
+
+        /* Wallet display on title screen */
+        .wallet-display {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: rgba(80,160,220,0.1);
+            border: 1px solid rgba(80,160,220,0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            color: #50a0dc;
+            font-size: 12px;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .wallet-display .wallet-addr {
+            font-family: monospace;
+            font-size: 11px;
+        }
+        .wallet-display .wallet-change-btn {
+            background: rgba(255,255,255,0.1);
+            color: #8892a8;
+            border: none;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-family: 'Nunito', sans-serif;
+            min-height: 24px;
+            min-width: 24px;
+        }
+
+        /* ===== HEADER BAR ===== */
+        .header-bar {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.03);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.08);
+            color: #a0aec0;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .header-bar h2 {
+            font-size: 18px;
+            font-weight: 800;
+            flex: 1;
+        }
+
+        /* ===== CARD RENDERING ===== */
+        .card {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            transform-style: preserve-3d;
+        }
+        .card.face-down .card-front { display: none; }
+        .card.face-down .card-back { display: flex; }
+        .card-front {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .card-back {
+            width: 100%;
+            height: 100%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a0a2e, #2d1b4e);
+            border: 2px solid #3d2b5e;
+        }
+        .card-back-pattern {
+            width: 70%;
+            height: 70%;
+            border: 2px solid rgba(255,255,255,0.15);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent, transparent 5px,
+                rgba(255,255,255,0.03) 5px, rgba(255,255,255,0.03) 6px
+            );
+        }
+        .card-back-text {
+            font-size: 10px;
+            font-weight: 900;
+            color: rgba(255,255,255,0.25);
+            letter-spacing: 2px;
+            transform: rotate(-25deg);
+        }
+        .card-frame {
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+            border-radius: 6px;
+            padding: 3px;
+        }
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .card-name-bar {
+            padding: 3px 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: 800;
+            font-size: 8px;
+            min-height: 18px;
+            background: rgba(0,0,0,0.3);
+        }
+        .card-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .card-attr {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 7px;
+            font-weight: 900;
+            flex-shrink: 0;
+            margin-left: 3px;
+        }
+        .card-art-box {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            margin: 2px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .card-art-bg {
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+        }
+        .card-art-svg {
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card-art-svg svg {
+            width: 75%;
+            height: 75%;
+        }
+        .card-level-bar {
+            display: flex;
+            justify-content: flex-end;
+            padding: 1px 4px;
+            gap: 1px;
+            min-height: 10px;
+            background: rgba(0,0,0,0.2);
+        }
+        .level-star {
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, #ffe44d, #cc9900);
+            border-radius: 50%;
+            border: 0.5px solid #aa7700;
+        }
+        .card-desc-box {
+            padding: 3px 4px;
+            font-size: 5.5px;
+            line-height: 1.3;
+            min-height: 28px;
+            background: rgba(0,0,0,0.25);
+            color: rgba(255,255,255,0.85);
+            overflow: hidden;
+        }
+        .card-stats-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 8px;
+            padding: 2px 5px;
+            font-size: 7px;
+            font-weight: 900;
+            background: rgba(0,0,0,0.3);
+        }
+        .card-type-label {
+            padding: 1px 4px;
+            font-size: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+            background: rgba(0,0,0,0.3);
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Card frame colors by type */
+        .card-frame.normal-monster { background: linear-gradient(135deg, #c4a43c, #a88a2a); }
+        .card-frame.effect-monster { background: linear-gradient(135deg, #c46a1f, #a05518); }
+        .card-frame.ritual-monster { background: linear-gradient(135deg, #4a7bc8, #3860a0); }
+        .card-frame.fusion-monster { background: linear-gradient(135deg, #7a3b9d, #602e7d); }
+        .card-frame.synchro-monster { background: linear-gradient(135deg, #d4d4d8, #a8a8b0); }
+        .card-frame.spell { background: linear-gradient(135deg, #1d8a5e, #156d4a); }
+        .card-frame.trap { background: linear-gradient(135deg, #9c2783, #7a1e68); }
+
+        /* Attribute colors */
+        .attr-WATER { background: #2980b9; }
+        .attr-FIRE { background: #c0392b; }
+        .attr-EARTH { background: #8b6914; }
+        .attr-WIND { background: #27ae60; }
+        .attr-LIGHT { background: #d4a017; }
+        .attr-DARK { background: #6c3483; }
+        .attr-SPELL { background: #1d8a5e; }
+        .attr-TRAP { background: #9c2783; }
+
+        /* ===== HOLOGRAPHIC EFFECTS ===== */
+        .card-holo-overlay {
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+            pointer-events: none;
+            z-index: 2;
+            border-radius: 6px;
+        }
+
+        /* Rare - Silver metallic name */
+        .rarity-R .card-name {
+            background: linear-gradient(90deg, #999, #e8e8e8, #999, #e8e8e8, #999);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 2.5s linear infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 300% 0; }
+            100% { background-position: -300% 0; }
+        }
+
+        /* Super Rare - Rainbow shimmer on art */
+        .rarity-SR .card-art-box::after {
+            content: '';
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+            background: linear-gradient(
+                var(--holo-angle, 135deg),
+                transparent 15%,
+                rgba(255,30,30,0.18) 25%,
+                rgba(255,180,30,0.18) 35%,
+                rgba(30,255,30,0.18) 45%,
+                rgba(30,200,255,0.18) 55%,
+                rgba(180,30,255,0.18) 65%,
+                transparent 75%
+            );
+            background-size: 200% 200%;
+            mix-blend-mode: color-dodge;
+            z-index: 1;
+            animation: holoSweep 3s ease-in-out infinite alternate;
+        }
+        @keyframes holoSweep {
+            0% { --holo-angle: 100deg; opacity: 0.6; background-position: 0% 0%; }
+            100% { --holo-angle: 200deg; opacity: 1; background-position: 100% 100%; }
+        }
+
+        /* Ultra Rare - Gold name + stronger rainbow */
+        .rarity-UR .card-name {
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+        }
+        .rarity-UR .card-art-box::after {
+            content: '';
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+            background: linear-gradient(
+                var(--holo-angle, 135deg),
+                transparent 10%,
+                rgba(255,50,50,0.25) 20%,
+                rgba(255,200,50,0.25) 35%,
+                rgba(50,255,100,0.25) 50%,
+                rgba(50,150,255,0.25) 65%,
+                rgba(200,50,255,0.25) 80%,
+                transparent 90%
+            );
+            background-size: 200% 200%;
+            mix-blend-mode: color-dodge;
+            z-index: 1;
+            animation: holoSweep 3s ease-in-out infinite alternate;
+        }
+
+        /* Secret Rare - Cross-hatch holographic */
+        .rarity-ScR .card-name {
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+        }
+        .rarity-ScR .card-art-box::after {
+            content: '';
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+            background:
+                repeating-linear-gradient(
+                    var(--holo-angle, 45deg),
+                    transparent 0px, transparent 3px,
+                    rgba(255,255,255,0.12) 3px, rgba(255,255,255,0.12) 4px
+                ),
+                repeating-linear-gradient(
+                    calc(var(--holo-angle, 45deg) + 90deg),
+                    transparent 0px, transparent 3px,
+                    rgba(255,255,255,0.12) 3px, rgba(255,255,255,0.12) 4px
+                ),
+                linear-gradient(
+                    var(--holo-angle, 135deg),
+                    rgba(255,0,0,0.2), rgba(255,255,0,0.2), rgba(0,255,0,0.2),
+                    rgba(0,255,255,0.2), rgba(0,0,255,0.2), rgba(255,0,255,0.2), rgba(255,0,0,0.2)
+                );
+            background-size: 8px 8px, 8px 8px, 300% 300%;
+            mix-blend-mode: color-dodge;
+            z-index: 1;
+            animation: secretHolo 4s linear infinite;
+        }
+        @keyframes secretHolo {
+            0% { background-position: 0 0, 0 0, 0% 0%; }
+            100% { background-position: 8px 8px, -8px 8px, 300% 300%; }
+        }
+
+        /* Ghost Rare - Ethereal translucent */
+        .rarity-GhR .card-front { filter: saturate(0.2) brightness(1.3) contrast(0.9); }
+        .rarity-GhR .card-art-box::after {
+            content: '';
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+            background: linear-gradient(
+                var(--holo-angle, 135deg),
+                rgba(200,200,255,0.35),
+                rgba(255,200,255,0.25),
+                rgba(200,255,255,0.35)
+            );
+            background-size: 200% 200%;
+            mix-blend-mode: screen;
+            z-index: 1;
+            animation: ghostPulse 5s ease-in-out infinite;
+        }
+        @keyframes ghostPulse {
+            0%, 100% { opacity: 0.5; background-position: 0% 0%; }
+            50% { opacity: 1; background-position: 100% 100%; }
+        }
+        .rarity-GhR .card-holo-overlay {
+            background: radial-gradient(ellipse at var(--holo-x, 50%) var(--holo-y, 50%),
+                rgba(220,220,255,0.15) 0%, transparent 60%);
+        }
+
+        /* Ultimate Rare - Embossed 3D relief */
+        .rarity-UltR .card-name {
+            background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+            background-size: 400% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 3s linear infinite;
+        }
+        .rarity-UltR .card-art-box::after {
+            content: '';
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+            background:
+                linear-gradient(
+                    var(--holo-angle, 135deg),
+                    rgba(255,200,100,0.15),
+                    rgba(100,255,200,0.15),
+                    rgba(255,100,200,0.15),
+                    rgba(100,200,255,0.15)
+                );
+            background-size: 200% 200%;
+            mix-blend-mode: color-dodge;
+            z-index: 1;
+            animation: ultRSweep 4s ease-in-out infinite alternate;
+        }
+        @keyframes ultRSweep {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 100% 100%; }
+        }
+        .rarity-UltR .card-frame {
+            box-shadow:
+                inset 1px 1px 3px rgba(255,255,255,0.25),
+                inset -1px -1px 3px rgba(0,0,0,0.4);
+        }
+        .rarity-UltR .card-art-svg svg {
+            filter: drop-shadow(1px 1px 0px rgba(0,0,0,0.5)) drop-shadow(-1px -1px 0px rgba(255,255,255,0.15));
+        }
+
+        /* Starlight Rare - Prismatic sparkles */
+        .rarity-StR .card-name {
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3, #54a0ff, #ff6b6b);
+            background-size: 600% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: prismaticText 4s linear infinite;
+        }
+        @keyframes prismaticText {
+            0% { background-position: 600% 0; }
+            100% { background-position: -600% 0; }
+        }
+        .rarity-StR .card-art-box::after {
+            content: '';
+            position: absolute;
+            top:0;left:0;right:0;bottom:0;
+            background:
+                radial-gradient(circle at 15% 20%, rgba(255,255,255,0.8) 0px, transparent 2px),
+                radial-gradient(circle at 55% 10%, rgba(255,255,255,0.6) 0px, transparent 2px),
+                radial-gradient(circle at 85% 30%, rgba(255,255,255,0.9) 0px, transparent 2px),
+                radial-gradient(circle at 25% 55%, rgba(255,255,255,0.5) 0px, transparent 2px),
+                radial-gradient(circle at 70% 50%, rgba(255,255,255,0.7) 0px, transparent 2px),
+                radial-gradient(circle at 45% 75%, rgba(255,255,255,0.8) 0px, transparent 2px),
+                radial-gradient(circle at 90% 70%, rgba(255,255,255,0.6) 0px, transparent 2px),
+                radial-gradient(circle at 10% 85%, rgba(255,255,255,0.7) 0px, transparent 2px),
+                radial-gradient(circle at 65% 90%, rgba(255,255,255,0.5) 0px, transparent 2px),
+                radial-gradient(circle at 35% 40%, rgba(255,255,255,0.6) 0px, transparent 2px),
+                linear-gradient(var(--holo-angle, 135deg),
+                    rgba(255,0,0,0.12), rgba(255,255,0,0.12), rgba(0,255,0,0.12),
+                    rgba(0,255,255,0.12), rgba(0,0,255,0.12), rgba(255,0,255,0.12)
+                );
+            mix-blend-mode: color-dodge;
+            z-index: 1;
+            animation: starlightTwinkle 2s ease-in-out infinite alternate;
+        }
+        @keyframes starlightTwinkle {
+            0% { opacity: 0.4; filter: blur(0px); background-position: 0% 0%; }
+            50% { opacity: 1; filter: blur(0.3px); background-position: 50% 50%; }
+            100% { opacity: 0.6; filter: blur(0px); background-position: 100% 100%; }
+        }
+
+        /* Card hover / detail tilt */
+        .card-detail-view {
+            perspective: 800px;
+        }
+        .card-detail-view .card {
+            transition: transform 0.1s ease-out;
+            will-change: transform;
+        }
+
+        /* ===== COLLECTION SCREEN ===== */
+        .filter-bar {
+            display: flex;
+            gap: 6px;
+            padding: 10px 16px;
+            overflow-x: auto;
+            flex-shrink: 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .filter-btn {
+            padding: 5px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.06);
+            color: #8892a8;
+            white-space: nowrap;
+            border: 1px solid transparent;
+            min-height: 44px;
+        }
+        .filter-btn.active {
+            background: rgba(231,76,60,0.15);
+            color: #e74c3c;
+            border-color: rgba(231,76,60,0.3);
+        }
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            padding: 12px 16px;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .card-grid .card {
+            width: 100%;
+            aspect-ratio: 0.686;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .card-grid .card:active { transform: scale(0.95); }
+        .card-count-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #e74c3c;
+            color: white;
+            font-size: 9px;
+            font-weight: 900;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+        }
+        .card-locked {
+            filter: brightness(0.3) grayscale(1);
+        }
+
+        /* ===== CARD DETAIL MODAL ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top:0;left:0;right:0;bottom:0;
+            background: rgba(0,0,0,0.85);
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .detail-card-wrap {
+            width: 220px;
+            aspect-ratio: 0.686;
+            margin-bottom: 16px;
+        }
+        .detail-card-wrap .card {
+            width: 100%;
+            height: 100%;
+        }
+        .detail-card-wrap .card-name-bar { font-size: 11px; padding: 5px 8px; min-height: 26px; }
+        .detail-card-wrap .card-attr { width: 18px; height: 18px; font-size: 9px; }
+        .detail-card-wrap .level-star { width: 11px; height: 11px; }
+        .detail-card-wrap .card-level-bar { padding: 2px 6px; gap: 2px; min-height: 16px; }
+        .detail-card-wrap .card-desc-box { font-size: 8px; padding: 5px 6px; min-height: 50px; }
+        .detail-card-wrap .card-stats-bar { font-size: 10px; padding: 3px 8px; }
+        .detail-card-wrap .card-type-label { font-size: 7px; }
+        .detail-info {
+            text-align: center;
+            max-width: 280px;
+        }
+        .detail-rarity {
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffc832;
+            margin-bottom: 6px;
+        }
+        .detail-close {
+            margin-top: 16px;
+            padding: 10px 32px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            color: #a0aec0;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        /* ===== PACK OPENING ===== */
+        #pack-screen .pack-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .pack-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+        .pack-icon {
+            width: 60px;
+            height: 80px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        .pack-info { flex: 1; }
+        .pack-info h3 { font-size: 16px; font-weight: 800; }
+        .pack-info p { font-size: 12px; color: #8892a8; margin-top: 2px; }
+        .pack-buy-btn {
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffc832, #e6a800);
+            color: #1a1a1a;
+        }
+        .pack-buy-btn:disabled {
+            background: rgba(255,255,255,0.1);
+            color: #555;
+        }
+        .pack-reveal {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .pack-reveal.active { display: flex; }
+        .pack-cards-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .pack-cards-row .card {
+            width: 90px;
+            aspect-ratio: 0.686;
+            animation: cardReveal 0.5s ease-out both;
+        }
+        @keyframes cardReveal {
+            0% { transform: scale(0.5) rotateY(180deg); opacity: 0; }
+            100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+        }
+        .reveal-new-badge {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255,200,50,0.9);
+            color: #1a1a1a;
+            font-size: 8px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 10;
+        }
+
+        /* ===== DECK BUILDER ===== */
+        #deckbuilder-screen .deck-stats {
+            padding: 10px 16px;
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: #8892a8;
+            flex-shrink: 0;
+        }
+        .deck-stats span { font-weight: 700; color: #e2e8f0; }
+        .deck-zone-label {
+            padding: 6px 16px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #ffc832;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,200,50,0.1);
+        }
+        .deck-section {
+            padding: 8px 16px;
+        }
+        .deck-cards-row {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        .deck-cards-row .card {
+            width: 48px;
+            aspect-ratio: 0.686;
+            cursor: pointer;
+            font-size: 4px;
+        }
+        .deck-cards-row .card .card-desc-box { display: none; }
+        .deck-cards-row .card .card-stats-bar { font-size: 5px; }
+        .deck-add-area {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .deck-save-btn {
+            margin: 12px 16px;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            color: white;
+            text-align: center;
+        }
+
+        /* ===== DUEL SCREEN ===== */
+        #duel-screen {
+            height: 100vh;
+            max-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(180deg, #060d18 0%, #0a1628 30%, #0c1a30 70%, #06060b 100%);
+            overscroll-behavior: none;
+        }
+        .duel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 12px;
+            padding-top: calc(6px + env(safe-area-inset-top, 0px));
+            flex-shrink: 0;
+            z-index: 5;
+        }
+        .lp-bar {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .lp-label {
+            font-size: 10px;
+            color: #8892a8;
+            font-weight: 700;
+        }
+        .lp-value {
+            font-size: 16px;
+            font-weight: 900;
+            min-width: 50px;
+        }
+        .lp-value.player-lp { color: #48dbfb; }
+        .lp-value.ai-lp { color: #ff6b6b; }
+        .lp-fill {
+            width: 60px;
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .lp-fill-inner {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s;
+        }
+        .lp-fill-inner.player { background: #48dbfb; }
+        .lp-fill-inner.ai { background: #ff6b6b; }
+        .turn-indicator {
+            font-size: 10px;
+            font-weight: 800;
+            color: #ffc832;
+            text-align: center;
+        }
+        .duel-field {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2px 8px;
+            gap: 2px;
+            min-height: 0;
+        }
+        .field-row {
+            display: flex;
+            justify-content: center;
+            gap: 3px;
+        }
+        .field-zone {
+            width: 48px;
+            height: 66px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.02);
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 44px;
+        }
+        .field-zone:hover, .field-zone.highlight {
+            border-color: rgba(255,200,50,0.5);
+            background: rgba(255,200,50,0.05);
+        }
+        .field-zone.selected {
+            border-color: #48dbfb;
+            box-shadow: 0 0 8px rgba(72,219,251,0.3);
+        }
+        .field-zone.attack-target {
+            border-color: #ff6b6b;
+            box-shadow: 0 0 8px rgba(255,107,107,0.3);
+        }
+        .field-zone .card {
+            position: absolute;
+            top:1px;left:1px;right:1px;bottom:1px;
+            border-radius: 3px;
+        }
+        .field-zone .card.def-pos {
+            transform: rotate(90deg) scale(0.85);
+        }
+        .field-zone.field-spell-zone {
+            width: 44px;
+            height: 60px;
+            border-color: rgba(30,138,94,0.3);
+            background: rgba(30,138,94,0.05);
+            align-self: center;
+        }
+        .field-label {
+            position: absolute;
+            bottom: 1px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 5px;
+            color: rgba(255,255,255,0.2);
+            pointer-events: none;
+        }
+        .field-center-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            padding: 2px 0;
+        }
+        .gy-zone, .deck-zone {
+            width: 40px;
+            height: 55px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 7px;
+            font-weight: 700;
+            color: rgba(255,255,255,0.4);
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.08);
+            min-height: 44px;
+        }
+        .gy-zone { background: rgba(100,0,0,0.15); border-color: rgba(150,50,50,0.2); }
+        .deck-zone { background: rgba(0,0,100,0.15); border-color: rgba(50,50,150,0.2); }
+        .zone-count {
+            font-size: 12px;
+            font-weight: 900;
+            color: #e2e8f0;
+        }
+
+        .phase-bar {
+            display: flex;
+            gap: 4px;
+            padding: 4px 8px;
+            padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px));
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .phase-btn {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.06);
+            color: #555;
+            min-height: 44px;
+        }
+        .phase-btn.current {
+            background: rgba(255,200,50,0.15);
+            color: #ffc832;
+            border: 1px solid rgba(255,200,50,0.3);
+        }
+        .phase-btn.clickable {
+            color: #48dbfb;
+            background: rgba(72,219,251,0.1);
+            border: 1px solid rgba(72,219,251,0.3);
+        }
+        .hand-area {
+            padding: 4px 8px 8px;
+            padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+            flex-shrink: 0;
+            overflow-x: auto;
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            min-height: 85px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .hand-area .card {
+            width: 54px;
+            height: 78px;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: transform 0.15s, margin-top 0.15s;
+        }
+        .hand-area .card:hover, .hand-area .card.selected {
+            transform: translateY(-10px) scale(1.05);
+            z-index: 10;
+        }
+        .hand-area .card .card-desc-box { display: none; }
+
+        /* Action menu */
+        .action-menu {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1e2e;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 12px;
+            padding: 8px;
+            z-index: 50;
+            gap: 6px;
+            flex-direction: column;
+            min-width: 160px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        .action-menu.active { display: flex; }
+        .action-btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+            transition: background 0.15s;
+            min-height: 44px;
+        }
+        .action-btn.summon { background: rgba(46,204,113,0.15); color: #2ecc71; }
+        .action-btn.set { background: rgba(155,89,182,0.15); color: #bb6bd9; }
+        .action-btn.activate { background: rgba(52,152,219,0.15); color: #3498db; }
+        .action-btn.attack { background: rgba(231,76,60,0.15); color: #e74c3c; }
+        .action-btn.position { background: rgba(241,196,15,0.15); color: #f1c40f; }
+        .action-btn.cancel { background: rgba(255,255,255,0.05); color: #777; }
+        .action-btn:active { filter: brightness(1.3); }
+
+        /* Duel log */
+        .duel-log {
+            position: absolute;
+            top: 32px;
+            left: 8px;
+            right: 8px;
+            max-height: 60px;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 20;
+        }
+        .log-entry {
+            font-size: 10px;
+            padding: 2px 8px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 4px;
+            margin-bottom: 2px;
+            color: #a0aec0;
+            animation: logFade 3s forwards;
+        }
+        @keyframes logFade {
+            0% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Chain prompt */
+        .chain-prompt {
+            display: none;
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1e2e;
+            border: 1px solid rgba(255,200,50,0.3);
+            border-radius: 12px;
+            padding: 12px 16px;
+            z-index: 55;
+            text-align: center;
+            min-width: 200px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+        }
+        .chain-prompt.active { display: block; }
+        .chain-prompt p { font-size: 12px; margin-bottom: 8px; color: #ffc832; font-weight: 700; }
+        .chain-prompt .chain-btns { display: flex; gap: 8px; justify-content: center; }
+        .chain-prompt .chain-btn {
+            padding: 8px 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            min-height: 44px;
+        }
+        .chain-btn.yes { background: rgba(46,204,113,0.2); color: #2ecc71; }
+        .chain-btn.no { background: rgba(231,76,60,0.2); color: #e74c3c; }
+
+        /* Game over overlay */
+        .game-over-overlay {
+            display: none;
+            position: fixed;
+            top:0;left:0;right:0;bottom:0;
+            background: rgba(0,0,0,0.9);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        .game-over-overlay.active { display: flex; }
+        .game-over-text {
+            font-size: 42px;
+            font-weight: 900;
+            margin-bottom: 12px;
+        }
+        .game-over-text.win { color: #ffc832; }
+        .game-over-text.lose { color: #e74c3c; }
+        .game-over-reward {
+            font-size: 16px;
+            color: #a0aec0;
+            margin-bottom: 24px;
+        }
+        .game-over-btn {
+            padding: 14px 40px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.1);
+            color: #e2e8f0;
+        }
+
+        /* Damage flash */
+        .damage-flash {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 48px;
+            font-weight: 900;
+            color: #ff4444;
+            text-shadow: 0 0 20px rgba(255,0,0,0.5);
+            z-index: 60;
+            animation: dmgFlash 1s ease-out forwards;
+            pointer-events: none;
+        }
+        .damage-flash.heal { color: #2ecc71; text-shadow: 0 0 20px rgba(46,204,113,0.5); }
+        @keyframes dmgFlash {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.5); }
+            30% { transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -70%) scale(1); }
+        }
+
+        /* Tribute select */
+        .tribute-prompt {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #1a1e2e;
+            border-top: 2px solid rgba(255,200,50,0.3);
+            padding: 12px 16px;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+            z-index: 55;
+            display: none;
+            text-align: center;
+        }
+        .tribute-prompt.active { display: block; }
+        .tribute-prompt p {
+            font-size: 13px;
+            color: #ffc832;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .tribute-confirm {
+            padding: 8px 24px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            background: rgba(46,204,113,0.2);
+            color: #2ecc71;
+            margin-top: 8px;
+            min-height: 44px;
+        }
+
+        /* How to play screen */
+        #howto-screen .howto-content {
+            padding: 16px;
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .howto-content h3 {
+            color: #ffc832;
+            font-size: 16px;
+            margin: 16px 0 8px;
+        }
+        .howto-content h3:first-child { margin-top: 0; }
+        .howto-content p, .howto-content li {
+            font-size: 13px;
+            color: #a0aec0;
+            line-height: 1.6;
+            margin-bottom: 6px;
+        }
+        .howto-content ul { padding-left: 20px; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+        /* ===== TABLET / SMALL DESKTOP (768px+) ===== */
+        @media (min-width: 768px) {
+            .title-logo h1 { font-size: 64px; }
+            .title-lobster { width: 160px; height: 160px; }
+            .title-lobster svg { width: 160px; height: 160px; }
+            .menu-buttons { width: 320px; }
+            .card-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+            .detail-card-wrap { width: 280px; }
+            .detail-card-wrap .card-desc-box { font-size: 9px; }
+            .detail-card-wrap .card-stats-bar { font-size: 11px; }
+            .deck-cards-row .card { width: 64px; }
+            .pack-item {
+                flex-direction: row;
+            }
+            .pack-icon { width: 70px; height: 90px; }
+            .field-zone { width: 58px; height: 80px; }
+            .hand-area .card { width: 68px; height: 96px; }
+            .hand-area { min-height: 110px; }
+            .phase-btn { padding: 8px 16px; font-size: 12px; }
+            .action-menu { min-width: 200px; padding: 12px; }
+        }
+
+        /* ===== DESKTOP (1024px+) ===== */
+        @media (min-width: 1024px) {
+            .title-logo h1 { font-size: 72px; }
+            .card-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 14px;
+            }
+            .card-grid .card:hover { transform: scale(1.03); }
+            .detail-card-wrap { width: 320px; }
+            .detail-card-wrap .card-desc-box { font-size: 10px; }
+            .detail-card-wrap .card-stats-bar { font-size: 12px; }
+            .field-zone { width: 64px; height: 88px; }
+            .field-row { gap: 6px; }
+            .hand-area .card { width: 76px; height: 108px; }
+            .hand-area { min-height: 120px; }
+            .menu-btn:hover {
+                filter: brightness(1.15);
+                transform: scale(1.02);
+            }
+            .menu-btn:active { transform: scale(0.96); }
+            .phase-btn.clickable:hover {
+                filter: brightness(1.2);
+                transform: scale(1.05);
+            }
+            .action-btn:hover {
+                filter: brightness(1.2);
+            }
+            .filter-btn:hover {
+                background: rgba(255,255,255,0.1);
+            }
+            .pack-buy-btn:hover:not(:disabled) {
+                filter: brightness(1.1);
+                transform: scale(1.03);
+            }
+            .detail-close:hover {
+                background: rgba(255,255,255,0.15);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== WALLET CONNECT MODAL ===== -->
+    <div class="wallet-modal-overlay" id="wallet-modal">
+        <div class="wallet-modal">
+            <h2>Connect Wallet</h2>
+            <p class="wallet-subtitle">$DD (DuckDollars) is the currency for Claw Wars. Connect your wallet to track your on-chain balance.</p>
+            <input type="text" id="wallet-input" placeholder="0x..." maxlength="42" autocomplete="off" autocorrect="off" spellcheck="false">
+            <div class="wallet-error" id="wallet-error"></div>
+            <button class="wallet-connect-btn" onclick="connectWalletFromInput()">Connect</button>
+            <button class="wallet-skip-btn" onclick="playWithoutWallet()">Play Without Wallet</button>
+        </div>
+    </div>
+
+    <!-- ===== TITLE SCREEN ===== -->
+    <div id="title-screen" class="screen active">
+        <div class="coin-display" id="title-coins">$DD 0</div>
+        <div class="wallet-display" id="title-wallet">
+            <span class="wallet-addr" id="title-wallet-addr">No Wallet</span>
+            <button class="wallet-change-btn" id="title-wallet-btn" onclick="showWalletModal()">Connect</button>
+        </div>
+        <div class="title-logo">
+            <div class="title-lobster">
+                <svg viewBox="0 0 120 120" width="120" height="120">
+                    <defs>
+                        <linearGradient id="lobster-grad" x1="0" y1="0" x2="1" y2="1">
+                            <stop offset="0%" stop-color="#ff4444"/>
+                            <stop offset="100%" stop-color="#cc2222"/>
+                        </linearGradient>
+                    </defs>
+                    <g fill="url(#lobster-grad)">
+                        <ellipse cx="60" cy="62" rx="18" ry="26"/>
+                        <circle cx="60" cy="34" r="13"/>
+                        <path d="M47 48 L28 34 L16 24 L24 34 L16 44 L30 38Z"/>
+                        <path d="M73 48 L92 34 L104 24 L96 34 L104 44 L90 38Z"/>
+                        <path d="M50 86 L46 100 L54 96 L60 104 L66 96 L74 100 L70 86Z"/>
+                        <circle cx="54" cy="30" r="3" fill="#fff"/>
+                        <circle cx="66" cy="30" r="3" fill="#fff"/>
+                        <circle cx="54" cy="30" r="1.5" fill="#111"/>
+                        <circle cx="66" cy="30" r="1.5" fill="#111"/>
+                        <path d="M54 22 Q42 6 30 2" stroke="#ff4444" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+                        <path d="M66 22 Q78 6 90 2" stroke="#ff4444" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="48" y1="72" x2="34" y2="86" stroke="#cc2222" stroke-width="2.5"/>
+                        <line x1="52" y1="78" x2="40" y2="92" stroke="#cc2222" stroke-width="2.5"/>
+                        <line x1="72" y1="72" x2="86" y2="86" stroke="#cc2222" stroke-width="2.5"/>
+                        <line x1="68" y1="78" x2="80" y2="92" stroke="#cc2222" stroke-width="2.5"/>
+                    </g>
+                </svg>
+            </div>
+            <h1>CLAW WARS</h1>
+            <div class="subtitle">Lobster Trading Card Game</div>
+        </div>
+        <div class="menu-buttons">
+            <button class="menu-btn primary" onclick="startDuel()">DUEL</button>
+            <button class="menu-btn secondary" onclick="showScreen('collection-screen')">COLLECTION</button>
+            <button class="menu-btn secondary" onclick="showScreen('pack-screen')">OPEN PACKS</button>
+            <button class="menu-btn secondary" onclick="showScreen('deckbuilder-screen')">DECK BUILDER</button>
+            <button class="menu-btn secondary" onclick="showScreen('howto-screen')">HOW TO PLAY</button>
+        </div>
+    </div>
+
+    <!-- ===== COLLECTION SCREEN ===== -->
+    <div id="collection-screen" class="screen">
+        <div class="header-bar">
+            <button class="back-btn" onclick="showScreen('title-screen')">Back</button>
+            <h2>Collection</h2>
+            <span id="coll-count" style="font-size:12px;color:#8892a8"></span>
+        </div>
+        <div class="filter-bar" id="coll-filters"></div>
+        <div class="card-grid" id="coll-grid"></div>
+    </div>
+
+    <!-- ===== PACK SCREEN ===== -->
+    <div id="pack-screen" class="screen">
+        <div class="header-bar">
+            <button class="back-btn" onclick="showScreen('title-screen')">Back</button>
+            <h2>Open Packs</h2>
+            <span id="pack-coins" class="coin-display" style="position:static">$DD 0</span>
+        </div>
+        <div class="pack-list" id="pack-list"></div>
+        <div class="pack-reveal" id="pack-reveal">
+            <div class="pack-cards-row" id="reveal-cards"></div>
+            <button class="menu-btn primary" onclick="closeReveal()" style="width:200px">CONTINUE</button>
+        </div>
+    </div>
+
+    <!-- ===== DECK BUILDER SCREEN ===== -->
+    <div id="deckbuilder-screen" class="screen">
+        <div class="header-bar">
+            <button class="back-btn" onclick="showScreen('title-screen')">Back</button>
+            <h2>Deck Builder</h2>
+        </div>
+        <div class="deck-stats" id="deck-stats"></div>
+        <div class="deck-add-area" id="deck-area"></div>
+    </div>
+
+    <!-- ===== HOW TO PLAY ===== -->
+    <div id="howto-screen" class="screen">
+        <div class="header-bar">
+            <button class="back-btn" onclick="showScreen('title-screen')">Back</button>
+            <h2>How To Play</h2>
+        </div>
+        <div class="howto-content">
+            <h3>Overview</h3>
+            <p>Claw Wars is a strategic trading card game where you command an army of lobster warriors! Reduce your opponent's Life Points from 8000 to 0 to win.</p>
+            <h3>Card Types</h3>
+            <ul>
+                <li><b style="color:#c4a43c">Monster Cards</b> — Summon creatures to attack and defend. They have ATK (attack) and DEF (defense) values and a Level (stars).</li>
+                <li><b style="color:#1d8a5e">Spell Cards</b> — Magical effects: Normal, Continuous, Equip, Quick-Play, Field, and Ritual types.</li>
+                <li><b style="color:#9c2783">Trap Cards</b> — Set face-down and activate when conditions are met to surprise your opponent.</li>
+            </ul>
+            <h3>Turn Phases</h3>
+            <ul>
+                <li><b>Draw Phase</b> — Draw 1 card from your deck</li>
+                <li><b>Main Phase 1</b> — Summon monsters, activate/set Spells and Traps</li>
+                <li><b>Battle Phase</b> — Attack with your monsters</li>
+                <li><b>Main Phase 2</b> — More summons and card plays</li>
+                <li><b>End Phase</b> — End your turn</li>
+            </ul>
+            <h3>Summoning</h3>
+            <ul>
+                <li>Level 1-4 monsters: Normal Summon directly (1 per turn)</li>
+                <li>Level 5-6 monsters: Tribute 1 monster you control</li>
+                <li>Level 7+ monsters: Tribute 2 monsters you control</li>
+                <li>Fusion: Use "Polymerization" + listed materials</li>
+                <li>Synchro: Tuner + non-Tuner(s) whose levels equal the Synchro monster's level</li>
+                <li>Ritual: Use a Ritual Spell + tributes matching the level</li>
+            </ul>
+            <h3>Battle</h3>
+            <ul>
+                <li>ATK vs ATK: Lower ATK destroyed, owner takes damage equal to the difference</li>
+                <li>ATK vs DEF: If ATK > DEF, defender destroyed (no damage). If DEF >= ATK, attacker takes damage equal to the difference</li>
+                <li>Direct Attack: If opponent has no monsters, attack their Life Points directly</li>
+            </ul>
+            <h3>Rarities</h3>
+            <ul>
+                <li><b>Common</b> — Standard card</li>
+                <li><b style="color:#ccc">Rare</b> — Silver name text</li>
+                <li><b style="color:#48dbfb">Super Rare</b> — Rainbow shimmer on art</li>
+                <li><b style="color:#ffc832">Ultra Rare</b> — Gold name + rainbow art</li>
+                <li><b style="color:#ff6b6b">Secret Rare</b> — Cross-hatch holographic</li>
+                <li><b style="color:#aabbff">Ghost Rare</b> — Ethereal ghostly effect</li>
+                <li><b style="color:#ffaa55">Ultimate Rare</b> — Embossed 3D relief</li>
+                <li><b style="color:#ff9ff3">Starlight Rare</b> — Prismatic sparkle</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ===== DUEL SCREEN ===== -->
+    <div id="duel-screen" class="screen">
+        <div class="duel-header">
+            <div class="lp-bar">
+                <div class="lp-label">AI</div>
+                <div class="lp-value ai-lp" id="ai-lp">8000</div>
+                <div class="lp-fill"><div class="lp-fill-inner ai" id="ai-lp-bar" style="width:100%"></div></div>
+            </div>
+            <div class="turn-indicator" id="turn-info">Turn 1</div>
+            <div class="lp-bar" style="flex-direction:row-reverse">
+                <div class="lp-label">YOU</div>
+                <div class="lp-value player-lp" id="player-lp">8000</div>
+                <div class="lp-fill"><div class="lp-fill-inner player" id="player-lp-bar" style="width:100%"></div></div>
+            </div>
+        </div>
+        <div class="duel-log" id="duel-log"></div>
+        <div class="duel-field" id="duel-field"></div>
+        <div class="phase-bar" id="phase-bar"></div>
+        <div class="hand-area" id="player-hand"></div>
+        <div class="action-menu" id="action-menu"></div>
+        <div class="chain-prompt" id="chain-prompt">
+            <p id="chain-text">Activate trap?</p>
+            <div class="chain-btns" id="chain-btns"></div>
+        </div>
+        <div class="tribute-prompt" id="tribute-prompt">
+            <p id="tribute-text">Select monsters to tribute</p>
+            <button class="tribute-confirm" id="tribute-confirm" onclick="confirmTributes()">Confirm</button>
+        </div>
+        <div class="game-over-overlay" id="game-over">
+            <div class="game-over-text" id="game-over-text"></div>
+            <div class="game-over-reward" id="game-over-reward"></div>
+            <button class="game-over-btn" onclick="showScreen('title-screen')">Return to Menu</button>
+        </div>
+    </div>
+
+    <!-- ===== CARD DETAIL MODAL ===== -->
+    <div class="modal-overlay" id="card-modal">
+        <div class="detail-card-wrap card-detail-view" id="detail-card-wrap"></div>
+        <div class="detail-info">
+            <div class="detail-rarity" id="detail-rarity"></div>
+        </div>
+        <button class="detail-close" onclick="closeModal()">Close</button>
+    </div>
+
+<script>
+// ============================================================
+// WALLET CONNECT SYSTEM
+// ============================================================
+let connectedWallet = null;
+let offlineMode = false;
+
+function getWalletFromCookie() {
+    try {
+        const match = document.cookie.match(/inclawbate_token=([^;]+)/);
+        if (!match) return null;
+        const payload = JSON.parse(atob(decodeURIComponent(match[1]).split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+        return payload.wallet_address || null;
+    } catch { return null; }
+}
+
+function isValidWallet(addr) {
+    return typeof addr === 'string' && /^0x[0-9a-fA-F]{40}$/.test(addr);
+}
+
+function truncateWallet(addr) {
+    if (!addr || addr.length < 10) return addr || '';
+    return addr.slice(0, 6) + '...' + addr.slice(-4);
+}
+
+function initWalletConnect() {
+    // Step 1: Try cookie
+    const cookieWallet = getWalletFromCookie();
+    if (cookieWallet && isValidWallet(cookieWallet)) {
+        setConnectedWallet(cookieWallet);
+        return;
+    }
+    // Step 2: Try localStorage
+    const savedWallet = localStorage.getItem('clawWarsWallet');
+    if (savedWallet && isValidWallet(savedWallet)) {
+        setConnectedWallet(savedWallet);
+        return;
+    }
+    // Step 3: Show modal
+    showWalletModal();
+}
+
+function showWalletModal() {
+    document.getElementById('wallet-input').value = '';
+    document.getElementById('wallet-error').textContent = '';
+    document.getElementById('wallet-modal').classList.add('active');
+}
+
+function hideWalletModal() {
+    document.getElementById('wallet-modal').classList.remove('active');
+}
+
+function connectWalletFromInput() {
+    const input = document.getElementById('wallet-input').value.trim();
+    if (!isValidWallet(input)) {
+        document.getElementById('wallet-error').textContent = 'Invalid address. Must be 0x followed by 40 hex characters.';
+        return;
+    }
+    setConnectedWallet(input);
+    hideWalletModal();
+}
+
+function playWithoutWallet() {
+    offlineMode = true;
+    connectedWallet = null;
+    localStorage.removeItem('clawWarsWallet');
+    if (playerData.coins === 0) {
+        playerData.coins = 500;
+        saveData();
+    }
+    hideWalletModal();
+    updateWalletDisplay();
+    updateCoinsDisplay();
+}
+
+function setConnectedWallet(addr) {
+    connectedWallet = addr;
+    offlineMode = false;
+    localStorage.setItem('clawWarsWallet', addr);
+    updateWalletDisplay();
+    syncDDBalance();
+}
+
+function disconnectWallet() {
+    connectedWallet = null;
+    offlineMode = false;
+    localStorage.removeItem('clawWarsWallet');
+    updateWalletDisplay();
+    showWalletModal();
+}
+
+function updateWalletDisplay() {
+    const addrEl = document.getElementById('title-wallet-addr');
+    const btnEl = document.getElementById('title-wallet-btn');
+    if (connectedWallet) {
+        addrEl.textContent = truncateWallet(connectedWallet);
+        btnEl.textContent = 'Change';
+        btnEl.onclick = disconnectWallet;
+    } else if (offlineMode) {
+        addrEl.textContent = 'Offline';
+        btnEl.textContent = 'Connect';
+        btnEl.onclick = showWalletModal;
+    } else {
+        addrEl.textContent = 'No Wallet';
+        btnEl.textContent = 'Connect';
+        btnEl.onclick = showWalletModal;
+    }
+}
+
+// ============================================================
+// CARD DATABASE
+// ============================================================
+const RARITIES = {
+    C: 'Common', R: 'Rare', SR: 'Super Rare', UR: 'Ultra Rare',
+    ScR: 'Secret Rare', GhR: 'Ghost Rare', UltR: 'Ultimate Rare', StR: 'Starlight Rare'
+};
+
+const ATTR_LABELS = { WATER:'WA', FIRE:'FI', EARTH:'EA', WIND:'WI', LIGHT:'LI', DARK:'DA' };
+const ATTR_COLORS = { WATER:'#2980b9', FIRE:'#c0392b', EARTH:'#8b6914', WIND:'#27ae60', LIGHT:'#d4a017', DARK:'#6c3483' };
+
+function makeCard(id, name, type, subtype, opts) {
+    return { id, name, type, subtype, ...opts };
+}
+
+const CARDS = [
+    // === NORMAL MONSTERS ===
+    makeCard(1, 'Claw Recruit', 'monster', 'normal', {
+        level: 2, atk: 800, def: 600, attribute: 'WATER', rarity: 'C',
+        desc: 'A young lobster warrior still training at the reef academy. Its small claws belie a fierce determination.',
+        art: { bg: ['#1a3050','#0d1828'], color: '#e07050' }
+    }),
+    makeCard(2, 'Tidal Crawler', 'monster', 'normal', {
+        level: 3, atk: 1200, def: 800, attribute: 'WATER', rarity: 'C',
+        desc: 'This swift lobster rides ocean currents to ambush unsuspecting prey from the depths.',
+        art: { bg: ['#152848','#0a1830'], color: '#d06848' }
+    }),
+    makeCard(3, 'Reef Sentinel', 'monster', 'normal', {
+        level: 4, atk: 1500, def: 1200, attribute: 'WATER', rarity: 'C',
+        desc: 'A vigilant guardian of the coral kingdoms, sworn to protect the reef from all invaders.',
+        art: { bg: ['#183858','#0c2038'], color: '#cc5540' }
+    }),
+    makeCard(4, 'Abyssal Pincer', 'monster', 'normal', {
+        level: 4, atk: 1700, def: 1000, attribute: 'DARK', rarity: 'R',
+        desc: 'Its crushing claws are feared throughout the deep. Forged in the pressure of the abyss.',
+        art: { bg: ['#1a0a2e','#0d0518'], color: '#a855c8' }
+    }),
+    makeCard(5, 'Shell Knight', 'monster', 'normal', {
+        level: 4, atk: 1400, def: 1800, attribute: 'EARTH', rarity: 'R',
+        desc: 'An armored warrior whose reinforced carapace turns aside even the mightiest blows.',
+        art: { bg: ['#2a1a08','#180e04'], color: '#c89040' }
+    }),
+
+    // === EFFECT MONSTERS (Low Level) ===
+    makeCard(6, 'Molt Striker', 'monster', 'effect', {
+        level: 3, atk: 1000, def: 500, attribute: 'WATER', rarity: 'R',
+        desc: 'When this card is Normal Summoned: It gains 500 ATK until the end of this turn.',
+        art: { bg: ['#1a3848','#0c2028'], color: '#50c8a0' },
+        effects: [{ trigger: 'onSummon', action: 'atkBuff', value: 500, duration: 'turn', target: 'self' }]
+    }),
+    makeCard(7, 'Coral Witch', 'monster', 'effect', {
+        level: 4, atk: 1300, def: 1100, attribute: 'WATER', rarity: 'SR',
+        desc: 'FLIP: Destroy 1 Spell/Trap card on the field.',
+        art: { bg: ['#1a2848','#0d1830'], color: '#e060a0' },
+        effects: [{ trigger: 'onFlip', action: 'destroyST', value: 1, target: 'any' }]
+    }),
+    makeCard(8, 'Antenna Oracle', 'monster', 'effect', {
+        level: 3, atk: 900, def: 1400, attribute: 'LIGHT', rarity: 'R',
+        desc: 'FLIP: Draw 1 card.',
+        art: { bg: ['#2a2818','#18180c'], color: '#f0d040' },
+        effects: [{ trigger: 'onFlip', action: 'draw', value: 1, target: 'self' }]
+    }),
+    makeCard(9, 'Deep Sea Berserker', 'monster', 'effect', {
+        level: 4, atk: 1800, def: 200, attribute: 'WATER', rarity: 'R',
+        desc: 'This card must attack if able. This card cannot change its battle position.',
+        art: { bg: ['#1a1038','#0d0820'], color: '#e04040' },
+        effects: [{ trigger: 'passive', action: 'mustAttack' }, { trigger: 'passive', action: 'cantChangePos' }]
+    }),
+    makeCard(10, 'Hermit Lobster', 'monster', 'effect', {
+        level: 3, atk: 800, def: 2000, attribute: 'EARTH', rarity: 'SR',
+        desc: 'This card cannot be destroyed by battle while in Defense Position.',
+        art: { bg: ['#281a08','#180e04'], color: '#a08040' },
+        effects: [{ trigger: 'passive', action: 'battleIndestructibleDef' }]
+    }),
+    makeCard(11, 'Pincer Duelist', 'monster', 'effect', {
+        level: 4, atk: 1600, def: 1200, attribute: 'WATER', rarity: 'SR',
+        desc: 'Your opponent cannot activate Trap Cards during battles involving this card.',
+        art: { bg: ['#102840','#081828'], color: '#50a8e0' },
+        effects: [{ trigger: 'passive', action: 'blockTrapsInBattle' }]
+    }),
+    makeCard(12, 'Phosphor Shrimp', 'monster', 'effect', {
+        level: 2, atk: 600, def: 400, attribute: 'LIGHT', rarity: 'C',
+        desc: 'When this card is Normal Summoned: All WATER monsters you control gain 200 ATK.',
+        art: { bg: ['#282008','#181004'], color: '#f0e868' },
+        effects: [{ trigger: 'onSummon', action: 'atkBuffType', value: 200, target: 'WATER' }]
+    }),
+    makeCard(13, 'Barnacle Parasite', 'monster', 'effect', {
+        level: 2, atk: 400, def: 200, attribute: 'DARK', rarity: 'R',
+        desc: 'When your opponent Normal Summons a monster: You can Special Summon this card from your hand, and that monster loses 500 ATK.',
+        art: { bg: ['#18082a','#0c0418'], color: '#8850a8' },
+        effects: [{ trigger: 'onOpponentSummon', action: 'specialSummonSelfDebuff', value: 500 }]
+    }),
+
+    // === TUNER MONSTERS ===
+    makeCard(14, 'Tide Caller', 'monster', 'effect', {
+        level: 4, atk: 1500, def: 1000, attribute: 'WATER', rarity: 'SR', isTuner: true,
+        desc: '[Tuner] When this card is used as Synchro Material: Draw 1 card.',
+        art: { bg: ['#082838','#041820'], color: '#40c0e8' },
+        effects: [{ trigger: 'onSynchroMaterial', action: 'draw', value: 1, target: 'self' }]
+    }),
+    makeCard(15, 'Larval Drifter', 'monster', 'effect', {
+        level: 1, atk: 200, def: 100, attribute: 'WATER', rarity: 'R', isTuner: true,
+        desc: '[Tuner] If you control a monster: You can Special Summon this card from your hand.',
+        art: { bg: ['#102030','#081018'], color: '#70b0d0' },
+        effects: [{ trigger: 'hand', action: 'specialSummonSelf', condition: 'controlMonster' }]
+    }),
+
+    // === HIGH-LEVEL EFFECT MONSTERS ===
+    makeCard(16, 'Thermidor the Blaze', 'monster', 'effect', {
+        level: 5, atk: 2100, def: 1500, attribute: 'FIRE', rarity: 'UR',
+        desc: 'When this card destroys an opponent\'s monster by battle: Gain 500 LP.',
+        art: { bg: ['#3a1008','#200804'], color: '#ff6030' },
+        effects: [{ trigger: 'onBattleDestroy', action: 'heal', value: 500, target: 'self' }]
+    }),
+    makeCard(17, 'Glacial Lobster', 'monster', 'effect', {
+        level: 5, atk: 2000, def: 1700, attribute: 'WATER', rarity: 'SR',
+        desc: 'When this card is Normal Summoned: Target 1 opponent\'s monster; it cannot attack during their next Battle Phase.',
+        art: { bg: ['#082838','#041828'], color: '#80e8ff' },
+        effects: [{ trigger: 'onSummon', action: 'freeze', value: 1, target: 'opponent' }]
+    }),
+    makeCard(18, 'Brood Mother', 'monster', 'effect', {
+        level: 6, atk: 2300, def: 1800, attribute: 'WATER', rarity: 'UR',
+        desc: 'When this card is destroyed by battle or card effect: Special Summon 2 "Lobster Tokens" (WATER/Level 1/ATK 300/DEF 300) in Defense Position.',
+        art: { bg: ['#1a2040','#0d1028'], color: '#d070a0' },
+        effects: [{ trigger: 'onDestroy', action: 'spawnTokens', count: 2, tokenAtk: 300, tokenDef: 300 }]
+    }),
+    makeCard(19, 'Abyssal Lurker', 'monster', 'effect', {
+        level: 5, atk: 2000, def: 1700, attribute: 'DARK', rarity: 'UR',
+        desc: 'If your opponent controls more monsters than you: You can Special Summon this card from your hand.',
+        art: { bg: ['#0a0020','#050010'], color: '#7040b0' },
+        effects: [{ trigger: 'hand', action: 'specialSummonSelf', condition: 'opponentMoreMonsters' }]
+    }),
+    makeCard(20, 'Coconut Crab King', 'monster', 'effect', {
+        level: 6, atk: 2400, def: 2000, attribute: 'EARTH', rarity: 'UR',
+        desc: 'Once per turn: You can destroy 1 Set Spell/Trap card on the field.',
+        art: { bg: ['#2a1a00','#180e00'], color: '#d0a050' },
+        effects: [{ trigger: 'activated', action: 'destroySetST', value: 1, target: 'any' }]
+    }),
+
+    // === RITUAL MONSTER ===
+    makeCard(21, 'Leviathan Lobster', 'monster', 'ritual', {
+        level: 8, atk: 2800, def: 2500, attribute: 'WATER', rarity: 'ScR',
+        desc: 'You can Ritual Summon this card with "Ritual of the Deep". Once per turn: You can destroy 1 card on the field.',
+        art: { bg: ['#081838','#040c20'], color: '#4080d0' },
+        ritualSpell: 31,
+        effects: [{ trigger: 'activated', action: 'destroyAny', value: 1, target: 'any' }]
+    }),
+
+    // === FUSION MONSTERS ===
+    makeCard(22, 'Emperor Crustacean', 'monster', 'fusion', {
+        level: 8, atk: 3000, def: 2500, attribute: 'WATER', rarity: 'ScR',
+        desc: '"Thermidor the Blaze" + "Abyssal Pincer"\nThis card is unaffected by Trap effects.',
+        art: { bg: ['#280838','#140420'], color: '#c040e0' },
+        fusionMaterials: [16, 4],
+        effects: [{ trigger: 'passive', action: 'immuneTraps' }]
+    }),
+    makeCard(23, 'Twin Claw Dragon', 'monster', 'fusion', {
+        level: 7, atk: 2600, def: 2100, attribute: 'WATER', rarity: 'UR',
+        desc: '"Deep Sea Berserker" + "Reef Sentinel"\nThis card can attack twice during each Battle Phase.',
+        art: { bg: ['#200830','#100418'], color: '#a050d0' },
+        fusionMaterials: [9, 3],
+        effects: [{ trigger: 'passive', action: 'doubleAttack' }]
+    }),
+
+    // === SYNCHRO MONSTERS ===
+    makeCard(24, 'Poseidon\'s Chosen', 'monster', 'synchro', {
+        level: 8, atk: 2900, def: 2400, attribute: 'WATER', rarity: 'GhR',
+        desc: '1 Tuner + 1 or more non-Tuner monsters\nWhen this card is Synchro Summoned: Destroy all Spell and Trap Cards your opponent controls.',
+        art: { bg: ['#101830','#081020'], color: '#90c0e8' },
+        effects: [{ trigger: 'onSummon', action: 'destroyAllOpponentST' }]
+    }),
+    makeCard(25, 'Abyssal Sovereign', 'monster', 'synchro', {
+        level: 6, atk: 2400, def: 1800, attribute: 'DARK', rarity: 'UltR',
+        desc: '1 Tuner + 1 or more non-Tuner monsters\nWhile this card is face-up on the field: All monsters your opponent controls lose 300 ATK.',
+        art: { bg: ['#100020','#080010'], color: '#8060c0' },
+        effects: [{ trigger: 'passive', action: 'atkDebuffAll', value: 300, target: 'opponent' }]
+    }),
+
+    // === SPELL CARDS ===
+    makeCard(26, 'Polymerization', 'spell', 'normal', {
+        rarity: 'C',
+        desc: 'Fusion Summon 1 Fusion Monster from your Extra Deck, using monsters from your hand or field as Fusion Material.',
+        art: { bg: ['#082818','#04180c'], icon: 'fusion' },
+        effects: [{ action: 'fusionSummon' }]
+    }),
+    makeCard(27, 'Lobster\'s Feast', 'spell', 'normal', {
+        rarity: 'C',
+        desc: 'Gain 1000 LP.',
+        art: { bg: ['#082820','#041810'], icon: 'heal' },
+        effects: [{ action: 'heal', value: 1000, target: 'self' }]
+    }),
+    makeCard(28, 'Ocean\'s Bounty', 'spell', 'normal', {
+        rarity: 'SR',
+        desc: 'Draw 2 cards.',
+        art: { bg: ['#082038','#041020'], icon: 'draw' },
+        effects: [{ action: 'draw', value: 2, target: 'self' }]
+    }),
+    makeCard(29, 'Claw Sharpening', 'spell', 'equip', {
+        rarity: 'R',
+        desc: 'The equipped monster gains 500 ATK.',
+        art: { bg: ['#182008','#0c1004'], icon: 'sword' },
+        effects: [{ action: 'equipBuff', value: 500, stat: 'atk' }]
+    }),
+    makeCard(30, 'Coral Reef Kingdom', 'spell', 'field', {
+        rarity: 'UR',
+        desc: 'All WATER monsters on the field gain 300 ATK and DEF.',
+        art: { bg: ['#083028','#041818'], icon: 'field' },
+        effects: [{ trigger: 'passive', action: 'fieldBuffType', value: 300, attrTarget: 'WATER' }]
+    }),
+    makeCard(31, 'Ritual of the Deep', 'spell', 'ritual', {
+        rarity: 'SR',
+        desc: 'This card is used to Ritual Summon "Leviathan Lobster". You must also Tribute monsters from your hand or field whose total Levels equal 8 or more.',
+        art: { bg: ['#081838','#040c20'], icon: 'ritual' },
+        ritualMonster: 21,
+        effects: [{ action: 'ritualSummon', monsterId: 21 }]
+    }),
+    makeCard(32, 'Crustacean Fury', 'spell', 'quickplay', {
+        rarity: 'R',
+        desc: 'Target 1 face-up monster; it gains 1000 ATK until the end of this turn.',
+        art: { bg: ['#281008','#180804'], icon: 'power' },
+        effects: [{ action: 'atkBuff', value: 1000, duration: 'turn', target: 'select' }]
+    }),
+    makeCard(33, 'Tidal Wave', 'spell', 'normal', {
+        rarity: 'SR',
+        desc: 'Destroy all monsters on the field.',
+        art: { bg: ['#082040','#041028'], icon: 'wave' },
+        effects: [{ action: 'destroyAllMonsters' }]
+    }),
+    makeCard(34, 'Molting Season', 'spell', 'normal', {
+        rarity: 'R',
+        desc: 'Special Summon 1 Level 4 or lower monster from your Graveyard.',
+        art: { bg: ['#102818','#081810'], icon: 'revive' },
+        effects: [{ action: 'revive', condition: 'level4OrLower' }]
+    }),
+
+    // === TRAP CARDS ===
+    makeCard(35, 'Pincer Trap', 'trap', 'normal', {
+        rarity: 'R',
+        desc: 'When an opponent\'s monster declares an attack: Negate the attack, and inflict 500 damage to your opponent.',
+        art: { bg: ['#2a0828','#180418'], icon: 'claw' },
+        effects: [{ trigger: 'onOpponentAttack', action: 'negateAttackDamage', value: 500 }]
+    }),
+    makeCard(36, 'Shell Shield', 'trap', 'normal', {
+        rarity: 'C',
+        desc: 'When an opponent\'s monster declares an attack: Negate the attack.',
+        art: { bg: ['#200830','#100418'], icon: 'shield' },
+        effects: [{ trigger: 'onOpponentAttack', action: 'negateAttack' }]
+    }),
+    makeCard(37, 'Lobster Pot', 'trap', 'normal', {
+        rarity: 'SR',
+        desc: 'When your opponent Special Summons a monster: Destroy that monster.',
+        art: { bg: ['#280818','#18040c'], icon: 'net' },
+        effects: [{ trigger: 'onOpponentSpecialSummon', action: 'destroyThat' }]
+    }),
+    makeCard(38, 'Ink Cloud', 'trap', 'normal', {
+        rarity: 'SR',
+        desc: 'When a Spell Card is activated: Negate the activation, and destroy it.',
+        art: { bg: ['#0a0828','#050418'], icon: 'negate' },
+        effects: [{ trigger: 'onSpellActivation', action: 'negateDestroy' }]
+    }),
+    makeCard(39, 'Tidal Ambush', 'trap', 'normal', {
+        rarity: 'R',
+        desc: 'When an opponent\'s monster declares an attack: Special Summon 1 Level 4 or lower monster from your hand.',
+        art: { bg: ['#180830','#0c0418'], icon: 'ambush' },
+        effects: [{ trigger: 'onOpponentAttack', action: 'specialSummonFromHand', condition: 'level4OrLower' }]
+    }),
+    makeCard(40, 'Mirror Tide', 'trap', 'counter', {
+        rarity: 'StR',
+        desc: 'When a card or effect is activated: Negate the activation, and destroy that card.',
+        art: { bg: ['#180828','#0c0418'], icon: 'mirror' },
+        effects: [{ trigger: 'onAnyActivation', action: 'negateDestroy' }]
+    }),
+];
+
+function getCard(id) { return CARDS.find(c => c.id === id); }
+
+// ============================================================
+// CARD ART SVG GENERATION
+// ============================================================
+function lobsterSVG(color, opts = {}) {
+    const s = opts.scale || 1;
+    const crown = opts.crown ? `<path d="M46 12 L50 4 L55 10 L60 2 L65 10 L70 4 L74 12Z" fill="#ffd700" stroke="#aa8800" stroke-width="0.5"/>` : '';
+    const aura = opts.aura ? `<circle cx="60" cy="50" r="38" fill="none" stroke="${opts.aura}" stroke-width="1.5" opacity="0.4" stroke-dasharray="4 3"><animateTransform attributeName="transform" type="rotate" from="0 60 50" to="360 60 50" dur="8s" repeatCount="indefinite"/></circle>` : '';
+    const fire = opts.fire ? `<g opacity="0.6"><ellipse cx="45" cy="35" rx="8" ry="12" fill="#ff4400"><animate attributeName="ry" values="12;14;12" dur="0.5s" repeatCount="indefinite"/></ellipse><ellipse cx="75" cy="35" rx="8" ry="12" fill="#ff6600"><animate attributeName="ry" values="12;15;12" dur="0.4s" repeatCount="indefinite"/></ellipse></g>` : '';
+    const ice = opts.ice ? `<g opacity="0.5"><polygon points="30,20 33,28 38,22" fill="#aaeeff"/><polygon points="80,25 85,18 88,26" fill="#88ddff"/><polygon points="55,8 58,15 52,13" fill="#ccf0ff"/></g>` : '';
+    const dark = opts.dark ? `<circle cx="60" cy="50" r="35" fill="rgba(60,0,100,0.3)"/>` : '';
+    const shield = opts.shield ? `<ellipse cx="60" cy="50" rx="24" ry="32" fill="none" stroke="rgba(200,180,100,0.4)" stroke-width="2"/>` : '';
+    return `<svg viewBox="0 0 120 100">${aura}${dark}${fire}${ice}${shield}
+        <g fill="${color}" transform="translate(${60-60*s},${50-50*s}) scale(${s})">
+            <ellipse cx="60" cy="55" rx="16" ry="22"/>
+            <circle cx="60" cy="32" r="11"/>
+            <path d="M49 42 L32 30 L22 22 L28 32 L22 40 L34 34Z"/>
+            <path d="M71 42 L88 30 L98 22 L92 32 L98 40 L86 34Z"/>
+            <path d="M50 75 L47 86 L54 82 L60 90 L66 82 L73 86 L70 75Z"/>
+            <circle cx="55" cy="29" r="2.5" fill="white"/><circle cx="65" cy="29" r="2.5" fill="white"/>
+            <circle cx="55" cy="29" r="1.2" fill="#111"/><circle cx="65" cy="29" r="1.2" fill="#111"/>
+            <path d="M55 22 Q44 8 34 4" stroke="${color}" fill="none" stroke-width="1.8" stroke-linecap="round"/>
+            <path d="M65 22 Q76 8 86 4" stroke="${color}" fill="none" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="48" y1="66" x2="36" y2="78" stroke="${color}" stroke-width="1.8"/>
+            <line x1="52" y1="70" x2="42" y2="82" stroke="${color}" stroke-width="1.8"/>
+            <line x1="72" y1="66" x2="84" y2="78" stroke="${color}" stroke-width="1.8"/>
+            <line x1="68" y1="70" x2="78" y2="82" stroke="${color}" stroke-width="1.8"/>
+            ${crown}
+        </g>
+    </svg>`;
+}
+
+function spellTrapSVG(icon, color) {
+    const icons = {
+        fusion: `<circle cx="40" cy="50" r="18" fill="${color}" opacity="0.5"/><circle cx="80" cy="50" r="18" fill="${color}" opacity="0.5"/><circle cx="60" cy="50" r="20" fill="${color}" opacity="0.7"/>`,
+        heal: `<path d="M60 25 L65 45 L85 45 L70 58 L75 78 L60 65 L45 78 L50 58 L35 45 L55 45Z" fill="${color}" opacity="0.8"/>`,
+        draw: `<rect x="35" y="25" width="22" height="50" rx="2" fill="${color}" opacity="0.6"/><rect x="63" y="25" width="22" height="50" rx="2" fill="${color}" opacity="0.8"/>`,
+        sword: `<path d="M60 15 L66 65 L60 70 L54 65Z" fill="${color}"/><rect x="48" y="63" width="24" height="5" rx="1" fill="${color}" opacity="0.7"/><rect x="56" y="68" width="8" height="12" rx="1" fill="${color}" opacity="0.5"/>`,
+        field: `<path d="M20 70 Q40 40 60 55 Q80 70 100 45" stroke="${color}" fill="none" stroke-width="3"/><circle cx="40" cy="38" r="5" fill="${color}" opacity="0.4"/><circle cx="70" cy="42" r="4" fill="${color}" opacity="0.3"/><circle cx="55" cy="30" r="6" fill="${color}" opacity="0.3"/><path d="M15 75 Q60 60 105 75 L105 85 Q60 72 15 85Z" fill="${color}" opacity="0.3"/>`,
+        ritual: `<circle cx="60" cy="50" r="25" fill="none" stroke="${color}" stroke-width="2"/><circle cx="60" cy="50" r="18" fill="none" stroke="${color}" stroke-width="1.5" stroke-dasharray="3 3"/><polygon points="60,28 65,45 80,45 68,55 72,70 60,60 48,70 52,55 40,45 55,45" fill="${color}" opacity="0.6"/>`,
+        power: `<path d="M65 15 L45 50 L58 50 L55 85 L75 48 L62 48Z" fill="${color}"/>`,
+        wave: `<path d="M15 40 Q30 25 45 40 Q60 55 75 40 Q90 25 105 40" stroke="${color}" fill="none" stroke-width="3.5"/><path d="M15 55 Q30 40 45 55 Q60 70 75 55 Q90 40 105 55" stroke="${color}" fill="none" stroke-width="2.5" opacity="0.6"/><path d="M15 70 Q30 55 45 70 Q60 85 75 70 Q90 55 105 70" stroke="${color}" fill="none" stroke-width="1.5" opacity="0.3"/>`,
+        revive: `<path d="M60 80 L60 35" stroke="${color}" stroke-width="3"/><path d="M45 50 L60 30 L75 50" stroke="${color}" fill="none" stroke-width="3" stroke-linecap="round"/><ellipse cx="60" cy="82" rx="20" ry="5" fill="${color}" opacity="0.3"/>`,
+        claw: `<path d="M35 30 L55 55 L35 70" stroke="${color}" fill="none" stroke-width="4" stroke-linecap="round"/><path d="M85 30 L65 55 L85 70" stroke="${color}" fill="none" stroke-width="4" stroke-linecap="round"/>`,
+        shield: `<path d="M60 20 L85 32 L85 55 Q85 75 60 88 Q35 75 35 55 L35 32Z" fill="${color}" opacity="0.6" stroke="${color}" stroke-width="1.5"/>`,
+        net: `<line x1="25" y1="25" x2="95" y2="25" stroke="${color}" stroke-width="1.5"/><line x1="25" y1="25" x2="35" y2="80" stroke="${color}" stroke-width="1.5"/><line x1="95" y1="25" x2="85" y2="80" stroke="${color}" stroke-width="1.5"/><line x1="60" y1="25" x2="60" y2="82" stroke="${color}" stroke-width="1"/><line x1="42" y1="25" x2="47" y2="81" stroke="${color}" stroke-width="1"/><line x1="78" y1="25" x2="73" y2="81" stroke="${color}" stroke-width="1"/><path d="M37 45 Q60 55 83 45" stroke="${color}" fill="none" stroke-width="1"/><path d="M39 65 Q60 75 81 65" stroke="${color}" fill="none" stroke-width="1"/>`,
+        negate: `<circle cx="60" cy="50" r="25" fill="none" stroke="${color}" stroke-width="3"/><line x1="42" y1="32" x2="78" y2="68" stroke="${color}" stroke-width="3"/>`,
+        ambush: `<path d="M30 75 L60 30 L90 75Z" fill="none" stroke="${color}" stroke-width="2.5"/><circle cx="60" cy="55" r="4" fill="${color}"/>`,
+        mirror: `<ellipse cx="60" cy="50" rx="25" ry="32" fill="${color}" opacity="0.15" stroke="${color}" stroke-width="2"/><path d="M45 35 Q60 25 75 35" stroke="white" fill="none" stroke-width="1.5" opacity="0.5"/>`
+    };
+    return `<svg viewBox="0 0 120 100">${icons[icon] || icons.heal}</svg>`;
+}
+
+function getCardArtSVG(card) {
+    if (card.type === 'monster') {
+        const opts = {};
+        if (card.attribute === 'FIRE') opts.fire = true;
+        if (card.attribute === 'DARK') opts.dark = true;
+        if (card.attribute === 'LIGHT') opts.aura = '#ffd700';
+        if (card.attribute === 'EARTH') opts.shield = true;
+        if (card.level >= 7) { opts.crown = true; opts.scale = 1.1; }
+        if (card.subtype === 'synchro') opts.aura = '#c0c0ff';
+        if (card.subtype === 'ritual') opts.aura = '#6090d0';
+        if (card.subtype === 'fusion') opts.aura = '#a050d0';
+        if (card.id === 12) opts.scale = 0.7; // Phosphor Shrimp
+        if (card.id === 15) opts.scale = 0.6; // Larval Drifter
+        return lobsterSVG(card.art.color, opts);
+    }
+    const icon = card.art.icon || 'heal';
+    const color = card.type === 'spell' ? '#40d890' : '#d050a0';
+    return spellTrapSVG(icon, color);
+}
+
+// ============================================================
+// CARD HTML RENDERING
+// ============================================================
+function getFrameClass(card) {
+    if (card.type === 'spell') return 'spell';
+    if (card.type === 'trap') return 'trap';
+    return (card.subtype || 'normal') + '-monster';
+}
+
+function getSpellTrapLabel(card) {
+    if (card.type === 'spell') {
+        const labels = { normal: 'Spell', continuous: 'Continuous Spell', equip: 'Equip Spell', quickplay: 'Quick-Play Spell', field: 'Field Spell', ritual: 'Ritual Spell' };
+        return labels[card.subtype] || 'Spell';
+    }
+    const labels = { normal: 'Trap', continuous: 'Continuous Trap', counter: 'Counter Trap' };
+    return labels[card.subtype] || 'Trap';
+}
+
+function renderCard(card, opts = {}) {
+    const faceDown = opts.faceDown;
+    const defPos = opts.defPos;
+    const rClass = `rarity-${card.rarity}`;
+    const frameClass = getFrameClass(card);
+    const bg = card.art?.bg || ['#1a1a2e', '#0d0d18'];
+    const artSVG = getCardArtSVG(card);
+
+    const attrColor = card.type === 'monster' ? (ATTR_COLORS[card.attribute] || '#555')
+        : card.type === 'spell' ? '#1d8a5e' : '#9c2783';
+    const attrLabel = card.type === 'monster' ? (ATTR_LABELS[card.attribute] || '?')
+        : card.type === 'spell' ? 'SP' : 'TR';
+
+    let levelHTML = '';
+    if (card.type === 'monster' && card.level) {
+        levelHTML = Array(card.level).fill('<div class="level-star"></div>').join('');
+    }
+
+    let statsHTML = '';
+    if (card.type === 'monster') {
+        const atkVal = opts.atkMod ? card.atk + opts.atkMod : card.atk;
+        const defVal = opts.defMod ? card.def + opts.defMod : card.def;
+        statsHTML = `<div class="card-stats-bar"><span>ATK/${atkVal}</span><span>DEF/${defVal}</span></div>`;
+    }
+
+    let typeLabel = '';
+    if (card.type !== 'monster') {
+        typeLabel = `<div class="card-type-label">${getSpellTrapLabel(card)}</div>`;
+    } else if (card.isTuner) {
+        typeLabel = `<div class="card-type-label">Tuner</div>`;
+    }
+
+    const html = `
+        <div class="card ${rClass} ${faceDown ? 'face-down' : ''} ${defPos ? 'def-pos' : ''}" data-card-id="${card.id}">
+            <div class="card-front">
+                <div class="card-frame ${frameClass}">
+                    <div class="card-inner">
+                        <div class="card-name-bar">
+                            <span class="card-name">${card.name}</span>
+                            <div class="card-attr" style="background:${attrColor}">${attrLabel}</div>
+                        </div>
+                        <div class="card-art-box">
+                            <div class="card-art-bg" style="background:linear-gradient(135deg, ${bg[0]}, ${bg[1]})"></div>
+                            <div class="card-art-svg">${artSVG}</div>
+                        </div>
+                        ${levelHTML ? `<div class="card-level-bar">${levelHTML}</div>` : ''}
+                        ${typeLabel}
+                        <div class="card-desc-box">${card.desc || ''}</div>
+                        ${statsHTML}
+                    </div>
+                </div>
+                <div class="card-holo-overlay"></div>
+            </div>
+            <div class="card-back">
+                <div class="card-back-pattern">
+                    <span class="card-back-text">CLAW<br>WARS</span>
+                </div>
+            </div>
+        </div>
+    `;
+    return html;
+}
+
+// ============================================================
+// SAVE / LOAD / PLAYER DATA
+// ============================================================
+// ============================================================
+// $DD — DuckDollars Token (Base chain)
+// ============================================================
+const DD_TOKEN = '0x0c6a04473c00725deadcc266b100889f62fa4113';
+const BASE_RPC = 'https://mainnet.base.org';
+
+async function fetchDDBalance(wallet) {
+    if (!wallet) wallet = connectedWallet;
+    if (!wallet) return null;
+    try {
+        const data = '0x70a08231' + wallet.slice(2).toLowerCase().padStart(64, '0');
+        const res = await fetch(BASE_RPC, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                jsonrpc: '2.0', id: 1,
+                method: 'eth_call',
+                params: [{ to: DD_TOKEN, data }, 'latest']
+            })
+        });
+        const json = await res.json();
+        return Math.floor(Number(BigInt(json.result || '0x0') / BigInt(1e18)));
+    } catch { return null; }
+}
+
+async function syncDDBalance() {
+    if (offlineMode || !connectedWallet) return;
+    const balance = await fetchDDBalance(connectedWallet);
+    if (balance !== null) {
+        playerData.coins = balance;
+        saveData();
+        updateCoinsDisplay();
+    }
+}
+
+let playerData = {
+    coins: 0,
+    collection: {}, // { cardId: count }
+    deck: [],       // array of card IDs (main deck)
+    extraDeck: [],  // array of card IDs (extra deck)
+    stats: { wins: 0, losses: 0, totalDuels: 0 }
+};
+
+function saveData() {
+    localStorage.setItem('clawWars', JSON.stringify(playerData));
+    if (window.AppDB) {
+        window.AppDB.set('clawWars', playerData).catch(() => {});
+    }
+}
+
+function loadData() {
+    try {
+        const saved = localStorage.getItem('clawWars');
+        if (saved) {
+            playerData = { ...playerData, ...JSON.parse(saved) };
+        }
+    } catch(e) {}
+
+    // Give starter cards if new player
+    if (Object.keys(playerData.collection).length === 0) {
+        giveStarterCards();
+    }
+    if (playerData.deck.length === 0) {
+        buildStarterDeck();
+    }
+}
+
+function giveStarterCards() {
+    // Give all commons x3 and rares x2
+    CARDS.forEach(c => {
+        if (c.rarity === 'C') playerData.collection[c.id] = 3;
+        else if (c.rarity === 'R') playerData.collection[c.id] = 2;
+    });
+    // Give 1 of each SR
+    CARDS.forEach(c => {
+        if (c.rarity === 'SR') playerData.collection[c.id] = 1;
+    });
+    saveData();
+}
+
+function buildStarterDeck() {
+    playerData.deck = [
+        1,1, 2,2, 3,3, 4,4, 5,5,       // 10 normal monsters
+        6,6, 8, 9, 12,12, 13,           // 7 effect monsters
+        15,15, 14,                       // 3 tuners
+        26,26, 27, 28, 29,29,           // 6 spells
+        32, 34,                          // 2 more spells
+        35,35, 36,36, 39,               // 5 traps
+    ]; // 33 cards, need 40 minimum
+    // Pad to 40
+    playerData.deck.push(7, 10, 11, 6, 3, 2, 27);
+    playerData.extraDeck = [25]; // Abyssal Sovereign (if they have it)
+    saveData();
+}
+
+// ============================================================
+// SCREENS
+// ============================================================
+function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    updateCoinsDisplay();
+    updateWalletDisplay();
+    if (id === 'collection-screen') renderCollection();
+    if (id === 'pack-screen') renderPackShop();
+    if (id === 'deckbuilder-screen') renderDeckBuilder();
+}
+
+function updateCoinsDisplay() {
+    document.getElementById('title-coins').textContent = '$DD ' + playerData.coins;
+    const pc = document.getElementById('pack-coins');
+    if (pc) pc.textContent = '$DD ' + playerData.coins;
+}
+
+// ============================================================
+// COLLECTION
+// ============================================================
+let collFilter = 'all';
+
+function renderCollection() {
+    const filtersEl = document.getElementById('coll-filters');
+    const filters = [
+        { key: 'all', label: 'All' },
+        { key: 'monster', label: 'Monsters' },
+        { key: 'spell', label: 'Spells' },
+        { key: 'trap', label: 'Traps' },
+        { key: 'owned', label: 'Owned' },
+    ];
+    filtersEl.innerHTML = filters.map(f =>
+        `<button class="filter-btn ${collFilter === f.key ? 'active' : ''}" onclick="setCollFilter('${f.key}')">${f.label}</button>`
+    ).join('');
+
+    const grid = document.getElementById('coll-grid');
+    let cards = CARDS;
+    if (collFilter === 'monster') cards = cards.filter(c => c.type === 'monster');
+    else if (collFilter === 'spell') cards = cards.filter(c => c.type === 'spell');
+    else if (collFilter === 'trap') cards = cards.filter(c => c.type === 'trap');
+    else if (collFilter === 'owned') cards = cards.filter(c => (playerData.collection[c.id] || 0) > 0);
+
+    const owned = cards.filter(c => (playerData.collection[c.id] || 0) > 0).length;
+    document.getElementById('coll-count').textContent = `${owned}/${CARDS.length}`;
+
+    grid.innerHTML = cards.map(c => {
+        const count = playerData.collection[c.id] || 0;
+        const locked = count === 0;
+        return `<div style="position:relative" onclick="showCardDetail(${c.id})">
+            ${count > 0 ? `<div class="card-count-badge">${count}</div>` : ''}
+            <div class="${locked ? 'card-locked' : ''}">${renderCard(c)}</div>
+        </div>`;
+    }).join('');
+}
+
+function setCollFilter(f) {
+    collFilter = f;
+    renderCollection();
+}
+
+// ============================================================
+// CARD DETAIL MODAL
+// ============================================================
+function showCardDetail(cardId) {
+    const card = getCard(cardId);
+    if (!card) return;
+    const wrap = document.getElementById('detail-card-wrap');
+    wrap.innerHTML = renderCard(card);
+    document.getElementById('detail-rarity').textContent = RARITIES[card.rarity] || card.rarity;
+
+    const modal = document.getElementById('card-modal');
+    modal.classList.add('active');
+
+    // Setup holographic tilt on detail card
+    const cardEl = wrap.querySelector('.card');
+    if (cardEl && card.rarity !== 'C') {
+        setupHoloTilt(cardEl);
+    }
+}
+
+function closeModal() {
+    document.getElementById('card-modal').classList.remove('active');
+}
+
+function setupHoloTilt(el) {
+    function handleMove(e) {
+        const rect = el.getBoundingClientRect();
+        const touch = e.touches ? e.touches[0] : e;
+        const x = (touch.clientX - rect.left) / rect.width;
+        const y = (touch.clientY - rect.top) / rect.height;
+        const rotateX = (y - 0.5) * -12;
+        const rotateY = (x - 0.5) * 12;
+        const holoAngle = Math.atan2(y - 0.5, x - 0.5) * (180 / Math.PI) + 180;
+        el.style.transform = `perspective(800px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        el.style.setProperty('--holo-angle', `${holoAngle}deg`);
+        el.style.setProperty('--holo-x', `${x * 100}%`);
+        el.style.setProperty('--holo-y', `${y * 100}%`);
+    }
+    function handleEnd() {
+        el.style.transform = '';
+    }
+    el.addEventListener('mousemove', handleMove);
+    el.addEventListener('touchmove', handleMove, { passive: true });
+    el.addEventListener('mouseleave', handleEnd);
+    el.addEventListener('touchend', handleEnd);
+}
+
+// ============================================================
+// PACK OPENING
+// ============================================================
+const PACKS = [
+    { id: 'starter', name: 'Starter Pack', desc: '5 cards. Great for beginners!', cost: 0, count: 5, maxBuys: 1,
+      pool: () => CARDS.filter(c => c.rarity === 'C' || c.rarity === 'R'),
+      guarantee: 'R',
+      colors: ['#2a4a6a','#1a2a3a']
+    },
+    { id: 'reef', name: 'Reef Pack', desc: '5 cards. Guaranteed 1 Super Rare+', cost: 100, count: 5,
+      pool: () => CARDS.filter(c => ['C','R','SR'].includes(c.rarity)),
+      guarantee: 'SR',
+      colors: ['#1a5a4a','#0a2a20']
+    },
+    { id: 'abyss', name: 'Abyssal Pack', desc: '5 cards. Guaranteed 1 Ultra Rare+', cost: 250, count: 5,
+      pool: () => CARDS.filter(c => ['C','R','SR','UR'].includes(c.rarity)),
+      guarantee: 'UR',
+      colors: ['#2a1a4a','#100828']
+    },
+    { id: 'legend', name: 'Legendary Pack', desc: '5 cards. Guaranteed 1 Secret/Ghost/Ultimate/Starlight!', cost: 500, count: 5,
+      pool: () => CARDS,
+      guarantee: 'ScR',
+      colors: ['#3a2a08','#1a1204']
+    },
+    { id: 'mega', name: 'Mega Pack', desc: '10 cards. Guaranteed 2 Ultra Rare+', cost: 1000, count: 10,
+      pool: () => CARDS,
+      guarantee: 'UR', guaranteeCount: 2,
+      colors: ['#3a0828','#1a0418']
+    },
+];
+
+let packBuys = {};
+
+function renderPackShop() {
+    const list = document.getElementById('pack-list');
+    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    list.innerHTML = PACKS.map(p => {
+        const bought = packBuys[p.id] || 0;
+        const canBuy = playerData.coins >= p.cost && (!p.maxBuys || bought < p.maxBuys);
+        const soldOut = p.maxBuys && bought >= p.maxBuys;
+        return `<div class="pack-item">
+            <div class="pack-icon" style="background:linear-gradient(135deg,${p.colors[0]},${p.colors[1]});border:1px solid rgba(255,255,255,0.15)">
+                <svg viewBox="0 0 40 50" width="40" height="50"><rect x="5" y="5" width="30" height="40" rx="3" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><text x="20" y="30" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="900">CW</text></svg>
+            </div>
+            <div class="pack-info">
+                <h3>${p.name}</h3>
+                <p>${p.desc}</p>
+            </div>
+            <button class="pack-buy-btn" onclick="buyPack('${p.id}')" ${canBuy ? '' : 'disabled'}>
+                ${soldOut ? 'SOLD OUT' : (p.cost === 0 ? 'FREE' : '$DD ' + p.cost)}
+            </button>
+        </div>`;
+    }).join('');
+}
+
+function buyPack(packId) {
+    const pack = PACKS.find(p => p.id === packId);
+    if (!pack || playerData.coins < pack.cost) return;
+    if (pack.maxBuys && (packBuys[pack.id] || 0) >= pack.maxBuys) return;
+
+    playerData.coins -= pack.cost;
+    packBuys[pack.id] = (packBuys[pack.id] || 0) + 1;
+
+    // Generate cards
+    const pool = pack.pool();
+    const pulled = [];
+
+    // Guarantee
+    if (pack.guarantee) {
+        const rarityOrder = ['C','R','SR','UR','ScR','GhR','UltR','StR'];
+        const minIdx = rarityOrder.indexOf(pack.guarantee);
+        const guaranteePool = CARDS.filter(c => rarityOrder.indexOf(c.rarity) >= minIdx);
+        const gCount = pack.guaranteeCount || 1;
+        for (let g = 0; g < gCount && guaranteePool.length > 0; g++) {
+            pulled.push(guaranteePool[Math.floor(Math.random() * guaranteePool.length)]);
+        }
+    }
+
+    // Fill rest
+    while (pulled.length < pack.count) {
+        // Weighted random
+        const r = Math.random();
+        let rarityFilter;
+        if (r < 0.5) rarityFilter = 'C';
+        else if (r < 0.78) rarityFilter = 'R';
+        else if (r < 0.92) rarityFilter = 'SR';
+        else if (r < 0.97) rarityFilter = 'UR';
+        else rarityFilter = null; // any from pool
+        const sub = rarityFilter ? pool.filter(c => c.rarity === rarityFilter) : pool;
+        if (sub.length > 0) {
+            pulled.push(sub[Math.floor(Math.random() * sub.length)]);
+        } else {
+            pulled.push(pool[Math.floor(Math.random() * pool.length)]);
+        }
+    }
+
+    // Add to collection
+    const newCards = [];
+    pulled.forEach(c => {
+        const wasNew = !playerData.collection[c.id];
+        playerData.collection[c.id] = (playerData.collection[c.id] || 0) + 1;
+        if (wasNew) newCards.push(c.id);
+    });
+    saveData();
+
+    // Show reveal
+    showReveal(pulled, newCards);
+}
+
+function showReveal(cards, newCardIds) {
+    document.querySelector('.pack-list').style.display = 'none';
+    const reveal = document.getElementById('pack-reveal');
+    reveal.classList.add('active');
+    const row = document.getElementById('reveal-cards');
+    row.innerHTML = cards.map((c, i) => {
+        const isNew = newCardIds.includes(c.id);
+        return `<div style="position:relative;width:90px;aspect-ratio:0.686;animation:cardReveal 0.5s ${i*0.15}s ease-out both" onclick="showCardDetail(${c.id})">
+            ${isNew ? '<div class="reveal-new-badge">NEW!</div>' : ''}
+            ${renderCard(c)}
+        </div>`;
+    }).join('');
+}
+
+function closeReveal() {
+    document.getElementById('pack-reveal').classList.remove('active');
+    document.querySelector('.pack-list').style.display = '';
+    renderPackShop();
+}
+
+// ============================================================
+// DECK BUILDER
+// ============================================================
+function renderDeckBuilder() {
+    const statsEl = document.getElementById('deck-stats');
+    const mainCount = playerData.deck.length;
+    const extraCount = playerData.extraDeck.length;
+    statsEl.innerHTML = `Main Deck: <span>${mainCount}/60</span> | Extra Deck: <span>${extraCount}/15</span>`;
+
+    const area = document.getElementById('deck-area');
+
+    // Current deck
+    const mainCards = playerData.deck.map(id => getCard(id)).filter(Boolean);
+    const extraCards = playerData.extraDeck.map(id => getCard(id)).filter(Boolean);
+
+    // Available cards (owned but could add more)
+    const owned = [];
+    Object.entries(playerData.collection).forEach(([id, count]) => {
+        const card = getCard(parseInt(id));
+        if (!card) return;
+        const inDeck = playerData.deck.filter(d => d === card.id).length +
+                       playerData.extraDeck.filter(d => d === card.id).length;
+        const available = count - inDeck;
+        if (available > 0) owned.push({ card, available });
+    });
+
+    area.innerHTML = `
+        <div class="deck-zone-label">Main Deck (${mainCount})</div>
+        <div class="deck-section">
+            <div class="deck-cards-row">
+                ${mainCards.map((c, i) =>
+                    `<div style="position:relative" onclick="removeFromDeck(${i},'main')">${renderCard(c)}</div>`
+                ).join('')}
+                ${mainCount === 0 ? '<div style="color:#555;font-size:12px;padding:20px">Tap cards below to add</div>' : ''}
+            </div>
+        </div>
+        <div class="deck-zone-label">Extra Deck (${extraCount})</div>
+        <div class="deck-section">
+            <div class="deck-cards-row">
+                ${extraCards.map((c, i) =>
+                    `<div style="position:relative" onclick="removeFromDeck(${i},'extra')">${renderCard(c)}</div>`
+                ).join('')}
+                ${extraCount === 0 ? '<div style="color:#555;font-size:12px;padding:10px">Fusion/Synchro monsters go here</div>' : ''}
+            </div>
+        </div>
+        <div class="deck-zone-label">Available Cards</div>
+        <div class="deck-section">
+            <div class="deck-cards-row">
+                ${owned.map(({ card: c, available }) =>
+                    `<div style="position:relative" onclick="addToDeck(${c.id})">
+                        <div class="card-count-badge" style="background:#27ae60">${available}</div>
+                        ${renderCard(c)}
+                    </div>`
+                ).join('')}
+            </div>
+        </div>
+        <button class="deck-save-btn" onclick="autoFillDeck()">Auto-Fill Deck</button>
+    `;
+}
+
+function addToDeck(cardId) {
+    const card = getCard(cardId);
+    if (!card) return;
+    const inDeck = playerData.deck.filter(d => d === cardId).length +
+                   playerData.extraDeck.filter(d => d === cardId).length;
+    const owned = playerData.collection[cardId] || 0;
+    if (inDeck >= owned || inDeck >= 3) return; // max 3 copies
+
+    if (card.subtype === 'fusion' || card.subtype === 'synchro') {
+        if (playerData.extraDeck.length >= 15) return;
+        playerData.extraDeck.push(cardId);
+    } else {
+        if (playerData.deck.length >= 60) return;
+        playerData.deck.push(cardId);
+    }
+    saveData();
+    renderDeckBuilder();
+}
+
+function removeFromDeck(index, zone) {
+    if (zone === 'main') playerData.deck.splice(index, 1);
+    else playerData.extraDeck.splice(index, 1);
+    saveData();
+    renderDeckBuilder();
+}
+
+function autoFillDeck() {
+    // Reset and auto-build
+    playerData.deck = [];
+    playerData.extraDeck = [];
+
+    const owned = {};
+    Object.entries(playerData.collection).forEach(([id, count]) => {
+        owned[parseInt(id)] = count;
+    });
+
+    // Add monsters first, then spells, then traps
+    const priorities = [
+        ...CARDS.filter(c => c.type === 'monster' && !['fusion','synchro'].includes(c.subtype)).sort((a,b) => (b.atk||0) - (a.atk||0)),
+        ...CARDS.filter(c => c.type === 'spell'),
+        ...CARDS.filter(c => c.type === 'trap'),
+    ];
+
+    for (const card of priorities) {
+        if (playerData.deck.length >= 40) break;
+        const avail = owned[card.id] || 0;
+        const copies = Math.min(avail, card.rarity === 'C' ? 3 : 2, 40 - playerData.deck.length);
+        for (let i = 0; i < copies; i++) {
+            playerData.deck.push(card.id);
+        }
+    }
+
+    // Extra deck
+    CARDS.filter(c => ['fusion','synchro'].includes(c.subtype)).forEach(c => {
+        if ((owned[c.id] || 0) > 0 && playerData.extraDeck.length < 15) {
+            playerData.extraDeck.push(c.id);
+        }
+    });
+
+    saveData();
+    renderDeckBuilder();
+}
+
+// ============================================================
+// DUEL ENGINE
+// ============================================================
+let duel = null;
+
+function createPlayerState(deckIds, extraIds) {
+    const deck = deckIds.map(id => ({ ...getCard(id), uid: Math.random().toString(36).slice(2) }));
+    // Shuffle
+    for (let i = deck.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+    return {
+        lp: 8000,
+        deck,
+        hand: [],
+        monsters: [null, null, null, null, null],
+        spells: [null, null, null, null, null],
+        fieldSpell: null,
+        graveyard: [],
+        extraDeck: extraIds.map(id => ({ ...getCard(id), uid: Math.random().toString(36).slice(2) })),
+        hasNormalSummoned: false,
+    };
+}
+
+function createFieldCard(card, position, faceUp) {
+    return {
+        card,
+        position, // 'atk' or 'def'
+        faceUp,
+        canAttack: false,
+        canChangePos: false,
+        atkMod: 0,
+        defMod: 0,
+        attacks: 0,
+        maxAttacks: 1,
+        frozen: false,
+        justSet: false,
+        turnSet: -1,
+        effectUsed: false,
+        isToken: false,
+    };
+}
+
+const AI_DECK = [
+    4,4, 5,5, 3,3, 2,2, 1,1,
+    9,9, 7,7, 13, 8,
+    14, 15,
+    16, 19,
+    26, 26, 29, 33, 30, 28,
+    32, 27, 34,
+    35, 35, 36, 38, 37,
+    39, 6, 11, 12, 10, 3
+];
+const AI_EXTRA = [22, 24, 25];
+
+function startDuel() {
+    if (playerData.deck.length < 20) {
+        alert('You need at least 20 cards in your deck! Go to Deck Builder.');
+        return;
+    }
+
+    duel = {
+        turn: 1,
+        currentPlayer: 'player', // 'player' or 'ai'
+        phase: 'draw',
+        player: createPlayerState([...playerData.deck], [...playerData.extraDeck]),
+        ai: createPlayerState([...AI_DECK], [...AI_EXTRA]),
+        log: [],
+        gameOver: false,
+        selectedCard: null,
+        selectedZone: null,
+        uiState: 'idle',
+        tributeTargets: [],
+        tributeNeeded: 0,
+        pendingAction: null,
+        chainResolving: false,
+        isFirstTurn: true,
+    };
+
+    // Draw opening hands
+    for (let i = 0; i < 5; i++) {
+        drawCard('player');
+        drawCard('ai');
+    }
+
+    showScreen('duel-screen');
+    duelLog('Duel Start! You go first.');
+    duel.phase = 'draw';
+    // First turn: skip draw
+    duelLog('Turn 1 - Skipping first draw.');
+    duel.phase = 'main1';
+    renderDuel();
+}
+
+function drawCard(who) {
+    const p = duel[who];
+    if (p.deck.length === 0) {
+        // Deck out
+        duelLog(`${who === 'player' ? 'You' : 'AI'} ran out of cards!`);
+        endDuelResult(who === 'player' ? 'lose' : 'win');
+        return false;
+    }
+    const card = p.deck.shift();
+    p.hand.push(card);
+    return card;
+}
+
+function duelLog(msg) {
+    if (!duel) return;
+    duel.log.push(msg);
+    const logEl = document.getElementById('duel-log');
+    if (logEl) {
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        entry.textContent = msg;
+        logEl.appendChild(entry);
+        // Remove old entries
+        while (logEl.children.length > 5) logEl.removeChild(logEl.firstChild);
+    }
+}
+
+function showDamageFlash(amount, heal) {
+    const el = document.createElement('div');
+    el.className = 'damage-flash' + (heal ? ' heal' : '');
+    el.textContent = (heal ? '+' : '-') + amount;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1000);
+}
+
+function getFieldATK(fc, owner) {
+    if (!fc) return 0;
+    let atk = fc.card.atk + fc.atkMod;
+    // Field spell buff
+    const p = duel[owner];
+    const opp = duel[owner === 'player' ? 'ai' : 'player'];
+    [p, opp].forEach(side => {
+        if (side.fieldSpell && side.fieldSpell.card.effects) {
+            side.fieldSpell.card.effects.forEach(eff => {
+                if (eff.trigger === 'passive' && eff.action === 'fieldBuffType' && fc.card.attribute === eff.attrTarget) {
+                    atk += eff.value;
+                }
+            });
+        }
+    });
+    // Abyssal Sovereign debuff
+    const oppSide = owner === 'player' ? 'ai' : 'player';
+    duel[oppSide].monsters.forEach(m => {
+        if (m && m.faceUp && m.card.effects) {
+            m.card.effects.forEach(eff => {
+                if (eff.trigger === 'passive' && eff.action === 'atkDebuffAll') {
+                    atk -= eff.value;
+                }
+            });
+        }
+    });
+    return Math.max(0, atk);
+}
+
+function getFieldDEF(fc, owner) {
+    if (!fc) return 0;
+    let def = fc.card.def + fc.defMod;
+    const p = duel[owner];
+    const opp = duel[owner === 'player' ? 'ai' : 'player'];
+    [p, opp].forEach(side => {
+        if (side.fieldSpell && side.fieldSpell.card.effects) {
+            side.fieldSpell.card.effects.forEach(eff => {
+                if (eff.trigger === 'passive' && eff.action === 'fieldBuffType' && fc.card.attribute === eff.attrTarget) {
+                    def += eff.value;
+                }
+            });
+        }
+    });
+    return Math.max(0, def);
+}
+
+function getEmptyMonsterZone(who) {
+    return duel[who].monsters.findIndex(z => z === null);
+}
+
+function getEmptySpellZone(who) {
+    return duel[who].spells.findIndex(z => z === null);
+}
+
+function getMonsterCount(who) {
+    return duel[who].monsters.filter(m => m !== null).length;
+}
+
+function sendToGraveyard(who, fieldCard) {
+    if (fieldCard && !fieldCard.isToken) {
+        duel[who].graveyard.push(fieldCard.card);
+    }
+}
+
+function destroyMonster(who, zoneIdx) {
+    const fc = duel[who].monsters[zoneIdx];
+    if (!fc) return;
+    duel[who].monsters[zoneIdx] = null;
+    sendToGraveyard(who, fc);
+
+    // On destroy effects
+    if (fc.card.effects) {
+        fc.card.effects.forEach(eff => {
+            if (eff.trigger === 'onDestroy') {
+                if (eff.action === 'spawnTokens') {
+                    for (let i = 0; i < eff.count; i++) {
+                        const zi = getEmptyMonsterZone(who);
+                        if (zi >= 0) {
+                            duel[who].monsters[zi] = createFieldCard(
+                                { id: 0, name: 'Lobster Token', type: 'monster', subtype: 'normal', level: 1,
+                                  atk: eff.tokenAtk, def: eff.tokenDef, attribute: 'WATER', rarity: 'C',
+                                  desc: 'Token', art: { bg: ['#1a2a3a','#0d1520'], color: '#c06050' } },
+                                'def', true
+                            );
+                            duel[who].monsters[zi].isToken = true;
+                        }
+                    }
+                    duelLog(`${fc.card.name} spawned ${eff.count} Lobster Tokens!`);
+                }
+            }
+        });
+    }
+}
+
+function destroySpellTrap(who, zoneIdx) {
+    const fc = duel[who].spells[zoneIdx];
+    if (!fc) return;
+    duel[who].spells[zoneIdx] = null;
+    sendToGraveyard(who, fc);
+}
+
+function takeDamage(who, amount) {
+    duel[who].lp = Math.max(0, duel[who].lp - amount);
+    showDamageFlash(amount, false);
+    if (duel[who].lp <= 0) {
+        endDuelResult(who === 'player' ? 'lose' : 'win');
+    }
+}
+
+function gainLP(who, amount) {
+    duel[who].lp = Math.min(99999, duel[who].lp + amount);
+    showDamageFlash(amount, true);
+}
+
+function endDuelResult(result) {
+    duel.gameOver = true;
+    const overlay = document.getElementById('game-over');
+    const textEl = document.getElementById('game-over-text');
+    const rewardEl = document.getElementById('game-over-reward');
+
+    if (result === 'win') {
+        textEl.textContent = 'YOU WIN!';
+        textEl.className = 'game-over-text win';
+        const reward = 50;
+        playerData.coins += reward;
+        playerData.stats.wins++;
+        rewardEl.textContent = `+${reward} $DD earned!`;
+    } else {
+        textEl.textContent = 'YOU LOSE';
+        textEl.className = 'game-over-text lose';
+        const reward = 10;
+        playerData.coins += reward;
+        playerData.stats.losses++;
+        rewardEl.textContent = `+${reward} $DD`;
+    }
+    playerData.stats.totalDuels++;
+    saveData();
+    overlay.classList.add('active');
+}
+
+// ============================================================
+// DUEL PHASES
+// ============================================================
+function advancePhase() {
+    if (duel.gameOver) return;
+    hideActionMenu();
+
+    const phases = ['draw', 'main1', 'battle', 'main2', 'end'];
+    const idx = phases.indexOf(duel.phase);
+
+    if (duel.currentPlayer === 'player') {
+        if (duel.phase === 'main1') {
+            duel.phase = 'battle';
+            // Enable attacks
+            duel.player.monsters.forEach(m => {
+                if (m && m.faceUp && m.position === 'atk') {
+                    m.canAttack = true;
+                    m.attacks = 0;
+                    if (m.card.effects?.some(e => e.action === 'doubleAttack')) m.maxAttacks = 2;
+                }
+            });
+            duelLog('Battle Phase.');
+        } else if (duel.phase === 'battle') {
+            duel.phase = 'main2';
+            duelLog('Main Phase 2.');
+        } else if (duel.phase === 'main2' || duel.phase === 'main1') {
+            endTurn();
+        }
+    }
+    renderDuel();
+}
+
+function endTurn() {
+    // End phase effects
+    // Remove turn-only buffs
+    duel.player.monsters.forEach(m => {
+        if (m) {
+            m.atkMod = 0;
+            m.defMod = 0;
+            m.canChangePos = true;
+            m.effectUsed = false;
+        }
+    });
+
+    // Discard to 6 (simplified - auto discard oldest)
+    while (duel.player.hand.length > 6) {
+        const discarded = duel.player.hand.pop();
+        duel.player.graveyard.push(discarded);
+        duelLog(`Discarded ${discarded.name} (hand limit).`);
+    }
+
+    // Switch to AI turn
+    duel.currentPlayer = 'ai';
+    duel.turn++;
+    duel.isFirstTurn = false;
+    duel.uiState = 'idle';
+    duel.selectedCard = null;
+
+    duelLog(`--- AI's Turn ${duel.turn} ---`);
+    renderDuel();
+
+    // AI plays after a delay
+    setTimeout(() => aiTurn(), 800);
+}
+
+// ============================================================
+// PLAYER ACTIONS
+// ============================================================
+function handleHandCardClick(handIdx) {
+    if (duel.currentPlayer !== 'player' || duel.gameOver) return;
+    if (duel.phase !== 'main1' && duel.phase !== 'main2') return;
+
+    const card = duel.player.hand[handIdx];
+    if (!card) return;
+
+    duel.selectedCard = { handIdx, card };
+    duel.uiState = 'selectAction';
+
+    const menu = document.getElementById('action-menu');
+    let buttons = [];
+
+    if (card.type === 'monster') {
+        if (card.subtype === 'fusion' || card.subtype === 'synchro') {
+            // Can't normal summon these
+            buttons.push({ label: 'Cannot Normal Summon', cls: 'cancel', disabled: true });
+        } else {
+            // Check special summon from hand
+            let canSpecial = false;
+            if (card.effects) {
+                card.effects.forEach(eff => {
+                    if (eff.trigger === 'hand' && eff.action === 'specialSummonSelf') {
+                        if (eff.condition === 'controlMonster' && getMonsterCount('player') > 0) canSpecial = true;
+                        if (eff.condition === 'opponentMoreMonsters' && getMonsterCount('ai') > getMonsterCount('player')) canSpecial = true;
+                    }
+                });
+            }
+            if (canSpecial && getEmptyMonsterZone('player') >= 0) {
+                buttons.push({ label: 'Special Summon', cls: 'summon', action: () => specialSummonFromHand(handIdx) });
+            }
+
+            // Normal summon
+            if (!duel.player.hasNormalSummoned && getEmptyMonsterZone('player') >= 0) {
+                if (card.level <= 4) {
+                    buttons.push({ label: 'Normal Summon', cls: 'summon', action: () => normalSummon(handIdx) });
+                } else if (card.level <= 6 && getMonsterCount('player') >= 1) {
+                    buttons.push({ label: 'Tribute Summon (1)', cls: 'summon', action: () => startTributeSummon(handIdx, 1) });
+                } else if (card.level >= 7 && getMonsterCount('player') >= 2) {
+                    buttons.push({ label: 'Tribute Summon (2)', cls: 'summon', action: () => startTributeSummon(handIdx, 2) });
+                }
+            }
+            // Set
+            if (!duel.player.hasNormalSummoned && getEmptyMonsterZone('player') >= 0 && card.level <= 4) {
+                buttons.push({ label: 'Set', cls: 'set', action: () => setMonster(handIdx) });
+            }
+        }
+    } else if (card.type === 'spell') {
+        if (card.subtype === 'field') {
+            buttons.push({ label: 'Activate', cls: 'activate', action: () => activateFieldSpell(handIdx) });
+        } else if (card.subtype === 'equip') {
+            if (getMonsterCount('player') > 0) {
+                buttons.push({ label: 'Activate', cls: 'activate', action: () => startEquipSpell(handIdx) });
+            }
+        } else if (card.subtype === 'ritual') {
+            if (canRitualSummon(card)) {
+                buttons.push({ label: 'Activate', cls: 'activate', action: () => startRitualSummon(handIdx) });
+            }
+        } else if (card.subtype === 'normal' && card.effects?.[0]?.action === 'fusionSummon') {
+            if (canFusionSummon('player')) {
+                buttons.push({ label: 'Activate', cls: 'activate', action: () => doFusionSummon('player', handIdx) });
+            }
+        } else {
+            buttons.push({ label: 'Activate', cls: 'activate', action: () => activateSpell(handIdx) });
+        }
+        if (card.subtype === 'quickplay' || card.subtype === 'continuous') {
+            if (getEmptySpellZone('player') >= 0) {
+                buttons.push({ label: 'Set', cls: 'set', action: () => setSpellTrap(handIdx) });
+            }
+        }
+    } else if (card.type === 'trap') {
+        if (getEmptySpellZone('player') >= 0) {
+            buttons.push({ label: 'Set', cls: 'set', action: () => setSpellTrap(handIdx) });
+        }
+    }
+
+    buttons.push({ label: 'Cancel', cls: 'cancel', action: hideActionMenu });
+    showActionMenu(buttons);
+}
+
+function showActionMenu(buttons) {
+    const menu = document.getElementById('action-menu');
+    menu.innerHTML = buttons.map((b, i) =>
+        `<button class="action-btn ${b.cls}" ${b.disabled ? 'disabled' : ''} onclick="actionMenuClick(${i})">${b.label}</button>`
+    ).join('');
+    menu._actions = buttons.map(b => b.action);
+    menu.classList.add('active');
+}
+
+function actionMenuClick(idx) {
+    const menu = document.getElementById('action-menu');
+    const action = menu._actions?.[idx];
+    if (action) action();
+}
+
+function hideActionMenu() {
+    document.getElementById('action-menu').classList.remove('active');
+    duel.uiState = 'idle';
+    duel.selectedCard = null;
+    renderDuel();
+}
+
+function normalSummon(handIdx) {
+    hideActionMenu();
+    const card = duel.player.hand.splice(handIdx, 1)[0];
+    const zi = getEmptyMonsterZone('player');
+    const fc = createFieldCard(card, 'atk', true);
+    fc.canAttack = duel.phase === 'battle';
+    duel.player.monsters[zi] = fc;
+    duel.player.hasNormalSummoned = true;
+    duelLog(`Summoned ${card.name} in ATK position!`);
+    triggerSummonEffects('player', zi);
+    renderDuel();
+}
+
+function setMonster(handIdx) {
+    hideActionMenu();
+    const card = duel.player.hand.splice(handIdx, 1)[0];
+    const zi = getEmptyMonsterZone('player');
+    const fc = createFieldCard(card, 'def', false);
+    fc.justSet = true;
+    fc.turnSet = duel.turn;
+    duel.player.monsters[zi] = fc;
+    duel.player.hasNormalSummoned = true;
+    duelLog(`Set a monster in DEF position.`);
+    renderDuel();
+}
+
+function startTributeSummon(handIdx, count) {
+    hideActionMenu();
+    duel.tributeNeeded = count;
+    duel.tributeTargets = [];
+    duel.pendingAction = { type: 'tributeSummon', handIdx };
+    duel.uiState = 'selectTribute';
+    document.getElementById('tribute-text').textContent = `Select ${count} monster(s) to tribute`;
+    document.getElementById('tribute-prompt').classList.add('active');
+    renderDuel();
+}
+
+function handleFieldMonsterClick(who, zoneIdx) {
+    if (duel.gameOver) return;
+
+    // Tribute selection
+    if (duel.uiState === 'selectTribute' && who === 'player') {
+        const fc = duel.player.monsters[zoneIdx];
+        if (!fc) return;
+        const idx = duel.tributeTargets.indexOf(zoneIdx);
+        if (idx >= 0) {
+            duel.tributeTargets.splice(idx, 1);
+        } else if (duel.tributeTargets.length < duel.tributeNeeded) {
+            duel.tributeTargets.push(zoneIdx);
+        }
+        renderDuel();
+        return;
+    }
+
+    // Equip target selection
+    if (duel.uiState === 'selectEquipTarget' && who === 'player') {
+        const fc = duel.player.monsters[zoneIdx];
+        if (!fc || !fc.faceUp) return;
+        completeEquipSpell(zoneIdx);
+        return;
+    }
+
+    // Ritual tribute selection
+    if (duel.uiState === 'selectRitualTribute' && who === 'player') {
+        const fc = duel.player.monsters[zoneIdx];
+        if (!fc) return;
+        const idx = duel.tributeTargets.indexOf(zoneIdx);
+        if (idx >= 0) {
+            duel.tributeTargets.splice(idx, 1);
+        } else {
+            duel.tributeTargets.push(zoneIdx);
+        }
+        renderDuel();
+        return;
+    }
+
+    // Attack target selection
+    if (duel.uiState === 'selectAttackTarget' && who === 'ai') {
+        performAttack(duel.pendingAction.zoneIdx, zoneIdx);
+        return;
+    }
+
+    // Player's monster actions during main phase
+    if (who === 'player' && duel.currentPlayer === 'player') {
+        const fc = duel.player.monsters[zoneIdx];
+        if (!fc) return;
+
+        if (duel.phase === 'battle' && fc.canAttack && fc.faceUp && fc.position === 'atk' && !fc.frozen && fc.attacks < fc.maxAttacks) {
+            // Start attack
+            const oppMonsters = duel.ai.monsters.filter(m => m !== null);
+            if (oppMonsters.length === 0) {
+                // Direct attack
+                performDirectAttack(zoneIdx);
+            } else {
+                duel.uiState = 'selectAttackTarget';
+                duel.pendingAction = { type: 'attack', zoneIdx };
+                duelLog('Select an attack target.');
+                renderDuel();
+            }
+            return;
+        }
+
+        if ((duel.phase === 'main1' || duel.phase === 'main2')) {
+            const buttons = [];
+
+            // Flip summon
+            if (!fc.faceUp && !fc.justSet && fc.turnSet < duel.turn) {
+                buttons.push({ label: 'Flip Summon', cls: 'summon', action: () => flipSummon('player', zoneIdx) });
+            }
+
+            // Change position
+            if (fc.faceUp && fc.canChangePos && !fc.card.effects?.some(e => e.action === 'cantChangePos')) {
+                const newPos = fc.position === 'atk' ? 'DEF' : 'ATK';
+                buttons.push({ label: `Change to ${newPos}`, cls: 'position', action: () => changePosition('player', zoneIdx) });
+            }
+
+            // Activated effects
+            if (fc.faceUp && !fc.effectUsed && fc.card.effects?.some(e => e.trigger === 'activated')) {
+                buttons.push({ label: 'Activate Effect', cls: 'activate', action: () => activateMonsterEffect('player', zoneIdx) });
+            }
+
+            if (buttons.length > 0) {
+                buttons.push({ label: 'Cancel', cls: 'cancel', action: hideActionMenu });
+                showActionMenu(buttons);
+            }
+        }
+    }
+}
+
+function handleDirectAttackClick() {
+    if (duel.uiState === 'selectAttackTarget') {
+        performDirectAttack(duel.pendingAction.zoneIdx);
+    }
+}
+
+function confirmTributes() {
+    if (duel.tributeTargets.length < duel.tributeNeeded) return;
+
+    document.getElementById('tribute-prompt').classList.remove('active');
+
+    if (duel.pendingAction?.type === 'tributeSummon') {
+        const handIdx = duel.pendingAction.handIdx;
+        // Remove tributes
+        duel.tributeTargets.forEach(zi => {
+            const fc = duel.player.monsters[zi];
+            duelLog(`Tributed ${fc.card.name}.`);
+            destroyMonster('player', zi);
+        });
+        // Summon
+        const card = duel.player.hand.splice(handIdx, 1)[0];
+        const zi = getEmptyMonsterZone('player');
+        const fc = createFieldCard(card, 'atk', true);
+        duel.player.monsters[zi] = fc;
+        duel.player.hasNormalSummoned = true;
+        duelLog(`Tribute Summoned ${card.name}!`);
+        triggerSummonEffects('player', zi);
+    }
+
+    if (duel.pendingAction?.type === 'ritualSummon') {
+        completeRitualSummon();
+    }
+
+    duel.uiState = 'idle';
+    duel.pendingAction = null;
+    duel.tributeTargets = [];
+    renderDuel();
+}
+
+function flipSummon(who, zoneIdx) {
+    hideActionMenu();
+    const fc = duel[who].monsters[zoneIdx];
+    if (!fc) return;
+    fc.faceUp = true;
+    fc.position = 'atk';
+    fc.canChangePos = false;
+    duelLog(`${who === 'player' ? 'You' : 'AI'} flip summoned ${fc.card.name}!`);
+
+    // Trigger flip effects
+    if (fc.card.effects) {
+        fc.card.effects.forEach(eff => {
+            if (eff.trigger === 'onFlip') {
+                resolveEffect(eff, who, zoneIdx);
+            }
+        });
+    }
+    renderDuel();
+}
+
+function changePosition(who, zoneIdx) {
+    hideActionMenu();
+    const fc = duel[who].monsters[zoneIdx];
+    if (!fc) return;
+    fc.position = fc.position === 'atk' ? 'def' : 'atk';
+    fc.canChangePos = false;
+    duelLog(`Changed ${fc.card.name} to ${fc.position.toUpperCase()} position.`);
+    renderDuel();
+}
+
+function specialSummonFromHand(handIdx) {
+    hideActionMenu();
+    const card = duel.player.hand.splice(handIdx, 1)[0];
+    const zi = getEmptyMonsterZone('player');
+    const fc = createFieldCard(card, 'atk', true);
+    duel.player.monsters[zi] = fc;
+    duelLog(`Special Summoned ${card.name}!`);
+    triggerSummonEffects('player', zi);
+    renderDuel();
+}
+
+// ============================================================
+// ATTACK RESOLUTION
+// ============================================================
+function performAttack(atkZoneIdx, defZoneIdx) {
+    duel.uiState = 'idle';
+    duel.pendingAction = null;
+
+    const attacker = duel.player.monsters[atkZoneIdx];
+    const defender = duel.ai.monsters[defZoneIdx];
+    if (!attacker || !defender) return;
+
+    attacker.attacks++;
+    if (attacker.attacks >= attacker.maxAttacks) attacker.canAttack = false;
+
+    const atkATK = getFieldATK(attacker, 'player');
+
+    duelLog(`${attacker.card.name} attacks ${defender.faceUp ? defender.card.name : 'a face-down monster'}!`);
+
+    // Flip face-down defender
+    if (!defender.faceUp) {
+        defender.faceUp = true;
+        duelLog(`Revealed: ${defender.card.name}!`);
+        // Trigger flip effects
+        if (defender.card.effects) {
+            defender.card.effects.forEach(eff => {
+                if (eff.trigger === 'onFlip') resolveEffect(eff, 'ai', defZoneIdx);
+            });
+        }
+    }
+
+    // Check for attack-negating traps
+    if (checkAndActivateTraps('ai', 'onOpponentAttack', { atkZoneIdx, defZoneIdx })) {
+        renderDuel();
+        return;
+    }
+
+    if (defender.position === 'atk') {
+        const defATK = getFieldATK(defender, 'ai');
+        if (atkATK > defATK) {
+            const dmg = atkATK - defATK;
+            takeDamage('ai', dmg);
+            destroyMonster('ai', defZoneIdx);
+            duelLog(`${defender.card.name} destroyed! AI takes ${dmg} damage.`);
+            // On battle destroy effect
+            if (attacker.card.effects?.some(e => e.trigger === 'onBattleDestroy')) {
+                attacker.card.effects.filter(e => e.trigger === 'onBattleDestroy').forEach(eff => {
+                    resolveEffect(eff, 'player', atkZoneIdx);
+                });
+            }
+        } else if (defATK > atkATK) {
+            const dmg = defATK - atkATK;
+            takeDamage('player', dmg);
+            destroyMonster('player', atkZoneIdx);
+            duelLog(`${attacker.card.name} destroyed! You take ${dmg} damage.`);
+        } else {
+            destroyMonster('player', atkZoneIdx);
+            destroyMonster('ai', defZoneIdx);
+            duelLog('Both monsters destroyed!');
+        }
+    } else {
+        // ATK vs DEF
+        const defDEF = getFieldDEF(defender, 'ai');
+        const indestructible = defender.card.effects?.some(e => e.action === 'battleIndestructibleDef');
+        if (atkATK > defDEF) {
+            if (!indestructible) {
+                destroyMonster('ai', defZoneIdx);
+                duelLog(`${defender.card.name} destroyed!`);
+            } else {
+                duelLog(`${defender.card.name} survived the attack!`);
+            }
+        } else if (defDEF > atkATK) {
+            const dmg = defDEF - atkATK;
+            takeDamage('player', dmg);
+            duelLog(`${defender.card.name} held! You take ${dmg} damage.`);
+        } else {
+            duelLog('No result.');
+        }
+    }
+
+    renderDuel();
+}
+
+function performDirectAttack(atkZoneIdx) {
+    duel.uiState = 'idle';
+    duel.pendingAction = null;
+
+    const attacker = duel.player.monsters[atkZoneIdx];
+    if (!attacker) return;
+
+    attacker.attacks++;
+    if (attacker.attacks >= attacker.maxAttacks) attacker.canAttack = false;
+
+    const atkATK = getFieldATK(attacker, 'player');
+
+    // Check for traps
+    if (checkAndActivateTraps('ai', 'onOpponentAttack', { atkZoneIdx })) {
+        renderDuel();
+        return;
+    }
+
+    duelLog(`${attacker.card.name} attacks directly for ${atkATK}!`);
+    takeDamage('ai', atkATK);
+    renderDuel();
+}
+
+// ============================================================
+// SPELL / TRAP ACTIVATION
+// ============================================================
+function activateSpell(handIdx) {
+    hideActionMenu();
+    const card = duel.player.hand.splice(handIdx, 1)[0];
+    duelLog(`Activated ${card.name}!`);
+
+    // Check for Ink Cloud
+    if (checkAndActivateTraps('ai', 'onSpellActivation', { card })) {
+        duel.player.graveyard.push(card);
+        renderDuel();
+        return;
+    }
+
+    if (card.effects) {
+        card.effects.forEach(eff => {
+            resolveSpellEffect(eff, 'player', card);
+        });
+    }
+    duel.player.graveyard.push(card);
+    renderDuel();
+}
+
+function activateFieldSpell(handIdx) {
+    hideActionMenu();
+    const card = duel.player.hand.splice(handIdx, 1)[0];
+    if (duel.player.fieldSpell) {
+        duel.player.graveyard.push(duel.player.fieldSpell.card);
+    }
+    duel.player.fieldSpell = createFieldCard(card, 'atk', true);
+    duelLog(`Activated Field Spell: ${card.name}!`);
+    renderDuel();
+}
+
+function startEquipSpell(handIdx) {
+    hideActionMenu();
+    duel.uiState = 'selectEquipTarget';
+    duel.pendingAction = { type: 'equip', handIdx };
+    duelLog('Select a monster to equip.');
+    renderDuel();
+}
+
+function completeEquipSpell(targetZone) {
+    const handIdx = duel.pendingAction.handIdx;
+    const card = duel.player.hand.splice(handIdx, 1)[0];
+    const target = duel.player.monsters[targetZone];
+
+    if (card.effects) {
+        card.effects.forEach(eff => {
+            if (eff.action === 'equipBuff') {
+                if (eff.stat === 'atk') target.atkMod += eff.value;
+                if (eff.stat === 'def') target.defMod += eff.value;
+            }
+        });
+    }
+    duelLog(`Equipped ${card.name} to ${target.card.name}! (+${card.effects?.[0]?.value || 0} ATK)`);
+
+    // Place in S/T zone
+    const zi = getEmptySpellZone('player');
+    if (zi >= 0) {
+        duel.player.spells[zi] = createFieldCard(card, 'atk', true);
+    } else {
+        duel.player.graveyard.push(card);
+    }
+
+    duel.uiState = 'idle';
+    duel.pendingAction = null;
+    renderDuel();
+}
+
+function setSpellTrap(handIdx) {
+    hideActionMenu();
+    const card = duel.player.hand.splice(handIdx, 1)[0];
+    const zi = getEmptySpellZone('player');
+    const fc = createFieldCard(card, 'atk', false);
+    fc.turnSet = duel.turn;
+    duel.player.spells[zi] = fc;
+    duelLog(`Set a card face-down.`);
+    renderDuel();
+}
+
+function resolveSpellEffect(eff, who, card) {
+    const opp = who === 'player' ? 'ai' : 'player';
+    switch (eff.action) {
+        case 'heal':
+            gainLP(who, eff.value);
+            duelLog(`${who === 'player' ? 'You' : 'AI'} gained ${eff.value} LP!`);
+            break;
+        case 'draw':
+            for (let i = 0; i < eff.value; i++) drawCard(who);
+            duelLog(`Drew ${eff.value} card(s).`);
+            break;
+        case 'destroyAllMonsters':
+            for (let i = 0; i < 5; i++) {
+                if (duel.player.monsters[i]) destroyMonster('player', i);
+                if (duel.ai.monsters[i]) destroyMonster('ai', i);
+            }
+            duelLog('All monsters destroyed!');
+            break;
+        case 'atkBuff':
+            if (eff.target === 'select') {
+                // Auto-select strongest
+                let best = -1, bestATK = 0;
+                duel[who].monsters.forEach((m, i) => {
+                    if (m && m.faceUp) {
+                        const a = getFieldATK(m, who);
+                        if (a > bestATK) { bestATK = a; best = i; }
+                    }
+                });
+                if (best >= 0) {
+                    duel[who].monsters[best].atkMod += eff.value;
+                    duelLog(`${duel[who].monsters[best].card.name} gained ${eff.value} ATK!`);
+                }
+            }
+            break;
+        case 'revive': {
+            const gy = duel[who].graveyard;
+            const targets = gy.filter(c => c.type === 'monster' && c.level <= 4);
+            if (targets.length > 0 && getEmptyMonsterZone(who) >= 0) {
+                const target = targets[targets.length - 1];
+                const idx = gy.lastIndexOf(target);
+                gy.splice(idx, 1);
+                const zi = getEmptyMonsterZone(who);
+                duel[who].monsters[zi] = createFieldCard(target, 'atk', true);
+                duelLog(`Special Summoned ${target.name} from the Graveyard!`);
+            }
+            break;
+        }
+    }
+}
+
+function resolveEffect(eff, who, zoneIdx) {
+    const opp = who === 'player' ? 'ai' : 'player';
+    switch (eff.action) {
+        case 'draw':
+            for (let i = 0; i < eff.value; i++) drawCard(who);
+            duelLog(`${who === 'player' ? 'You' : 'AI'} drew ${eff.value} card(s).`);
+            break;
+        case 'destroyST': {
+            // Destroy a random opp S/T
+            const targets = [];
+            duel[opp].spells.forEach((s, i) => { if (s) targets.push(i); });
+            if (duel[opp].fieldSpell) targets.push('field');
+            if (targets.length > 0) {
+                const t = targets[Math.floor(Math.random() * targets.length)];
+                if (t === 'field') {
+                    duel[opp].graveyard.push(duel[opp].fieldSpell.card);
+                    duel[opp].fieldSpell = null;
+                    duelLog('Destroyed opponent\'s field spell!');
+                } else {
+                    duelLog(`Destroyed ${duel[opp].spells[t].card.name}!`);
+                    destroySpellTrap(opp, t);
+                }
+            }
+            break;
+        }
+        case 'destroyAny': {
+            // Destroy any card - pick strongest opponent monster first
+            let done = false;
+            let bestIdx = -1, bestATK = -1;
+            duel[opp].monsters.forEach((m, i) => {
+                if (m && m.faceUp) {
+                    const a = getFieldATK(m, opp);
+                    if (a > bestATK) { bestATK = a; bestIdx = i; }
+                }
+            });
+            if (bestIdx >= 0) {
+                duelLog(`Destroyed ${duel[opp].monsters[bestIdx].card.name}!`);
+                destroyMonster(opp, bestIdx);
+                done = true;
+            }
+            if (!done) {
+                const st = duel[opp].spells.findIndex(s => s !== null);
+                if (st >= 0) {
+                    duelLog(`Destroyed ${duel[opp].spells[st].card.name}!`);
+                    destroySpellTrap(opp, st);
+                }
+            }
+            break;
+        }
+        case 'destroySetST': {
+            const targets = [];
+            duel[opp].spells.forEach((s, i) => { if (s && !s.faceUp) targets.push(i); });
+            duel[who].spells.forEach((s, i) => { if (s && !s.faceUp) targets.push({ who, i }); });
+            if (targets.length > 0) {
+                const t = targets[0];
+                if (typeof t === 'number') {
+                    duelLog(`Destroyed a set card!`);
+                    destroySpellTrap(opp, t);
+                }
+            }
+            break;
+        }
+        case 'destroyAllOpponentST':
+            for (let i = 0; i < 5; i++) {
+                if (duel[opp].spells[i]) {
+                    duelLog(`Destroyed ${duel[opp].spells[i].card.name}!`);
+                    destroySpellTrap(opp, i);
+                }
+            }
+            if (duel[opp].fieldSpell) {
+                duelLog('Destroyed opponent\'s field spell!');
+                duel[opp].graveyard.push(duel[opp].fieldSpell.card);
+                duel[opp].fieldSpell = null;
+            }
+            break;
+        case 'heal':
+            gainLP(who, eff.value);
+            duelLog(`Gained ${eff.value} LP!`);
+            break;
+        case 'freeze': {
+            const targets = duel[opp].monsters.filter(m => m && m.faceUp);
+            if (targets.length > 0) {
+                const t = targets[Math.floor(Math.random() * targets.length)];
+                t.frozen = true;
+                duelLog(`${t.card.name} is frozen!`);
+            }
+            break;
+        }
+        case 'atkBuff':
+            if (eff.target === 'self') {
+                duel[who].monsters[zoneIdx].atkMod += eff.value;
+                duelLog(`${duel[who].monsters[zoneIdx].card.name} gained ${eff.value} ATK!`);
+            }
+            break;
+        case 'atkBuffType':
+            duel[who].monsters.forEach(m => {
+                if (m && m.faceUp && m.card.attribute === eff.target) {
+                    m.atkMod += eff.value;
+                }
+            });
+            duelLog(`All ${eff.target} monsters gained ${eff.value} ATK!`);
+            break;
+        case 'damage':
+            takeDamage(opp, eff.value);
+            duelLog(`Dealt ${eff.value} damage!`);
+            break;
+    }
+}
+
+function triggerSummonEffects(who, zoneIdx) {
+    const fc = duel[who].monsters[zoneIdx];
+    if (!fc || !fc.card.effects) return;
+    fc.card.effects.forEach(eff => {
+        if (eff.trigger === 'onSummon') {
+            resolveEffect(eff, who, zoneIdx);
+        }
+    });
+
+    // Check opponent for Barnacle Parasite
+    const opp = who === 'player' ? 'ai' : 'player';
+    duel[opp].hand.forEach((card, hi) => {
+        if (card.id === 13 && getEmptyMonsterZone(opp) >= 0) { // Barnacle Parasite
+            const c = duel[opp].hand.splice(hi, 1)[0];
+            const zi = getEmptyMonsterZone(opp);
+            duel[opp].monsters[zi] = createFieldCard(c, 'atk', true);
+            fc.atkMod -= 500;
+            duelLog(`${opp === 'player' ? 'You' : 'AI'} Special Summoned Barnacle Parasite! ${fc.card.name} loses 500 ATK!`);
+        }
+    });
+}
+
+function activateMonsterEffect(who, zoneIdx) {
+    hideActionMenu();
+    const fc = duel[who].monsters[zoneIdx];
+    if (!fc) return;
+    fc.effectUsed = true;
+    fc.card.effects.filter(e => e.trigger === 'activated').forEach(eff => {
+        resolveEffect(eff, who, zoneIdx);
+    });
+    renderDuel();
+}
+
+// ============================================================
+// TRAPS
+// ============================================================
+function checkAndActivateTraps(who, trigger, context) {
+    const traps = [];
+    duel[who].spells.forEach((s, i) => {
+        if (s && !s.faceUp && s.card.type === 'trap' && s.turnSet < duel.turn) {
+            if (s.card.effects?.some(e => e.trigger === trigger)) {
+                traps.push({ zone: i, fc: s });
+            }
+        }
+    });
+
+    if (traps.length === 0) return false;
+
+    // AI auto-activates traps
+    if (who === 'ai') {
+        const trap = traps[0];
+        trap.fc.faceUp = true;
+        duelLog(`AI activated ${trap.fc.card.name}!`);
+        resolveTrapEffect(who, trap.zone, trigger, context);
+        destroySpellTrap(who, trap.zone);
+        return true;
+    }
+
+    // Player gets a prompt (simplified - auto for now)
+    return false;
+}
+
+function resolveTrapEffect(who, zoneIdx, trigger, context) {
+    const opp = who === 'player' ? 'ai' : 'player';
+    const fc = duel[who].spells[zoneIdx];
+    if (!fc) return;
+
+    const eff = fc.card.effects?.find(e => e.trigger === trigger);
+    if (!eff) return;
+
+    switch (eff.action) {
+        case 'negateAttack':
+            duelLog('Attack negated!');
+            if (context?.atkZoneIdx !== undefined) {
+                duel[opp].monsters[context.atkZoneIdx].canAttack = false;
+            }
+            break;
+        case 'negateAttackDamage':
+            duelLog('Attack negated!');
+            if (context?.atkZoneIdx !== undefined) {
+                duel[opp].monsters[context.atkZoneIdx].canAttack = false;
+            }
+            takeDamage(opp, eff.value);
+            duelLog(`Dealt ${eff.value} damage!`);
+            break;
+        case 'destroyThat':
+            // Destroy the monster that triggered this
+            if (context?.defZoneIdx !== undefined) {
+                duelLog(`Destroyed the summoned monster!`);
+                destroyMonster(opp, context.defZoneIdx);
+            }
+            break;
+        case 'negateDestroy':
+            duelLog('Card negated and destroyed!');
+            break;
+        case 'specialSummonFromHand': {
+            const hand = duel[who].hand;
+            const targets = hand.filter(c => c.type === 'monster' && c.level <= 4);
+            if (targets.length > 0 && getEmptyMonsterZone(who) >= 0) {
+                const card = targets[0];
+                const hi = hand.indexOf(card);
+                hand.splice(hi, 1);
+                const zi = getEmptyMonsterZone(who);
+                duel[who].monsters[zi] = createFieldCard(card, 'def', true);
+                duelLog(`Special Summoned ${card.name} from hand!`);
+            }
+            break;
+        }
+    }
+}
+
+// ============================================================
+// FUSION / SYNCHRO / RITUAL
+// ============================================================
+function canFusionSummon(who) {
+    return duel[who].extraDeck.some(c => c.subtype === 'fusion' && c.fusionMaterials);
+}
+
+function doFusionSummon(who, polyHandIdx) {
+    hideActionMenu();
+    const p = duel[who];
+
+    // Find a fusionable monster
+    for (const fusionCard of p.extraDeck) {
+        if (fusionCard.subtype !== 'fusion' || !fusionCard.fusionMaterials) continue;
+
+        const mats = fusionCard.fusionMaterials;
+        const available = [...p.hand, ...p.monsters.filter(m => m).map(m => m.card)];
+
+        // Check if we have all materials
+        const used = [];
+        let allFound = true;
+        for (const matId of mats) {
+            const idx = available.findIndex((c, i) => c.id === matId && !used.includes(i));
+            if (idx >= 0) {
+                used.push(idx);
+            } else {
+                allFound = false;
+                break;
+            }
+        }
+
+        if (!allFound) continue;
+        if (getEmptyMonsterZone(who) < 0) continue;
+
+        // Remove Polymerization
+        if (polyHandIdx !== undefined) {
+            const poly = p.hand.splice(polyHandIdx, 1)[0];
+            p.graveyard.push(poly);
+        }
+
+        // Remove materials
+        for (const matId of mats) {
+            const handIdx = p.hand.findIndex(c => c.id === matId);
+            if (handIdx >= 0) {
+                p.graveyard.push(p.hand.splice(handIdx, 1)[0]);
+            } else {
+                const fieldIdx = p.monsters.findIndex(m => m && m.card.id === matId);
+                if (fieldIdx >= 0) destroyMonster(who, fieldIdx);
+            }
+        }
+
+        // Summon fusion
+        const zi = getEmptyMonsterZone(who);
+        const edIdx = p.extraDeck.indexOf(fusionCard);
+        const card = p.extraDeck.splice(edIdx, 1)[0];
+        const fc = createFieldCard(card, 'atk', true);
+        p.monsters[zi] = fc;
+        duelLog(`${who === 'player' ? 'You' : 'AI'} Fusion Summoned ${card.name}!`);
+        triggerSummonEffects(who, zi);
+        break;
+    }
+    renderDuel();
+}
+
+function canSynchroSummon(who) {
+    const p = duel[who];
+    const fieldMonsters = p.monsters.filter(m => m && m.faceUp);
+    const tuners = fieldMonsters.filter(m => m.card.isTuner);
+    const nonTuners = fieldMonsters.filter(m => !m.card.isTuner);
+
+    if (tuners.length === 0 || nonTuners.length === 0) return [];
+
+    const results = [];
+    for (const synchro of p.extraDeck) {
+        if (synchro.subtype !== 'synchro') continue;
+        const targetLevel = synchro.level;
+
+        // Check all combinations
+        for (const tuner of tuners) {
+            const remaining = nonTuners.filter(m => m !== tuner);
+            for (let mask = 1; mask < (1 << remaining.length); mask++) {
+                let totalLevel = tuner.card.level;
+                const combo = [tuner];
+                for (let i = 0; i < remaining.length; i++) {
+                    if (mask & (1 << i)) {
+                        totalLevel += remaining[i].card.level;
+                        combo.push(remaining[i]);
+                    }
+                }
+                if (totalLevel === targetLevel) {
+                    results.push({ synchro, materials: combo });
+                }
+            }
+        }
+    }
+    return results;
+}
+
+function doSynchroSummon(who, synchroResult) {
+    const p = duel[who];
+    const { synchro, materials } = synchroResult;
+
+    // Check for Tide Caller draw effect
+    const tideCallerUsed = materials.some(m => m.card.id === 14);
+
+    // Send materials to GY
+    materials.forEach(m => {
+        const idx = p.monsters.indexOf(m);
+        if (idx >= 0) {
+            p.graveyard.push(m.card);
+            p.monsters[idx] = null;
+        }
+    });
+
+    // Summon from extra deck
+    const edIdx = p.extraDeck.indexOf(synchro);
+    const card = p.extraDeck.splice(edIdx, 1)[0];
+    const zi = getEmptyMonsterZone(who);
+    const fc = createFieldCard(card, 'atk', true);
+    p.monsters[zi] = fc;
+    duelLog(`${who === 'player' ? 'You' : 'AI'} Synchro Summoned ${card.name}!`);
+
+    if (tideCallerUsed) {
+        drawCard(who);
+        duelLog('Tide Caller\'s effect: Drew 1 card!');
+    }
+
+    triggerSummonEffects(who, zi);
+}
+
+function canRitualSummon(spellCard) {
+    if (!spellCard.ritualMonster) return false;
+    const monsterInHand = duel.player.hand.some(c => c.id === spellCard.ritualMonster);
+    if (!monsterInHand) return false;
+    if (getEmptyMonsterZone('player') < 0) return false;
+
+    const ritualMonster = getCard(spellCard.ritualMonster);
+    const totalLevels = duel.player.monsters.filter(m => m).reduce((sum, m) => sum + m.card.level, 0)
+        + duel.player.hand.filter(c => c.type === 'monster' && c.id !== spellCard.ritualMonster).reduce((sum, c) => sum + c.level, 0);
+    return totalLevels >= ritualMonster.level;
+}
+
+function startRitualSummon(handIdx) {
+    hideActionMenu();
+    const spellCard = duel.player.hand[handIdx];
+    const ritualMonster = getCard(spellCard.ritualMonster);
+
+    duel.uiState = 'selectRitualTribute';
+    duel.tributeTargets = [];
+    duel.tributeNeeded = ritualMonster.level;
+    duel.pendingAction = { type: 'ritualSummon', handIdx, monsterId: spellCard.ritualMonster };
+
+    document.getElementById('tribute-text').textContent = `Select monsters to tribute (total levels >= ${ritualMonster.level})`;
+    document.getElementById('tribute-prompt').classList.add('active');
+    renderDuel();
+}
+
+function completeRitualSummon() {
+    const pa = duel.pendingAction;
+    const p = duel.player;
+    const ritualMonster = getCard(pa.monsterId);
+
+    // Check total levels
+    let totalLevels = 0;
+    duel.tributeTargets.forEach(zi => {
+        if (p.monsters[zi]) totalLevels += p.monsters[zi].card.level;
+    });
+
+    if (totalLevels < ritualMonster.level) {
+        duelLog('Not enough levels! Ritual cancelled.');
+        return;
+    }
+
+    // Remove ritual spell from hand
+    const spell = p.hand.splice(pa.handIdx, 1)[0];
+    p.graveyard.push(spell);
+
+    // Remove tributes
+    duel.tributeTargets.forEach(zi => {
+        destroyMonster('player', zi);
+    });
+
+    // Remove ritual monster from hand
+    const monsterIdx = p.hand.findIndex(c => c.id === pa.monsterId);
+    const card = p.hand.splice(monsterIdx, 1)[0];
+
+    // Summon
+    const zi = getEmptyMonsterZone('player');
+    const fc = createFieldCard(card, 'atk', true);
+    p.monsters[zi] = fc;
+    duelLog(`Ritual Summoned ${card.name}!`);
+    triggerSummonEffects('player', zi);
+
+    document.getElementById('tribute-prompt').classList.remove('active');
+}
+
+// ============================================================
+// AI ENGINE
+// ============================================================
+function aiTurn() {
+    if (duel.gameOver) return;
+
+    // Draw Phase
+    duel.phase = 'draw';
+    const drawn = drawCard('ai');
+    if (drawn) duelLog(`AI drew a card.`);
+    if (duel.gameOver) return;
+
+    renderDuel();
+
+    setTimeout(() => {
+        if (duel.gameOver) return;
+        duel.phase = 'main1';
+        duel.ai.hasNormalSummoned = false;
+
+        // Unfreeze monsters
+        duel.ai.monsters.forEach(m => { if (m) { m.frozen = false; m.canChangePos = true; m.effectUsed = false; } });
+
+        aiMainPhase();
+    }, 600);
+}
+
+function aiMainPhase() {
+    if (duel.gameOver) return;
+
+    // 1. Activate field spell if we have one
+    const fieldSpell = duel.ai.hand.find(c => c.type === 'spell' && c.subtype === 'field');
+    if (fieldSpell && !duel.ai.fieldSpell) {
+        const hi = duel.ai.hand.indexOf(fieldSpell);
+        duel.ai.hand.splice(hi, 1);
+        duel.ai.fieldSpell = createFieldCard(fieldSpell, 'atk', true);
+        duelLog(`AI activated ${fieldSpell.name}!`);
+    }
+
+    // 2. Set traps
+    duel.ai.hand.filter(c => c.type === 'trap').forEach(card => {
+        if (getEmptySpellZone('ai') >= 0) {
+            const hi = duel.ai.hand.indexOf(card);
+            if (hi < 0) return;
+            duel.ai.hand.splice(hi, 1);
+            const zi = getEmptySpellZone('ai');
+            const fc = createFieldCard(card, 'atk', false);
+            fc.turnSet = duel.turn;
+            duel.ai.spells[zi] = fc;
+            duelLog('AI set a card.');
+        }
+    });
+
+    // 3. Activate beneficial spells
+    const spells = duel.ai.hand.filter(c => c.type === 'spell' && c.subtype !== 'field' && c.subtype !== 'ritual');
+    for (const spell of spells) {
+        const hi = duel.ai.hand.indexOf(spell);
+        if (hi < 0) continue;
+
+        if (spell.effects?.[0]?.action === 'fusionSummon') {
+            if (canFusionSummon('ai')) {
+                doFusionSummon('ai', hi);
+                continue;
+            } else continue;
+        }
+
+        if (spell.subtype === 'equip') {
+            const target = duel.ai.monsters.findIndex(m => m && m.faceUp);
+            if (target >= 0) {
+                duel.ai.hand.splice(hi, 1);
+                spell.effects?.forEach(eff => {
+                    if (eff.action === 'equipBuff') {
+                        if (eff.stat === 'atk') duel.ai.monsters[target].atkMod += eff.value;
+                        if (eff.stat === 'def') duel.ai.monsters[target].defMod += eff.value;
+                    }
+                });
+                const zi = getEmptySpellZone('ai');
+                if (zi >= 0) duel.ai.spells[zi] = createFieldCard(spell, 'atk', true);
+                else duel.ai.graveyard.push(spell);
+                duelLog(`AI activated ${spell.name}!`);
+            }
+            continue;
+        }
+
+        // Don't use Tidal Wave if we have more monsters
+        if (spell.effects?.[0]?.action === 'destroyAllMonsters') {
+            if (getMonsterCount('ai') > getMonsterCount('player')) continue;
+        }
+
+        // Activate normal spells
+        if (['normal', 'quickplay', 'continuous'].includes(spell.subtype)) {
+            duel.ai.hand.splice(hi, 1);
+            duelLog(`AI activated ${spell.name}!`);
+            spell.effects?.forEach(eff => resolveSpellEffect(eff, 'ai', spell));
+            if (spell.subtype !== 'continuous') duel.ai.graveyard.push(spell);
+            else {
+                const zi = getEmptySpellZone('ai');
+                if (zi >= 0) duel.ai.spells[zi] = createFieldCard(spell, 'atk', true);
+            }
+        }
+    }
+
+    // 4. Special summon from hand
+    duel.ai.hand.forEach(card => {
+        if (card.effects?.some(e => e.trigger === 'hand' && e.action === 'specialSummonSelf')) {
+            card.effects.filter(e => e.trigger === 'hand').forEach(eff => {
+                let canSS = false;
+                if (eff.condition === 'controlMonster' && getMonsterCount('ai') > 0) canSS = true;
+                if (eff.condition === 'opponentMoreMonsters' && getMonsterCount('player') > getMonsterCount('ai')) canSS = true;
+                if (canSS && getEmptyMonsterZone('ai') >= 0) {
+                    const hi = duel.ai.hand.indexOf(card);
+                    if (hi < 0) return;
+                    duel.ai.hand.splice(hi, 1);
+                    const zi = getEmptyMonsterZone('ai');
+                    duel.ai.monsters[zi] = createFieldCard(card, 'atk', true);
+                    duelLog(`AI Special Summoned ${card.name}!`);
+                    triggerSummonEffects('ai', zi);
+                }
+            });
+        }
+    });
+
+    // 5. Normal summon - pick the strongest we can summon
+    if (!duel.ai.hasNormalSummoned) {
+        const handMonsters = duel.ai.hand.filter(c => c.type === 'monster' && !['fusion', 'synchro'].includes(c.subtype));
+        handMonsters.sort((a, b) => (b.atk || 0) - (a.atk || 0));
+
+        for (const card of handMonsters) {
+            if (getEmptyMonsterZone('ai') < 0) break;
+
+            if (card.level <= 4) {
+                const hi = duel.ai.hand.indexOf(card);
+                duel.ai.hand.splice(hi, 1);
+                const zi = getEmptyMonsterZone('ai');
+                // Set flip monsters face-down
+                const hasFlip = card.effects?.some(e => e.trigger === 'onFlip');
+                if (hasFlip && card.def > card.atk) {
+                    duel.ai.monsters[zi] = createFieldCard(card, 'def', false);
+                    duel.ai.monsters[zi].turnSet = duel.turn;
+                    duelLog('AI set a monster.');
+                } else {
+                    duel.ai.monsters[zi] = createFieldCard(card, 'atk', true);
+                    duelLog(`AI summoned ${card.name}!`);
+                    triggerSummonEffects('ai', zi);
+                }
+                duel.ai.hasNormalSummoned = true;
+                break;
+            } else if (card.level <= 6 && getMonsterCount('ai') >= 1) {
+                let weakest = -1, weakATK = Infinity;
+                duel.ai.monsters.forEach((m, i) => {
+                    if (m) {
+                        const a = getFieldATK(m, 'ai');
+                        if (a < weakATK) { weakATK = a; weakest = i; }
+                    }
+                });
+                if (weakest >= 0) {
+                    duelLog(`AI tributed ${duel.ai.monsters[weakest].card.name}.`);
+                    destroyMonster('ai', weakest);
+                    const hi = duel.ai.hand.indexOf(card);
+                    duel.ai.hand.splice(hi, 1);
+                    const zi = getEmptyMonsterZone('ai');
+                    duel.ai.monsters[zi] = createFieldCard(card, 'atk', true);
+                    duelLog(`AI tribute summoned ${card.name}!`);
+                    triggerSummonEffects('ai', zi);
+                    duel.ai.hasNormalSummoned = true;
+                    break;
+                }
+            } else if (card.level >= 7 && getMonsterCount('ai') >= 2) {
+                const sorted = [];
+                duel.ai.monsters.forEach((m, i) => { if (m) sorted.push({ m, i, atk: getFieldATK(m, 'ai') }); });
+                sorted.sort((a, b) => a.atk - b.atk);
+                if (sorted.length >= 2) {
+                    duelLog(`AI tributed ${sorted[0].m.card.name} and ${sorted[1].m.card.name}.`);
+                    destroyMonster('ai', sorted[0].i);
+                    destroyMonster('ai', sorted[1].i);
+                    const hi = duel.ai.hand.indexOf(card);
+                    duel.ai.hand.splice(hi, 1);
+                    const zi = getEmptyMonsterZone('ai');
+                    duel.ai.monsters[zi] = createFieldCard(card, 'atk', true);
+                    duelLog(`AI tribute summoned ${card.name}!`);
+                    triggerSummonEffects('ai', zi);
+                    duel.ai.hasNormalSummoned = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    // 6. Try synchro summon
+    const synchroOptions = canSynchroSummon('ai');
+    if (synchroOptions.length > 0) {
+        synchroOptions.sort((a, b) => b.synchro.atk - a.synchro.atk);
+        doSynchroSummon('ai', synchroOptions[0]);
+    }
+
+    // 7. Flip summon face-down monsters if beneficial
+    duel.ai.monsters.forEach((m, i) => {
+        if (m && !m.faceUp && m.turnSet < duel.turn) {
+            flipSummon('ai', i);
+        }
+    });
+
+    // 8. Use activated effects
+    duel.ai.monsters.forEach((m, i) => {
+        if (m && m.faceUp && !m.effectUsed && m.card.effects?.some(e => e.trigger === 'activated')) {
+            activateMonsterEffect('ai', i);
+        }
+    });
+
+    renderDuel();
+
+    // Battle Phase
+    setTimeout(() => {
+        if (duel.gameOver) return;
+        aiBattlePhase();
+    }, 800);
+}
+
+function aiBattlePhase() {
+    if (duel.gameOver) return;
+    duel.phase = 'battle';
+    duelLog('AI Battle Phase.');
+
+    const attackers = [];
+    duel.ai.monsters.forEach((m, i) => {
+        if (m && m.faceUp && m.position === 'atk' && !m.frozen) {
+            const maxAtks = m.card.effects?.some(e => e.action === 'doubleAttack') ? 2 : 1;
+            for (let a = 0; a < maxAtks; a++) {
+                attackers.push(i);
+            }
+        }
+    });
+
+    let delay = 0;
+    const attacks = [];
+
+    for (const atkIdx of attackers) {
+        const attacker = duel.ai.monsters[atkIdx];
+        if (!attacker) continue;
+        const atkATK = getFieldATK(attacker, 'ai');
+
+        const playerMonsters = duel.player.monsters.map((m, i) => m ? { m, i } : null).filter(Boolean);
+
+        if (playerMonsters.length === 0) {
+            attacks.push({ type: 'direct', atkIdx, atkATK, attacker });
+        } else {
+            const beatable = playerMonsters.filter(({ m }) => {
+                if (m.position === 'atk') return atkATK >= getFieldATK(m, 'player');
+                return atkATK > getFieldDEF(m, 'player');
+            });
+
+            if (beatable.length > 0) {
+                beatable.sort((a, b) => getFieldATK(a.m, 'player') - getFieldATK(b.m, 'player'));
+                attacks.push({ type: 'battle', atkIdx, defIdx: beatable[0].i, attacker });
+            }
+            else if (attacker.card.effects?.some(e => e.action === 'mustAttack') && playerMonsters.length > 0) {
+                attacks.push({ type: 'battle', atkIdx, defIdx: playerMonsters[0].i, attacker });
+            }
+        }
+    }
+
+    function executeNextAttack(idx) {
+        if (idx >= attacks.length || duel.gameOver) {
+            aiEndPhase();
+            return;
+        }
+
+        const atk = attacks[idx];
+        const attacker = duel.ai.monsters[atk.atkIdx];
+        if (!attacker) { executeNextAttack(idx + 1); return; }
+
+        if (atk.type === 'direct') {
+            const atkATK = getFieldATK(attacker, 'ai');
+            duelLog(`${attacker.card.name} attacks directly for ${atkATK}!`);
+
+            if (checkAndActivateTraps('player', 'onOpponentAttack', { atkZoneIdx: atk.atkIdx })) {
+                setTimeout(() => { renderDuel(); executeNextAttack(idx + 1); }, 600);
+                return;
+            }
+            takeDamage('player', atkATK);
+        } else {
+            const defender = duel.player.monsters[atk.defIdx];
+            if (!defender) { executeNextAttack(idx + 1); return; }
+
+            const atkATK = getFieldATK(attacker, 'ai');
+            duelLog(`${attacker.card.name} attacks ${defender.faceUp ? defender.card.name : 'a face-down monster'}!`);
+
+            if (!defender.faceUp) {
+                defender.faceUp = true;
+                duelLog(`Revealed: ${defender.card.name}!`);
+                if (defender.card.effects) {
+                    defender.card.effects.forEach(eff => {
+                        if (eff.trigger === 'onFlip') resolveEffect(eff, 'player', atk.defIdx);
+                    });
+                }
+            }
+
+            if (checkAndActivateTraps('player', 'onOpponentAttack', { atkZoneIdx: atk.atkIdx, defZoneIdx: atk.defIdx })) {
+                setTimeout(() => { renderDuel(); executeNextAttack(idx + 1); }, 600);
+                return;
+            }
+
+            if (defender.position === 'atk') {
+                const defATK = getFieldATK(defender, 'player');
+                if (atkATK > defATK) {
+                    takeDamage('player', atkATK - defATK);
+                    destroyMonster('player', atk.defIdx);
+                    duelLog(`${defender.card.name} destroyed! You take ${atkATK - defATK} damage.`);
+                    if (attacker.card.effects?.some(e => e.trigger === 'onBattleDestroy')) {
+                        attacker.card.effects.filter(e => e.trigger === 'onBattleDestroy').forEach(eff => resolveEffect(eff, 'ai', atk.atkIdx));
+                    }
+                } else if (defATK > atkATK) {
+                    takeDamage('ai', defATK - atkATK);
+                    destroyMonster('ai', atk.atkIdx);
+                    duelLog(`${attacker.card.name} destroyed! AI takes ${defATK - atkATK} damage.`);
+                } else {
+                    destroyMonster('player', atk.defIdx);
+                    destroyMonster('ai', atk.atkIdx);
+                    duelLog('Both destroyed!');
+                }
+            } else {
+                const defDEF = getFieldDEF(defender, 'player');
+                const indestructible = defender.card.effects?.some(e => e.action === 'battleIndestructibleDef');
+                if (atkATK > defDEF) {
+                    if (!indestructible) {
+                        destroyMonster('player', atk.defIdx);
+                        duelLog(`${defender.card.name} destroyed!`);
+                    } else {
+                        duelLog(`${defender.card.name} survived!`);
+                    }
+                } else if (defDEF > atkATK) {
+                    takeDamage('ai', defDEF - atkATK);
+                    duelLog(`Attack bounced! AI takes ${defDEF - atkATK} damage.`);
+                }
+            }
+        }
+
+        renderDuel();
+        setTimeout(() => executeNextAttack(idx + 1), 600);
+    }
+
+    if (attacks.length > 0) {
+        setTimeout(() => executeNextAttack(0), 400);
+    } else {
+        setTimeout(() => aiEndPhase(), 400);
+    }
+}
+
+function aiEndPhase() {
+    if (duel.gameOver) return;
+
+    duel.phase = 'end';
+
+    // Remove turn buffs
+    duel.ai.monsters.forEach(m => {
+        if (m) { m.atkMod = 0; m.defMod = 0; }
+    });
+
+    // Discard to 6
+    while (duel.ai.hand.length > 6) {
+        duel.ai.graveyard.push(duel.ai.hand.pop());
+    }
+
+    duelLog('AI ends turn.');
+    renderDuel();
+
+    // Player's turn
+    setTimeout(() => {
+        if (duel.gameOver) return;
+        duel.currentPlayer = 'player';
+        duel.turn++;
+        duel.phase = 'draw';
+        duel.player.hasNormalSummoned = false;
+        duel.player.monsters.forEach(m => {
+            if (m) {
+                m.canAttack = false;
+                m.attacks = 0;
+                m.canChangePos = true;
+                m.frozen = false;
+                m.justSet = false;
+                m.effectUsed = false;
+            }
+        });
+
+        duelLog(`--- Your Turn ${duel.turn} ---`);
+        const drawn = drawCard('player');
+        if (drawn) duelLog(`Drew ${drawn.name}.`);
+        duel.phase = 'main1';
+        renderDuel();
+    }, 800);
+}
+
+// ============================================================
+// DUEL RENDERING
+// ============================================================
+function renderDuel() {
+    if (!duel) return;
+
+    // LP
+    document.getElementById('player-lp').textContent = duel.player.lp;
+    document.getElementById('ai-lp').textContent = duel.ai.lp;
+    document.getElementById('player-lp-bar').style.width = (duel.player.lp / 8000 * 100) + '%';
+    document.getElementById('ai-lp-bar').style.width = (duel.ai.lp / 8000 * 100) + '%';
+    document.getElementById('turn-info').textContent = `Turn ${duel.turn} - ${duel.currentPlayer === 'player' ? 'Your Turn' : 'AI Turn'}`;
+
+    // Field
+    const field = document.getElementById('duel-field');
+    field.innerHTML = `
+        ${renderFieldRow('ai', 'spells')}
+        ${renderFieldRow('ai', 'monsters')}
+        <div class="field-center-row">
+            <div class="gy-zone" onclick="showGraveyard('ai')">
+                <span style="font-size:6px">AI GY</span>
+                <span class="zone-count">${duel.ai.graveyard.length}</span>
+            </div>
+            ${renderFieldSpellZone('ai')}
+            <div style="width:20px"></div>
+            ${renderFieldSpellZone('player')}
+            <div class="gy-zone" onclick="showGraveyard('player')">
+                <span style="font-size:6px">YOUR GY</span>
+                <span class="zone-count">${duel.player.graveyard.length}</span>
+            </div>
+        </div>
+        ${renderFieldRow('player', 'monsters')}
+        ${renderFieldRow('player', 'spells')}
+    `;
+
+    // Highlight tribute targets
+    if (duel.uiState === 'selectTribute' || duel.uiState === 'selectRitualTribute') {
+        duel.tributeTargets.forEach(zi => {
+            const zones = field.querySelectorAll('.player-monster-zone');
+            if (zones[zi]) zones[zi].classList.add('selected');
+        });
+    }
+
+    // Highlight attack targets
+    if (duel.uiState === 'selectAttackTarget') {
+        field.querySelectorAll('.ai-monster-zone').forEach(z => {
+            if (z.querySelector('.card')) z.classList.add('attack-target');
+        });
+    }
+
+    // Phase bar
+    const phaseBar = document.getElementById('phase-bar');
+    const phases = [
+        { key: 'draw', label: 'DRAW' },
+        { key: 'main1', label: 'MAIN' },
+        { key: 'battle', label: 'BATTLE' },
+        { key: 'main2', label: 'MAIN 2' },
+        { key: 'end', label: 'END' },
+    ];
+
+    const isPlayerTurn = duel.currentPlayer === 'player';
+    phaseBar.innerHTML = phases.map(p => {
+        const isCurrent = duel.phase === p.key;
+        const canClick = isPlayerTurn && !duel.gameOver && (
+            (duel.phase === 'main1' && p.key === 'battle') ||
+            (duel.phase === 'battle' && p.key === 'main2') ||
+            (duel.phase === 'main2' && p.key === 'end') ||
+            (duel.phase === 'main1' && p.key === 'end')
+        );
+        return `<button class="phase-btn ${isCurrent ? 'current' : ''} ${canClick ? 'clickable' : ''}"
+            ${canClick ? 'onclick="advancePhase()"' : ''}>${p.label}</button>`;
+    }).join('');
+
+    // Synchro summon button
+    if (isPlayerTurn && (duel.phase === 'main1' || duel.phase === 'main2')) {
+        const synchroOpts = canSynchroSummon('player');
+        if (synchroOpts.length > 0) {
+            phaseBar.innerHTML += `<button class="phase-btn clickable" style="background:rgba(200,200,220,0.15);color:#c0c0e0;border:1px solid rgba(200,200,220,0.3)" onclick="playerSynchroSummon()">SYNCHRO</button>`;
+        }
+    }
+
+    // Direct attack button
+    if (duel.uiState === 'selectAttackTarget' && getMonsterCount('ai') === 0) {
+        phaseBar.innerHTML += `<button class="phase-btn clickable" style="background:rgba(231,76,60,0.15);color:#e74c3c" onclick="handleDirectAttackClick()">DIRECT ATK</button>`;
+    }
+
+    // Hand
+    const hand = document.getElementById('player-hand');
+    hand.innerHTML = duel.player.hand.map((card, i) =>
+        `<div onclick="handleHandCardClick(${i})">${renderCard(card)}</div>`
+    ).join('');
+}
+
+function renderFieldRow(who, zone) {
+    const slots = zone === 'monsters' ? duel[who].monsters : duel[who].spells;
+    const zoneClass = `${who}-${zone === 'monsters' ? 'monster' : 'spell'}-zone`;
+
+    return `<div class="field-row">
+        ${slots.map((fc, i) => {
+            let cardHTML = '';
+            if (fc) {
+                const isDefPos = fc.position === 'def';
+                cardHTML = renderCard(fc.card, { faceDown: !fc.faceUp, defPos: isDefPos });
+            }
+            const clickHandler = zone === 'monsters'
+                ? `onclick="handleFieldMonsterClick('${who}', ${i})"`
+                : `onclick="handleFieldSpellClick('${who}', ${i})"`;
+            return `<div class="field-zone ${zoneClass}" ${clickHandler}>
+                ${cardHTML}
+                ${!fc ? `<span class="field-label">${zone === 'monsters' ? 'M' : 'S/T'}</span>` : ''}
+            </div>`;
+        }).join('')}
+    </div>`;
+}
+
+function renderFieldSpellZone(who) {
+    const fc = duel[who].fieldSpell;
+    return `<div class="field-zone field-spell-zone">
+        ${fc ? renderCard(fc.card) : '<span class="field-label">Field</span>'}
+    </div>`;
+}
+
+function handleFieldSpellClick(who, zoneIdx) {
+    if (who !== 'player' || duel.currentPlayer !== 'player') return;
+    const fc = duel.player.spells[zoneIdx];
+    if (!fc) return;
+
+    if (!fc.faceUp && fc.turnSet < duel.turn) {
+        if (fc.card.type === 'trap' || fc.card.subtype === 'quickplay') {
+            const buttons = [
+                { label: 'Activate', cls: 'activate', action: () => activateSetCard(zoneIdx) },
+                { label: 'Cancel', cls: 'cancel', action: hideActionMenu }
+            ];
+            showActionMenu(buttons);
+        }
+    } else if (fc.faceUp && fc.card.type === 'monster') {
+        showCardDetail(fc.card.id);
+    }
+}
+
+function activateSetCard(zoneIdx) {
+    hideActionMenu();
+    const fc = duel.player.spells[zoneIdx];
+    if (!fc) return;
+    fc.faceUp = true;
+    duelLog(`Activated ${fc.card.name}!`);
+
+    if (fc.card.effects) {
+        fc.card.effects.forEach(eff => {
+            if (!eff.trigger || eff.trigger === 'onOpponentAttack') return;
+            resolveSpellEffect(eff, 'player', fc.card);
+        });
+    }
+
+    if (fc.card.type === 'spell' && fc.card.subtype !== 'continuous') {
+        destroySpellTrap('player', zoneIdx);
+    }
+    renderDuel();
+}
+
+function playerSynchroSummon() {
+    const opts = canSynchroSummon('player');
+    if (opts.length === 0) return;
+    opts.sort((a, b) => b.synchro.atk - a.synchro.atk);
+    doSynchroSummon('player', opts[0]);
+    renderDuel();
+}
+
+function showGraveyard(who) {
+    const gy = duel[who].graveyard;
+    if (gy.length === 0) {
+        duelLog(`${who === 'player' ? 'Your' : 'AI\'s'} Graveyard is empty.`);
+        return;
+    }
+    const last5 = gy.slice(-5);
+    const names = last5.map(c => c.name).join(', ');
+    duelLog(`GY (${gy.length}): ${names}${gy.length > 5 ? '...' : ''}`);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadData();
+updateCoinsDisplay();
+initWalletConnect();
+
+// Close modal on overlay click
+document.getElementById('card-modal').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+});
+
+// Close game over on return
+document.querySelector('.game-over-btn')?.addEventListener('click', function() {
+    document.getElementById('game-over').classList.remove('active');
+    duel = null;
+});
+</script>
+</body>
+</html>
