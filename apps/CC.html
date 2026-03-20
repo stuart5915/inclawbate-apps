@@ -1032,6 +1032,10 @@
             position: absolute; top:0;left:0;right:0;bottom:0;
             display: flex; align-items: center; justify-content: center;
         }
+        .card-art-img {
+            position: absolute; top:0;left:0;width:100%;height:100%;
+            object-fit: cover; z-index:1;
+        }
         .card-art-svg svg { width: 100%; height: 100%; }
 
         /* Type line — bracketed, centered */
@@ -2680,41 +2684,56 @@
                                 <svg viewBox="0 0 120 120" width="90" height="90">
                                     <defs>
                                         <linearGradient id="lobster-grad" x1="0" y1="0" x2="1" y2="1">
-                                            <stop offset="0%" stop-color="#c8a060"/>
-                                            <stop offset="50%" stop-color="#a08040"/>
-                                            <stop offset="100%" stop-color="#806228"/>
+                                            <stop offset="0%" stop-color="#d4a050"/>
+                                            <stop offset="50%" stop-color="#b07030"/>
+                                            <stop offset="100%" stop-color="#8a4a18"/>
                                         </linearGradient>
                                         <filter id="lobster-glow">
-                                            <feGaussianBlur stdDeviation="2" result="g"/>
-                                            <feComposite in="g" in2="g" operator="arithmetic" k1="0" k2="2" k3="0" k4="0"/>
+                                            <feGaussianBlur stdDeviation="3" result="g"/>
+                                            <feComposite in="g" in2="g" operator="arithmetic" k1="0" k2="2.5" k3="0" k4="0"/>
                                         </filter>
                                     </defs>
+                                    <!-- Glow behind -->
                                     <g filter="url(#lobster-glow)" opacity="0.3">
-                                        <ellipse cx="60" cy="62" rx="20" ry="28" fill="#b89050"/>
-                                        <circle cx="60" cy="34" r="15" fill="#b89050"/>
+                                        <ellipse cx="60" cy="68" rx="24" ry="30" fill="#c07030"/>
                                     </g>
-                                    <g fill="url(#lobster-grad)">
-                                        <ellipse cx="60" cy="62" rx="18" ry="26"/>
-                                        <circle cx="60" cy="34" r="13"/>
-                                        <path d="M47 48 L28 34 L16 22 L24 34 L14 46 L30 38Z"/>
-                                        <path d="M73 48 L92 34 L104 22 L96 34 L106 46 L90 38Z"/>
-                                        <path d="M50 86 L44 102 L54 96 L60 106 L66 96 L76 102 L70 86Z"/>
-                                        <circle cx="54" cy="30" r="3.5" fill="rgba(255,250,230,0.7)"/>
-                                        <circle cx="66" cy="30" r="3.5" fill="rgba(255,250,230,0.7)"/>
-                                        <circle cx="54" cy="30" r="1.8" fill="#2a2010"/>
-                                        <circle cx="66" cy="30" r="1.8" fill="#2a2010"/>
-                                        <circle cx="55" cy="29" r="0.8" fill="rgba(255,250,230,0.6)" opacity="0.8"/>
-                                        <circle cx="67" cy="29" r="0.8" fill="rgba(255,250,230,0.6)" opacity="0.8"/>
-                                        <path d="M54 22 Q40 4 26 0" stroke="#b89050" fill="none" stroke-width="2.5" stroke-linecap="round"/>
-                                        <path d="M66 22 Q80 4 94 0" stroke="#b89050" fill="none" stroke-width="2.5" stroke-linecap="round"/>
-                                        <line x1="48" y1="72" x2="32" y2="88" stroke="#907038" stroke-width="2.5" stroke-linecap="round"/>
-                                        <line x1="52" y1="78" x2="38" y2="94" stroke="#907038" stroke-width="2.5" stroke-linecap="round"/>
-                                        <line x1="72" y1="72" x2="88" y2="88" stroke="#907038" stroke-width="2.5" stroke-linecap="round"/>
-                                        <line x1="68" y1="78" x2="82" y2="94" stroke="#907038" stroke-width="2.5" stroke-linecap="round"/>
-                                        <ellipse cx="60" cy="52" rx="14" ry="2" fill="none" stroke="rgba(255,250,230,0.1)" stroke-width="0.8"/>
-                                        <ellipse cx="60" cy="62" rx="16" ry="2" fill="none" stroke="rgba(255,250,230,0.08)" stroke-width="0.8"/>
-                                        <ellipse cx="60" cy="72" rx="14" ry="2" fill="none" stroke="rgba(255,250,230,0.06)" stroke-width="0.8"/>
-                                    </g>
+                                    <!-- Legs — wide power stance -->
+                                    <line x1="46" y1="76" x2="26" y2="94" stroke="#907038" stroke-width="3" stroke-linecap="round"/>
+                                    <line x1="50" y1="80" x2="34" y2="100" stroke="#907038" stroke-width="2.5" stroke-linecap="round"/>
+                                    <line x1="74" y1="76" x2="94" y2="94" stroke="#907038" stroke-width="3" stroke-linecap="round"/>
+                                    <line x1="70" y1="80" x2="86" y2="100" stroke="#907038" stroke-width="2.5" stroke-linecap="round"/>
+                                    <!-- Tail fan -->
+                                    <path d="M48 88 L38 108 L52 100 L60 112 L68 100 L82 108 L72 88Z" fill="url(#lobster-grad)"/>
+                                    <!-- Body -->
+                                    <ellipse cx="60" cy="66" rx="18" ry="26" fill="url(#lobster-grad)"/>
+                                    <!-- Shell lines -->
+                                    <ellipse cx="60" cy="56" rx="14" ry="2" fill="none" stroke="rgba(255,220,150,0.12)" stroke-width="0.8"/>
+                                    <ellipse cx="60" cy="66" rx="16" ry="2" fill="none" stroke="rgba(255,220,150,0.10)" stroke-width="0.8"/>
+                                    <ellipse cx="60" cy="76" rx="14" ry="2" fill="none" stroke="rgba(255,220,150,0.08)" stroke-width="0.8"/>
+                                    <!-- Arms — thick, claws raised high -->
+                                    <path d="M44 50 Q34 38 26 22" stroke="url(#lobster-grad)" stroke-width="6" stroke-linecap="round" fill="none"/>
+                                    <path d="M76 50 Q86 38 94 22" stroke="url(#lobster-grad)" stroke-width="6" stroke-linecap="round" fill="none"/>
+                                    <!-- Left claw — big, open -->
+                                    <path d="M26 22 L14 8 L20 22 L10 18 L22 26Z" fill="#d4a050" stroke="#a06020" stroke-width="1"/>
+                                    <!-- Right claw — big, open -->
+                                    <path d="M94 22 L106 8 L100 22 L110 18 L98 26Z" fill="#d4a050" stroke="#a06020" stroke-width="1"/>
+                                    <!-- Head -->
+                                    <circle cx="60" cy="38" r="14" fill="url(#lobster-grad)"/>
+                                    <!-- Angry brow -->
+                                    <path d="M49 32 L56 29" stroke="#6a3010" stroke-width="2.5" stroke-linecap="round"/>
+                                    <path d="M71 32 L64 29" stroke="#6a3010" stroke-width="2.5" stroke-linecap="round"/>
+                                    <!-- Eyes — fierce -->
+                                    <ellipse cx="53" cy="35" rx="3.5" ry="3" fill="rgba(255,250,220,0.85)"/>
+                                    <ellipse cx="67" cy="35" rx="3.5" ry="3" fill="rgba(255,250,220,0.85)"/>
+                                    <circle cx="54" cy="35" r="2" fill="#7a1008"/>
+                                    <circle cx="68" cy="35" r="2" fill="#7a1008"/>
+                                    <circle cx="54.6" cy="34.2" r="0.8" fill="rgba(255,240,200,0.8)"/>
+                                    <circle cx="68.6" cy="34.2" r="0.8" fill="rgba(255,240,200,0.8)"/>
+                                    <!-- Mouth — aggressive V snarl -->
+                                    <path d="M54 42 L60 44 L66 42" stroke="#6a3010" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <!-- Antennae — swept back -->
+                                    <path d="M52 26 Q40 10 24 4" stroke="#b89050" fill="none" stroke-width="2.5" stroke-linecap="round"/>
+                                    <path d="M68 26 Q80 10 96 4" stroke="#b89050" fill="none" stroke-width="2.5" stroke-linecap="round"/>
                                 </svg>
                             </div>
                             <h1>CRUSTACEAN<br>COMBAT</h1>
@@ -3573,358 +3592,932 @@ makeCard(187,'Coral Rejection','trap','counter',{rarity:'SR',desc:'When a Spell 
 makeCard(188,'Tidal Surge','spell','quickplay',{rarity:'SR',desc:'Shift the Tide 1 toward your favor. Target 1 monster; it gains 300 ATK until end of turn.',art:{bg:['#5a3818','#4a2810'],icon:'power'},effects:[{action:'tideShift',value:1,target:'self'},{action:'atkBuff',value:300,duration:'turn',target:'select'}]}),
 makeCard(189,'Pelagic Seal','trap','counter',{rarity:'SR',desc:'When a Spell Card is activated: Negate the activation, and destroy it.',art:{bg:['#200830','#100418'],icon:'negate'},effects:[{trigger:'onSpellActivation',action:'negateDestroy'}]}),
 makeCard(190,'Armored Reef','spell','continuous',{rarity:'SR',desc:'All EARTH monsters you control gain Shell 2 when summoned.',art:{bg:['#5a3818','#4a2810'],icon:'shield'},effects:[{trigger:'passive',action:'shellOnSummonEarth',value:2}]}),
+// === TIDES OF THE ABYSS EXPANSION (191-210) ===
+// -- Monsters --
+makeCard(191,'Abyssal Angler','monster','normal',{
+    level:3, atk:1100, def:900, attribute:'DARK', rarity:'C',
+    desc:'A deep-sea predator that lures prey with its bioluminescent lantern. Many creatures have followed the light and never returned.',
+    art:{bg:['#0a0828','#050418'],color:'#60c0ff'}
+}),
+makeCard(192,'Reef Stalker','monster','normal',{
+    level:4, atk:1500, def:1100, attribute:'WATER', rarity:'C',
+    desc:'A silent hunter that moves through coral labyrinths with deadly precision. Its claws can shear through solid rock.',
+    art:{bg:['#0a2838','#051820'],color:'#e07050'}
+}),
+makeCard(193,'Volcanic Vent Crab','monster','normal',{
+    level:4, atk:1400, def:1600, attribute:'FIRE', rarity:'R', shell:2,
+    desc:'Forged in hydrothermal vents, its shell is hardened by extreme heat. Superheated steam erupts from cracks in its armor.',
+    art:{bg:['#2a0808','#180404'],color:'#ff8040'}
+}),
+makeCard(194,'Phantom Jellyfish','monster','normal',{
+    level:3, atk:800, def:1400, attribute:'DARK', rarity:'R', shell:1,
+    desc:'A translucent specter of the deep. Its venomous tendrils paralyze anything that dares touch it.',
+    art:{bg:['#100830','#080418'],color:'#c080ff'}
+}),
+makeCard(195,'Chain Urchin','monster','effect',{
+    level:4, atk:1300, def:1800, attribute:'EARTH', rarity:'SR', shell:3,
+    desc:'When this card is destroyed in battle: inflict 500 damage to your opponent.',
+    art:{bg:['#1a1808','#0c0c04'],color:'#a0c060'},
+    effects:[{trigger:'onDestroyed',action:'damage',value:500,target:'opponent'}]
+}),
+makeCard(196,'Mantis Shrimp Striker','monster','effect',{
+    level:5, atk:2100, def:1200, attribute:'LIGHT', rarity:'SR',
+    desc:'When this card destroys a monster by battle: shift the Tide 1 in your favor.',
+    art:{bg:['#2a2808','#181804'],color:'#ffe040'},
+    effects:[{trigger:'onBattleDestroy',action:'tideShift',value:1}]
+}),
+makeCard(197,'Kraken Hatchling','monster','normal',{
+    level:2, atk:600, def:500, attribute:'WATER', rarity:'C',
+    desc:'A tiny kraken still tangled in its egg sac. Its eight arms already grasp for anything within reach.',
+    art:{bg:['#081838','#040c20'],color:'#50a0d0'}
+}),
+makeCard(198,'Ironclad Nautilus','monster','normal',{
+    level:6, atk:1800, def:2400, attribute:'EARTH', rarity:'SR', shell:3,
+    desc:'An ancient nautilus whose shell has calcified into living armor. It has survived extinction events that wiped out entire species.',
+    art:{bg:['#1a1808','#0c0c04'],color:'#c0a060'}
+}),
+makeCard(199,'Bioluminescent Dragon Eel','monster','effect',{
+    level:7, atk:2600, def:2000, attribute:'LIGHT', rarity:'UR',
+    desc:'When this card is Normal Summoned: draw 1 card. This serpent commands respect in the deepest trenches.',
+    art:{bg:['#2a2818','#18180c'],color:'#60ffb0'},
+    effects:[{trigger:'onSummon',action:'draw',value:1,target:'self'}]
+}),
+makeCard(200,'Claw of Dominion','monster','normal',{
+    level:8, atk:3000, def:2500, attribute:'FIRE', rarity:'ScR',
+    desc:'The ultimate weapon of the Inclawbate realm. A titanic lobster deity wreathed in volcanic flame. Legends say its claw can shatter any defense.',
+    art:{bg:['#2a0808','#180404'],color:'#ffc040'}
+}),
+// -- Spells --
+makeCard(201,'Abyssal Summons','spell','normal',{rarity:'R',
+    desc:'Special Summon 1 Level 4 or lower WATER monster from your hand.',
+    art:{bg:['#081838','#040c20'],icon:'summon'},
+    effects:[{action:'specialSummonHand',levelMax:4,attrTarget:'WATER'}]
+}),
+makeCard(202,'Hydrothermal Charge','spell','normal',{rarity:'SR',
+    desc:'Inflict 800 damage to your opponent and shift the Tide 1 in your favor.',
+    art:{bg:['#2a0808','#180404'],icon:'damage'},
+    effects:[{action:'damage',value:800,target:'opponent'},{action:'tideShift',value:1,target:'self'}]
+}),
+makeCard(203,'Predator Instinct','spell','quickplay',{rarity:'R',
+    desc:'Target 1 monster you control; it gains 600 ATK until end of turn. If its attribute is DARK, draw 1 card.',
+    art:{bg:['#0a0828','#050418'],icon:'power'},
+    effects:[{action:'atkBuff',value:600,duration:'turn',target:'select'}]
+}),
+makeCard(204,'Shell Reinforce','spell','normal',{rarity:'SR',
+    desc:'Target 1 monster you control: it gains Shell 2. If it already has Shell, gain 1000 LP instead.',
+    art:{bg:['#1a1808','#0c0c04'],icon:'shield'},
+    effects:[{action:'grantShell',value:2,target:'select'}]
+}),
+makeCard(205,'Maelstrom Ritual','spell','ritual',{rarity:'UR',
+    desc:'This card is used to Ritual Summon "Bioluminescent Dragon Eel". Tribute monsters whose total Levels equal 7 or more.',
+    art:{bg:['#081838','#040c20'],icon:'ritual'},
+    ritualMonster:199, effects:[{action:'ritualSummon',monsterId:199}]
+}),
+// -- Traps --
+makeCard(206,'Pressure Crush','trap','normal',{rarity:'R',
+    desc:'When your opponent Normal Summons a monster: destroy it.',
+    art:{bg:['#180828','#0c0418'],icon:'destroy'},
+    effects:[{trigger:'onOpponentSummon',action:'destroyMonster',value:1,target:'opponent'}]
+}),
+makeCard(207,'Ink Cloud','trap','normal',{rarity:'C',
+    desc:'When an opponent\'s monster declares an attack: negate the attack.',
+    art:{bg:['#0a0828','#050418'],icon:'negate'},
+    effects:[{trigger:'onAttack',action:'negateAttack'}]
+}),
+makeCard(208,'Depth Mine Alpha','trap','depthcharge',{rarity:'SR', depthTimer:3,
+    desc:'Depth Charge (3 turns): When this detonates, destroy all monsters your opponent controls with ATK 1500 or less.',
+    art:{bg:['#2a0808','#180404'],icon:'destroy'},
+    effects:[{action:'destroyMonsterBelow',value:1500,target:'opponent'}]
+}),
+makeCard(209,'Depth Mine Omega','trap','depthcharge',{rarity:'UR', depthTimer:2,
+    desc:'Depth Charge (2 turns): When this detonates, inflict 1500 damage to your opponent and shift the Tide 2 in your favor.',
+    art:{bg:['#180828','#0c0418'],icon:'damage'},
+    effects:[{action:'damage',value:1500,target:'opponent'},{action:'tideShift',value:2,target:'self'}]
+}),
+makeCard(210,'Tidal Entrapment','trap','continuous',{rarity:'SR',
+    desc:'While this card is face-up: all WATER monsters you control gain 200 ATK.',
+    art:{bg:['#081838','#040c20'],icon:'power'},
+    effects:[{trigger:'passive',action:'fieldBuffType',value:200,attrTarget:'WATER'}]
+}),
 ];
 
 function getCard(id) { return CARDS.find(c => c.id === id); }
 
 // ============================================================
-// CARD ART — PROCEDURAL HIGH-FANTASY ILLUSTRATION ENGINE
+// PROCEDURAL SVG CARD ART ENGINE
 // ============================================================
-// Color utilities
-function _hexRgb(h){const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return[r,g,b];}
-function _rgbHex(r,g,b){return'#'+[r,g,b].map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');}
-function _lit(h,f){const[r,g,b]=_hexRgb(h);return _rgbHex(r+(255-r)*f,g+(255-g)*f,b+(255-b)*f);}
-function _drk(h,f){const[r,g,b]=_hexRgb(h);return _rgbHex(r*(1-f),g*(1-f),b*(1-f));}
-function _rgba(h,a){const[r,g,b]=_hexRgb(h);return'rgba('+r+','+g+','+b+','+a+')';}
+const _artCache = {};
 
-function getCardArtSVG(card){
-var bg=card.art?.bg||['#1a1a2e','#0d0d18'],c=card.art?.color||'#5080a0',id=card.id,lv=card.level||0,
-cL=_lit(c,.35),cD=_drk(c,.4),cDD=_drk(c,.65),bgD=_drk(bg[1],.3);
-var _s=(id*2654435761)>>>0;var rr=function(){_s=(_s*1664525+1013904223)>>>0;return _s/4294967296};
-var ri=function(a,b){return a+((rr()*(b-a+1))|0)},rf=function(a,b){return+(a+rr()*(b-a)).toFixed(2)};
-var g=function(n){return n+id},P=Math.PI,Co=Math.cos,Si=Math.sin,R=_rgba;
-var E=function(x,y,rx,ry,f,o){return'<ellipse cx="'+x+'" cy="'+y+'" rx="'+rx+'" ry="'+ry+'" fill="'+f+'"'+(o?' '+o:'')+'/>'},
-Ci=function(x,y,r,f,o){return'<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+f+'"'+(o?' '+o:'')+'/>'},
-SL='stroke-linecap="round"',
-Li=function(a,b,c2,d,s,w){return'<line x1="'+a+'" y1="'+b+'" x2="'+c2+'" y2="'+d+'" stroke="'+s+'" stroke-width="'+w+'" '+SL+'/>'},
-Pa=function(d,f,s,w,o){return'<path d="'+d+'" '+(f?'fill="'+f+'"':'fill="none"')+(s?' stroke="'+s+'"':'')+(w?' stroke-width="'+w+'"':'')+(o?' '+o:'')+'/>'};
-var defs='<radialGradient id="'+g('bg')+'" cx="'+ri(35,55)+'%" cy="'+ri(30,48)+'%" r="'+ri(55,75)+'%"><stop offset="0%" stop-color="'+bg[0]+'"/><stop offset="70%" stop-color="'+bg[1]+'"/><stop offset="100%" stop-color="'+bgD+'"/></radialGradient>'+
-'<filter id="'+g('gl')+'"><feGaussianBlur stdDeviation="4" result="b"/><feComposite in="b" in2="b" operator="arithmetic" k1="0" k2="1.5" k3="0" k4="0"/></filter>'+
-'<filter id="'+g('g2')+'"><feGaussianBlur stdDeviation="2"/></filter>'+
-'<filter id="'+g('g3')+'"><feGaussianBlur stdDeviation="6" result="b"/><feComposite in="b" in2="b" operator="arithmetic" k1="0" k2="2" k3="0" k4="0"/></filter>'+
-'<filter id="'+g('sh')+'"><feGaussianBlur stdDeviation="1.5"/></filter>'+
-'<clipPath id="'+g('vp')+'"><rect width="120" height="100"/></clipPath>'+
-'<linearGradient id="'+g('bd')+'" x1="0" y1="0" x2=".3" y2="1"><stop offset="0%" stop-color="'+cL+'"/><stop offset="40%" stop-color="'+c+'"/><stop offset="100%" stop-color="'+cD+'"/></linearGradient>'+
-'<radialGradient id="'+g('br')+'" cx="40%" cy="30%" r="65%"><stop offset="0%" stop-color="'+cL+'"/><stop offset="100%" stop-color="'+cD+'"/></radialGradient>'+
-'<linearGradient id="'+g('fg')+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+bgD+'" stop-opacity="0"/><stop offset="100%" stop-color="'+bgD+'" stop-opacity=".6"/></linearGradient>';
-var v='<rect width="120" height="100" fill="url(#'+g('bg')+')"/>';
-for(var i=0;i<ri(2,4);i++){var x=ri(5,90),w=ri(4,10);v+='<polygon points="'+x+',0 '+(x+w)+',0 '+(x+w*3)+',100 '+(x-w)+',100" fill="'+R(cL,rf(.03,.07))+'"/>'}
-v+='<rect width="120" height="35" y="65" fill="url(#'+g('fg')+')" opacity=".4"/>';
-for(i=0;i<ri(2,3);i++)v+=Pa('M'+ri(0,40)+' '+ri(3,15)+' Q'+ri(30,60)+' '+ri(0,12)+' '+ri(60,120)+' '+ri(3,15),0,R(cL,rf(.04,.1)),rf(.8,1.5),SL);
-var bd='url(#'+g('bd')+')',br='url(#'+g('br')+')';
-if(card.type==='monster'){
-var mx=ri(50,66),my=ri(38,50),sz=Math.min(12+lv*2.5+ri(0,3),30);
-v+=E(mx,my+sz*.8+5,sz*1.2,sz*.2,R('#000000',.2),'filter="url(#'+g('sh')+')"');
-v+=E(mx,my,sz*1.3,sz*1.1,R(c,.12),'filter="url(#'+g('g3')+')"');
-var bt=id%25,ht=((id*7+3)>>>0)%10,at=((id*13+5)>>>0)%12,tt=((id*11+7)>>>0)%8,et=((id*17+11)>>>0)%8;
-var fa=((id*19+2)>>>0)%8,fb=((id*23+13)>>>0)%8,pt=((id*29+17)>>>0)%10,ab=((id*37+23)>>>0)%6;
-var bx=mx+(id%3===0?-1:id%3===1?1:0)*sz*.1,by=my,bw=sz,bh=sz*.8;
-if(bt===0){var p='M';for(var t=0;t<=1;t+=.04){p+=(bx-bw*1.2+t*bw*2.6).toFixed(1)+' '+(by+Si(t*P*2.5+id*.7)*bh*.55).toFixed(1)+' L'}p=p.slice(0,-2);
-v+=Pa(p,0,cD,5+lv*.4,'stroke-linecap="round" opacity=".6"')+Pa(p,0,bd,3.5+lv*.3,SL)+Pa(p,0,R(cL,.22),1.5+lv*.15,SL);
-}else if(bt===1){v+=Pa('M'+(bx-bw*.6)+' '+(by-bh*.1)+' Q'+(bx-bw*.3)+' '+(by-bh*.55)+' '+bx+' '+(by-bh*.5)+' Q'+(bx+bw*.3)+' '+(by-bh*.45)+' '+(bx+bw*.55)+' '+(by-bh*.15)+' Q'+(bx+bw*.6)+' '+(by+bh*.2)+' '+(bx+bw*.3)+' '+(by+bh*.35)+' L'+(bx-bw*.35)+' '+(by+bh*.35)+' Q'+(bx-bw*.65)+' '+(by+bh*.2)+' '+(bx-bw*.6)+' '+(by-bh*.1),br);
-for(i=0;i<4;i++){var lx=bx-bw*.4+i*bw*.28;v+=Pa('M'+lx+' '+(by+bh*.35)+' L'+(lx+ri(-2,2))+' '+(by+bh*.65),0,bd,rf(2.5,3.5),SL)}
-}else if(bt===2){v+=Pa('M'+(bx-bw*.3)+' '+(by-bh*.15)+' L'+(bx-bw*.38)+' '+(by+bh*.4)+' L'+(bx+bw*.38)+' '+(by+bh*.4)+' L'+(bx+bw*.3)+' '+(by-bh*.15)+' Z',br);
-v+=Pa('M'+(bx-bw*.15)+' '+(by+bh*.4)+' L'+(bx-bw*.25)+' '+(by+bh*.85),0,bd,3.5,SL);
-v+=Pa('M'+(bx+bw*.15)+' '+(by+bh*.4)+' L'+(bx+bw*.22)+' '+(by+bh*.85),0,bd,3.5,SL);
-for(var s=-1;s<=1;s+=2)v+=E(bx+bw*.35*s,by-bh*.12,bw*.15,bh*.1,br);
-}else if(bt===3){var bp=[];for(var a=0;a<360;a+=25){var r=a*P/180,d=bw*(.55+rr()*.3);bp.push([bx+Co(r)*d,by+Si(r)*d*.75])}
-var bP='M'+bp[0][0].toFixed(1)+' '+bp[0][1].toFixed(1);for(i=1;i<bp.length;i++){bP+=' Q'+((bp[i-1][0]+bp[i][0])/2+ri(-4,4)).toFixed(1)+' '+((bp[i-1][1]+bp[i][1])/2+ri(-4,4)).toFixed(1)+' '+bp[i][0].toFixed(1)+' '+bp[i][1].toFixed(1)}
-v+=Pa(bP+' Z',br,0,0,'opacity=".85"');for(i=0;i<ri(3,6);i++)v+=Ci(bx+ri(-bw*.3,bw*.3),by+ri(-bh*.2,bh*.3),rf(1.5,4),R(cL,rf(.08,.2)));
-}else if(bt===4){v+=E(bx,by,bw*.75,bh*.5,br);
-for(i=0;i<3;i++)for(s=-1;s<=1;s+=2){lx=bx+(bw*.2+i*bw*.2)*s;v+=Pa('M'+lx+' '+(by+bh*.4)+' L'+(lx+3*s)+' '+(by+bh*.6)+' L'+(lx+5*s)+' '+(by+bh*.85),0,cD,1.2,SL)}
-}else if(bt===5){v+=Pa('M'+(bx-bw*.8)+' '+by+' Q'+(bx-bw*.4)+' '+(by-bh*.5)+' '+(bx+bw*.2)+' '+(by-bh*.4)+' Q'+(bx+bw*.6)+' '+(by-bh*.25)+' '+(bx+bw*.7)+' '+by+' Q'+(bx+bw*.6)+' '+(by+bh*.25)+' '+(bx+bw*.2)+' '+(by+bh*.4)+' Q'+(bx-bw*.4)+' '+(by+bh*.5)+' '+(bx-bw*.8)+' '+by,br);
-v+=Pa('M'+(bx-bw*.8)+' '+by+' Q'+(bx-bw*1.1)+' '+(by-bh*.4)+' '+(bx-bw*1.15)+' '+(by-bh*.15)+' Q'+(bx-bw*.9)+' '+by+' '+(bx-bw*1.15)+' '+(by+bh*.15)+' Q'+(bx-bw*1.1)+' '+(by+bh*.4)+' '+(bx-bw*.8)+' '+by,R(c,.35));
-}else if(bt===6){v+=Pa('M'+(bx-bw*.5)+' '+(by+bh*.1)+' Q'+bx+' '+(by-bh*.05)+' '+(bx+bw*.45)+' '+(by+bh*.05)+' L'+(bx+bw*.45)+' '+(by+bh*.35)+' L'+(bx-bw*.5)+' '+(by+bh*.35)+' Z',bd);
-for(i=0;i<4;i++){lx=bx-bw*.4+i*bw*.28;v+=Pa('M'+lx+' '+(by+bh*.35)+' L'+(lx+ri(-1,1))+' '+(by+bh*.7),0,bd,2.8,SL)}
-v+=Pa('M'+(bx-bw*.15)+' '+(by+bh*.1)+' L'+(bx-bw*.2)+' '+(by-bh*.35)+' L'+(bx+bw*.2)+' '+(by-bh*.35)+' L'+(bx+bw*.15)+' '+(by+bh*.1)+' Z',br);
-}else if(bt===7){v+=E(bx,by,bw*.35,bh*.4,br);
-for(s=-1;s<=1;s+=2){v+=Pa('M'+(bx+bw*.2*s)+' '+(by-bh*.15)+' Q'+(bx+bw*.6*s)+' '+(by-bh*.65)+' '+(bx+bw*1.1*s)+' '+(by-bh*.3)+' Q'+(bx+bw*.9*s)+' '+(by+bh*.05)+' '+(bx+bw*.65*s)+' '+(by+bh*.15)+' Q'+(bx+bw*.4*s)+' '+(by+bh*.1)+' '+(bx+bw*.2*s)+' '+(by+bh*.1),R(c,.25),R(cD,.3),.5);
-v+=Li(bx+bw*.2*s,by-bh*.15,bx+bw*.85*s,by-bh*.5,R(cL,.2),.8)}
-v+=Pa('M'+bx+' '+(by+bh*.4)+' Q'+(bx-bw*.3)+' '+(by+bh*.7)+' '+(bx-bw*.5)+' '+(by+bh*.85),0,bd,1.5,SL);
-}else if(bt===8){v+=E(bx,by,bw*.4,bh*.45,br);
-for(i=0;i<6;i++){a=(i*60+15+id*7)*P/180;var l=bw*rf(.6,.95),ex=bx+Co(a)*l,ey=by+Si(a)*l*.7;
-v+=Pa('M'+(bx+Co(a)*bw*.3)+' '+(by+Si(a)*bh*.35)+' Q'+(bx+Co(a+.3)*l*.6)+' '+(by+Si(a+.3)*l*.5)+' '+ex.toFixed(1)+' '+ey.toFixed(1),0,bd,rf(1.8,3),SL)}
-}else if(bt===9){v+=Ci(bx,by,bw*.3,br,'opacity=".7"')+Ci(bx,by,bw*.45,R(c,.08),'filter="url(#'+g('gl')+')"');
-for(i=0;i<ri(5,8);i++){a=rr()*P*2;l=bw*rf(.5,1);v+=Pa('M'+bx+' '+by+' Q'+(bx+Co(a)*l*.5+ri(-5,5))+' '+(by+Si(a)*l*.4+ri(-5,5))+' '+(bx+Co(a)*l).toFixed(1)+' '+(by+Si(a)*l*.7).toFixed(1),0,R(c,rf(.12,.3)),rf(.6,2),SL)}
-}else if(bt===10){v+=E(bx-bw*.25,by+bh*.1,bw*.35,bh*.3,bd,'transform="rotate(-15 '+(bx-bw*.25)+' '+(by+bh*.1)+')"');
-v+=E(bx+bw*.1,by-bh*.05,bw*.22,bh*.2,br)+Li(bx-bw*.05,by+bh*.05,bx+bw*.05,by-bh*.02,c,2);
-for(i=0;i<6;i++){lx=bx-bw*.1+(i%3)*bw*.15;s=i<3?-1:1;v+=Pa('M'+lx+' '+(by+bh*.1)+' L'+(lx+bw*.3*s)+' '+(by-bh*.1)+' L'+(lx+bw*.45*s)+' '+(by+bh*.5),0,R(c,.5),.8,SL)}
-}else if(bt===11){var sp='M'+bx+' '+by;for(t=0;t<4.5;t+=.15){r=bw*.08*t;a=t*1.8+id*.5;sp+=' L'+(bx+Co(a)*r).toFixed(1)+' '+(by+Si(a)*r*.8).toFixed(1)}
-v+=Pa(sp,0,bd,rf(3,5),SL)+Pa(sp,0,R(cL,.2),rf(1,2),SL)+E(bx+bw*.5,by+bh*.1,bw*.2,bh*.25,br);
-}else if(bt===12){v+=Pa('M'+(bx-bw*.15)+' '+(by+bh*.6)+' L'+(bx-bw*.22)+' '+(by-bh*.7)+' Q'+bx+' '+(by-bh*.85)+' '+(bx+bw*.22)+' '+(by-bh*.7)+' L'+(bx+bw*.15)+' '+(by+bh*.6)+' Z',bd);
-for(i=0;i<5;i++){var ry=by-bh*.5+i*bh*.25;v+=Pa('M'+(bx-bw*.18)+' '+ry+' Q'+bx+' '+(ry+2)+' '+(bx+bw*.18)+' '+ry,0,R(cL,.12),.5)}
-}else if(bt===13){v+=Pa('M'+bx+' '+(by-bh*.15)+' Q'+(bx+bw*.9)+' '+(by-bh*.5)+' '+(bx+bw)+' '+(by+bh*.1)+' Q'+(bx+bw*.5)+' '+(by+bh*.3)+' '+bx+' '+(by+bh*.2)+' Q'+(bx-bw*.5)+' '+(by+bh*.3)+' '+(bx-bw)+' '+(by+bh*.1)+' Q'+(bx-bw*.9)+' '+(by-bh*.5)+' '+bx+' '+(by-bh*.15),br);
-v+=Pa('M'+bx+' '+(by+bh*.2)+' Q'+(bx+bw*.1)+' '+(by+bh*.6)+' '+(bx-bw*.05)+' '+(by+bh*.95),0,bd,1.5,SL);
-for(i=0;i<ri(4,6);i++)v+=Ci(bx+ri(-bw*.5,bw*.5),by+ri(-bh*.15,bh*.12),rf(1,3),R(cL,rf(.08,.18)));
-}else if(bt===14){var ur=bw*.5;v+=Ci(bx,by,ur,br);
-for(a=0;a<360;a+=ri(14,22)){r=a*P/180;l=ur+ri(4,12);v+=Li(bx+Co(r)*ur*.8,by+Si(r)*ur*.8,bx+Co(r)*l,by+Si(r)*l,R(c,rf(.3,.55)),rf(.5,1.2))}
-v+=Ci(bx-ur*.2,by-ur*.25,ur*.25,R(cL,.2));
-}else if(bt===15){/* serpent/eel — long wavy body */
-var sp='M'+(bx-bw*1.2)+' '+by;for(t=0;t<8;t++){var cx2=bx-bw*1.2+t*bw*.35,cy2=by+(t%2===0?-1:1)*bh*.3;sp+=' Q'+cx2+' '+cy2+' '+(cx2+bw*.17)+' '+by}
-v+=Pa(sp,0,bd,4+lv*.3,SL)+Pa(sp,0,R(cL,.2),2+lv*.15,SL);
-v+=Ci(bx+bw*1.1,by,bw*.2,br)+E(bx-bw*1.2,by,bw*.12,bh*.15,R(cD,.6));
-}else if(bt===16){/* jellyfish — dome + tentacles */
-v+=Pa('M'+(bx-bw*.7)+' '+(by+bh*.05)+' Q'+(bx-bw*.5)+' '+(by-bh*.7)+' '+bx+' '+(by-bh*.75)+' Q'+(bx+bw*.5)+' '+(by-bh*.7)+' '+(bx+bw*.7)+' '+(by+bh*.05)+' Z',br,'opacity=".85"');
-for(i=0;i<ri(5,8);i++){lx=bx-bw*.5+i*bw*.15;var tp='M'+lx+' '+(by+bh*.05);for(s=0;s<ri(4,6);s++)tp+=' Q'+(lx+ri(-4,4))+' '+(by+bh*.1+s*bh*.15)+' '+(lx+ri(-2,2))+' '+(by+bh*.15+s*bh*.15);v+=Pa(tp,0,R(c,rf(.2,.45)),rf(.5,1.2),SL)}
-v+=E(bx,by-bh*.3,bw*.4,bh*.25,R(cL,.12),'filter="url(#'+g('g2')+')"');
-}else if(bt===17){/* seahorse — curved S-body */
-v+=Pa('M'+bx+' '+(by-bh*.7)+' Q'+(bx+bw*.6)+' '+(by-bh*.5)+' '+(bx+bw*.4)+' '+(by-bh*.1)+' Q'+(bx+bw*.2)+' '+(by+bh*.15)+' '+(bx-bw*.2)+' '+(by+bh*.2)+' Q'+(bx-bw*.5)+' '+(by+bh*.3)+' '+(bx-bw*.3)+' '+(by+bh*.6)+' Q'+(bx-bw*.1)+' '+(by+bh*.8)+' '+(bx+bw*.15)+' '+(by+bh*.75),0,bd,5+lv*.3,SL);
-v+=Pa('M'+bx+' '+(by-bh*.7)+' Q'+(bx+bw*.6)+' '+(by-bh*.5)+' '+(bx+bw*.4)+' '+(by-bh*.1)+' Q'+(bx+bw*.2)+' '+(by+bh*.15)+' '+(bx-bw*.2)+' '+(by+bh*.2)+' Q'+(bx-bw*.5)+' '+(by+bh*.3)+' '+(bx-bw*.3)+' '+(by+bh*.6)+' Q'+(bx-bw*.1)+' '+(by+bh*.8)+' '+(bx+bw*.15)+' '+(by+bh*.75),0,R(cL,.25),2.5+lv*.15,SL);
-v+=E(bx+bw*.1,by-bh*.55,bw*.18,bh*.15,br);
-for(i=0;i<ri(3,5);i++){a=(-30+i*ri(15,25))*P/180;v+=Pa('M'+(bx-bw*.15)+' '+(by-bh*.2+i*4)+' L'+(bx-bw*.15+Co(a)*bw*.35)+' '+(by-bh*.2+i*4+Si(a)*bh*.2),0,R(c,.3),1,SL)}
-}else if(bt===18){/* nautilus — spiral shell */
-v+=Ci(bx,by,bw*.55,R(cD,.5),'stroke="'+bd+'" stroke-width="1.5"');
-var nsP='M'+bx+' '+(by-bw*.45);for(t=0;t<5;t+=.08){r=bw*(.42-t*.06);a=t*3.5;nsP+=' L'+(bx+Co(a)*r).toFixed(1)+' '+(by+Si(a)*r).toFixed(1)}
-v+=Pa(nsP,0,R(cL,.3),1.2,SL)+Ci(bx,by,bw*.08,R(cL,.4));
-for(i=1;i<=4;i++)v+=Ci(bx,by,bw*(.55-i*.1),'none','stroke="'+R(cL,.1)+'" stroke-width=".5"');
-}else if(bt===19){/* starfish — 5 arms radiating */
-var sP2='';for(i=0;i<5;i++){a=(i*72-90)*P/180;var a2=((i+.5)*72-90)*P/180;sP2+=(i===0?'M':'L')+(bx+Co(a)*bw*.85).toFixed(1)+' '+(by+Si(a)*bh*.75).toFixed(1)+' L'+(bx+Co(a2)*bw*.25).toFixed(1)+' '+(by+Si(a2)*bh*.2).toFixed(1)}
-v+=Pa(sP2+' Z',br,R(cD,.3),.6);
-for(i=0;i<5;i++){a=(i*72-90)*P/180;v+=Li(bx,by,(bx+Co(a)*bw*.6).toFixed(1),(by+Si(a)*bh*.5).toFixed(1),R(cL,.15),.6)}
-v+=Ci(bx,by,bw*.12,R(cL,.3));
-}else if(bt===20){/* anglerfish — big jaw + lure */
-v+=Pa('M'+(bx-bw*.5)+' '+(by-bh*.1)+' Q'+(bx-bw*.3)+' '+(by-bh*.55)+' '+(bx+bw*.1)+' '+(by-bh*.4)+' Q'+(bx+bw*.5)+' '+(by-bh*.3)+' '+(bx+bw*.6)+' '+by+' L'+(bx+bw*.5)+' '+(by+bh*.25)+' Q'+(bx+bw*.2)+' '+(by+bh*.45)+' '+(bx-bw*.3)+' '+(by+bh*.35)+' Q'+(bx-bw*.55)+' '+(by+bh*.2)+' '+(bx-bw*.5)+' '+(by-bh*.1),br);
-v+=Pa('M'+(bx-bw*.2)+' '+(by+bh*.15)+' Q'+(bx+bw*.15)+' '+(by+bh*.1)+' '+(bx+bw*.35)+' '+(by+bh*.2),0,R(cDD,.4),.8);
-for(i=0;i<ri(4,6);i++)v+=Li(bx-bw*.2+i*bw*.12,by+bh*.2,bx-bw*.2+i*bw*.12+ri(-1,1),by+bh*.25+ri(1,3),R(cL,.5),.5);
-v+=Pa('M'+(bx-bw*.3)+' '+(by-bh*.5)+' Q'+(bx-bw*.5)+' '+(by-bh*1)+' '+(bx-bw*.15)+' '+(by-bh*.9),0,R(c,.35),1,SL)+Ci(bx-bw*.15,by-bh*.9,bw*.08,R(cL,.8),'filter="url(#'+g('g2')+')"');
-}else if(bt===21){/* manta ray — wide flat */
-v+=Pa('M'+bx+' '+(by-bh*.3)+' Q'+(bx+bw*1.1)+' '+(by-bh*.5)+' '+(bx+bw*1.2)+' '+(by+bh*.1)+' Q'+(bx+bw*.8)+' '+(by+bh*.15)+' '+(bx+bw*.3)+' '+(by+bh*.2)+' L'+bx+' '+(by+bh*.5)+' L'+(bx-bw*.3)+' '+(by+bh*.2)+' Q'+(bx-bw*.8)+' '+(by+bh*.15)+' '+(bx-bw*1.2)+' '+(by+bh*.1)+' Q'+(bx-bw*1.1)+' '+(by-bh*.5)+' '+bx+' '+(by-bh*.3),br,R(cD,.2),.5);
-v+=E(bx,by-bh*.05,bw*.35,bh*.15,R(cL,.1));
-v+=Pa('M'+bx+' '+(by+bh*.5)+' Q'+(bx+bw*.05)+' '+(by+bh*.7)+' '+(bx-bw*.02)+' '+(by+bh*.95),0,bd,1.5,SL);
-}else if(bt===22){/* squid — torpedo + tentacles */
-v+=Pa('M'+(bx-bw*.15)+' '+(by-bh*.6)+' Q'+(bx-bw*.4)+' '+(by-bh*.2)+' '+(bx-bw*.35)+' '+(by+bh*.15)+' L'+(bx+bw*.35)+' '+(by+bh*.15)+' Q'+(bx+bw*.4)+' '+(by-bh*.2)+' '+(bx+bw*.15)+' '+(by-bh*.6)+' Z',br);
-v+=Pa('M'+bx+' '+(by-bh*.7)+' L'+(bx-bw*.08)+' '+(by-bh*.6)+' L'+(bx+bw*.08)+' '+(by-bh*.6)+' Z',R(cD,.5));
-for(i=0;i<ri(6,9);i++){lx=bx-bw*.3+i*bw*.1;tp='M'+lx+' '+(by+bh*.15);for(s=0;s<ri(3,5);s++)tp+=' Q'+(lx+ri(-3,3))+' '+(by+bh*.2+s*bh*.12)+' '+(lx+ri(-2,2))+' '+(by+bh*.25+s*bh*.12);v+=Pa(tp,0,R(c,rf(.15,.35)),rf(.4,1),SL)}
-}else if(bt===23){/* trilobite — segmented oval */
-v+=E(bx,by,bw*.65,bh*.5,br);
-for(i=0;i<ri(5,8);i++){ry=by-bh*.35+i*bh*.12;v+=Li(bx-bw*.6,ry,bx+bw*.6,ry,R(cD,.2),.5)}
-v+=Li(bx,by-bh*.5,bx,by+bh*.5,R(cL,.15),.6);
-v+=Pa('M'+(bx-bw*.65)+' '+by+' Q'+(bx-bw*.8)+' '+(by-bh*.1)+' '+(bx-bw*.9)+' '+(by+bh*.05),0,R(c,.4),1.5,SL);
-v+=Pa('M'+(bx+bw*.65)+' '+by+' Q'+(bx+bw*.8)+' '+(by-bh*.1)+' '+(bx+bw*.9)+' '+(by+bh*.05),0,R(c,.4),1.5,SL);
-}else{/* bt===24: crystal — angular faceted */
-var pts=[];for(i=0;i<ri(5,7);i++){a=(i*(360/7)-90)*P/180;d=bw*(rf(.4,.8));pts.push([bx+Co(a)*d,by+Si(a)*d*.8])}
-var cP='M'+pts[0][0].toFixed(1)+' '+pts[0][1].toFixed(1);for(i=1;i<pts.length;i++)cP+=' L'+pts[i][0].toFixed(1)+' '+pts[i][1].toFixed(1);
-v+=Pa(cP+' Z',br,R(cD,.3),.6);
-for(i=0;i<pts.length;i++)v+=Li(bx,by,pts[i][0],pts[i][1],R(cL,.08),.4);
-v+=Ci(bx,by,bw*.15,R(cL,.25),'filter="url(#'+g('g2')+')"');
+function _artSeed(id) {
+    let s = (id * 2654435761) >>> 0;
+    const R = () => { s = (s + 0x6D2B79F5) | 0; let t = Math.imul(s ^ s >>> 15, 1 | s); t = (t + Math.imul(t ^ t >>> 7, 61 | t)) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    R(); R(); R();
+    R.i = (a, b) => Math.floor(a + R() * (b - a + 1));
+    R.f = (a, b) => a + R() * (b - a);
+    R.pick = arr => arr[R.i(0, arr.length - 1)];
+    return R;
 }
-var hx=bx,hy=by,hr=sz*.22;
-if(bt===0){hx=bx+bw*.9;hy=by+Si(P*2.5+id*.7)*bh*.55}else if(bt<=2||bt===6||bt===12){hy=by-bh*.55}else if(bt===5||bt===13){hx=bx+bw*.5;hy=by-bh*.15}else if(bt===7){hy=by-bh*.35}else if(bt===15){hx=bx+bw*1.1;hy=by}else if(bt===16){hx=bx;hy=by-bh*.5}else if(bt===17){hx=bx+bw*.1;hy=by-bh*.6}else if(bt===20){hx=bx-bw*.2;hy=by-bh*.3}else if(bt===22){hx=bx;hy=by-bh*.45}else{hx=bx+ri(-3,3);hy=by-bh*.35}
-if(ht===0){v+=Pa('M'+(hx-hr)+' '+(hy+hr*.3)+' Q'+(hx-hr*1.1)+' '+(hy-hr*.6)+' '+hx+' '+(hy-hr*.8)+' Q'+(hx+hr*1.1)+' '+(hy-hr*.6)+' '+(hx+hr)+' '+(hy+hr*.3)+' Q'+(hx+hr*.4)+' '+(hy+hr*.5)+' '+hx+' '+(hy+hr*.4)+' Q'+(hx-hr*.4)+' '+(hy+hr*.5)+' '+(hx-hr)+' '+(hy+hr*.3),br);
-for(s=-1;s<=1;s+=2)v+=Pa('M'+(hx+hr*.6*s)+' '+(hy-hr*.5)+' Q'+(hx+hr*1.2*s)+' '+(hy-hr*1.6)+' '+(hx+hr*.8*s)+' '+(hy-hr*1.9),0,cL,1.5,SL);
-}else if(ht===1){v+=E(hx,hy,hr*1.1,hr*.8,br)+Pa('M'+(hx+hr*.8)+' '+(hy-hr*.15)+' L'+(hx+hr*1.6)+' '+(hy-hr*.25)+' L'+(hx+hr*1.5)+' '+(hy+hr*.15)+' L'+(hx+hr*.8)+' '+(hy+hr*.1),R(c,.6));
-}else if(ht===2){v+=E(hx,hy,hr*.8,hr*.7,br);for(s=-1;s<=1;s+=2)v+=Pa('M'+(hx+hr*.5*s)+' '+(hy+hr*.3)+' Q'+(hx+hr*s)+' '+(hy+hr*.6)+' '+(hx+hr*.7*s)+' '+(hy+hr*1.1),0,cD,1.5,SL);
-}else if(ht===3){v+=Pa('M'+(hx-hr*.9)+' '+(hy+hr*.2)+' Q'+(hx-hr*.95)+' '+(hy-hr*1.2)+' '+hx+' '+(hy-hr*1.3)+' Q'+(hx+hr*.95)+' '+(hy-hr*1.2)+' '+(hx+hr*.9)+' '+(hy+hr*.2)+' Z',br)+E(hx-hr*.15,hy-hr*.7,hr*.3,hr*.2,R(cL,.2));
-}else if(ht===4){v+=Pa('M'+(hx-hr*.7)+' '+(hy+hr*.3)+' L'+(hx-hr*.5)+' '+(hy-hr*.4)+' L'+hx+' '+(hy-hr*1.2)+' L'+(hx+hr*.5)+' '+(hy-hr*.4)+' L'+(hx+hr*.7)+' '+(hy+hr*.3)+' Z',br);
-}else if(ht===5){v+=E(hx,hy,hr*.85,hr,br)+Pa('M'+(hx-hr*.4)+' '+(hy+hr*.1)+' Q'+hx+' '+(hy+hr*.3)+' '+(hx+hr*.4)+' '+(hy+hr*.1),0,R(cD,.2),.6);
-}else if(ht===6){v+=Pa('M'+(hx-hr)+' '+(hy+hr*.2)+' Q'+(hx-hr*.8)+' '+(hy-hr*.8)+' '+hx+' '+(hy-hr*.9)+' Q'+(hx+hr*.8)+' '+(hy-hr*.8)+' '+(hx+hr)+' '+(hy+hr*.2)+' Q'+hx+' '+(hy+hr*.5)+' '+(hx-hr)+' '+(hy+hr*.2),br);
-}else if(ht===7){v+=E(hx,hy-hr*.2,hr*.8,hr*.7,br)+Pa('M'+(hx+hr*.5)+' '+(hy-hr*.1)+' L'+(hx+hr*1.4)+' '+(hy+hr*.1)+' L'+(hx+hr*.5)+' '+(hy+hr*.25),R(cDD,.7));
-}else if(ht===8){v+=E(hx,hy-hr*.3,hr*.85,hr*.65,br);for(s=-1;s<=1;s+=2)v+=Pa('M'+(hx+hr*.4*s)+' '+(hy+hr*.1)+' Q'+(hx+hr*.6*s)+' '+(hy+hr*.7)+' '+(hx+hr*.3*s)+' '+(hy+hr*.9),R(c,.5));
-}else{v+=E(hx,hy-hr*.2,hr*.8,hr*.7,br);for(i=0;i<ri(4,6);i++){var tx=hx+ri(-hr*.5,hr*.5);v+=Pa('M'+tx+' '+(hy+hr*.2)+' Q'+(tx+ri(-4,4))+' '+(hy+hr*.2+ri(4,8))+' '+(tx+ri(-6,6))+' '+(hy+hr*.2+ri(8,14)),0,R(c,rf(.2,.4)),rf(.6,1.3),SL)}}
-if(et===0){for(s=-1;s<=1;s+=2){ex=hx+hr*.35*s;ey=hy-hr*.15;v+=Ci(ex,ey,hr*.22,R(cL,.85))+Ci(ex+s*.5,ey,hr*.13,'#0a0a12')+Ci(ex+s*.8,ey-.6,hr*.06,'#fff','opacity=".9"')}
-}else if(et===1){v+=Ci(hx,hy-hr*.1,hr*.32,R(cL,.85))+Ci(hx,hy-hr*.1,hr*.2,'#0a0a12')+Ci(hx+1,hy-hr*.15,hr*.08,'#fff','opacity=".9"');
-}else if(et===2){for(s=-1;s<=1;s+=2){ex=hx+hr*.45*s;ey=hy-hr*.15;v+=E(ex,ey,hr*.28,hr*.22,R(cL,.7));for(var f=0;f<4;f++){a=f*90*P/180;v+=Ci(ex+Co(a)*hr*.1,ey+Si(a)*hr*.08,hr*.06,R(cDD,.3))}}
-}else if(et===3){for(s=-1;s<=1;s+=2){ex=hx+hr*.3*s;ey=hy-hr*.1;v+=E(ex,ey,hr*.18,hr*.06,cL)+E(ex,ey,hr*.25,hr*.1,R(cL,.3),'filter="url(#'+g('g2')+')"')}
-}else if(et===4){for(i=0;i<ri(5,8);i++){ex=hx+ri(-hr*.7,hr*.7);ey=hy+ri(-hr*.6,hr*.3);var er=rf(.8,2.2);v+=Ci(ex,ey,er,R(cL,.75))+Ci(ex,ey,er*.6,'#0a0a12')+Ci(ex+.3,ey-.3,er*.2,'#fff','opacity=".8"')}
-}else if(et===5){for(s=-1;s<=1;s+=2)v+=E(hx+hr*.3*s,hy,hr*.08,hr*.12,R(cDD,.4));
-}else if(et===6){for(s=-1;s<=1;s+=2){ex=hx+hr*.7*s;ey=hy-hr*.8;v+=Pa('M'+(hx+hr*.2*s)+' '+(hy-hr*.3)+' Q'+(hx+hr*.5*s)+' '+(hy-hr*.6)+' '+ex+' '+ey,0,c,1.5)+Ci(ex,ey,hr*.2,R(cL,.85))+Ci(ex,ey,hr*.12,'#0a0a12')+Ci(ex+s*.5,ey-.5,hr*.05,'#fff','opacity=".9"')}
-}else{for(s=-1;s<=1;s+=2){ex=hx+hr*.3*s;ey=hy-hr*.05;v+=Ci(ex,ey,hr*.18,R(cL,.8))+Ci(ex+s*.3,ey,hr*.1,'#0a0a12')}
-v+=Ci(hx,hy-hr*.55,hr*.22,cL,'opacity=".7" filter="url(#'+g('g2')+')"')+Ci(hx,hy-hr*.55,hr*.14,'#0a0a12');
+
+function _artArch(name) {
+    const n = name.toLowerCase();
+    if (/lobster|pincer|recruit|crusher|snapper|thermidor|crustacean/.test(n)) return 'lobster';
+    if (/\bclaw\b/.test(n) && !/card/.test(n)) return 'lobster';
+    if (/crab|ironshell|ironclad|coconut|hermit/.test(n)) return 'crab';
+    if (/shrimp|krill|mantis|pistol/.test(n)) return 'shrimp';
+    if (/eel|serpent|dragon|wyrm|drake/.test(n)) return 'eel';
+    if (/jelly|prism/.test(n)) return 'jellyfish';
+    if (/squid|cuttl|gloom/.test(n)) return 'squid';
+    if (/kraken|octop|cephalop|maw|charybdis/.test(n)) return 'octopus';
+    if (/nautilus|spiral/.test(n)) return 'nautilus';
+    if (/urchin|spike|ember/.test(n)) return 'urchin';
+    if (/hydra|polyp|anemone/.test(n)) return 'hydra';
+    if (/fish|angler|fin\b|runner|drifter|minnow|scout|remora|wasp/.test(n)) return 'fish';
+    if (/seahorse/.test(n)) return 'seahorse';
+    if (/turtle|bastion|golem|coloss/.test(n)) return 'turtle';
+    if (/coral|barnacle|bloom/.test(n)) return 'coral';
+    if (/whale|leviathan/.test(n)) return 'whale';
+    if (/witch|oracle|caller|chanter|siren|sprite|wisp|diver|pearl/.test(n)) return 'mystic';
+    if (/berserker|duelist|knight|striker|king|emperor|sovereign|monarch|overlord|chosen|sentinel|warden|prime|brood|mother|obsidian|shellbreak|inferno/.test(n)) return 'warrior';
+    if (/larv|swarm|hatch|plankton|spore/.test(n)) return 'swarm';
+    if (/lurk|stalk|hunt|burrow|prowl|crawl/.test(n)) return 'lurker';
+    if (/ink|cloud|veil|murk/.test(n)) return 'squid';
+    if (/worm|siphon|parasit/.test(n)) return 'eel';
+    if (/ray|electric/.test(n)) return 'fish';
+    if (/star(?!light)/.test(n)) return 'starfish';
+    if (/phantom|ghost|shadow|void/.test(n)) return 'lurker';
+    if (/titan|deep ?water|abyssal(?! [a-z]*(?:net|echo|feast|plate|erupt|summon))/.test(n)) return 'whale';
+    if (/reef|tide|tidal|current|storm|gale|maelstrom|tempest/.test(n)) return 'eel';
+    return 'generic';
 }
-if(at===0){for(s=-1;s<=1;s+=2){var ax=bx+bw*.5*s,ay=by-bh*.05;v+=Pa('M'+(bx+bw*.25*s)+' '+ay+' Q'+(ax+3*s)+' '+(ay-5)+' '+ax+' '+(ay-3),0,bd,3,SL)+Pa('M'+ax+' '+(ay-3)+' Q'+(ax+5*s)+' '+(ay-12)+' '+(ax+2*s)+' '+(ay-15),bd,cD,.5)+Pa('M'+ax+' '+(ay-3)+' Q'+(ax+7*s)+' '+(ay-7)+' '+(ax+4*s)+' '+(ay-13),br,cD,.5)}
-}else if(at===1){for(i=0;i<ri(4,6);i++){var sx=bx+ri(-bw*.3,bw*.3),sy=by+bh*.3,tp='M'+sx+' '+sy,ty=sy;for(s=0;s<ri(3,5);s++){ty+=ri(5,9);tp+=' Q'+(sx+ri(-7,7))+' '+(ty-ri(2,4))+' '+(sx+ri(-4,4))+' '+ty}v+=Pa(tp,0,R(c,rf(.2,.4)),rf(.8,2),SL)}
-}else if(at===2){for(s=-1;s<=1;s+=2)v+=Pa('M'+(bx+bw*.15*s)+' '+(by-bh*.2)+' Q'+(bx+bw*.55*s)+' '+(by-bh*.55)+' '+(bx+bw*.7*s)+' '+(by-bh*.15)+' Q'+(bx+bw*.45*s)+' '+(by+bh*.05)+' '+(bx+bw*.15*s)+' '+by,R(c,.2),R(cL,.2),.4);
-}else if(at===3){v+=Pa('M'+(bx-bw*.1)+' '+(by-bh*.3)+' L'+bx+' '+(by-bh*.7)+' L'+(bx+bw*.15)+' '+(by-bh*.25),R(c,.35));
-for(s=-1;s<=1;s+=2)v+=Pa('M'+(bx+bw*.2*s)+' '+(by+bh*.15)+' Q'+(bx+bw*.5*s)+' '+(by+bh*.4)+' '+(bx+bw*.35*s)+' '+(by+bh*.55),R(c,.25));
-}else if(at===4){v+=Pa('M'+(bx-bw*.3)+' '+(by+bh*.25)+' Q'+(bx-bw*.65)+' '+(by+bh*.5)+' '+(bx-bw*.8)+' '+(by+bh*.15)+' Q'+(bx-bw*.9)+' '+(by-bh*.1)+' '+(bx-bw*.75)+' '+(by-bh*.35),0,bd,2,SL);
-v+=Pa('M'+(bx-bw*.75)+' '+(by-bh*.35)+' L'+(bx-bw*.85)+' '+(by-bh*.55)+' L'+(bx-bw*.7)+' '+(by-bh*.4),R(cL,.5));
-}else if(at===5){for(i=0;i<ri(5,7);i++){lx=bx-bw*.4+i*bw*.16;s=i%2===0?1:-1;v+=Pa('M'+lx+' '+(by+bh*.3)+' L'+(lx+3*s)+' '+(by+bh*.5)+' L'+(lx+s)+' '+(by+bh*.75),0,R(c,.45),1,SL)}
-}else if(at===6){for(i=0;i<ri(3,5);i++){var ox=bx+ri(-bw*.6,bw*.6),oy=by+ri(-bh*.5,-bh*.2),or=rf(1.5,3.5);v+=Ci(ox,oy,or,R(cL,.4),'filter="url(#'+g('g2')+')"')+Ci(ox,oy,or*.5,R(cL,.7))}
-}else if(at===7){for(i=0;i<ri(4,7);i++){var wx=bx+ri(-bw*.5,bw*.5),wy=by+ri(-bh*.3,bh*.4);v+=Pa('M'+wx+' '+wy+' Q'+(wx+ri(-8,8))+' '+(wy-ri(5,12))+' '+(wx+ri(-5,5))+' '+(wy-ri(10,20)),0,R(cL,rf(.1,.25)),rf(.4,1),SL)}
-}else if(at===8){for(s=-1;s<=1;s+=2)v+=Pa('M'+(bx+bw*.25*s)+' '+(by-bh*.1)+' L'+(bx+bw*.7*s)+' '+(by-bh*.5)+' L'+(bx+bw*.85*s)+' '+(by-bh*.35)+' L'+(bx+bw*.3*s)+' '+(by+bh*.05)+' Z',R(c,.35),R(cL,.25),.5);
-}else if(at===9){for(s=-1;s<=1;s+=2){v+=Pa('M'+(hx+hr*.3*s)+' '+(hy-hr*.5)+' Q'+(hx+hr*1.5*s)+' '+(hy-hr*2)+' '+(hx+hr*2*s)+' '+(hy-hr*2.2),0,R(c,.4),.8,SL)+Ci(hx+hr*2*s,hy-hr*2.2,1.2,R(cL,.5))}
-}else if(at===10){for(i=-2;i<=2;i++){tx=bx-bw*.6+i*2;v+=E(tx,by+bh*.2+Math.abs(i)*1.5,3,6+ri(0,3),bd,'opacity=".4" transform="rotate('+i*15+' '+tx+' '+(by+bh*.2)+')"')}
-}else{for(s=-1;s<=1;s+=2)for(i=0;i<ri(2,3);i++){sx=bx+bw*(.2+i*.12)*s;sy=by-bh*(.2+i*.1);v+=Pa('M'+sx+' '+sy+' L'+(sx+3*s)+' '+(sy-ri(6,11))+' L'+(sx+s)+' '+sy,R(c,.4))}}
-if(tt===0){for(i=0;i<ri(6,10);i++){x=bx+ri(-bw*.4,bw*.4);var y=by+ri(-bh*.3,bh*.3);v+=E(x,y,1.8,1.2,R(cL,rf(.06,.14)),'transform="rotate('+ri(-15,15)+' '+x+' '+y+')"')}
-}else if(tt===2){for(i=0;i<ri(3,5);i++){x=bx+ri(-bw*.3,bw*.3);y=by+ri(-bh*.2,bh*.2);v+='<rect x="'+(x-3)+'" y="'+(y-2)+'" width="6" height="4" rx="1" fill="'+R(cL,rf(.06,.12))+'" transform="rotate('+ri(-20,20)+' '+x+' '+y+')"/>'}
-}else if(tt===3){for(i=0;i<ri(10,16);i++){x=bx+ri(-bw*.4,bw*.4);y=by+ri(-bh*.3,bh*.3);v+=Li(x,y,x+ri(-2,2),y-ri(2,5),R(c,rf(.1,.25)),.5)}
-}else if(tt===4){for(i=0;i<ri(3,5);i++){x=bx+ri(-bw*.3,bw*.3);y=by+ri(-bh*.2,bh*.2);s=ri(3,6);v+='<polygon points="'+x+','+(y-s)+' '+(x+s*.7)+','+y+' '+x+','+(y+s*.5)+' '+(x-s*.7)+','+y+'" fill="'+R(cL,rf(.05,.12))+'"/>'}
-}else if(tt===5){v+=E(bx,by,bw*.5,bh*.4,R(cL,.06),'filter="url(#'+g('gl')+')"')
-}else if(tt===6){for(i=0;i<ri(3,5);i++){x=bx+ri(-bw*.3,bw*.3);y=by+ri(-bh*.1,bh*.3);v+=Pa('M'+x+' '+y+' Q'+(x+ri(-3,3))+' '+(y-ri(3,7))+' '+(x+ri(-2,2))+' '+(y-ri(6,12)),0,R(c,rf(.15,.3)),rf(.8,1.5),SL)}
-}else if(tt===7){for(i=0;i<ri(4,6);i++){x=bx+ri(-bw*.4,bw*.4);y=by+ri(-bh*.3,bh*.1);v+=Pa('M'+(x-2)+' '+y+' Q'+x+' '+(y-ri(5,10))+' '+(x+2)+' '+y,R(cL,rf(.08,.18)))}}
-if(fa<4){if(fa===0){for(i=0;i<ri(3,5);i++){x=bx+ri(-bw*.5,bw*.5);y=by+ri(-bh*.4,bh*.3);v+=Ci(x,y,rf(.6,1.8),cL,'opacity="'+rf(.2,.5)+'"')}
-}else if(fa===1){for(i=0;i<ri(2,4);i++){x=bx+ri(-bw*.3,bw*.3);y=by+ri(-bh*.2,bh*.2);v+=Pa('M'+x+' '+y+' L'+(x+ri(-3,3))+' '+(y+ri(-4,4))+' L'+(x+ri(-3,3))+' '+(y+ri(-4,4)),0,R(cL,rf(.15,.3)),.6)}
-}else if(fa===2){for(i=0;i<ri(4,7);i++){x=ri(5,115);y=ri(5,90);v+='<rect x="'+x+'" y="'+y+'" width="'+rf(.8,2)+'" height="'+rf(.8,2)+'" fill="'+R(cL,rf(.08,.2))+'" transform="rotate('+ri(0,45)+' '+x+' '+y+')"/>'}
-}else{for(i=0;i<ri(3,5);i++){x=bx+ri(-bw*.4,bw*.4);y=by-bh*.3-ri(0,5);v+=Pa('M'+(x-2)+' '+y+' Q'+x+' '+(y-ri(5,10))+' '+(x+2)+' '+y,R(cL,rf(.08,.18)))}}}
-if(fb>=4){if(fb===4){for(i=0;i<ri(2,3);i++){var ap='M'+(bx+ri(-bw*.3,bw*.3))+' '+(by+ri(-bh*.3,bh*.1));for(s=0;s<3;s++)ap+=' L'+(bx+ri(-bw*.5,bw*.5))+' '+(by+ri(-bh*.5,bh*.3));v+=Pa(ap,0,R(cL,rf(.15,.35)),.5)}
-}else if(fb===5){for(i=0;i<ri(3,5);i++){var dx=bx+ri(-bw*.3,bw*.3),dy=by+bh*.3;v+=Li(dx,dy,dx+ri(-1,1),dy+ri(5,12),R(c,rf(.15,.3)),rf(.6,1.2))+Ci(dx+ri(-1,1),dy+ri(7,14),rf(.5,1.2),R(c,rf(.15,.3)))}
-}else if(fb===6){v+=E(hx,hy-hr*1.2,hr*.9,hr*.25,'none','stroke="'+R(cL,.3)+'" stroke-width="1"')+E(hx,hy-hr*1.2,hr*1.1,hr*.3,'none','stroke="'+R(cL,.15)+'" stroke-width=".5" filter="url(#'+g('g2')+')"');
-}else{for(i=0;i<ri(2,4);i++){x=bx+ri(-bw*.25,bw*.25);y=by+ri(-bh*.15,bh*.15);v+=Pa('M'+x+' '+y+' Q'+(x+ri(3,6))+' '+(y-ri(2,5))+' '+(x+ri(1,3))+' '+(y-ri(4,8)),0,R(cL,.15),.8,SL)}}}
-/* surface patterns on body */
-if(pt===0){for(i=0;i<ri(4,7);i++){y=by-bh*.3+i*bh*.1;v+=Pa('M'+(bx-bw*.4)+' '+y+' Q'+(bx+ri(-3,3))+' '+(y-ri(1,3))+' '+(bx+bw*.4)+' '+y,0,R(cL,rf(.06,.14)),.5)}}
-else if(pt===1){for(i=0;i<ri(6,10);i++){x=bx+ri(-bw*.35,bw*.35);y=by+ri(-bh*.3,bh*.25);v+=Ci(x,y,rf(1,3),R(cDD,rf(.08,.2)))}}
-else if(pt===2){for(i=0;i<ri(5,8);i++){x=bx+ri(-bw*.3,bw*.3);y=by+ri(-bh*.25,bh*.2);var sh=ri(2,5);v+='<polygon points="'+x+','+(y-sh)+' '+(x+sh)+','+y+' '+x+','+(y+sh)+' '+(x-sh)+','+y+'" fill="'+R(cL,rf(.04,.1))+'" transform="rotate('+ri(0,45)+' '+x+' '+y+')"/>'}}
-else if(pt===3){for(i=0;i<ri(3,5);i++){a=(ri(0,360))*P/180;l=bw*rf(.2,.5);v+=Pa('M'+(bx+Co(a)*l*.3).toFixed(1)+' '+(by+Si(a)*l*.3).toFixed(1)+' L'+(bx+Co(a)*l).toFixed(1)+' '+(by+Si(a)*l*.7).toFixed(1),0,R(cL,rf(.1,.22)),rf(1.5,3),SL)}}
-else if(pt===4){for(i=0;i<ri(4,6);i++){x=bx+ri(-bw*.3,bw*.3);y=by+ri(-bh*.2,bh*.15);v+=Pa('M'+(x-ri(2,4))+' '+y+' Q'+x+' '+(y-ri(3,6))+' '+(x+ri(2,4))+' '+y,R(cDD,rf(.06,.15)))}}
-else if(pt===5){for(i=0;i<ri(3,5);i++){a=ri(0,360)*P/180;var vl=bw*rf(.15,.4),vx=bx+Co(a)*vl,vy=by+Si(a)*vl*.7;v+=Pa('M'+bx+' '+by+' Q'+(bx+Co(a+.5)*vl*.5).toFixed(1)+' '+(by+Si(a+.5)*vl*.5).toFixed(1)+' '+vx.toFixed(1)+' '+vy.toFixed(1),0,R(c,rf(.08,.18)),rf(.3,.8),SL)}}
-else if(pt===6){for(i=0;i<ri(4,7);i++){x=bx-bw*.3+i*bw*.12;for(s=0;s<ri(2,3);s++){y=by-bh*.2+s*bh*.15;v+=Ci(x+ri(-1,1),y+ri(-1,1),rf(.5,1.2),R(cL,rf(.06,.15)))}}}
-else if(pt===7){for(i=0;i<ri(3,5);i++){x=bx+ri(-bw*.3,bw*.3);y=by+ri(-bh*.2,bh*.2);v+=Pa('M'+x+' '+(y-2)+' L'+(x+ri(2,5))+' '+(y+ri(2,5))+' L'+(x-ri(2,5))+' '+(y+ri(1,4))+' Z',R(cL,rf(.04,.1)))}}
-else if(pt===8){for(i=0;i<ri(5,8);i++){x=bx+ri(-bw*.35,bw*.35);y=by+ri(-bh*.25,bh*.2);v+=E(x,y,rf(1.5,3),rf(1,2),R(cDD,rf(.06,.14)),'transform="rotate('+ri(-30,30)+' '+x+' '+y+')"')}}
-else{for(i=0;i<ri(3,5);i++){x=bx+ri(-bw*.25,bw*.25);y=by+ri(-bh*.15,bh*.15);v+=Ci(x,y,rf(2,4),'none','stroke="'+R(cL,rf(.08,.18))+'" stroke-width="'+rf(.3,.6)+'"')}}
-/* attribute aura */
-var atr=card.attribute||'WATER';
-if(atr==='WATER'){for(i=0;i<ri(2,3);i++){wx=ri(10,110);wy=ri(60,90);v+=Pa('M'+wx+' '+wy+' Q'+(wx+ri(8,15))+' '+(wy-ri(3,6))+' '+(wx+ri(15,25))+' '+wy,0,R('#4aa8e0',rf(.1,.2)),rf(.6,1.2),SL)}}
-else if(atr==='FIRE'){for(i=0;i<ri(3,5);i++){x=bx+ri(-bw*.5,bw*.5);y=by+bh*.3+ri(0,5);v+=Pa('M'+x+' '+y+' Q'+(x+ri(-3,3))+' '+(y-ri(5,12))+' '+(x+ri(-2,2))+' '+(y-ri(10,18)),0,R('#e85040',rf(.08,.18)),rf(.4,1),SL)}}
-else if(atr==='EARTH'){for(i=0;i<ri(2,4);i++){x=bx+ri(-bw*.6,bw*.6);y=by+bh*.4+ri(0,5);sh=ri(2,4);v+='<polygon points="'+x+','+(y-sh)+' '+(x+sh)+','+y+' '+x+','+(y+sh*.5)+' '+(x-sh)+','+y+'" fill="'+R('#c0a040',rf(.1,.2))+'"/>'}}
-else if(atr==='WIND'){for(i=0;i<ri(2,3);i++){x=ri(8,80);y=ri(10,40);v+=Pa('M'+x+' '+y+' Q'+(x+ri(10,20))+' '+(y+ri(-5,5))+' '+(x+ri(25,40))+' '+(y+ri(-3,3)),0,R('#40c878',rf(.08,.15)),rf(.3,.7),SL)}}
-else if(atr==='LIGHT'){for(i=0;i<ri(3,5);i++){a=ri(0,360)*P/180;l=ri(25,45);v+=Li((60+Co(a)*5).toFixed(0),(50+Si(a)*5).toFixed(0),(60+Co(a)*l).toFixed(0),(50+Si(a)*l*.8).toFixed(0),R('#f0d060',rf(.04,.1)),rf(.3,.6))}}
-else if(atr==='DARK'){for(i=0;i<ri(2,4);i++){x=ri(10,110);y=ri(10,85);v+=Ci(x,y,rf(4,10),R('#6c3483',rf(.04,.08)),'filter="url(#'+g('g2')+')"')}}
-for(i=0;i<ri(4,7);i++)v+=Ci(ri(5,115),ri(5,90),rf(.3,.8),R(cL,rf(.1,.25)));
-for(i=0;i<ri(3,5);i++){var bx2=ri(5,115),by2=ri(15,75),br2=rf(.8,2);v+=Ci(bx2,by2,br2,R(cL,.04),'stroke="'+R(cL,rf(.08,.15))+'" stroke-width=".4"')+Ci(bx2-br2*.2,by2-br2*.3,br2*.2,R('#ffffff',.3))}
-}else if(card.type==='spell'){
-var sx=ri(50,66),sy=ri(38,50);
-defs+='<radialGradient id="'+g('sp')+'" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="'+cL+'" stop-opacity=".6"/><stop offset="50%" stop-color="'+c+'" stop-opacity=".3"/><stop offset="100%" stop-color="'+cD+'" stop-opacity="0"/></radialGradient>';
-var ce=id%28,be=((id*7+3)>>>0)%8,ae=((id*13+5)>>>0)%6,sp2='url(#'+g('sp')+')',cr=ri(12,18);
-if(be===0){for(a=0;a<360;a+=ri(12,22)){r=a*P/180;l=ri(28,42);v+=Li(sx,sy,sx+Co(r)*l,sy+Si(r)*l,R(cL,rf(.06,.15)),rf(.3,1))}
-}else if(be===1){var sp3='M'+sx+' '+sy;for(t=0;t<6;t+=.12){r=t*5.5;sp3+=' L'+(sx+Co(t*2)*r).toFixed(1)+' '+(sy+Si(t*2)*r).toFixed(1)}v+=Pa(sp3,0,R(c,.2),.8);
-}else if(be===2){for(i=0;i<ri(5,8);i++){a=rr()*P*2;d=ri(35,50);v+=Pa('M'+(sx+Co(a)*d).toFixed(1)+' '+(sy+Si(a)*d).toFixed(1)+' Q'+(sx+Co(a+.5)*d*.4).toFixed(1)+' '+(sy+Si(a+.5)*d*.4).toFixed(1)+' '+sx+' '+sy,0,R(c,rf(.1,.2)),rf(.5,1.2))}
-}else if(be===3){for(i=1;i<=4;i++)v+=Ci(sx,sy,i*9,'none','stroke="'+R(c,.25-i*.04)+'" stroke-width="'+(1.5-i*.2)+'" stroke-dasharray="'+(2+i)+' '+(1+i)+'"');
-}else if(be===4){for(i=0;i<ri(12,18);i++){dx=ri(5,115);dy=ri(5,85);v+=Li(dx,dy,dx+ri(-1,1),dy+ri(3,7),R(c,rf(.08,.2)),.5)}
-}else if(be===5){for(i=0;i<ri(4,6);i++){sx2=sx+ri(-20,20);v+=Pa('M'+sx2+' '+(sy+ri(15,30))+' Q'+(sx2+ri(-10,10))+' '+(sy+ri(-5,10))+' '+(sx2+ri(-8,8))+' '+(sy-ri(10,25)),0,R(c,rf(.06,.15)),rf(1,3),SL)}
-}else if(be===6){for(i=0;i<ri(6,9);i++){var rx=ri(10,110),ry2=ri(10,90),sh=['M0,-3 L2,0 L0,3 L-2,0 Z','M-2,-2 L2,-2 L2,2 L-2,2 Z','M0,-3 L3,2 L-3,2 Z'][i%3];v+=Pa(sh,0,R(cL,rf(.1,.25)),.5,'transform="translate('+rx+','+ry2+') rotate('+ri(0,45)+')"')}
-}else{for(i=0;i<3;i++){r=12+i*10;for(a=0;a<6;a++){var a1=(a*60+i*15)*P/180,a2=((a+1)*60+i*15)*P/180;v+=Li((sx+Co(a1)*r).toFixed(1),(sy+Si(a1)*r).toFixed(1),(sx+Co(a2)*r).toFixed(1),(sy+Si(a2)*r).toFixed(1),R(c,.12-i*.02),.5)}}}
-if(ce===0){v+='<polygon points="'+sx+','+(sy-cr)+' '+(sx+cr*.4)+','+(sy-cr*.3)+' '+(sx+cr*.35)+','+(sy+cr*.5)+' '+(sx-cr*.35)+','+(sy+cr*.5)+' '+(sx-cr*.4)+','+(sy-cr*.3)+'" fill="'+sp2+'" stroke="'+R(cL,.4)+'" stroke-width=".8"/>'+Li(sx,sy-cr,sx,sy+cr*.5,R(cL,.2),.4);
-}else if(ce===1){v+=Ci(sx,sy,cr,sp2,'stroke="'+R(cL,.3)+'" stroke-width=".8"')+Ci(sx-cr*.2,sy-cr*.25,cr*.3,R(cL,.2))+Ci(sx,sy,cr*.5,R(cL,.08),'filter="url(#'+g('g2')+')"');
-}else if(ce===2){v+=Pa('M'+sx+' '+(sy+cr)+' Q'+(sx-cr*.6)+' '+sy+' '+(sx-cr*.3)+' '+(sy-cr*.5)+' Q'+(sx-cr*.1)+' '+(sy-cr*.2)+' '+sx+' '+(sy-cr)+' Q'+(sx+cr*.1)+' '+(sy-cr*.2)+' '+(sx+cr*.3)+' '+(sy-cr*.5)+' Q'+(sx+cr*.6)+' '+sy+' '+sx+' '+(sy+cr),sp2)+Pa('M'+sx+' '+(sy+cr*.5)+' Q'+(sx-cr*.2)+' '+sy+' '+sx+' '+(sy-cr*.5)+' Q'+(sx+cr*.2)+' '+sy+' '+sx+' '+(sy+cr*.5),R(cL,.25));
-}else if(ce===3){v+=Ci(sx,sy,cr,'none','stroke="'+R(cL,.35)+'" stroke-width="1.5"')+Ci(sx,sy,cr-4,'none','stroke="'+R(c,.2)+'" stroke-width=".6" stroke-dasharray="3 2"');
-for(a=0;a<360;a+=45){r=a*P/180;v+=Ci(sx+Co(r)*cr,sy+Si(r)*cr,1.5,cL,'opacity="'+rf(.3,.6)+'"')}v+=Ci(sx,sy,3,cL,'opacity=".5" filter="url(#'+g('g2')+')"');
-}else if(ce===4){v+='<rect x="'+(sx-cr*.6)+'" y="'+(sy-cr*.7)+'" width="'+(cr*1.2)+'" height="'+(cr*1.4)+'" rx="1" fill="'+R(cD,.5)+'" stroke="'+R(cL,.3)+'" stroke-width=".8"/>'+Li(sx-cr*.6,sy-cr*.7,sx-cr*.6,sy+cr*.7,R(cL,.3),1.5);
-for(i=1;i<=4;i++)v+=Li(sx-cr*.4,sy-cr*.5+i*cr*.25,sx+cr*.4,sy-cr*.5+i*cr*.25,R(cL,.1),.4);v+=Ci(sx,sy,cr*.25,cL,'opacity=".4" filter="url(#'+g('g2')+')"');
-}else if(ce===5){v+=Pa('M'+(sx-cr*.3)+' '+(sy-cr*.2)+' L'+(sx-cr*.4)+' '+(sy+cr*.6)+' Q'+sx+' '+(sy+cr*.8)+' '+(sx+cr*.4)+' '+(sy+cr*.6)+' L'+(sx+cr*.3)+' '+(sy-cr*.2),R(c,.3),R(cL,.3),.6);
-v+='<rect x="'+(sx-cr*.15)+'" y="'+(sy-cr*.55)+'" width="'+(cr*.3)+'" height="'+(cr*.4)+'" fill="'+R(cD,.4)+'" stroke="'+R(cL,.2)+'" stroke-width=".5"/>'+E(sx,sy+cr*.3,cr*.3,cr*.2,cL,'opacity=".3" filter="url(#'+g('g2')+')"');
-}else if(ce===6){v+=Pa('M'+(sx-cr)+' '+sy+' Q'+sx+' '+(sy-cr*.8)+' '+(sx+cr)+' '+sy+' Q'+sx+' '+(sy+cr*.8)+' '+(sx-cr)+' '+sy,R(c,.2),R(cL,.35),.8)+Ci(sx,sy,cr*.35,R(cL,.6))+Ci(sx,sy,cr*.2,'#0a0a12')+Ci(sx+1,sy-1,cr*.07,'#fff','opacity=".9"');
-}else if(ce===7){var sP='';for(i=0;i<10;i++){a=(i*36-90)*P/180;r=i%2===0?cr:cr*.4;sP+=(i===0?'M':'L')+(sx+Co(a)*r).toFixed(1)+' '+(sy+Si(a)*r).toFixed(1)}
-v+=Pa(sP+' Z',sp2,R(cL,.35),.6)+Ci(sx,sy,cr*.2,cL,'opacity=".5" filter="url(#'+g('g2')+')"');
-}else if(ce===8){v+=Ci(sx,sy,cr,R(c,.25),'stroke="'+R(cL,.3)+'" stroke-width=".6"')+Ci(sx+cr*.3,sy-cr*.15,cr*.75,'url(#'+g('bg')+')')+Ci(sx-cr*.15,sy-cr*.1,cr*.12,cL,'opacity=".4" filter="url(#'+g('g2')+')"');
-}else if(ce===9){for(i=0;i<5;i++){r=5+i*(cr*.22);v+='<circle cx="'+sx+'" cy="'+sy+'" r="'+r+'" stroke="'+R(c,.3-i*.04)+'" fill="none" stroke-width="'+(2-i*.25)+'" stroke-dasharray="'+(3+i*2)+' '+(2+i)+'"/>'}v+=Ci(sx,sy,3,R(cDD,.5));
-}else if(ce===10){v+=Li(sx,sy+cr,sx,sy-cr,R(cL,.6),2)+Pa('M'+(sx-1.5)+' '+(sy-cr)+' L'+sx+' '+(sy-cr-4)+' L'+(sx+1.5)+' '+(sy-cr),R(cL,.5))+Li(sx-cr*.4,sy+cr*.3,sx+cr*.4,sy+cr*.3,R(cL,.5),1.5)+Ci(sx,sy+cr+2,2,R(c,.4));
-}else if(ce===11){v+=Pa('M'+sx+' '+(sy-cr)+' L'+(sx+cr*.8)+' '+(sy-cr*.4)+' L'+(sx+cr*.7)+' '+(sy+cr*.4)+' L'+sx+' '+(sy+cr)+' L'+(sx-cr*.7)+' '+(sy+cr*.4)+' L'+(sx-cr*.8)+' '+(sy-cr*.4)+' Z',R(c,.25),R(cL,.35),1)+Ci(sx,sy,cr*.15,cL,'opacity=".4"');
-}else if(ce===12){v+=Ci(sx,sy,cr,'none','stroke="'+R(cL,.35)+'" fill="'+R(c,.1)+'" stroke-width="1.2"');
-for(a=0;a<360;a+=30){r=a*P/180;v+=Li(sx+Co(r)*cr*.8,sy+Si(r)*cr*.8,sx+Co(r)*cr*.95,sy+Si(r)*cr*.95,R(cL,.35),.6)}
-v+=Li(sx,sy,sx+cr*.4,sy-cr*.5,R(cL,.6),1)+Li(sx,sy,sx-cr*.15,sy+cr*.6,R(cL,.4),.7)+Ci(sx,sy,1.5,cL,'opacity=".6"');
-}else if(ce===13){v+=Li(sx-cr*.3,sy,sx+cr*.7,sy,R(cL,.5),1.5)+Ci(sx-cr*.3,sy,cr*.35,'none','stroke="'+R(cL,.4)+'" stroke-width="1.2"')+Li(sx+cr*.4,sy,sx+cr*.4,sy+cr*.2,R(cL,.4),1)+Li(sx+cr*.6,sy,sx+cr*.6,sy+cr*.15,R(cL,.4),1);
-}else if(ce===14){v+=Li(sx,sy+cr,sx,sy-cr*.2,R(cD,.5),2.5);for(i=0;i<3;i++){ty=sy-cr*.1-i*cr*.35;tw=cr*(.7-i*.15);v+=Pa('M'+(sx-tw)+' '+(ty+cr*.2)+' Q'+sx+' '+(ty-cr*.3)+' '+(sx+tw)+' '+(ty+cr*.2),R(c,.25-i*.05))}
-}else if(ce===15){v+=E(sx,sy+cr*.15,cr*.4,cr*.35,R(c,.2),'stroke="'+R(cL,.15)+'" stroke-width=".5"');
-v+=Pa('M'+(sx-cr*.35)+' '+(sy+cr*.5)+' L'+(sx-cr*.3)+' '+(sy-cr*.1)+' L'+(sx-cr*.15)+' '+(sy-cr*.7)+' M'+(sx-cr*.05)+' '+(sy-cr*.15)+' L'+(sx-cr*.05)+' '+(sy-cr*.85)+' M'+(sx+cr*.05)+' '+(sy-cr*.15)+' L'+(sx+cr*.05)+' '+(sy-cr*.9)+' M'+(sx+cr*.2)+' '+(sy-cr*.1)+' L'+(sx+cr*.2)+' '+(sy-cr*.75),0,R(cL,.4),1.5,SL);
-v+=Ci(sx,sy+cr*.1,cr*.15,cL,'opacity=".3" filter="url(#'+g('g2')+')"');
-}else if(ce===16){v+=E(sx,sy,cr*.6,cr*.85,R(cL,.1),'stroke="'+R(cL,.35)+'" stroke-width="1.2"')+E(sx,sy,cr*.7,cr*.95,'none','stroke="'+R(c,.25)+'" stroke-width="2"')+E(sx-cr*.15,sy-cr*.2,cr*.15,cr*.3,R(cL,.15));
-}else if(ce===17){for(i=0;i<3;i++){wy=sy-cr*.3+i*cr*.35;v+=Pa('M'+(sx-cr)+' '+wy+' Q'+(sx-cr*.5)+' '+(wy-cr*.3)+' '+sx+' '+wy+' Q'+(sx+cr*.5)+' '+(wy+cr*.3)+' '+(sx+cr)+' '+wy,0,R(c,.3-i*.06),1.5-i*.3)}
-for(i=0;i<ri(3,5);i++)v+=Ci(sx+ri(-cr,cr),sy+ri(-cr*.5,cr*.3),rf(.4,1),R(cL,rf(.15,.3)));
-}else if(ce===18){v+=Pa('M'+(sx-cr*.7)+' '+(sy+cr*.3)+' L'+(sx-cr*.6)+' '+(sy-cr*.3)+' L'+(sx-cr*.25)+' '+sy+' L'+sx+' '+(sy-cr*.6)+' L'+(sx+cr*.25)+' '+sy+' L'+(sx+cr*.6)+' '+(sy-cr*.3)+' L'+(sx+cr*.7)+' '+(sy+cr*.3)+' Z',R(c,.3),R(cL,.4),.8);
-v+=Ci(sx,sy-cr*.6,2,cL,'opacity=".6"')+'<rect x="'+(sx-cr*.7)+'" y="'+(sy+cr*.2)+'" width="'+(cr*1.4)+'" height="'+(cr*.15)+'" fill="'+R(cL,.15)+'"/>';
-}else if(ce===19){v+=Pa('M'+(sx-cr*.5)+' '+(sy+cr*.1)+' Q'+(sx-cr*.55)+' '+(sy-cr*.6)+' '+sx+' '+(sy-cr*.7)+' Q'+(sx+cr*.55)+' '+(sy-cr*.6)+' '+(sx+cr*.5)+' '+(sy+cr*.1)+' Q'+(sx+cr*.3)+' '+(sy+cr*.4)+' '+sx+' '+(sy+cr*.35)+' Q'+(sx-cr*.3)+' '+(sy+cr*.4)+' '+(sx-cr*.5)+' '+(sy+cr*.1),R(c,.25),R(cL,.3),.7);
-for(s=-1;s<=1;s+=2){v+=E(sx+cr*.2*s,sy-cr*.15,cr*.15,cr*.12,R(cDD,.5))+Ci(sx+cr*.2*s,sy-cr*.15,cr*.06,cL,'opacity=".5" filter="url(#'+g('g2')+')"')}
-v+=Pa('M'+(sx-cr*.25)+' '+(sy+cr*.2)+' Q'+sx+' '+(sy+cr*.35)+' '+(sx+cr*.25)+' '+(sy+cr*.2),0,R(cDD,.2),.5);
-}else if(ce===20){/* anchor */
-v+=Li(sx,sy-cr,sx,sy+cr*.6,R(cL,.5),2)+Pa('M'+(sx-cr*.4)+' '+(sy+cr*.4)+' Q'+sx+' '+(sy+cr*.8)+' '+(sx+cr*.4)+' '+(sy+cr*.4),0,R(cL,.4),1.5,SL);
-v+=Pa('M'+(sx-cr*.3)+' '+(sy-cr*.7)+' L'+(sx+cr*.3)+' '+(sy-cr*.7),0,R(cL,.4),1.5,SL)+Ci(sx,sy-cr,cr*.15,R(cL,.3));
-}else if(ce===21){/* trident */
-v+=Li(sx,sy+cr,sx,sy-cr*.4,R(cL,.5),2);for(s=-1;s<=1;s++){v+=Li(sx+s*cr*.35,sy-cr,sx+s*cr*.35*.3,sy-cr*.4,R(cL,.45),1.5);v+=Pa('M'+(sx+s*cr*.35)+' '+(sy-cr)+' L'+(sx+s*cr*.35)+' '+(sy-cr-3),R(cL,.3))}
-}else if(ce===22){/* hourglass */
-v+=Pa('M'+(sx-cr*.5)+' '+(sy-cr)+' L'+(sx+cr*.5)+' '+(sy-cr)+' L'+sx+' '+sy+' L'+(sx+cr*.5)+' '+(sy+cr)+' L'+(sx-cr*.5)+' '+(sy+cr)+' L'+sx+' '+sy+' Z',R(c,.2),R(cL,.35),.8);
-v+=E(sx,sy-cr*.5,cr*.2,cr*.15,R(cL,.15))+E(sx,sy+cr*.5,cr*.2,cr*.15,R(cL,.15));
-}else if(ce===23){/* DNA helix */
-for(i=0;i<8;i++){t=i*.125;wy=sy-cr+i*cr*.3;wx=sx+Co(t*P*4)*cr*.4;var wx2=sx-Co(t*P*4)*cr*.4;v+=Ci(wx,wy,1.5,R(cL,.4))+Ci(wx2,wy,1.5,R(cL,.4))+Li(wx,wy,wx2,wy,R(c,.1),.3)}
-}else if(ce===24){/* moon crescent */
-v+=Ci(sx,sy,cr*.7,R(c,.3),'stroke="'+R(cL,.3)+'" stroke-width=".8"')+Ci(sx+cr*.25,sy-cr*.15,cr*.55,'url(#'+g('bg')+')');
-for(i=0;i<ri(3,5);i++){a=ri(150,300)*P/180;d=cr*rf(.8,1.2);v+=Ci((sx+Co(a)*d).toFixed(1),(sy+Si(a)*d).toFixed(1),rf(.4,.8),R(cL,rf(.2,.4)))}
-}else if(ce===25){/* wave pattern */
-for(i=0;i<4;i++){wy=sy-cr*.6+i*cr*.4;v+=Pa('M'+(sx-cr*1.2)+' '+wy+' Q'+(sx-cr*.6)+' '+(wy-cr*.2)+' '+sx+' '+wy+' Q'+(sx+cr*.6)+' '+(wy+cr*.2)+' '+(sx+cr*1.2)+' '+wy,0,R(cL,.25-i*.04),1-i*.15)}
-v+=Ci(sx,sy,cr*.2,R(cL,.2),'filter="url(#'+g('g2')+')"');
-}else if(ce===26){/* skull/danger */
-v+=E(sx,sy-cr*.15,cr*.55,cr*.65,R(c,.25),'stroke="'+R(cL,.3)+'" stroke-width=".8"');
-for(s=-1;s<=1;s+=2)v+=E(sx+cr*.2*s,sy-cr*.25,cr*.12,cr*.15,R(cDD,.5));
-v+=Pa('M'+(sx-cr*.15)+' '+(sy+cr*.15)+' L'+sx+' '+(sy+cr*.25)+' L'+(sx+cr*.15)+' '+(sy+cr*.15),0,R(cDD,.3),.5);
-v+=Pa('M'+(sx-cr*.25)+' '+(sy+cr*.5)+' L'+sx+' '+(sy+cr*.35)+' L'+(sx+cr*.25)+' '+(sy+cr*.5),R(cDD,.3));
-}else{/* ce===27: compass rose */
-for(a=0;a<360;a+=90){r=a*P/180;v+=Pa('M'+sx+' '+sy+' L'+(sx+Co(r)*cr).toFixed(1)+' '+(sy+Si(r)*cr).toFixed(1),0,R(cL,.4),1.2)}
-for(a=45;a<360;a+=90){r=a*P/180;v+=Pa('M'+sx+' '+sy+' L'+(sx+Co(a*P/180)*cr*.6).toFixed(1)+' '+(sy+Si(a*P/180)*cr*.6).toFixed(1),0,R(cL,.2),.6)}
-v+=Ci(sx,sy,cr*.12,R(cL,.5))+Ci(sx,sy,cr,'none','stroke="'+R(cL,.15)+'" stroke-width=".4"');
-v+=Pa('M'+sx+' '+(sy-cr)+' L'+(sx+cr*.12)+' '+(sy-cr*.6)+' L'+(sx-cr*.12)+' '+(sy-cr*.6)+' Z',R(cL,.4));}
-if(ae===0){for(i=0;i<ri(5,8);i++){a=rr()*P*2;d=ri(cr+5,cr+15);v+=Ci((sx+Co(a)*d).toFixed(1),(sy+Si(a)*d).toFixed(1),rf(.5,1.5),cL,'opacity="'+rf(.2,.5)+'"')}
-}else if(ae===1){for(i=0;i<ri(3,5);i++){wx=sx+ri(-cr,cr);wy=sy+ri(-cr,cr);v+=Pa('M'+wx+' '+wy+' Q'+(wx+ri(-6,6))+' '+(wy-ri(4,10))+' '+(wx+ri(-4,4))+' '+(wy-ri(8,16)),0,R(cL,rf(.08,.2)),rf(.4,1),SL)}
-}else if(ae===2){var cn=[[8,8],[112,8],[8,92],[112,92]];for(i=0;i<4;i++)v+=Pa('M'+(cn[i][0]-3)+' '+cn[i][1]+' L'+cn[i][0]+' '+(cn[i][1]-3)+' L'+(cn[i][0]+3)+' '+cn[i][1]+' L'+cn[i][0]+' '+(cn[i][1]+3)+' Z',0,R(cL,rf(.12,.25)),.5);
-}else if(ae===3){for(i=0;i<ri(2,4);i++){a1=rr()*P*2;a2=a1+rf(.5,1.5);var d1=cr+ri(5,15),d2=cr+ri(5,15);v+=Pa('M'+(sx+Co(a1)*d1).toFixed(1)+' '+(sy+Si(a1)*d1).toFixed(1)+' Q'+(sx+ri(-5,5))+' '+(sy+ri(-5,5))+' '+(sx+Co(a2)*d2).toFixed(1)+' '+(sy+Si(a2)*d2).toFixed(1),0,R(cL,rf(.15,.3)),.6)}
-}else if(ae===4){for(i=0;i<ri(3,5);i++){var cx=sx+ri(-25,25),cy=sy+ri(-20,20),cs=ri(2,4);v+='<polygon points="'+cx+','+(cy-cs)+' '+(cx+cs*.5)+','+cy+' '+cx+','+(cy+cs*.4)+' '+(cx-cs*.5)+','+cy+'" fill="'+R(cL,rf(.1,.25))+'"/>'}
-}else{for(i=0;i<ri(5,9);i++)v+=Ci(ri(8,112),ri(8,92),rf(.3,.8),cL,'opacity="'+rf(.2,.5)+'"')}
-}else if(card.type==='trap'){
-var tx=ri(50,66),ty=ri(38,50),dt=id%22,wt=((id*7+3)>>>0)%6,at2=((id*11+7)>>>0)%4,tr=ri(14,20);
-defs+='<radialGradient id="'+g('tp')+'" cx="50%" cy="50%" r="55%"><stop offset="0%" stop-color="'+cL+'" stop-opacity=".5"/><stop offset="50%" stop-color="'+c+'" stop-opacity=".2"/><stop offset="100%" stop-color="'+cD+'" stop-opacity="0"/></radialGradient>';
-if(at2===0){defs+='<radialGradient id="'+g('vi')+'" cx="50%" cy="50%" r="50%"><stop offset="40%" stop-opacity="0"/><stop offset="100%" stop-color="#000" stop-opacity=".4"/></radialGradient>';v+='<rect width="120" height="100" fill="url(#'+g('vi')+')"/>'}
-else if(at2===1){for(i=0;i<ri(3,5);i++)v+=E(ri(20,100),ri(40,85),ri(20,40),ri(3,8),R(c,rf(.04,.1)))}
-else if(at2===2){for(i=0;i<ri(8,14);i++)v+=Ci(ri(5,115),ri(5,95),rf(.3,.7),cL,'opacity="'+rf(.2,.5)+'"')}
-else{for(i=0;i<ri(3,5);i++){sx=ri(0,120);sy=ri(50,95);v+=Li(sx,sy,sx+ri(-15,15),sy+ri(5,15),R('#000000',rf(.08,.18)),rf(1,3))}}
-if(dt===0){v+='<rect x="'+(tx-tr)+'" y="'+(ty-tr)+'" width="'+(tr*2)+'" height="'+(tr*2)+'" fill="none" stroke="'+R(cL,.3)+'" stroke-width="1"/>';
-for(i=0;i<6;i++)v+=Li(tx-tr+i*tr*.4,ty-tr,tx-tr+i*tr*.4,ty+tr,R(cL,.25),.8);v+=Pa('M'+(tx-tr*.5)+' '+(ty-tr)+' Q'+tx+' '+(ty-tr-8)+' '+(tx+tr*.5)+' '+(ty-tr),0,R(c,.3),.8);
-}else if(dt===1){for(i=0;i<5;i++){v+=Li(tx-tr+i*tr*.5,ty-tr,tx-tr+i*tr*.5+tr*.25,ty+tr,R(c,.2),.5)+Li(tx-tr,ty-tr+i*tr*.5,tx+tr,ty-tr+i*tr*.5+tr*.15,R(c,.2),.5)}
-}else if(dt===2){v+=Pa('M'+(tx-tr)+' '+ty+' L'+(tx-tr*.7)+' '+(ty+tr*1.2)+' L'+(tx+tr*.7)+' '+(ty+tr*1.2)+' L'+(tx+tr)+' '+ty,R(cDD,.4),R(cD,.3),.6);
-for(i=0;i<4;i++){var spx=tx-tr*.4+i*tr*.28;v+=Pa('M'+(spx-1.5)+' '+(ty+tr*1.2)+' L'+spx+' '+(ty+tr*.7)+' L'+(spx+1.5)+' '+(ty+tr*1.2),R(cL,.25))}
-}else if(dt===3){for(i=0;i<ri(3,5);i++){cx=tx+ri(-tr,tr);cy=ty-tr;var cp='M'+cx+' '+cy;for(s=0;s<ri(4,7);s++)cp+=' Q'+(cx+ri(-4,4))+' '+(cy+s*5+2)+' '+(cx+ri(-2,2))+' '+(cy+s*5+5);v+=Pa(cp,0,R(c,rf(.2,.35)),rf(.8,1.5),SL)}
-}else if(dt===4){v+=Pa('M'+(tx-tr)+' '+(ty+tr*.3)+' L'+tx+' '+(ty+tr)+' L'+(tx+tr)+' '+(ty+tr*.3),0,R(cL,.35),1.5)+Pa('M'+(tx-tr)+' '+(ty-tr*.3)+' L'+tx+' '+(ty-tr)+' L'+(tx+tr)+' '+(ty-tr*.3),0,R(cL,.35),1.5);
-for(i=0;i<5;i++){var px=tx-tr*.7+i*tr*.35;v+=Pa('M'+px+' '+(ty+tr*.3-i*.5)+' L'+(px+1)+' '+(ty+1)+' L'+(px+2)+' '+(ty+tr*.3-i*.5),R(cL,.3))+Pa('M'+px+' '+(ty-tr*.3+i*.5)+' L'+(px+1)+' '+(ty-1)+' L'+(px+2)+' '+(ty-tr*.3+i*.5),R(cL,.3))}
-}else if(dt===5){v+=E(tx,ty,tr*.65,tr*.85,R(cL,.08),'stroke="'+R(cL,.35)+'" stroke-width="1.5"')+E(tx,ty,tr*.75,tr*.95,'none','stroke="'+R(c,.2)+'" stroke-width="2.5"')+E(tx-tr*.15,ty-tr*.15,tr*.12,tr*.3,R(cL,.15),'transform="rotate(-15 '+tx+' '+ty+')"');
-}else if(dt===6){v+=Ci(tx,ty,tr,'none','stroke="'+R(cL,.3)+'" stroke-width="1.2"')+Ci(tx,ty,tr-4,'none','stroke="'+R(c,.2)+'" stroke-width=".6" stroke-dasharray="2 2"');
-for(a=0;a<360;a+=60){r=a*P/180;v+=Ci((tx+Co(r)*(tr-2)).toFixed(1),(ty+Si(r)*(tr-2)).toFixed(1),1.5,cL,'opacity="'+rf(.3,.5)+'"')}
-v+=Li(tx-tr+4,ty,tx+tr-4,ty,R(cL,.15),.5)+Li(tx,ty-tr+4,tx,ty+tr-4,R(cL,.15),.5);
-}else if(dt===7){for(i=0;i<ri(6,10);i++){a=rr()*P*2;d=ri(5,tr);ox=tx+Co(a)*d;oy=ty+Si(a)*d;var tl=ri(4,9);
-v+=Li(ox.toFixed(1),oy.toFixed(1),(ox+Co(a)*tl).toFixed(1),(oy+Si(a)*tl).toFixed(1),R(c,rf(.25,.45)),rf(.6,1.2));
-v+=Pa('M'+(ox+Co(a)*tl*.5).toFixed(1)+' '+(oy+Si(a)*tl*.5).toFixed(1)+' L'+(ox+Co(a+.6)*tl*.4).toFixed(1)+' '+(oy+Si(a+.6)*tl*.4).toFixed(1),0,R(c,rf(.15,.3)),.5)}
-}else if(dt===8){for(a=0;a<360;a+=40){r=a*P/180;v+=Li(tx,ty,(tx+Co(r)*tr*1.2).toFixed(1),(ty+Si(r)*tr*1.2).toFixed(1),R(c,.15),.4)}
-for(r=4;r<tr*1.1;r+=4)v+=Ci(tx,ty,r,'none','stroke="'+R(c,.1)+'" stroke-width=".3"');
-for(i=0;i<ri(3,5);i++){a=rr()*P*2;d=ri(5,tr);v+=Ci((tx+Co(a)*d).toFixed(1),(ty+Si(a)*d).toFixed(1),rf(.5,1.2),R(cL,rf(.2,.4)))}
-}else if(dt===9){v+=Pa('M'+(tx-tr)+' '+ty+' Q'+tx+' '+(ty-tr*.7)+' '+(tx+tr)+' '+ty+' Q'+tx+' '+(ty+tr*.7)+' '+(tx-tr)+' '+ty,R(c,.15),R(cL,.3),.8)+Ci(tx,ty,tr*.35,R(cL,.5))+Ci(tx,ty,tr*.2,'#0a0a12')+Ci(tx+1,ty-1,tr*.06,'#fff','opacity=".9"');
-for(i=0;i<3;i++){a=(rr()*60+150+i*40)*P/180;v+=Li(tx,ty,(tx+Co(a)*tr*1.5).toFixed(1),(ty+Si(a)*tr*1.5).toFixed(1),R(cL,rf(.06,.12)),'.4" stroke-dasharray="2 3')}
-}else if(dt===10){v+='<rect x="'+(tx-tr*.25)+'" y="'+(ty-tr)+'" width="'+(tr*.5)+'" height="'+(tr*2)+'" rx="2" fill="'+R(c,.3)+'" stroke="'+R(cL,.2)+'" stroke-width=".6"/>';
-for(i=0;i<3;i++){var fy=ty-tr*.6+i*tr*.65;for(s=-1;s<=1;s+=2)v+=Ci(tx+tr*.08*s,fy,1.5,cL,'opacity="'+rf(.3,.5)+'"');
-v+=Pa('M'+(tx-tr*.1)+' '+(fy+3)+' Q'+tx+' '+(fy+5)+' '+(tx+tr*.1)+' '+(fy+3),0,R(cL,.2),.5)}
-}else if(dt===11){v+=Ci(tx,ty,tr*.6,R(cD,.4),'stroke="'+R(cL,.3)+'" stroke-width="1"');
-for(a=0;a<360;a+=45){r=a*P/180;v+=Li(tx+Co(r)*tr*.55,ty+Si(r)*tr*.55,tx+Co(r)*tr*.85,ty+Si(r)*tr*.85,R(cL,.3),1.5)+Ci(tx+Co(r)*tr*.85,ty+Si(r)*tr*.85,1.5,R(cL,.35))}
-v+=Ci(tx,ty,tr*.15,cL,'opacity=".4" filter="url(#'+g('g2')+')"');
-}else if(dt===12){for(i=0;i<4;i++){bx2=tx-tr+i*tr*.7;v+='<rect x="'+bx2+'" y="'+(ty-tr*.8)+'" width="'+(tr*.15)+'" height="'+(tr*1.6)+'" fill="'+R(c,.25)+'" stroke="'+R(cL,.2)+'" stroke-width=".4"/>'}
-for(i=0;i<3;i++){bx2=tx-tr+i*tr*.7+tr*.15;v+=Pa('M'+bx2+' '+(ty-tr*.4)+' Q'+(bx2+tr*.35)+' '+ty+' '+bx2+' '+(ty+tr*.4),0,R(cL,rf(.1,.2)),.5)}
-}else if(dt===13){v+=Li(tx,ty-tr*1.2,tx,ty-tr*.3,R(c,.3),1)+Li(tx,ty-tr*.3,tx+tr*.5,ty+tr*.6,R(cL,.35),.8);
-v+=Pa('M'+(tx+tr*.2)+' '+(ty+tr*.3)+' L'+(tx+tr*.5)+' '+(ty+tr*.6)+' L'+(tx+tr*.8)+' '+(ty+tr*.3)+' Q'+(tx+tr*.5)+' '+(ty+tr*.9)+' '+(tx+tr*.2)+' '+(ty+tr*.3),R(cL,.3))+Ci(tx,ty-tr*.3,2,R(c,.4));
-}else if(dt===14){for(i=0;i<4;i++){r=5+i*(tr*.28);v+=E(tx,ty+tr*.2,r*1.3,r*.4,'none','stroke="'+R(c,.25-i*.04)+'" stroke-width="'+(1.2-i*.2)+'" stroke-dasharray="'+(3+i*2)+' '+(2+i)+'"')}
-v+=Pa('M'+(tx-3)+' '+(ty-tr*.1)+' L'+tx+' '+(ty-tr*.4)+' L'+(tx+3)+' '+(ty-tr*.1),R(cL,.2));
-for(i=0;i<ri(3,4);i++)v+=Ci(tx+ri(-tr*.5,tr*.5),ty+ri(0,tr*.4),rf(.5,1.5),R(cL,.1),'stroke="'+R(cL,.15)+'" stroke-width=".3"');
-}else if(dt===15){for(i=0;i<5;i++){r=4+i*(tr*.25);v+='<circle cx="'+tx+'" cy="'+ty+'" r="'+r+'" stroke="'+R(c,.3-i*.04)+'" fill="none" stroke-width="'+(1.5-i*.2)+'" stroke-dasharray="'+(2+i*2)+' '+(1+i)+'"/>'}v+=Ci(tx,ty,3,R(cDD,.5));
-}else if(dt===16){/* bear trap jaws */
-for(s=-1;s<=1;s+=2){v+=Pa('M'+(tx+tr*.8*s)+' '+(ty+tr*.3)+' L'+(tx+tr*.5*s)+' '+(ty-tr*.5)+' L'+(tx+tr*.3*s)+' '+(ty+tr*.3),R(c,.3),R(cL,.3),.6)}
-v+=Ci(tx,ty,tr*.3,R(cD,.4),'stroke="'+R(cL,.25)+'" stroke-width=".8"')+Ci(tx,ty,tr*.1,R(cL,.3));
-}else if(dt===17){/* chain links */
-for(i=0;i<4;i++){var lkx=tx-tr+i*tr*.7,lky=ty+(i%2===0?-tr*.15:tr*.15);v+=E(lkx,lky,tr*.25,tr*.18,'none','stroke="'+R(cL,.35)+'" stroke-width="1.2"')}
-v+=Ci(tx-tr*1.1,ty,2,R(cL,.4))+Ci(tx+tr*1.1,ty,2,R(cL,.4));
-}else if(dt===18){/* web pattern */
-for(a=0;a<360;a+=45){r=a*P/180;v+=Li(tx,ty,(tx+Co(r)*tr*1.1).toFixed(1),(ty+Si(r)*tr*1.1).toFixed(1),R(cL,.15),.4)}
-for(i=1;i<=3;i++){var wr=tr*.35*i;var wp='';for(a=0;a<360;a+=45){r=a*P/180;wp+=(a===0?'M':'L')+(tx+Co(r)*wr).toFixed(1)+' '+(ty+Si(r)*wr).toFixed(1)}v+=Pa(wp+' Z','none',R(cL,.12),.4)}
-v+=Ci(tx,ty,1.5,R(cL,.4));
-}else if(dt===19){/* warning sign */
-v+=Pa('M'+tx+' '+(ty-tr)+' L'+(tx+tr*.9)+' '+(ty+tr*.6)+' L'+(tx-tr*.9)+' '+(ty+tr*.6)+' Z','none',R(cL,.4),1.2);
-v+=Pa('M'+tx+' '+(ty-tr*.3)+' L'+tx+' '+(ty+tr*.15),0,R(cL,.5),1.5,SL)+Ci(tx,ty+tr*.35,1.2,R(cL,.5));
-}else if(dt===20){/* lock/padlock */
-v+='<rect x="'+(tx-tr*.4)+'" y="'+ty+'" width="'+(tr*.8)+'" height="'+(tr*.7)+'" rx="2" fill="'+R(cD,.4)+'" stroke="'+R(cL,.3)+'" stroke-width="1"/>';
-v+=Pa('M'+(tx-tr*.25)+' '+ty+' Q'+(tx-tr*.25)+' '+(ty-tr*.5)+' '+tx+' '+(ty-tr*.5)+' Q'+(tx+tr*.25)+' '+(ty-tr*.5)+' '+(tx+tr*.25)+' '+ty,'none',R(cL,.35),1.2);
-v+=Ci(tx,ty+tr*.35,tr*.1,R(cL,.3));
-}else{/* dt===21: whirlpool */
-for(i=1;i<=5;i++){var wr2=tr*.2*i;var wp2='M'+(tx+wr2)+' '+ty;for(a=10;a<=360;a+=10){r=a*P/180;var wr3=wr2-i*.2*a/360;wp2+=' L'+(tx+Co(r)*wr3).toFixed(1)+' '+(ty+Si(r)*wr3).toFixed(1)}v+=Pa(wp2,0,R(c,.2-i*.02),.5)}
-v+=Ci(tx,ty,2,R(cDD,.4));}
-if(wt===0){for(i=0;i<ri(2,3);i++){wx=tx+ri(-tr*1.2,tr*1.2);wy=ty+ri(-tr*.8,tr*.8);v+=Pa('M'+(wx-2)+' '+(wy-2)+' L'+(wx+2)+' '+(wy+2)+' M'+(wx+2)+' '+(wy-2)+' L'+(wx-2)+' '+(wy+2),0,R(cL,rf(.15,.3)),.7)}
-}else if(wt===1){v+='<rect x="2" y="2" width="116" height="96" fill="none" stroke="'+R(cL,.08)+'" stroke-width="1.5" rx="2"/>'
-}else if(wt===2){for(i=0;i<ri(1,2);i++){sx=tx+ri(-tr*1.3,tr*1.3);sy=ty+ri(-tr,tr);v+=Ci(sx,sy,3,R(c,.15))+Ci(sx-1,sy-.5,.6,R(cDD,.4))+Ci(sx+1,sy-.5,.6,R(cDD,.4))}
-}else if(wt===3){for(i=0;i<ri(1,2);i++){ex=tx+ri(-tr*1.2,tr*1.2);ey=ty+ri(-tr,tr);v+=Li(ex,ey-3,ex,ey+1,R(cL,.3),1)+Ci(ex,ey+3,.6,R(cL,.3))}
-}else if(wt===4){for(i=0;i<ri(3,5);i++){rx=tx+ri(-tr*1.2,tr*1.2);ry=ty+ri(-tr,tr);v+=Pa('M'+(rx-2)+' '+ry+' L'+rx+' '+(ry-3)+' L'+(rx+2)+' '+ry+' L'+rx+' '+(ry+3)+' Z',0,R(cL,rf(.1,.22)),.4)}
-}else{for(i=0;i<ri(2,3);i++){cx=tx+ri(-tr,tr);cy=ty+ri(-tr,tr);cp='M'+cx+' '+cy;for(s=0;s<ri(2,3);s++)cp+=' L'+(cx+ri(-6,6))+' '+(cy+ri(-6,6));v+=Pa(cp,0,R(cL,rf(.08,.18)),.5)}}}
-return'<svg viewBox="0 0 120 100" xmlns="http://www.w3.org/2000/svg"><defs>'+defs+'</defs><g clip-path="url(#'+g('vp')+')">'+v+'</g></svg>'}
+
+function _artBg(attr, R, W, H, acA) {
+    let s = '';
+    const gx = R.f(W * 0.3, W * 0.7), gy = R.f(H * 0.3, H * 0.6);
+    s += `<circle cx="${gx}" cy="${gy}" r="${R.f(50, 80)}" fill="${acA(0.07)}"/>`;
+    const scene = R.i(0, 2);
+    if (attr === 'WATER' || attr === 'WIND') {
+        if (scene === 0) {
+            // Ocean floor with rocks and light rays
+            const floorY = H - R.f(18, 30);
+            let fp = `M0,${floorY}`; for (let x = 0; x < W; x += R.f(18, 28)) { fp += ` Q${x + R.f(8, 15)},${floorY + R.f(-5, 7)} ${Math.min(x + R.f(18, 28), W)},${floorY + R.f(-2, 4)}`; }
+            s += `<path d="${fp} L${W},${H} L0,${H}Z" fill="${acA(0.13)}"/>`;
+            for (let i = 0; i < R.i(2, 4); i++) { const rx = R.f(10, W - 10), rh = R.f(10, 28), rw = R.f(5, 12); s += `<path d="M${rx - rw},${floorY} Q${rx - rw * 0.4},${floorY - rh * 0.6} ${rx},${floorY - rh} Q${rx + rw * 0.4},${floorY - rh * 0.6} ${rx + rw},${floorY}Z" fill="${acA(0.1)}"/>`; }
+            for (let i = 0; i < R.i(1, 3); i++) { const bx = R.f(20, W - 20), bw = R.f(6, 16); s += `<path d="M${bx - bw},0 L${bx - bw * 2.5},${H} L${bx + bw * 2.5},${H} L${bx + bw},0Z" fill="${acA(0.035)}"/>`; }
+        } else if (scene === 1) {
+            // Open water with current streaks
+            for (let i = 0; i < R.i(4, 7); i++) { const cy = R.f(10, H - 10), cl = R.f(40, 120); s += `<line x1="${R.f(-20, 30)}" y1="${cy}" x2="${R.f(-20, 30) + cl}" y2="${cy + R.f(-8, 8)}" stroke="${acA(R.f(0.05, 0.12))}" stroke-width="${R.f(1, 4)}" stroke-linecap="round"/>`; }
+            for (let i = 0; i < R.i(2, 4); i++) { const wx = R.f(10, W - 10), wy = R.f(10, H - 10); s += `<path d="M${wx - 30},${wy} Q${wx},${wy - R.f(8, 18)} ${wx + 30},${wy}" stroke="${acA(0.06)}" stroke-width="${R.f(0.5, 1.5)}" fill="none"/>`; }
+        } else {
+            // Coral reef scene
+            const floorY = H - R.f(22, 35);
+            s += `<path d="M0,${floorY + 5} Q${W * 0.25},${floorY - 5} ${W * 0.5},${floorY + 3} Q${W * 0.75},${floorY - 8} ${W},${floorY + 2} L${W},${H} L0,${H}Z" fill="${acA(0.12)}"/>`;
+            for (let i = 0; i < R.i(3, 6); i++) { const cx = R.f(10, W - 10), ch = R.f(12, 30); s += `<path d="M${cx},${floorY} Q${cx + R.f(-6, 6)},${floorY - ch * 0.6} ${cx + R.f(-3, 3)},${floorY - ch}" stroke="${acA(R.f(0.15, 0.25))}" stroke-width="${R.f(2, 4)}" fill="none" stroke-linecap="round"/>`; for (let b = 0; b < R.i(1, 3); b++) { const by = floorY - ch * R.f(0.3, 0.8); s += `<circle cx="${cx + R.f(-5, 5)}" cy="${by}" r="${R.f(1.5, 3.5)}" fill="${acA(R.f(0.1, 0.2))}"/>`; } }
+        }
+    } else if (attr === 'FIRE') {
+        if (scene === 0) {
+            // Volcanic floor with lava cracks
+            const floorY = H - R.f(12, 20);
+            s += `<rect x="0" y="${floorY}" width="${W}" height="${H - floorY}" fill="rgba(40,8,0,0.35)"/>`;
+            for (let i = 0; i < R.i(3, 5); i++) { const lx = R.f(5, W - 5); s += `<path d="M${lx},${floorY + 2} Q${lx + R.f(-10, 10)},${floorY + R.f(8, 14)} ${lx + R.f(-12, 12)},${H}" stroke="rgba(255,80,0,0.25)" stroke-width="${R.f(1, 2.5)}" fill="none"/>`; }
+            for (let i = 0; i < R.i(2, 4); i++) { const hx = R.f(20, W - 20); s += `<path d="M${hx},${H} Q${hx + R.f(-8, 8)},${H * 0.5} ${hx + R.f(-5, 5)},0" stroke="rgba(255,100,20,0.05)" stroke-width="${R.f(6, 14)}" fill="none"/>`; }
+        } else if (scene === 1) {
+            // Ember field — floating sparks and heat haze
+            for (let i = 0; i < R.i(6, 12); i++) { const ex = R.f(5, W - 5), ey = R.f(5, H - 5); s += `<circle cx="${ex}" cy="${ey}" r="${R.f(1, 3)}" fill="rgba(255,${R.i(60, 160)},0,${R.f(0.15, 0.35)})"/>`; }
+            for (let i = 0; i < R.i(2, 4); i++) { const hy = R.f(H * 0.3, H * 0.7); s += `<path d="M0,${hy} Q${W * 0.25},${hy + R.f(-8, 8)} ${W * 0.5},${hy + R.f(-5, 5)} Q${W * 0.75},${hy + R.f(-8, 8)} ${W},${hy}" stroke="rgba(255,80,0,0.06)" stroke-width="${R.f(4, 10)}" fill="none"/>`; }
+        } else {
+            // Lava cave with ceiling drips
+            s += `<rect x="0" y="0" width="${W}" height="${R.f(15, 25)}" fill="rgba(30,5,0,0.3)"/>`;
+            s += `<rect x="0" y="${H - R.f(10, 18)}" width="${W}" height="${R.f(10, 18)}" fill="rgba(60,10,0,0.25)"/>`;
+            for (let i = 0; i < R.i(3, 6); i++) { const dx = R.f(8, W - 8), dl = R.f(15, 40); s += `<path d="M${dx},0 Q${dx + R.f(-4, 4)},${dl * 0.5} ${dx + R.f(-2, 2)},${dl}" stroke="rgba(255,90,0,0.2)" stroke-width="${R.f(1, 2.5)}" fill="none"/>`; s += `<circle cx="${dx + R.f(-2, 2)}" cy="${dl}" r="${R.f(1.5, 3)}" fill="rgba(255,120,0,0.3)"/>`; }
+        }
+    } else if (attr === 'EARTH') {
+        if (scene === 0) {
+            // Cave with stalactites/stalagmites
+            for (let i = 0; i < R.i(3, 6); i++) { const sx = R.f(5, W - 5), sl = R.f(12, 32), sw = R.f(3, 7); s += `<path d="M${sx - sw},0 Q${sx - sw * 0.3},${sl * 0.4} ${sx},${sl} Q${sx + sw * 0.3},${sl * 0.4} ${sx + sw},0Z" fill="${acA(0.13)}"/>`; }
+            for (let i = 0; i < R.i(2, 4); i++) { const sx = R.f(5, W - 5), sl = R.f(8, 20), sw = R.f(3, 7); s += `<path d="M${sx - sw},${H} Q${sx - sw * 0.3},${H - sl * 0.4} ${sx},${H - sl} Q${sx + sw * 0.3},${H - sl * 0.4} ${sx + sw},${H}Z" fill="${acA(0.13)}"/>`; }
+        } else if (scene === 1) {
+            // Crystal cavern
+            for (let i = 0; i < R.i(4, 8); i++) { const cx = R.f(10, W - 10), cy = R.f(10, H - 10), ch = R.f(10, 25), cw = R.f(3, 6), ca = R.f(-30, 30); s += `<path d="M${cx},${cy} L${cx - cw},${cy + ch} L${cx + cw},${cy + ch}Z" fill="${acA(R.f(0.08, 0.18))}" transform="rotate(${ca},${cx},${cy + ch / 2})"/>`; }
+            for (let i = 0; i < R.i(2, 4); i++) { s += `<circle cx="${R.f(10, W - 10)}" cy="${R.f(10, H - 10)}" r="${R.f(1, 2.5)}" fill="${acA(R.f(0.2, 0.4))}"/>`; }
+        } else {
+            // Layered canyon walls
+            for (let i = 0; i < R.i(3, 5); i++) { const ly = R.f(5, H - 5); s += `<path d="M0,${ly} Q${W * 0.3},${ly + R.f(-12, 12)} ${W * 0.6},${ly + R.f(-8, 8)} Q${W * 0.8},${ly + R.f(-10, 10)} ${W},${ly + R.f(-6, 6)}" stroke="${acA(R.f(0.08, 0.16))}" stroke-width="${R.f(1.5, 4)}" fill="none"/>`; }
+            for (let i = 0; i < R.i(1, 3); i++) { const vx = R.f(10, W - 10), vy = R.f(10, H - 10); s += `<path d="M${vx},${vy} Q${vx + R.f(-25, 25)},${vy + R.f(-15, 15)} ${vx + R.f(-35, 35)},${vy + R.f(-25, 25)}" stroke="${acA(0.18)}" stroke-width="${R.f(0.5, 1.8)}" fill="none"/>`; }
+        }
+    } else if (attr === 'LIGHT') {
+        if (scene === 0) {
+            // Radiant beams
+            for (let i = 0; i < R.i(3, 5); i++) { const bx = R.f(25, W - 25), bw = R.f(8, 18); s += `<path d="M${bx - bw / 2},0 L${bx - bw * 2},${H} L${bx + bw * 2},${H} L${bx + bw / 2},0Z" fill="${acA(0.04)}"/>`; }
+            for (let i = 0; i < R.i(5, 9); i++) { const px = R.f(5, W - 5), py = R.f(5, H - 5), ps = R.f(1, 2.5); s += `<path d="M${px},${py - ps} L${px + ps * 0.3},${py} L${px},${py + ps} L${px - ps * 0.3},${py}Z" fill="${acA(R.f(0.2, 0.45))}"/>`; }
+        } else if (scene === 1) {
+            // Celestial halo rings
+            const cx = W / 2 + R.f(-20, 20), cy2 = H / 2 + R.f(-10, 10);
+            for (let i = 0; i < R.i(2, 4); i++) { s += `<ellipse cx="${cx}" cy="${cy2}" rx="${R.f(25, 55)}" ry="${R.f(15, 35)}" fill="none" stroke="${acA(R.f(0.06, 0.12))}" stroke-width="${R.f(0.5, 1.5)}" transform="rotate(${R.f(-20, 20)},${cx},${cy2})"/>`; }
+            for (let i = 0; i < R.i(8, 14); i++) { const sx = R.f(3, W - 3), sy = R.f(3, H - 3); s += `<circle cx="${sx}" cy="${sy}" r="${R.f(0.3, 1.2)}" fill="${acA(R.f(0.25, 0.5))}"/>`; }
+        } else {
+            // Sacred ground with upward light pillars
+            for (let i = 0; i < R.i(2, 4); i++) { const px = R.f(20, W - 20), pw = R.f(3, 8); s += `<rect x="${px - pw / 2}" y="0" width="${pw}" height="${H}" fill="${acA(R.f(0.03, 0.06))}"/>`; }
+            s += `<path d="M0,${H - 8} Q${W * 0.25},${H - 14} ${W * 0.5},${H - 10} Q${W * 0.75},${H - 16} ${W},${H - 6} L${W},${H} L0,${H}Z" fill="${acA(0.08)}"/>`;
+        }
+    } else {
+        if (scene === 0) {
+            // Dark wisps and stars
+            for (let i = 0; i < R.i(3, 5); i++) { const wx = R.f(10, W - 10), wy = R.f(10, H - 10); s += `<ellipse cx="${wx}" cy="${wy}" rx="${R.f(18, 45)}" ry="${R.f(10, 25)}" fill="${acA(0.06)}" transform="rotate(${R.f(-25, 25)},${wx},${wy})"/>`; }
+            for (let i = 0; i < R.i(5, 12); i++) { s += `<circle cx="${R.f(3, W - 3)}" cy="${R.f(3, H - 3)}" r="${R.f(0.4, 1.2)}" fill="rgba(200,180,255,${R.f(0.15, 0.35)})"/>`; }
+        } else if (scene === 1) {
+            // Void vortex
+            const cx = W / 2 + R.f(-15, 15), cy2 = H / 2 + R.f(-10, 10);
+            for (let i = 0; i < R.i(3, 6); i++) { const r = 15 + i * R.f(10, 16); s += `<circle cx="${cx}" cy="${cy2}" r="${r}" fill="none" stroke="${acA(R.f(0.04, 0.1))}" stroke-width="${R.f(0.5, 2)}" stroke-dasharray="${R.f(4, 12)} ${R.f(3, 8)}"/>`; }
+            for (let i = 0; i < R.i(4, 8); i++) { s += `<circle cx="${R.f(3, W - 3)}" cy="${R.f(3, H - 3)}" r="${R.f(0.3, 0.8)}" fill="rgba(180,160,255,${R.f(0.2, 0.4)})"/>`; }
+        } else {
+            // Shadow tendrils
+            for (let i = 0; i < R.i(3, 5); i++) { const sx = R.f(5, W - 5), sy = R.i(0, 1) === 0 ? 0 : H; s += `<path d="M${sx},${sy} Q${sx + R.f(-30, 30)},${H / 2 + R.f(-20, 20)} ${R.f(20, W - 20)},${H / 2 + R.f(-30, 30)}" stroke="${acA(R.f(0.06, 0.12))}" stroke-width="${R.f(2, 5)}" fill="none" stroke-linecap="round"/>`; }
+            for (let i = 0; i < R.i(3, 7); i++) { s += `<circle cx="${R.f(3, W - 3)}" cy="${R.f(3, H - 3)}" r="${R.f(0.3, 1)}" fill="rgba(160,140,220,${R.f(0.15, 0.3)})"/>`; }
+        }
+    }
+    return s;
+}
+
+function _artFx(attr, R, W, H, acA) {
+    let s = '';
+    const n = R.i(4, 9);
+    if (attr === 'WATER') { for (let i = 0; i < n; i++) s += `<circle cx="${R.f(5, W - 5)}" cy="${R.f(5, H - 5)}" r="${R.f(1, 3.5)}" fill="none" stroke="${acA(R.f(0.1, 0.25))}" stroke-width="0.5"/>`; }
+    else if (attr === 'FIRE') { for (let i = 0; i < n; i++) s += `<circle cx="${R.f(5, W - 5)}" cy="${R.f(5, H - 5)}" r="${R.f(0.5, 2)}" fill="rgba(255,${R.i(80, 200)},0,${R.f(0.2, 0.45)})"/>`; }
+    else if (attr === 'WIND') { for (let i = 0; i < R.i(2, 4); i++) { const ly = R.f(10, H - 10), ll = R.f(15, 35); s += `<line x1="${R.f(10, W - ll)}" y1="${ly}" x2="${R.f(10, W - ll) + ll}" y2="${ly + R.f(-3, 3)}" stroke="${acA(0.13)}" stroke-width="${R.f(0.3, 0.8)}"/>`; } }
+    else if (attr === 'LIGHT') { for (let i = 0; i < n; i++) { const sx = R.f(5, W - 5), sy = R.f(5, H - 5), ss = R.f(1, 2.5); s += `<path d="M${sx},${sy - ss} L${sx + ss * 0.3},${sy} L${sx},${sy + ss} L${sx - ss * 0.3},${sy}Z" fill="${acA(R.f(0.12, 0.35))}"/>`; } }
+    else { for (let i = 0; i < R.i(2, 5); i++) { const wx = R.f(10, W - 10), wy = R.f(10, H - 10); s += `<path d="M${wx},${wy} Q${wx + R.f(-12, 12)},${wy + R.f(-12, 12)} ${wx + R.f(-18, 18)},${wy + R.f(-18, 18)}" stroke="${acA(0.1)}" stroke-width="${R.f(1, 2.5)}" fill="none"/>`; } }
+    for (let i = 0; i < R.i(2, 5); i++) s += `<circle cx="${R.f(5, W - 5)}" cy="${R.f(5, H - 5)}" r="${R.f(0.3, 1.2)}" fill="${acA(R.f(0.08, 0.22))}"/>`;
+    return s;
+}
+
+const _artBodies = {
+    lobster(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const flip = R.f(0, 1) > 0.5 ? -1 : 1;
+        const bLen = 48 * sz, bWid = 14 * sz;
+        s += `<circle cx="${cx}" cy="${cy}" r="${32 * sz}" fill="${acA(0.1)}"/>`;
+        // Tail fan
+        const tx = cx + flip * bLen * 0.55;
+        for (let i = -2; i <= 2; i++) { const a = i * 16; s += `<ellipse cx="${tx + flip * 8 * sz * Math.cos(a * 0.0175)}" cy="${cy + 8 * sz * Math.sin(a * 0.0175)}" rx="${9 * sz}" ry="${3.5 * sz}" fill="${acL}" opacity="0.7" transform="rotate(${flip > 0 ? a : 180 + a},${tx + flip * 8 * sz * Math.cos(a * 0.0175)},${cy + 8 * sz * Math.sin(a * 0.0175)})"/>`; }
+        // Body segments
+        for (let i = 0; i < 5; i++) { const sx = cx + flip * (bLen * 0.38 - i * bLen * 0.19); s += `<ellipse cx="${sx}" cy="${cy}" rx="${bLen * 0.11}" ry="${bWid * (1 - i * 0.07)}" fill="${ac}" stroke="${acD}" stroke-width="0.5"/>`; }
+        // Head
+        const hx = cx - flip * bLen * 0.33;
+        s += `<ellipse cx="${hx}" cy="${cy}" rx="${11 * sz}" ry="${9 * sz}" fill="${acL}" opacity="0.9"/>`;
+        // Eye stalks + eyes
+        for (const ey of [-1, 1]) { s += `<circle cx="${hx - flip * 3 * sz}" cy="${cy + ey * 5 * sz}" r="${2.2 * sz}" fill="white"/>`; s += `<circle cx="${hx - flip * 3 * sz}" cy="${cy + ey * 5 * sz}" r="${1.1 * sz}" fill="#111"/>`; }
+        // Antennae
+        s += `<path d="M${hx - flip * 7 * sz},${cy - 3 * sz} Q${hx - flip * 28 * sz},${cy - 18 * sz} ${hx - flip * 35 * sz},${cy - 15 * sz + R.f(-4, 4)}" stroke="${acL}" stroke-width="${1 * sz}" fill="none" opacity="0.6"/>`;
+        s += `<path d="M${hx - flip * 7 * sz},${cy + 3 * sz} Q${hx - flip * 28 * sz},${cy + 18 * sz} ${hx - flip * 35 * sz},${cy + 15 * sz + R.f(-4, 4)}" stroke="${acL}" stroke-width="${1 * sz}" fill="none" opacity="0.6"/>`;
+        // Claws
+        for (const [cOff, cSz, cAng] of [[[-16, -11], R.f(14, 22), -25], [[-13, 13], R.f(11, 18), 22]]) {
+            const ccx = hx + flip * cOff[0] * sz, ccy = cy + cOff[1] * sz;
+            s += `<ellipse cx="${ccx}" cy="${ccy}" rx="${cSz * sz}" ry="${cSz * 0.55 * sz}" fill="${ac}" stroke="${acD}" stroke-width="0.7" transform="rotate(${flip > 0 ? cAng : -cAng},${ccx},${ccy})"/>`;
+            const cox = ccx - flip * cSz * 0.65 * sz;
+            s += `<path d="M${cox},${ccy - 2.5 * sz} L${cox - flip * 5 * sz},${ccy} L${cox},${ccy + 2.5 * sz}" stroke="${acD}" stroke-width="${1.2 * sz}" fill="none"/>`;
+        }
+        // Walking legs
+        for (let i = 0; i < 4; i++) { const lx = cx + flip * (-bLen * 0.12 + i * bLen * 0.16); const ll = R.f(10, 16) * sz; s += `<line x1="${lx}" y1="${cy - bWid}" x2="${lx + R.f(-4, 4)}" y2="${cy - bWid - ll}" stroke="${ac}" stroke-width="${1.3 * sz}" stroke-linecap="round"/>`; s += `<line x1="${lx}" y1="${cy + bWid}" x2="${lx + R.f(-4, 4)}" y2="${cy + bWid + ll}" stroke="${ac}" stroke-width="${1.3 * sz}" stroke-linecap="round"/>`; }
+        return s;
+    },
+
+    crab(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const bW = 32 * sz, bH = 20 * sz;
+        s += `<circle cx="${cx}" cy="${cy}" r="${28 * sz}" fill="${acA(0.08)}"/>`;
+        // Carapace
+        s += `<path d="M${cx - bW},${cy} Q${cx - bW * 0.8},${cy - bH} ${cx},${cy - bH * 0.85} Q${cx + bW * 0.8},${cy - bH} ${cx + bW},${cy} Q${cx + bW * 0.8},${cy + bH * 0.65} ${cx},${cy + bH * 0.55} Q${cx - bW * 0.8},${cy + bH * 0.65} ${cx - bW},${cy}Z" fill="${ac}" stroke="${acD}" stroke-width="0.7"/>`;
+        // Shell dots
+        for (let i = 0; i < R.i(4, 8); i++) s += `<circle cx="${cx + R.f(-bW * 0.5, bW * 0.5)}" cy="${cy + R.f(-bH * 0.4, bH * 0.25)}" r="${R.f(1, 2.5) * sz}" fill="${acD}" opacity="0.25"/>`;
+        // Eye stalks
+        for (const side of [-1, 1]) { s += `<line x1="${cx + side * 7 * sz}" y1="${cy - bH * 0.65}" x2="${cx + side * 10 * sz}" y2="${cy - bH * 1.05}" stroke="${ac}" stroke-width="${1.8 * sz}"/>`; s += `<circle cx="${cx + side * 10 * sz}" cy="${cy - bH * 1.05}" r="${2.5 * sz}" fill="white"/>`; s += `<circle cx="${cx + side * 10 * sz}" cy="${cy - bH * 1.05}" r="${1.3 * sz}" fill="#111"/>`; }
+        // Big claws
+        for (const side of [-1, 1]) {
+            const clx = cx + side * (bW + 7 * sz), cly = cy - 4 * sz, clW = R.f(16, 24) * sz;
+            s += `<line x1="${cx + side * bW}" y1="${cy}" x2="${clx}" y2="${cly}" stroke="${ac}" stroke-width="${3.5 * sz}" stroke-linecap="round"/>`;
+            s += `<path d="M${clx},${cly - 2.5 * sz} Q${clx + side * clW * 0.5},${cly - clW * 0.35} ${clx + side * clW},${cly}" stroke="${ac}" stroke-width="${2.5 * sz}" fill="${acL}"/>`;
+            s += `<path d="M${clx},${cly + 2.5 * sz} Q${clx + side * clW * 0.5},${cly + clW * 0.25} ${clx + side * clW},${cly}" stroke="${ac}" stroke-width="${2.5 * sz}" fill="${acL}"/>`;
+        }
+        // Walking legs
+        for (let i = 0; i < 4; i++) { for (const side of [-1, 1]) { const lx = cx + side * (bW * 0.3 + i * 5 * sz), ly = cy + bH * 0.35; s += `<path d="M${lx},${ly} Q${lx + side * R.f(5, 10) * sz},${(ly + ly + R.f(10, 18) * sz) / 2} ${lx + side * R.f(7, 14) * sz},${ly + R.f(10, 18) * sz}" stroke="${ac}" stroke-width="${1.3 * sz}" fill="none" stroke-linecap="round"/>`; } }
+        return s;
+    },
+
+    shrimp(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        s += `<circle cx="${cx}" cy="${cy}" r="${26 * sz}" fill="${acA(0.07)}"/>`;
+        // Curved comma body
+        s += `<path d="M${cx - 18 * sz},${cy - 8 * sz} Q${cx + 5 * sz},${cy - 16 * sz} ${cx + 18 * sz},${cy - 3 * sz} Q${cx + 22 * sz},${cy + 6 * sz} ${cx + 13 * sz},${cy + 14 * sz} Q${cx + 3 * sz},${cy + 18 * sz} ${cx - 8 * sz},${cy + 13 * sz} Q${cx - 18 * sz},${cy + 4 * sz} ${cx - 18 * sz},${cy - 8 * sz}Z" fill="${ac}" opacity="0.82"/>`;
+        // Segment lines
+        for (let i = 0; i < 5; i++) { const t = 0.18 + i * 0.13; const sx = cx - 18 * sz + t * 40 * sz, sy = cy - 8 * sz + Math.sin(t * 3.14) * 18 * sz; s += `<path d="M${sx - 4 * sz},${sy - 3 * sz} Q${sx},${sy - 5 * sz} ${sx + 4 * sz},${sy - 3 * sz}" stroke="${acD}" stroke-width="0.4" fill="none" opacity="0.35"/>`; }
+        // Rostrum + antennae
+        s += `<line x1="${cx - 18 * sz}" y1="${cy - 8 * sz}" x2="${cx - 28 * sz}" y2="${cy - 13 * sz}" stroke="${ac}" stroke-width="${1.8 * sz}" stroke-linecap="round"/>`;
+        s += `<path d="M${cx - 20 * sz},${cy - 6 * sz} Q${cx - 33 * sz},${cy - 22 * sz} ${cx - 38 * sz},${cy - 17 * sz}" stroke="${acL}" stroke-width="${0.7 * sz}" fill="none" opacity="0.55"/>`;
+        s += `<path d="M${cx - 20 * sz},${cy - 4 * sz} Q${cx - 35 * sz},${cy - 12 * sz} ${cx - 42 * sz},${cy - 6 * sz}" stroke="${acL}" stroke-width="${0.7 * sz}" fill="none" opacity="0.55"/>`;
+        // Eye
+        s += `<circle cx="${cx - 16 * sz}" cy="${cy - 10 * sz}" r="${2.2 * sz}" fill="white"/>`;
+        s += `<circle cx="${cx - 16 * sz}" cy="${cy - 10 * sz}" r="${1 * sz}" fill="#111"/>`;
+        // Swimmerets
+        for (let i = 0; i < R.i(5, 7); i++) { const lx = cx - 8 * sz + i * 4.5 * sz, ly = cy + 7 * sz + i * 1.3 * sz; s += `<line x1="${lx}" y1="${ly}" x2="${lx + R.f(-2, 2)}" y2="${ly + R.f(5, 9) * sz}" stroke="${acL}" stroke-width="${0.7 * sz}" opacity="0.45"/>`; }
+        // Tail fan
+        for (let i = -2; i <= 2; i++) s += `<ellipse cx="${cx + 15 * sz + i * 2.5 * sz}" cy="${cy + 15 * sz}" rx="${4.5 * sz}" ry="${2.5 * sz}" fill="${acL}" opacity="0.55" transform="rotate(${i * 14 + 90},${cx + 15 * sz + i * 2.5 * sz},${cy + 15 * sz})"/>`;
+        return s;
+    },
+
+    eel(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const len = 85 * sz, amp = R.f(14, 26) * sz, thick = R.f(5, 9) * sz, segs = 18;
+        s += `<ellipse cx="${cx}" cy="${cy}" rx="${33 * sz}" ry="${22 * sz}" fill="${acA(0.07)}"/>`;
+        const pts = [];
+        for (let i = 0; i <= segs; i++) { const t = i / segs; pts.push({ x: cx - len / 2 + t * len, y: cy + Math.sin(t * 3.14 * R.f(1.5, 2.5)) * amp, w: thick * (1 - t * 0.55) }); }
+        // Body fill
+        let bp = `M${pts[0].x},${pts[0].y - pts[0].w}`;
+        for (let i = 1; i < pts.length; i++) bp += ` L${pts[i].x},${pts[i].y - pts[i].w}`;
+        for (let i = pts.length - 1; i >= 0; i--) bp += ` L${pts[i].x},${pts[i].y + pts[i].w}`;
+        s += `<path d="${bp}Z" fill="${ac}" stroke="${acD}" stroke-width="0.4"/>`;
+        // Dorsal fin
+        let fp = `M${pts[2].x},${pts[2].y - pts[2].w}`;
+        for (let i = 3; i < pts.length - 2; i++) { const fh = R.f(2.5, 7) * sz * (1 - i / pts.length); fp += ` Q${(pts[i].x + pts[i - 1].x) / 2},${pts[i].y - pts[i].w - fh} ${pts[i].x},${pts[i].y - pts[i].w}`; }
+        s += `<path d="${fp}" fill="${acL}" opacity="0.5"/>`;
+        // Eye
+        s += `<circle cx="${pts[0].x + 3 * sz}" cy="${pts[0].y - 2 * sz}" r="${2.8 * sz}" fill="white"/>`;
+        s += `<circle cx="${pts[0].x + 3 * sz}" cy="${pts[0].y - 2 * sz}" r="${1.3 * sz}" fill="#111"/>`;
+        // Mouth
+        s += `<path d="M${pts[0].x - 1 * sz},${pts[0].y + 1 * sz} L${pts[0].x - 4 * sz},${pts[0].y + 3 * sz}" stroke="${acD}" stroke-width="${1.2 * sz}" fill="none"/>`;
+        // Bioluminescent spots
+        for (let i = 2; i < pts.length - 3; i += 2) s += `<circle cx="${pts[i].x}" cy="${pts[i].y}" r="${R.f(0.8, 2) * sz}" fill="${acL}" opacity="${R.f(0.3, 0.55)}"/>`;
+        // Pectoral fin
+        s += `<ellipse cx="${pts[1].x}" cy="${pts[1].y + pts[1].w + 3.5 * sz}" rx="${5.5 * sz}" ry="${2.5 * sz}" fill="${acL}" opacity="0.45" transform="rotate(${R.f(20, 35)},${pts[1].x},${pts[1].y + pts[1].w + 3.5 * sz})"/>`;
+        return s;
+    },
+
+    jellyfish(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const bW = R.f(23, 35) * sz, bH = R.f(16, 25) * sz, bY = cy - 8 * sz;
+        s += `<circle cx="${cx}" cy="${bY}" r="${35 * sz}" fill="${acA(0.07)}"/>`;
+        // Bell dome
+        s += `<path d="M${cx - bW},${bY + bH * 0.3} Q${cx - bW},${bY - bH} ${cx},${bY - bH} Q${cx + bW},${bY - bH} ${cx + bW},${bY + bH * 0.3} Q${cx + bW * 0.4},${bY + bH * 0.45} ${cx},${bY + bH * 0.25} Q${cx - bW * 0.4},${bY + bH * 0.45} ${cx - bW},${bY + bH * 0.3}Z" fill="${ac}" opacity="0.65"/>`;
+        // Bell ribs
+        for (let i = -2; i <= 2; i++) { const rx = cx + i * bW * 0.23; s += `<path d="M${rx},${bY - bH * 0.75} Q${rx + R.f(-2, 2)},${bY} ${rx},${bY + bH * 0.25}" stroke="${acL}" stroke-width="0.5" fill="none" opacity="0.35"/>`; }
+        // Inner glow
+        s += `<ellipse cx="${cx}" cy="${bY}" rx="${bW * 0.45}" ry="${bH * 0.45}" fill="${acL}" opacity="0.12"/>`;
+        // Oral arms
+        for (let i = 0; i < R.i(2, 4); i++) { const ax = cx + R.f(-bW * 0.3, bW * 0.3), aLen = R.f(22, 40) * sz; let ap = `M${ax},${bY + bH * 0.25}`; let ay = bY + bH * 0.25; for (let j = 0; j < 4; j++) { ay += aLen / 4; ap += ` Q${ax + R.f(-7, 7) * sz},${ay - aLen / 8} ${ax + R.f(-4, 4) * sz},${ay}`; } s += `<path d="${ap}" stroke="${ac}" stroke-width="${R.f(1.8, 3.5) * sz}" fill="none" opacity="0.55" stroke-linecap="round"/>`; }
+        // Trailing tentacles
+        for (let i = 0; i < R.i(4, 7); i++) { const tx2 = cx + R.f(-bW * 0.75, bW * 0.75), tLen = R.f(28, 50) * sz; let tp = `M${tx2},${bY + bH * 0.25}`; let ty = bY + bH * 0.25; for (let j = 0; j < 5; j++) { ty += tLen / 5; tp += ` Q${tx2 + R.f(-5, 5) * sz},${ty - tLen / 10} ${tx2 + R.f(-3, 3) * sz},${ty}`; } s += `<path d="${tp}" stroke="${acL}" stroke-width="${R.f(0.4, 1.2) * sz}" fill="none" opacity="${R.f(0.25, 0.5)}"/>`; }
+        return s;
+    },
+
+    squid(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        s += `<circle cx="${cx}" cy="${cy - 8 * sz}" r="${28 * sz}" fill="${acA(0.07)}"/>`;
+        // Mantle
+        s += `<path d="M${cx - 11 * sz},${cy + 4 * sz} Q${cx - 13 * sz},${cy - 13 * sz} ${cx},${cy - 28 * sz} Q${cx + 13 * sz},${cy - 13 * sz} ${cx + 11 * sz},${cy + 4 * sz}Z" fill="${ac}"/>`;
+        // Fins
+        s += `<path d="M${cx - 11 * sz},${cy - 8 * sz} Q${cx - 20 * sz},${cy - 13 * sz} ${cx - 13 * sz},${cy - 20 * sz}" fill="${acL}" opacity="0.45"/>`;
+        s += `<path d="M${cx + 11 * sz},${cy - 8 * sz} Q${cx + 20 * sz},${cy - 13 * sz} ${cx + 13 * sz},${cy - 20 * sz}" fill="${acL}" opacity="0.45"/>`;
+        // Eyes
+        for (const side of [-1, 1]) { s += `<circle cx="${cx + side * 6 * sz}" cy="${cy - 1 * sz}" r="${4.5 * sz}" fill="white"/>`; s += `<circle cx="${cx + side * 6 * sz + side * 0.8 * sz}" cy="${cy - 1 * sz}" r="${2.2 * sz}" fill="#111"/>`; }
+        // Short arms
+        for (let i = 0; i < 8; i++) { const a = -45 + i * (270 / 7), r = a * 0.0175, aLen = R.f(13, 22) * sz; s += `<path d="M${cx + Math.cos(r) * 7 * sz},${cy + 7 * sz} Q${cx + Math.cos(r) * aLen * 0.5},${cy + 7 * sz + aLen * 0.55} ${cx + Math.cos(r) * aLen},${cy + 7 * sz + aLen}" stroke="${ac}" stroke-width="${R.f(1.3, 2.2) * sz}" fill="none" stroke-linecap="round" opacity="0.75"/>`; }
+        // Long tentacles
+        for (const side of [-1, 1]) { const tLen = R.f(28, 40) * sz; s += `<path d="M${cx + side * 4 * sz},${cy + 7 * sz} Q${cx + side * 18 * sz},${cy + 22 * sz} ${cx + side * R.f(13, 26) * sz},${cy + 7 * sz + tLen}" stroke="${acL}" stroke-width="${1.3 * sz}" fill="none" opacity="0.55"/>`; s += `<ellipse cx="${cx + side * R.f(13, 26) * sz}" cy="${cy + 7 * sz + tLen}" rx="${2.5 * sz}" ry="${1.5 * sz}" fill="${acL}" opacity="0.45"/>`; }
+        // Mantle spots
+        for (let i = 0; i < R.i(3, 7); i++) s += `<circle cx="${cx + R.f(-7, 7) * sz}" cy="${cy + R.f(-18, -3) * sz}" r="${R.f(0.8, 2.5) * sz}" fill="${acD}" opacity="0.18"/>`;
+        return s;
+    },
+
+    octopus(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const hR = R.f(16, 23) * sz, hY = cy - 6 * sz;
+        s += `<circle cx="${cx}" cy="${hY}" r="${35 * sz}" fill="${acA(0.08)}"/>`;
+        // 8 tentacles
+        for (let i = 0; i < 8; i++) {
+            const ba = -55 + i * (230 / 7), rad = ba * 0.0175, tLen = R.f(28, 45) * sz, curl = R.f(-0.8, 0.8);
+            let tp = `M${cx + Math.cos(rad) * hR * 0.7},${hY + Math.sin(rad) * hR * 0.7 + hR * 0.25}`;
+            let tx2 = cx + Math.cos(rad) * hR * 0.7, ty = hY + Math.sin(rad) * hR * 0.7 + hR * 0.25;
+            for (let j = 0; j < 5; j++) { const t = (j + 1) / 5; tx2 += Math.cos(rad + curl * t * 1.8) * tLen / 5; ty += Math.sin(rad) * tLen / 7 + tLen / 7; tp += ` Q${tx2 + R.f(-3, 3) * sz},${ty - R.f(2, 5) * sz} ${tx2},${ty}`; }
+            s += `<path d="${tp}" stroke="${ac}" stroke-width="${R.f(2.2, 3.5) * sz}" fill="none" stroke-linecap="round" opacity="0.8"/>`;
+            // Suckers
+            let sx2 = cx + Math.cos(rad) * hR * 0.7, sy2 = hY + Math.sin(rad) * hR * 0.7 + hR * 0.25;
+            for (let j = 0; j < 3; j++) { const t2 = (j + 1) / 4; sx2 += Math.cos(rad + curl * t2 * 1.8) * tLen / 5; sy2 += Math.sin(rad) * tLen / 7 + tLen / 7; s += `<circle cx="${sx2}" cy="${sy2}" r="${R.f(0.7, 1.3) * sz}" fill="${acD}" opacity="0.35"/>`; }
+        }
+        // Head
+        s += `<ellipse cx="${cx}" cy="${hY}" rx="${hR}" ry="${hR * 1.08}" fill="${ac}"/>`;
+        s += `<ellipse cx="${cx - hR * 0.2}" cy="${hY - hR * 0.18}" rx="${hR * 0.6}" ry="${hR * 0.4}" fill="${acL}" opacity="0.15"/>`;
+        // Spots
+        for (let i = 0; i < R.i(4, 7); i++) s += `<circle cx="${cx + R.f(-hR * 0.6, hR * 0.6)}" cy="${hY + R.f(-hR * 0.5, hR * 0.5)}" r="${R.f(0.8, 2.5) * sz}" fill="${acD}" opacity="0.2"/>`;
+        // Eyes
+        for (const side of [-1, 1]) { const ex = cx + side * hR * 0.5; s += `<ellipse cx="${ex}" cy="${hY - 1.5 * sz}" rx="${4 * sz}" ry="${4.5 * sz}" fill="white"/>`; s += `<ellipse cx="${ex + side * 0.8 * sz}" cy="${hY - 1.5 * sz}" rx="${2.2 * sz}" ry="${2.7 * sz}" fill="#111"/>`; s += `<circle cx="${ex + side * 1.5 * sz}" cy="${hY - 2.5 * sz}" r="${0.8 * sz}" fill="rgba(255,255,255,0.5)"/>`; }
+        return s;
+    },
+
+    nautilus(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const sR = 20 * sz;
+        s += `<circle cx="${cx}" cy="${cy}" r="${28 * sz}" fill="${acA(0.07)}"/>`;
+        // Shell
+        s += `<circle cx="${cx}" cy="${cy}" r="${sR}" fill="${ac}" stroke="${acD}" stroke-width="0.8"/>`;
+        // Chamber spiral lines
+        for (let i = 1; i <= 5; i++) { const r2 = sR * (1 - i * 0.14), sa = i * 55 * 0.0175, ea = (i * 55 + 260) * 0.0175; s += `<path d="M${cx + Math.cos(sa) * r2},${cy + Math.sin(sa) * r2} A${r2},${r2} 0 1 1 ${cx + Math.cos(ea) * r2},${cy + Math.sin(ea) * r2}" stroke="${acD}" stroke-width="0.7" fill="none" opacity="0.35"/>`; }
+        // Shell highlight
+        s += `<ellipse cx="${cx - sR * 0.2}" cy="${cy - sR * 0.2}" rx="${sR * 0.45}" ry="${sR * 0.35}" fill="${acL}" opacity="0.12"/>`;
+        // Tentacles from opening
+        const oa = R.f(30, 55);
+        for (let i = 0; i < R.i(5, 9); i++) { const a2 = oa + i * R.f(7, 13), rad = a2 * 0.0175, tl = R.f(10, 22) * sz; s += `<path d="M${cx + Math.cos(rad) * sR},${cy + Math.sin(rad) * sR} Q${cx + Math.cos(rad) * (sR + tl * 0.5)},${cy + Math.sin(rad) * (sR + tl * 0.5) + R.f(-4, 4)} ${cx + Math.cos(rad) * (sR + tl)},${cy + Math.sin(rad) * (sR + tl)}" stroke="${acL}" stroke-width="${R.f(0.6, 1.5) * sz}" fill="none" opacity="0.5"/>`; }
+        // Eye
+        const eA = (oa + 15) * 0.0175;
+        s += `<circle cx="${cx + Math.cos(eA) * (sR + 2 * sz)}" cy="${cy + Math.sin(eA) * (sR + 2 * sz)}" r="${2.2 * sz}" fill="white"/>`;
+        s += `<circle cx="${cx + Math.cos(eA) * (sR + 2 * sz)}" cy="${cy + Math.sin(eA) * (sR + 2 * sz)}" r="${1 * sz}" fill="#111"/>`;
+        return s;
+    },
+
+    urchin(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const bR = 12 * sz;
+        s += `<circle cx="${cx}" cy="${cy}" r="${28 * sz}" fill="${acA(0.07)}"/>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="${bR}" fill="${ac}"/>`;
+        s += `<circle cx="${cx - bR * 0.25}" cy="${cy - bR * 0.25}" r="${bR * 0.35}" fill="${acL}" opacity="0.12"/>`;
+        // Spines
+        const nS = R.i(18, 28);
+        for (let i = 0; i < nS; i++) { const a = (i / nS) * 360 + R.f(-4, 4), rad = a * 0.0175, sLen = R.f(14, 32) * sz; s += `<line x1="${cx + Math.cos(rad) * bR}" y1="${cy + Math.sin(rad) * bR}" x2="${cx + Math.cos(rad) * (bR + sLen)}" y2="${cy + Math.sin(rad) * (bR + sLen)}" stroke="${ac}" stroke-width="${R.f(0.7, 1.8) * sz}" opacity="${R.f(0.5, 0.85)}" stroke-linecap="round"/>`; }
+        // Tube feet
+        for (let i = 0; i < R.i(4, 7); i++) { const a = R.f(0, 360), rad = a * 0.0175; s += `<circle cx="${cx + Math.cos(rad) * (bR + R.f(2, 5) * sz)}" cy="${cy + Math.sin(rad) * (bR + R.f(2, 5) * sz)}" r="${0.8 * sz}" fill="${acL}" opacity="0.35"/>`; }
+        return s;
+    },
+
+    fish(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const bLen = R.f(33, 46) * sz, bH = R.f(11, 17) * sz, flip = R.f(0, 1) > 0.5 ? -1 : 1;
+        s += `<circle cx="${cx}" cy="${cy}" r="${23 * sz}" fill="${acA(0.07)}"/>`;
+        // Tail fin
+        const tailX = cx + flip * bLen * 0.48;
+        s += `<path d="M${tailX},${cy} L${tailX + flip * 10 * sz},${cy - 9 * sz} L${tailX + flip * 2.5 * sz},${cy} L${tailX + flip * 10 * sz},${cy + 9 * sz}Z" fill="${acL}" opacity="0.65"/>`;
+        // Body
+        s += `<ellipse cx="${cx}" cy="${cy}" rx="${bLen * 0.48}" ry="${bH}" fill="${ac}"/>`;
+        s += `<ellipse cx="${cx}" cy="${cy + bH * 0.28}" rx="${bLen * 0.38}" ry="${bH * 0.45}" fill="${acL}" opacity="0.2"/>`;
+        // Dorsal fin
+        const dfx = cx + flip * R.f(-4, 4);
+        s += `<path d="M${dfx - flip * 7 * sz},${cy - bH} Q${dfx},${cy - bH - R.f(7, 13) * sz} ${dfx + flip * 7 * sz},${cy - bH}" fill="${acL}" opacity="0.55"/>`;
+        // Pectoral fin
+        s += `<ellipse cx="${cx - flip * bLen * 0.13}" cy="${cy + bH * 0.45}" rx="${5 * sz}" ry="${2.5 * sz}" fill="${acL}" opacity="0.45" transform="rotate(${flip * 28},${cx - flip * bLen * 0.13},${cy + bH * 0.45})"/>`;
+        // Eye
+        const eX = cx - flip * bLen * 0.28;
+        s += `<circle cx="${eX}" cy="${cy - 1.5 * sz}" r="${3 * sz}" fill="white"/>`;
+        s += `<circle cx="${eX}" cy="${cy - 1.5 * sz}" r="${1.5 * sz}" fill="#111"/>`;
+        s += `<circle cx="${eX - flip * 0.4 * sz}" cy="${cy - 2.5 * sz}" r="${0.7 * sz}" fill="rgba(255,255,255,0.45)"/>`;
+        // Mouth
+        s += `<path d="M${cx - flip * bLen * 0.45},${cy + 0.8 * sz} Q${cx - flip * bLen * 0.47},${cy + 2.5 * sz} ${cx - flip * bLen * 0.43},${cy + 3.5 * sz}" stroke="${acD}" stroke-width="0.8" fill="none"/>`;
+        // Scale pattern
+        for (let row = -1; row <= 1; row++) { for (let col = 0; col < R.i(3, 5); col++) { const scx = cx - bLen * 0.18 + col * 7 * sz + (row % 2) * 3.5 * sz, scy = cy + row * 4.5 * sz; if (Math.abs(scx - cx) < bLen * 0.36) s += `<path d="M${scx - 2.5 * sz},${scy} Q${scx},${scy - 1.5 * sz} ${scx + 2.5 * sz},${scy}" stroke="${acD}" stroke-width="0.35" fill="none" opacity="0.25"/>`; } }
+        return s;
+    },
+
+    turtle(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const shW = 26 * sz, shH = 18 * sz;
+        s += `<circle cx="${cx}" cy="${cy}" r="${28 * sz}" fill="${acA(0.07)}"/>`;
+        // Shell
+        s += `<ellipse cx="${cx}" cy="${cy}" rx="${shW}" ry="${shH}" fill="${ac}" stroke="${acD}" stroke-width="0.8"/>`;
+        // Hexagonal scutes
+        const hxR = 5.5 * sz;
+        for (let row = -1; row <= 1; row++) { for (let col = -2; col <= 2; col++) { const hx = cx + col * hxR * 1.6 + (row % 2) * hxR * 0.8, hy = cy + row * hxR * 1.4; if (Math.abs(hx - cx) < shW * 0.65 && Math.abs(hy - cy) < shH * 0.65) { let hp = ''; for (let i = 0; i < 6; i++) { const a = (60 * i - 30) * 0.0175; hp += `${i === 0 ? 'M' : 'L'}${hx + hxR * 0.65 * Math.cos(a)},${hy + hxR * 0.65 * Math.sin(a)}`; } s += `<path d="${hp}Z" stroke="${acD}" stroke-width="0.45" fill="none" opacity="0.3"/>`; } } }
+        // Highlight
+        s += `<ellipse cx="${cx - shW * 0.18}" cy="${cy - shH * 0.25}" rx="${shW * 0.35}" ry="${shH * 0.25}" fill="${acL}" opacity="0.1"/>`;
+        // Head
+        const hdx = cx - shW - 2.5 * sz;
+        s += `<ellipse cx="${hdx}" cy="${cy}" rx="${7 * sz}" ry="${5.5 * sz}" fill="${acL}"/>`;
+        s += `<circle cx="${hdx - 2.5 * sz}" cy="${cy - 1.5 * sz}" r="${1.8 * sz}" fill="white"/>`;
+        s += `<circle cx="${hdx - 2.5 * sz}" cy="${cy - 1.5 * sz}" r="${0.9 * sz}" fill="#111"/>`;
+        // Flippers
+        for (const [fx, fy, fa] of [[cx - shW * 0.55, cy + shH, -18], [cx + shW * 0.55, cy + shH, 18], [cx - shW * 0.35, cy - shH, 14], [cx + shW * 0.35, cy - shH, -14]]) s += `<ellipse cx="${fx}" cy="${fy}" rx="${9 * sz}" ry="${3.5 * sz}" fill="${acL}" opacity="0.65" transform="rotate(${fa},${fx},${fy})"/>`;
+        return s;
+    },
+
+    whale(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const bLen = 75 * sz, bH = 22 * sz;
+        s += `<ellipse cx="${cx}" cy="${cy}" rx="${45 * sz}" ry="${28 * sz}" fill="${acA(0.06)}"/>`;
+        // Massive body
+        s += `<path d="M${cx - bLen * 0.48},${cy} Q${cx - bLen * 0.28},${cy - bH * 1.15} ${cx + bLen * 0.08},${cy - bH * 0.95} Q${cx + bLen * 0.38},${cy - bH * 0.75} ${cx + bLen * 0.48},${cy - bH * 0.25} L${cx + bLen * 0.48},${cy + bH * 0.18} Q${cx + bLen * 0.38},${cy + bH * 0.75} ${cx + bLen * 0.08},${cy + bH * 0.95} Q${cx - bLen * 0.28},${cy + bH * 1.05} ${cx - bLen * 0.48},${cy}Z" fill="${ac}"/>`;
+        // Belly line
+        s += `<path d="M${cx - bLen * 0.38},${cy + bH * 0.28} Q${cx},${cy + bH * 0.98} ${cx + bLen * 0.42},${cy + bH * 0.12}" stroke="${acL}" stroke-width="${1.5 * sz}" fill="none" opacity="0.18"/>`;
+        // Eye
+        s += `<circle cx="${cx - bLen * 0.33}" cy="${cy - bH * 0.25}" r="${2.5 * sz}" fill="white"/>`;
+        s += `<circle cx="${cx - bLen * 0.33}" cy="${cy - bH * 0.25}" r="${1.2 * sz}" fill="#111"/>`;
+        // Tail flukes
+        for (const side of [-1, 1]) s += `<path d="M${cx + bLen * 0.46},${cy} Q${cx + bLen * 0.52},${cy + side * 13 * sz} ${cx + bLen * 0.62},${cy + side * 16 * sz} Q${cx + bLen * 0.52},${cy + side * 4 * sz} ${cx + bLen * 0.46},${cy}" fill="${acL}" opacity="0.65"/>`;
+        // Pectoral fin
+        s += `<ellipse cx="${cx - bLen * 0.13}" cy="${cy + bH * 0.65}" rx="${10 * sz}" ry="${3.5 * sz}" fill="${acL}" opacity="0.45" transform="rotate(22,${cx - bLen * 0.13},${cy + bH * 0.65})"/>`;
+        // Barnacles
+        for (let i = 0; i < R.i(3, 5); i++) s += `<circle cx="${cx + R.f(-bLen * 0.28, bLen * 0.28)}" cy="${cy + R.f(-bH * 0.45, bH * 0.45)}" r="${R.f(0.8, 2) * sz}" fill="${acD}" opacity="0.25"/>`;
+        return s;
+    },
+
+    mystic(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        s += `<circle cx="${cx}" cy="${cy - 4 * sz}" r="${32 * sz}" fill="${acA(0.08)}"/>`;
+        // Robe
+        s += `<path d="M${cx - 11 * sz},${cy - 13 * sz} Q${cx - 16 * sz},${cy + 4 * sz} ${cx - 20 * sz},${cy + 28 * sz} L${cx + 20 * sz},${cy + 28 * sz} Q${cx + 16 * sz},${cy + 4 * sz} ${cx + 11 * sz},${cy - 13 * sz}Z" fill="${ac}" opacity="0.75"/>`;
+        // Hood
+        s += `<path d="M${cx - 11 * sz},${cy - 13 * sz} Q${cx - 13 * sz},${cy - 27 * sz} ${cx},${cy - 29 * sz} Q${cx + 13 * sz},${cy - 27 * sz} ${cx + 11 * sz},${cy - 13 * sz}Z" fill="${acD}"/>`;
+        // Face shadow
+        s += `<ellipse cx="${cx}" cy="${cy - 18 * sz}" rx="${5.5 * sz}" ry="${4.5 * sz}" fill="rgba(0,0,0,0.25)"/>`;
+        // Glowing eyes
+        s += `<circle cx="${cx - 2.5 * sz}" cy="${cy - 18 * sz}" r="${1.3 * sz}" fill="${acL}"/>`;
+        s += `<circle cx="${cx + 2.5 * sz}" cy="${cy - 18 * sz}" r="${1.3 * sz}" fill="${acL}"/>`;
+        // Staff
+        const stSide = R.f(0, 1) > 0.5 ? 16 : -16;
+        s += `<line x1="${cx + stSide * sz}" y1="${cy - 32 * sz}" x2="${cx + stSide * sz}" y2="${cy + 23 * sz}" stroke="${acL}" stroke-width="${1.3 * sz}"/>`;
+        s += `<circle cx="${cx + stSide * sz}" cy="${cy - 32 * sz}" r="${4.5 * sz}" fill="${acL}" opacity="0.55"/>`;
+        s += `<circle cx="${cx + stSide * sz}" cy="${cy - 32 * sz}" r="${2.5 * sz}" fill="white" opacity="0.25"/>`;
+        // Orbiting energy
+        for (let i = 0; i < R.i(3, 5); i++) { const a = R.f(0, 360), rad = a * 0.0175, oR = R.f(18, 32) * sz; s += `<circle cx="${cx + Math.cos(rad) * oR}" cy="${cy - 4 * sz + Math.sin(rad) * oR * 0.45}" r="${R.f(1.3, 2.5) * sz}" fill="${acL}" opacity="${R.f(0.2, 0.45)}"/>`; }
+        // Robe trim
+        s += `<path d="M${cx - 14 * sz},${cy + 8 * sz} Q${cx},${cy + 13 * sz} ${cx + 14 * sz},${cy + 8 * sz}" stroke="${acL}" stroke-width="0.7" fill="none" opacity="0.25"/>`;
+        return s;
+    },
+
+    warrior(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const flip = R.f(0, 1) > 0.5 ? -1 : 1;
+        s += `<circle cx="${cx}" cy="${cy}" r="${32 * sz}" fill="${acA(0.08)}"/>`;
+        // Legs
+        s += `<line x1="${cx - 5.5 * sz}" y1="${cy + 11 * sz}" x2="${cx - 9 * sz}" y2="${cy + 30 * sz}" stroke="${acD}" stroke-width="${3.5 * sz}" stroke-linecap="round"/>`;
+        s += `<line x1="${cx + 5.5 * sz}" y1="${cy + 11 * sz}" x2="${cx + 9 * sz}" y2="${cy + 30 * sz}" stroke="${acD}" stroke-width="${3.5 * sz}" stroke-linecap="round"/>`;
+        // Cape
+        s += `<path d="M${cx - 9 * sz},${cy - 6 * sz} Q${cx - 13 * sz + flip * 4 * sz},${cy + 8 * sz} ${cx - 16 * sz + flip * 4 * sz},${cy + 26 * sz} L${cx + 16 * sz + flip * 4 * sz},${cy + 26 * sz} Q${cx + 13 * sz + flip * 4 * sz},${cy + 8 * sz} ${cx + 9 * sz},${cy - 6 * sz}" fill="${acA(0.18)}"/>`;
+        // Torso armor
+        s += `<path d="M${cx - 12 * sz},${cy - 7 * sz} L${cx - 10 * sz},${cy + 12 * sz} L${cx + 10 * sz},${cy + 12 * sz} L${cx + 12 * sz},${cy - 7 * sz}Z" fill="${ac}" stroke="${acD}" stroke-width="0.7"/>`;
+        // Chest detail
+        s += `<path d="M${cx - 7 * sz},${cy - 3 * sz} L${cx},${cy + 5 * sz} L${cx + 7 * sz},${cy - 3 * sz}" stroke="${acL}" stroke-width="0.8" fill="none" opacity="0.35"/>`;
+        // Shoulder pads
+        for (const side of [-1, 1]) s += `<ellipse cx="${cx + side * 14 * sz}" cy="${cy - 5 * sz}" rx="${7 * sz}" ry="${4.5 * sz}" fill="${ac}" stroke="${acD}" stroke-width="0.5"/>`;
+        // Arms
+        s += `<line x1="${cx - 14 * sz}" y1="${cy - 1 * sz}" x2="${cx - 20 * sz}" y2="${cy + 10 * sz}" stroke="${acD}" stroke-width="${2.8 * sz}" stroke-linecap="round"/>`;
+        s += `<line x1="${cx + 14 * sz}" y1="${cy - 1 * sz}" x2="${cx + 20 * sz}" y2="${cy + 10 * sz}" stroke="${acD}" stroke-width="${2.8 * sz}" stroke-linecap="round"/>`;
+        // Weapon
+        const wx = cx + flip * 22 * sz;
+        s += `<line x1="${wx}" y1="${cy - 28 * sz}" x2="${wx}" y2="${cy + 13 * sz}" stroke="${acL}" stroke-width="${1.8 * sz}"/>`;
+        s += `<path d="M${wx - 2.5 * sz},${cy - 26 * sz} L${wx},${cy - 32 * sz} L${wx + 2.5 * sz},${cy - 26 * sz}" fill="${acL}"/>`;
+        // Head + helmet
+        s += `<circle cx="${cx}" cy="${cy - 14 * sz}" r="${6.5 * sz}" fill="${acL}"/>`;
+        s += `<path d="M${cx - 6.5 * sz},${cy - 14 * sz} Q${cx - 7 * sz},${cy - 22 * sz} ${cx},${cy - 23 * sz} Q${cx + 7 * sz},${cy - 22 * sz} ${cx + 6.5 * sz},${cy - 14 * sz}" fill="${ac}"/>`;
+        // Visor eyes
+        s += `<circle cx="${cx - 2.5 * sz}" cy="${cy - 14.5 * sz}" r="${1.2 * sz}" fill="${acL}"/>`;
+        s += `<circle cx="${cx + 2.5 * sz}" cy="${cy - 14.5 * sz}" r="${1.2 * sz}" fill="${acL}"/>`;
+        return s;
+    },
+
+    hydra(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        s += `<circle cx="${cx}" cy="${cy}" r="${28 * sz}" fill="${acA(0.07)}"/>`;
+        // Base body
+        s += `<ellipse cx="${cx}" cy="${cy + 4 * sz}" rx="${13 * sz}" ry="${18 * sz}" fill="${ac}"/>`;
+        // Multiple heads
+        const nHeads = R.i(3, 5);
+        for (let i = 0; i < nHeads; i++) {
+            const a = -55 + i * (110 / (nHeads - 1)), rad = a * 0.0175, nLen = R.f(18, 32) * sz;
+            const nx2 = cx + Math.cos(rad) * nLen, ny2 = cy - 8 * sz - Math.abs(Math.sin(rad)) * nLen * 0.45 - nLen * 0.45;
+            s += `<path d="M${cx + Math.cos(rad) * 7 * sz},${cy - 8 * sz} Q${(cx + nx2) / 2 + R.f(-4, 4) * sz},${(cy - 8 * sz + ny2) / 2 - 8 * sz} ${nx2},${ny2}" stroke="${ac}" stroke-width="${R.f(2.5, 4) * sz}" fill="none" stroke-linecap="round"/>`;
+            s += `<ellipse cx="${nx2}" cy="${ny2}" rx="${5.5 * sz}" ry="${3.5 * sz}" fill="${acL}" transform="rotate(${a * 0.45},${nx2},${ny2})"/>`;
+            s += `<circle cx="${nx2 - Math.cos(rad) * 1.5 * sz}" cy="${ny2 - 1.5 * sz}" r="${1.3 * sz}" fill="white"/>`;
+            s += `<circle cx="${nx2 - Math.cos(rad) * 1.5 * sz}" cy="${ny2 - 1.5 * sz}" r="${0.6 * sz}" fill="#111"/>`;
+            s += `<path d="M${nx2 + Math.cos(rad) * 4 * sz},${ny2 + 0.8 * sz} L${nx2 + Math.cos(rad) * 7 * sz},${ny2 + 1.5 * sz}" stroke="${acD}" stroke-width="${0.8 * sz}" fill="none"/>`;
+        }
+        // Base roots
+        for (let i = 0; i < R.i(2, 4); i++) { const bx = cx + R.f(-8, 8) * sz; s += `<path d="M${bx},${cy + 18 * sz} Q${bx + R.f(-8, 8) * sz},${cy + 27 * sz} ${bx + R.f(-12, 12) * sz},${cy + 32 * sz}" stroke="${ac}" stroke-width="${R.f(1.3, 2.5) * sz}" fill="none" opacity="0.55"/>`; }
+        return s;
+    },
+
+    coral(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        s += `<circle cx="${cx}" cy="${cy}" r="${28 * sz}" fill="${acA(0.07)}"/>`;
+        const tH = R.f(28, 40) * sz;
+        s += `<path d="M${cx - 3.5 * sz},${cy + tH * 0.28} L${cx - 2.5 * sz},${cy - tH * 0.45} L${cx + 2.5 * sz},${cy - tH * 0.45} L${cx + 3.5 * sz},${cy + tH * 0.28}Z" fill="${ac}"/>`;
+        function branch(bx, by, len, ang, depth) {
+            if (depth <= 0 || len < 2.5) return '';
+            const rad = ang * 0.0175, ex = bx + Math.cos(rad) * len, ey = by - Math.sin(rad) * len;
+            let bs = `<line x1="${bx}" y1="${by}" x2="${ex}" y2="${ey}" stroke="${depth > 1 ? ac : acL}" stroke-width="${(depth * 1.3 + 0.4) * sz}" stroke-linecap="round" opacity="${0.5 + depth * 0.12}"/>`;
+            if (depth <= 1) bs += `<circle cx="${ex}" cy="${ey}" r="${R.f(1.5, 3.5) * sz}" fill="${acL}" opacity="0.45"/>`;
+            for (let i = 0; i < R.i(2, 3); i++) bs += branch(ex, ey, len * R.f(0.5, 0.72), ang + R.f(-38, 38), depth - 1);
+            return bs;
+        }
+        for (let i = 0; i < R.i(3, 5); i++) s += branch(cx, cy - tH * 0.35, R.f(10, 20) * sz, 48 + R.f(-25, 25) + i * R.f(14, 22), 3);
+        // Base
+        s += `<ellipse cx="${cx}" cy="${cy + tH * 0.28}" rx="${7 * sz}" ry="${2.5 * sz}" fill="${acD}" opacity="0.35"/>`;
+        return s;
+    },
+
+    swarm(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const n = R.i(8, 15);
+        for (let i = 0; i < n; i++) {
+            const sx = cx + R.f(-38, 38) * sz, sy = cy + R.f(-28, 28) * sz, ss = R.f(1.8, 5) * sz;
+            s += `<ellipse cx="${sx}" cy="${sy}" rx="${ss}" ry="${ss * 0.55}" fill="${ac}" opacity="${R.f(0.35, 0.75)}"/>`;
+            s += `<line x1="${sx + ss}" y1="${sy}" x2="${sx + ss * 1.4}" y2="${sy + R.f(-1.5, 1.5)}" stroke="${acL}" stroke-width="${0.4 * sz}" opacity="0.4"/>`;
+            s += `<circle cx="${sx - ss * 0.4}" cy="${sy - ss * 0.15}" r="${0.4 * sz}" fill="white" opacity="0.5"/>`;
+        }
+        return s;
+    },
+
+    seahorse(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        s += `<circle cx="${cx}" cy="${cy}" r="${28 * sz}" fill="${acA(0.07)}"/>`;
+        // S-curved body
+        s += `<path d="M${cx},${cy - 26 * sz} Q${cx + 13 * sz},${cy - 18 * sz} ${cx + 10 * sz},${cy - 6 * sz} Q${cx + 7 * sz},${cy + 4 * sz} ${cx - 4 * sz},${cy + 13 * sz} Q${cx - 10 * sz},${cy + 22 * sz} ${cx - 7 * sz},${cy + 28 * sz} Q${cx - 1 * sz},${cy + 30 * sz} ${cx + 4 * sz},${cy + 26 * sz}" stroke="${ac}" stroke-width="${5.5 * sz}" fill="none" stroke-linecap="round"/>`;
+        // Head
+        s += `<ellipse cx="${cx - 2 * sz}" cy="${cy - 28 * sz}" rx="${7 * sz}" ry="${4.5 * sz}" fill="${ac}"/>`;
+        // Snout
+        s += `<line x1="${cx - 8 * sz}" y1="${cy - 28 * sz}" x2="${cx - 16 * sz}" y2="${cy - 26 * sz}" stroke="${ac}" stroke-width="${1.8 * sz}" stroke-linecap="round"/>`;
+        // Coronet
+        for (let i = 0; i < 3; i++) s += `<line x1="${cx - 1 * sz + i * 2.5 * sz}" y1="${cy - 31 * sz}" x2="${cx - 1 * sz + i * 2.5 * sz}" y2="${cy - 35 * sz - R.f(0, 2.5) * sz}" stroke="${acL}" stroke-width="${0.8 * sz}" stroke-linecap="round"/>`;
+        // Dorsal fin
+        s += `<path d="M${cx + 9 * sz},${cy - 13 * sz} Q${cx + 18 * sz},${cy - 8 * sz} ${cx + 12 * sz},${cy - 0 * sz}" fill="${acL}" opacity="0.45"/>`;
+        // Eye
+        s += `<circle cx="${cx - 4 * sz}" cy="${cy - 29 * sz}" r="${1.8 * sz}" fill="white"/>`;
+        s += `<circle cx="${cx - 4 * sz}" cy="${cy - 29 * sz}" r="${0.9 * sz}" fill="#111"/>`;
+        // Body ridges
+        for (let i = 0; i < 5; i++) { const ry = cy - 20 * sz + i * 7 * sz, rx = cx + 9 * sz * Math.cos(i * 0.5 + 0.5); s += `<circle cx="${rx}" cy="${ry}" r="${0.9 * sz}" fill="${acD}" opacity="0.25"/>`; }
+        // Curled tail
+        s += `<path d="M${cx + 4 * sz},${cy + 26 * sz} Q${cx + 10 * sz},${cy + 30 * sz} ${cx + 7 * sz},${cy + 34 * sz} Q${cx + 1 * sz},${cy + 36 * sz} ${cx + 5 * sz},${cy + 32 * sz}" stroke="${ac}" stroke-width="${1.8 * sz}" fill="none"/>`;
+        return s;
+    },
+
+    starfish(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        s += `<circle cx="${cx}" cy="${cy}" r="${28 * sz}" fill="${acA(0.07)}"/>`;
+        const armLen = R.f(20, 28) * sz, armW = R.f(4.5, 7) * sz;
+        let sp = '';
+        for (let i = 0; i < 5; i++) { const a = -90 + i * 72 + R.f(-4, 4), rad = a * 0.0175, mRad = (a + 36) * 0.0175; sp += `${i === 0 ? 'M' : 'L'}${cx + Math.cos(rad) * armLen},${cy + Math.sin(rad) * armLen} L${cx + Math.cos(mRad) * armW},${cy + Math.sin(mRad) * armW} `; }
+        s += `<path d="${sp}Z" fill="${ac}" stroke="${acD}" stroke-width="0.7"/>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="${4.5 * sz}" fill="${acL}" opacity="0.25"/>`;
+        // Bumps on arms
+        for (let i = 0; i < 5; i++) { const a = -90 + i * 72, rad = a * 0.0175; for (let j = 1; j <= 3; j++) { const d = armLen * j / 4; s += `<circle cx="${cx + Math.cos(rad) * d}" cy="${cy + Math.sin(rad) * d}" r="${R.f(0.7, 1.3) * sz}" fill="${acD}" opacity="0.25"/>`; } }
+        return s;
+    },
+
+    lurker(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        const bW = 23 * sz, bH = 16 * sz;
+        s += `<circle cx="${cx}" cy="${cy}" r="${28 * sz}" fill="${acA(0.08)}"/>`;
+        s += `<ellipse cx="${cx}" cy="${cy}" rx="${bW}" ry="${bH}" fill="${ac}" opacity="0.7"/>`;
+        // Menacing eyes
+        for (const side of [-1, 1]) { s += `<ellipse cx="${cx + side * 7 * sz}" cy="${cy - bH * 0.18}" rx="${3.5 * sz}" ry="${2.2 * sz}" fill="${acL}" opacity="0.75"/>`; s += `<ellipse cx="${cx + side * 7 * sz}" cy="${cy - bH * 0.18}" rx="${1.8 * sz}" ry="${1.3 * sz}" fill="white" opacity="0.35"/>`; }
+        // Shadow tendrils
+        for (let i = 0; i < R.i(4, 7); i++) { const a = R.f(0, 360), rad = a * 0.0175, tl = R.f(13, 30) * sz; s += `<path d="M${cx + Math.cos(rad) * bW * 0.65},${cy + Math.sin(rad) * bH * 0.65} Q${cx + Math.cos(rad) * (bW + tl * 0.45)},${cy + Math.sin(rad) * (bH + tl * 0.3)} ${cx + Math.cos(rad) * (bW * 0.65 + tl)},${cy + Math.sin(rad) * (bH * 0.65 + tl)}" stroke="${ac}" stroke-width="${R.f(1.3, 3.5) * sz}" fill="none" opacity="${R.f(0.15, 0.35)}" stroke-linecap="round"/>`; }
+        // Teeth
+        s += `<path d="M${cx - 7 * sz},${cy + bH * 0.28} Q${cx},${cy + bH * 0.45} ${cx + 7 * sz},${cy + bH * 0.28}" stroke="${acD}" stroke-width="0.8" fill="none"/>`;
+        for (let i = -3; i <= 3; i++) s += `<line x1="${cx + i * 2.5 * sz}" y1="${cy + bH * 0.32}" x2="${cx + i * 2.5 * sz}" y2="${cy + bH * 0.4}" stroke="white" stroke-width="${0.7 * sz}" opacity="0.35"/>`;
+        return s;
+    },
+
+    generic(cx, cy, sz, ac, acL, acD, acA, R) {
+        let s = '';
+        s += `<circle cx="${cx}" cy="${cy}" r="${28 * sz}" fill="${acA(0.07)}"/>`;
+        // Organic blob body
+        const nPts = R.i(6, 9);
+        const pts = [];
+        for (let i = 0; i < nPts; i++) { const a = (i / nPts) * 360, rad = a * 0.0175, r = R.f(13, 25) * sz; pts.push({ x: cx + Math.cos(rad) * r, y: cy + Math.sin(rad) * r }); }
+        let bp = `M${pts[0].x},${pts[0].y}`;
+        for (let i = 1; i <= pts.length; i++) { const cur = pts[i % pts.length], prev = pts[(i - 1) % pts.length]; bp += ` Q${(prev.x + cur.x) / 2 + R.f(-4, 4)},${(prev.y + cur.y) / 2 + R.f(-4, 4)} ${cur.x},${cur.y}`; }
+        s += `<path d="${bp}Z" fill="${ac}" opacity="0.75"/>`;
+        // Eyes
+        for (const side of [-1, 1]) { s += `<circle cx="${cx + side * 4.5 * sz}" cy="${cy - 4.5 * sz}" r="${2.5 * sz}" fill="white"/>`; s += `<circle cx="${cx + side * 4.5 * sz}" cy="${cy - 4.5 * sz}" r="${1.2 * sz}" fill="#111"/>`; }
+        // Appendages
+        for (let i = 0; i < R.i(3, 5); i++) { const a = R.f(0, 360), rad = a * 0.0175, len = R.f(8, 22) * sz; s += `<path d="M${cx + Math.cos(rad) * 10 * sz},${cy + Math.sin(rad) * 10 * sz} Q${cx + Math.cos(rad) * (10 + len * 0.5) * sz},${cy + Math.sin(rad) * (10 + len * 0.3) * sz + R.f(-4, 4)} ${cx + Math.cos(rad) * (10 + len) * sz},${cy + Math.sin(rad) * (10 + len) * sz}" stroke="${acL}" stroke-width="${R.f(0.8, 2) * sz}" fill="none" opacity="0.55" stroke-linecap="round"/>`; }
+        return s;
+    }
+};
+
+const _artSpells = {
+    heal(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<circle cx="${cx}" cy="${cy}" r="23" fill="${acA(0.18)}"/>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="14" fill="${ac}" opacity="0.45"/>`;
+        s += `<rect x="${cx - 2.5}" y="${cy - 10}" width="5" height="20" rx="1.5" fill="${acL}" opacity="0.75"/>`;
+        s += `<rect x="${cx - 10}" y="${cy - 2.5}" width="20" height="5" rx="1.5" fill="${acL}" opacity="0.75"/>`;
+        for (let i = 0; i < 6; i++) { const a = i * 60 + R.f(-8, 8), r = a * 0.0175, d = R.f(20, 29); s += `<circle cx="${cx + Math.cos(r) * d}" cy="${cy + Math.sin(r) * d}" r="${R.f(0.8, 2.2)}" fill="${acL}" opacity="${R.f(0.25, 0.5)}"/>`; }
+        return s;
+    },
+    damage(cx, cy, ac, acL, acD, acA, R) {
+        let s = '';
+        for (let i = 0; i < 8; i++) { const a = i * 45 + R.f(-4, 4), r = a * 0.0175; s += `<line x1="${cx}" y1="${cy}" x2="${cx + Math.cos(r) * R.f(16, 28)}" y2="${cy + Math.sin(r) * R.f(16, 28)}" stroke="${ac}" stroke-width="${R.f(1.8, 3.5)}" opacity="0.65" stroke-linecap="round"/>`; }
+        s += `<circle cx="${cx}" cy="${cy}" r="10" fill="${ac}" opacity="0.55"/>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="5" fill="${acL}" opacity="0.35"/>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="20" fill="none" stroke="${acL}" stroke-width="1.3" opacity="0.25"/>`;
+        return s;
+    },
+    draw(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<circle cx="${cx}" cy="${cy}" r="14" fill="${acL}" opacity="0.08"/>`;
+        s += `<path d="M${cx},${cy - 4} Q${cx - 18},${cy - 13} ${cx - 20},${cy + 8} L${cx},${cy + 4}Z" fill="${ac}" opacity="0.55"/>`;
+        s += `<path d="M${cx},${cy - 4} Q${cx + 18},${cy - 13} ${cx + 20},${cy + 8} L${cx},${cy + 4}Z" fill="${acL}" opacity="0.45"/>`;
+        for (let i = 0; i < 4; i++) s += `<line x1="${cx + 3.5}" y1="${cy - 2 + i * 2.5}" x2="${cx + 14}" y2="${cy - 3.5 + i * 2.5}" stroke="${acD}" stroke-width="0.5" opacity="0.35"/>`;
+        return s;
+    },
+    destroy(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<circle cx="${cx}" cy="${cy}" r="16" fill="${ac}" opacity="0.25"/>`;
+        for (let i = 0; i < 5; i++) { const a = i * 72 + R.f(-12, 12), r = a * 0.0175; s += `<line x1="${cx}" y1="${cy}" x2="${cx + Math.cos(r) * R.f(11, 20)}" y2="${cy + Math.sin(r) * R.f(11, 20)}" stroke="${acL}" stroke-width="1.3" opacity="0.45"/>`; }
+        for (let i = 0; i < 5; i++) { const a = R.f(0, 360), r = a * 0.0175, d = R.f(8, 22); s += `<path d="M${cx + Math.cos(r) * d},${cy + Math.sin(r) * d} L${cx + Math.cos(r) * (d + R.f(3, 7))},${cy + Math.sin(r) * (d + R.f(3, 7)) + R.f(-2, 2)}" stroke="${ac}" stroke-width="${R.f(1.2, 2.5)}" stroke-linecap="round" opacity="0.55"/>`; }
+        return s;
+    },
+    wave(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<path d="M${cx - 32},${cy + 8} Q${cx - 18},${cy - 22} ${cx},${cy - 16} Q${cx + 8},${cy - 13} ${cx + 13},${cy - 18} Q${cx + 22},${cy - 25} ${cx + 32},${cy - 8} L${cx + 32},${cy + 18} L${cx - 32},${cy + 18}Z" fill="${ac}" opacity="0.45"/>`;
+        s += `<path d="M${cx + 13},${cy - 18} Q${cx + 18},${cy - 22} ${cx + 16},${cy - 13}" stroke="${acL}" stroke-width="1.5" fill="none" opacity="0.45"/>`;
+        for (let i = 0; i < R.i(4, 7); i++) s += `<circle cx="${cx + R.f(-13, 22)}" cy="${cy + R.f(-25, -8)}" r="${R.f(0.6, 1.8)}" fill="${acL}" opacity="${R.f(0.25, 0.5)}"/>`;
+        return s;
+    },
+    revive(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<path d="M${cx - 7},${cy + 13} Q${cx - 10},${cy} ${cx},${cy - 18} Q${cx + 10},${cy} ${cx + 7},${cy + 13}" fill="${ac}" opacity="0.35"/>`;
+        s += `<circle cx="${cx}" cy="${cy - 18}" r="4.5" fill="${acL}" opacity="0.45"/>`;
+        s += `<path d="M${cx - 13},${cy + 18} Q${cx - 18},${cy} ${cx},${cy - 4} Q${cx + 18},${cy} ${cx + 13},${cy + 18}" stroke="${acL}" stroke-width="0.8" fill="none" opacity="0.25"/>`;
+        for (let i = 0; i < 4; i++) s += `<circle cx="${cx + R.f(-8, 8)}" cy="${cy + R.f(-22, -4)}" r="${R.f(0.4, 1.3)}" fill="${acL}" opacity="${R.f(0.2, 0.45)}"/>`;
+        return s;
+    },
+    mill(cx, cy, ac, acL, acD, acA, R) {
+        let s = '';
+        for (let i = 0; i < 3; i++) s += `<circle cx="${cx}" cy="${cy}" r="${7 + i * 7}" fill="none" stroke="${i === 0 ? acL : ac}" stroke-width="${1.8 - i * 0.4}" opacity="${0.45 - i * 0.08}" stroke-dasharray="${2.5 + i * 1.5} ${1.5 + i}"/>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="3.5" fill="${acD}" opacity="0.55"/>`;
+        for (let i = 0; i < R.i(3, 5); i++) { const a = R.f(0, 360), r = a * 0.0175, d = R.f(10, 22); s += `<rect x="${cx + Math.cos(r) * d - 0.8}" y="${cy + Math.sin(r) * d - 0.8}" width="1.6" height="1.6" fill="${ac}" opacity="0.35" transform="rotate(${a},${cx + Math.cos(r) * d},${cy + Math.sin(r) * d})"/>`; }
+        return s;
+    },
+    power(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<path d="M${cx - 4},${cy - 25} L${cx + 2.5},${cy - 4} L${cx - 2.5},${cy - 4} L${cx + 4},${cy + 25} L${cx - 0.8},${cy + 2.5} L${cx + 1.5},${cy + 2.5}Z" fill="${ac}" opacity="0.75"/>`;
+        s += `<path d="M${cx - 2.5},${cy - 20} L${cx + 1.5},${cy - 4} L${cx - 0.8},${cy - 4} L${cx + 2.5},${cy + 20}" fill="${acL}" opacity="0.35"/>`;
+        for (let i = 0; i < R.i(3, 4); i++) { const sx = cx + R.f(-7, 7), sy = cy + R.f(-13, 13); s += `<path d="M${sx},${sy} L${sx + R.f(-5, 5)},${sy + R.f(-5, 5)} L${sx + R.f(-7, 7)},${sy + R.f(-7, 7)}" stroke="${acL}" stroke-width="0.7" fill="none" opacity="0.35"/>`; }
+        return s;
+    },
+    field(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<path d="M${cx - 38},${cy + 13} L${cx - 18},${cy - 13} L${cx - 4},${cy + 4} L${cx + 8},${cy - 18} L${cx + 28},${cy - 4} L${cx + 38},${cy + 13}Z" fill="${ac}" opacity="0.35"/>`;
+        s += `<rect x="${cx - 38}" y="${cy + 13}" width="76" height="18" fill="${acA(0.13)}"/>`;
+        s += `<circle cx="${cx}" cy="${cy - 8}" r="18" fill="${acL}" opacity="0.06"/>`;
+        return s;
+    },
+    shield(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<path d="M${cx - 20},${cy + 8} Q${cx - 22},${cy - 18} ${cx},${cy - 22} Q${cx + 22},${cy - 18} ${cx + 20},${cy + 8}Z" fill="${ac}" opacity="0.28" stroke="${acL}" stroke-width="1.3"/>`;
+        for (let i = 0; i < 4; i++) { const hx = cx + R.f(-13, 13), hy = cy + R.f(-16, 4); s += `<path d="M${hx - 3.5},${hy} L${hx - 1.5},${hy - 2.5} L${hx + 1.5},${hy - 2.5} L${hx + 3.5},${hy} L${hx + 1.5},${hy + 2.5} L${hx - 1.5},${hy + 2.5}Z" stroke="${acL}" stroke-width="0.5" fill="none" opacity="0.35"/>`; }
+        return s;
+    },
+    sword(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<path d="M${cx},${cy - 27} L${cx + 3.5},${cy + 8} L${cx},${cy + 6} L${cx - 3.5},${cy + 8}Z" fill="${ac}" opacity="0.75"/>`;
+        s += `<line x1="${cx}" y1="${cy - 25}" x2="${cx + 1.5}" y2="${cy + 4}" stroke="${acL}" stroke-width="0.8" opacity="0.35"/>`;
+        s += `<rect x="${cx - 7}" y="${cy + 7}" width="14" height="2.5" rx="0.8" fill="${acD}"/>`;
+        s += `<rect x="${cx - 1.5}" y="${cy + 9.5}" width="3" height="8" rx="0.8" fill="${acD}"/>`;
+        s += `<circle cx="${cx}" cy="${cy + 20}" r="2.5" fill="${ac}"/>`;
+        return s;
+    },
+    ritual(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<rect x="${cx - 16}" y="${cy + 4}" width="32" height="7" rx="1.5" fill="${acD}" opacity="0.55"/>`;
+        s += `<path d="M${cx - 10},${cy + 4} L${cx - 8},${cy - 4} L${cx + 8},${cy - 4} L${cx + 10},${cy + 4}Z" fill="${ac}" opacity="0.45"/>`;
+        for (let i = -1; i <= 1; i++) { s += `<rect x="${cx + i * 10 - 0.8}" y="${cy - 13}" width="1.6" height="9" fill="${acL}" opacity="0.55"/>`; s += `<ellipse cx="${cx + i * 10}" cy="${cy - 14}" rx="1.5" ry="2.5" fill="${acL}" opacity="0.45"/>`; }
+        s += `<circle cx="${cx}" cy="${cy}" r="18" fill="none" stroke="${acL}" stroke-width="0.7" opacity="0.25" stroke-dasharray="2.5 1.5"/>`;
+        return s;
+    },
+    _default(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<circle cx="${cx}" cy="${cy}" r="16" fill="${ac}" opacity="0.25"/>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="9" fill="${acL}" opacity="0.15"/>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="3.5" fill="${acL}" opacity="0.35"/>`;
+        return s;
+    }
+};
+
+const _artTraps = {
+    shield(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<path d="M${cx - 22},${cy + 13} L${cx - 18},${cy - 18} L${cx},${cy - 22} L${cx + 18},${cy - 18} L${cx + 22},${cy + 13}Z" fill="${ac}" opacity="0.35" stroke="${acL}" stroke-width="0.8"/>`;
+        for (let i = 0; i < 3; i++) { const sx = cx + R.f(-16, 16), sy = cy + R.f(-16, 6); s += `<path d="M${sx},${sy} L${sx + R.f(-3, 3)},${sy + R.f(-3, 3)}" stroke="${acL}" stroke-width="0.8" opacity="0.45"/>`; }
+        return s;
+    },
+    bomb(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<circle cx="${cx}" cy="${cy}" r="12" fill="${ac}" opacity="0.55" stroke="${acD}" stroke-width="1.3"/>`;
+        for (let i = 0; i < 8; i++) { const a = i * 45, r = a * 0.0175; s += `<line x1="${cx + Math.cos(r) * 12}" y1="${cy + Math.sin(r) * 12}" x2="${cx + Math.cos(r) * 18}" y2="${cy + Math.sin(r) * 18}" stroke="${ac}" stroke-width="1.8" stroke-linecap="round"/>`; }
+        s += `<path d="M${cx},${cy - 5} L${cx - 3.5},${cy + 3.5} L${cx + 3.5},${cy + 3.5}Z" fill="${acL}" opacity="0.45"/>`;
+        s += `<circle cx="${cx}" cy="${cy + 6}" r="0.8" fill="${acL}" opacity="0.45"/>`;
+        return s;
+    },
+    net(cx, cy, ac, acL, acD, acA, R) {
+        let s = '';
+        for (let i = -2; i <= 2; i++) { s += `<line x1="${cx - 22}" y1="${cy + i * 7}" x2="${cx + 22}" y2="${cy + i * 7 + R.f(-2, 2)}" stroke="${ac}" stroke-width="0.8" opacity="0.35"/>`; s += `<line x1="${cx + i * 9}" y1="${cy - 22}" x2="${cx + i * 9 + R.f(-2, 2)}" y2="${cy + 22}" stroke="${ac}" stroke-width="0.8" opacity="0.35"/>`; }
+        for (let i = 0; i < R.i(3, 5); i++) s += `<circle cx="${cx + R.f(-18, 18)}" cy="${cy + R.f(-18, 18)}" r="1.3" fill="${acL}" opacity="0.35"/>`;
+        return s;
+    },
+    claw(cx, cy, ac, acL, acD, acA, R) {
+        let s = '';
+        const ja = R.f(18, 35);
+        s += `<path d="M${cx - 4},${cy} Q${cx - 13},${cy - 8} ${cx - 22},${cy - 4} L${cx - 18},${cy - 1.5} Q${cx - 8},${cy - 7} ${cx - 4},${cy}Z" fill="${ac}" opacity="0.65" transform="rotate(${-ja},${cx - 4},${cy})"/>`;
+        s += `<path d="M${cx - 4},${cy} Q${cx - 13},${cy + 8} ${cx - 22},${cy + 4} L${cx - 18},${cy + 1.5} Q${cx - 8},${cy + 7} ${cx - 4},${cy}Z" fill="${ac}" opacity="0.65" transform="rotate(${ja},${cx - 4},${cy})"/>`;
+        s += `<circle cx="${cx - 4}" cy="${cy}" r="3.5" fill="${acD}" stroke="${ac}" stroke-width="0.8"/>`;
+        for (let i = 0; i < 3; i++) { s += `<line x1="${cx - 9 - i * 3.5}" y1="${cy - 2.5}" x2="${cx - 9 - i * 3.5}" y2="${cy - 1}" stroke="${acL}" stroke-width="0.8" opacity="0.45"/>`; s += `<line x1="${cx - 9 - i * 3.5}" y1="${cy + 2.5}" x2="${cx - 9 - i * 3.5}" y2="${cy + 1}" stroke="${acL}" stroke-width="0.8" opacity="0.45"/>`; }
+        return s;
+    },
+    negate(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<circle cx="${cx}" cy="${cy}" r="18" fill="none" stroke="${ac}" stroke-width="1.8" opacity="0.45"/>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="12" fill="none" stroke="${acL}" stroke-width="0.8" opacity="0.25"/>`;
+        s += `<line x1="${cx - 12}" y1="${cy - 12}" x2="${cx + 12}" y2="${cy + 12}" stroke="${ac}" stroke-width="2.2" opacity="0.55"/>`;
+        s += `<line x1="${cx + 12}" y1="${cy - 12}" x2="${cx - 12}" y2="${cy + 12}" stroke="${ac}" stroke-width="2.2" opacity="0.55"/>`;
+        for (let i = 0; i < 5; i++) { const a = i * 72 + R.f(-4, 4), r = a * 0.0175; s += `<rect x="${cx + Math.cos(r) * 20 - 1.3}" y="${cy + Math.sin(r) * 20 - 1.3}" width="2.6" height="2.6" fill="${acL}" opacity="0.25" transform="rotate(${a},${cx + Math.cos(r) * 20},${cy + Math.sin(r) * 20})"/>`; }
+        return s;
+    },
+    mirror(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<path d="M${cx - 16},${cy + 13} Q${cx - 20},${cy} ${cx},${cy - 20} Q${cx + 20},${cy} ${cx + 16},${cy + 13}Z" fill="${ac}" opacity="0.25"/>`;
+        for (let i = 0; i < 3; i++) { const lx = cx - 8 + i * 8; s += `<line x1="${lx}" y1="${cy - 13 + i * 2.5}" x2="${lx + 4}" y2="${cy + 8 - i * 1.5}" stroke="${acL}" stroke-width="0.7" opacity="${0.35 - i * 0.08}"/>`; }
+        s += `<path d="M${cx - 27},${cy} L${cx - 8},${cy - 4} L${cx + 18},${cy - 18}" stroke="${acL}" stroke-width="1.3" fill="none" opacity="0.35" stroke-dasharray="2.5 1.5"/>`;
+        return s;
+    },
+    destroy(cx, cy, ac, acL, acD, acA, R) {
+        let s = '';
+        for (let i = 0; i < 7; i++) { const a = i * 51 + R.f(-8, 8), r = a * 0.0175; s += `<line x1="${cx}" y1="${cy}" x2="${cx + Math.cos(r) * R.f(13, 25)}" y2="${cy + Math.sin(r) * R.f(13, 25)}" stroke="${ac}" stroke-width="${R.f(1.3, 2.5)}" opacity="0.45" stroke-linecap="round"/>`; }
+        s += `<circle cx="${cx}" cy="${cy}" r="7" fill="${ac}" opacity="0.45"/>`;
+        for (let i = 0; i < R.i(4, 7); i++) s += `<rect x="${cx + R.f(-22, 22)}" y="${cy + R.f(-22, 22)}" width="${R.f(1.5, 4)}" height="${R.f(1.5, 4)}" fill="${acD}" opacity="0.25" transform="rotate(${R.f(0, 40)},${cx},${cy})"/>`;
+        return s;
+    },
+    _default(cx, cy, ac, acL, acD, acA, R) {
+        let s = `<path d="M${cx},${cy - 18} L${cx + 16},${cy + 8} L${cx - 16},${cy + 8}Z" fill="none" stroke="${ac}" stroke-width="1.8" opacity="0.45"/>`;
+        s += `<circle cx="${cx}" cy="${cy}" r="7" fill="${ac}" opacity="0.25"/>`;
+        return s;
+    }
+};
+
+function _artMarkings(cx, cy, sz, ac, acL, acD, acA, R) {
+    let s = '';
+    const style = R.i(0, 6);
+    if (style === 0) {
+        // Horizontal stripes
+        const count = R.i(3, 6); const sp = 7 * sz;
+        for (let i = 0; i < count; i++) { const sy = cy - (count * sp) / 2 + i * sp; s += `<line x1="${cx - R.f(15, 25) * sz}" y1="${sy}" x2="${cx + R.f(15, 25) * sz}" y2="${sy + R.f(-2, 2)}" stroke="${acD}" stroke-width="${R.f(1, 2.5) * sz}" opacity="${R.f(0.15, 0.3)}" stroke-linecap="round"/>`; }
+    } else if (style === 1) {
+        // Scattered spots
+        for (let i = 0; i < R.i(5, 12); i++) { s += `<circle cx="${cx + R.f(-22, 22) * sz}" cy="${cy + R.f(-16, 16) * sz}" r="${R.f(1, 3.5) * sz}" fill="${acL}" opacity="${R.f(0.08, 0.22)}"/>`; }
+    } else if (style === 2) {
+        // Armor ridges
+        for (let i = 0; i < R.i(3, 5); i++) { const ry = cy - 12 * sz + i * 7 * sz; s += `<path d="M${cx - R.f(14, 22) * sz},${ry} Q${cx},${ry - R.f(2, 5) * sz} ${cx + R.f(14, 22) * sz},${ry}" stroke="${acD}" stroke-width="${R.f(0.8, 1.8) * sz}" fill="none" opacity="0.2"/>`; }
+    } else if (style === 3) {
+        // Bioluminescent dots
+        for (let i = 0; i < R.i(6, 14); i++) { const dx = cx + R.f(-20, 20) * sz, dy = cy + R.f(-14, 14) * sz; s += `<circle cx="${dx}" cy="${dy}" r="${R.f(0.6, 1.8) * sz}" fill="${acL}" opacity="${R.f(0.3, 0.6)}"/>`; s += `<circle cx="${dx}" cy="${dy}" r="${R.f(2.5, 4) * sz}" fill="${acL}" opacity="${R.f(0.04, 0.1)}"/>`; }
+    } else if (style === 4) {
+        // Chevrons / V-marks
+        for (let i = 0; i < R.i(2, 4); i++) { const vy = cy - 10 * sz + i * 9 * sz; const vw = R.f(8, 16) * sz; s += `<path d="M${cx - vw},${vy + 3 * sz} L${cx},${vy} L${cx + vw},${vy + 3 * sz}" stroke="${acD}" stroke-width="${R.f(1, 2) * sz}" fill="none" opacity="0.2"/>`; }
+    } else if (style === 5) {
+        // Scale / diamond pattern
+        const gw = R.f(6, 10) * sz, gh = R.f(4, 7) * sz;
+        for (let gy = -2; gy <= 2; gy++) for (let gx = -2; gx <= 2; gx++) { if (R() > 0.55) continue; const dx = cx + gx * gw + (gy % 2 ? gw / 2 : 0), dy = cy + gy * gh; s += `<path d="M${dx},${dy - gh / 2} L${dx + gw / 2},${dy} L${dx},${dy + gh / 2} L${dx - gw / 2},${dy}Z" fill="none" stroke="${acD}" stroke-width="${0.6 * sz}" opacity="0.15"/>`; }
+    }
+    // style === 6 = clean/no markings
+    return s;
+}
+
+function getCardArtSVG(card) {
+    if (_artCache[card.id]) return _artCache[card.id];
+    const R = _artSeed(card.id);
+    const W = 200, H = 160;
+    // Derive accent color — use card.art.color for monsters, derive from art.bg for spells/traps
+    let ac;
+    if (card.art?.color) { ac = card.art.color; }
+    else if (card.art?.bg?.[0]) { const b = card.art.bg[0]; const rv = parseInt(b.slice(1, 3), 16) || 0; const gv = parseInt(b.slice(3, 5), 16) || 0; const bv = parseInt(b.slice(5, 7), 16) || 0; ac = '#' + [Math.min(255, rv * 4 + 80), Math.min(255, gv * 4 + 80), Math.min(255, bv * 4 + 80)].map(v => v.toString(16).padStart(2, '0')).join(''); }
+    else { ac = '#4090c0'; }
+    const hr = parseInt(ac.slice(1, 3), 16) || 64, hg = parseInt(ac.slice(3, 5), 16) || 144, hb = parseInt(ac.slice(5, 7), 16) || 192;
+    const acL = `rgb(${Math.min(255, hr + 60)},${Math.min(255, hg + 60)},${Math.min(255, hb + 60)})`;
+    const acD = `rgb(${hr >> 1},${hg >> 1},${hb >> 1})`;
+    const acA = a => `rgba(${hr},${hg},${hb},${a})`;
+    let els = '';
+    if (card.type === 'monster') {
+        els += _artBg(card.attribute || 'WATER', R, W, H, acA);
+        const arch = _artArch(card.name);
+        const lvl = card.level || 1;
+        // 7 composition layouts for variety
+        const layouts = [[0,0,1],[-25,10,1.3],[20,-15,0.8],[30,20,1.5],[-20,-10,1.15],[0,15,1.35],[10,-5,0.7]];
+        const lay = layouts[card.id % layouts.length];
+        const cx = W / 2 + lay[0] + R.f(-6, 6), cy = H / 2 + lay[1] + R.f(-4, 4);
+        const sz = (0.6 + Math.min(lvl, 10) * 0.06) * lay[2];
+        if (lvl >= 7) { els += `<circle cx="${cx}" cy="${cy}" r="${48 * sz}" fill="${acA(0.05)}"/>`; els += `<circle cx="${cx}" cy="${cy}" r="${62 * sz}" fill="${acA(0.025)}"/>`; }
+        els += (_artBodies[arch] || _artBodies.generic)(cx, cy, sz, ac, acL, acD, acA, R);
+        els += _artMarkings(cx, cy, sz, ac, acL, acD, acA, R);
+    } else {
+        // Spell/Trap — unique compositions per card
+        const rot = R.f(-20, 20);
+        const sScale = R.f(0.85, 1.25);
+        const ox = R.f(-18, 18), oy = R.f(-12, 12);
+        const scx = W / 2 + ox, scy = H / 2 + oy;
+        // Background glow — varies per card
+        els += `<circle cx="${scx}" cy="${scy}" r="${R.f(42, 60)}" fill="${acA(0.06)}"/>`;
+        for (let i = 0; i < R.i(1, 3); i++) { els += `<circle cx="${scx + R.f(-20, 20)}" cy="${scy + R.f(-15, 15)}" r="${R.f(25, 45)}" fill="${acA(R.f(0.02, 0.05))}"/>`; }
+        // Decorative ring or rays behind icon
+        const decor = R.i(0, 3);
+        if (decor === 0) { els += `<circle cx="${scx}" cy="${scy}" r="${28 * sScale}" fill="none" stroke="${acA(0.12)}" stroke-width="0.8" stroke-dasharray="${R.f(3, 8)} ${R.f(2, 5)}"/>`; }
+        else if (decor === 1) { for (let i = 0; i < R.i(4, 8); i++) { const a = i * (360 / R.i(4, 8)) * 0.0175; els += `<line x1="${scx}" y1="${scy}" x2="${scx + Math.cos(a) * 38 * sScale}" y2="${scy + Math.sin(a) * 38 * sScale}" stroke="${acA(0.08)}" stroke-width="0.6"/>`; } }
+        else if (decor === 2) { els += `<path d="M${scx - 30 * sScale},${scy} L${scx},${scy - 30 * sScale} L${scx + 30 * sScale},${scy} L${scx},${scy + 30 * sScale}Z" fill="none" stroke="${acA(0.1)}" stroke-width="0.7"/>`; }
+        // Icon with rotation and scale
+        els += `<g transform="translate(${scx},${scy}) rotate(${rot}) scale(${sScale}) translate(${-W / 2},${-H / 2})">`;
+        if (card.type === 'spell') {
+            els += (_artSpells[card.art?.icon] || _artSpells._default)(W / 2, H / 2, ac, acL, acD, acA, R);
+        } else {
+            els += (_artTraps[card.art?.icon] || _artTraps._default)(W / 2, H / 2, ac, acL, acD, acA, R);
+        }
+        els += '</g>';
+    }
+    els += _artFx(card.attribute || (card.type === 'spell' ? 'LIGHT' : 'DARK'), R, W, H, acA);
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}">${els}</svg>`;
+    _artCache[card.id] = svg;
+    return svg;
+}
 
 // ============================================================
 // CARD HTML RENDERING
@@ -3996,7 +4589,7 @@ function renderCard(card, opts = {}) {
                         ${levelHTML ? `<div class="card-level-bar">${levelHTML}</div>` : ''}
                         <div class="card-art-box">
                             <div class="card-art-bg" style="background:linear-gradient(135deg, ${bg[0]}, ${bg[1]})"></div>
-                            <div class="card-art-svg">${artSVG}</div>
+                            ${artSVG ? `<div class="card-art-svg">${artSVG}</div>` : ''}
                         </div>
                         ${typeLabel}
                         <div class="card-desc-box">${card.desc || ''}</div>
@@ -4092,6 +4685,17 @@ function loadData() {
     if (playerData.deck.length === 0) {
         buildStarterDeck();
     }
+    // Grant new cards added since last load
+    let grantedNew = false;
+    CARDS.forEach(c => {
+        if (playerData.collection[c.id] === undefined || playerData.collection[c.id] === 0) {
+            if (c.rarity === 'C') { playerData.collection[c.id] = 3; grantedNew = true; }
+            else if (c.rarity === 'R') { playerData.collection[c.id] = 2; grantedNew = true; }
+            else if (c.rarity === 'SR') { playerData.collection[c.id] = 1; grantedNew = true; }
+        }
+    });
+    if (grantedNew) saveData();
+
     // Migrate to multi-deck system
     if (!playerData.decks || playerData.decks.length === 0) {
         playerData.decks = [{ name: 'Deck 1', cards: [...playerData.deck], extra: [...playerData.extraDeck] }];
