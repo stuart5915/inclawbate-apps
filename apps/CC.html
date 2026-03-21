@@ -178,29 +178,26 @@
         #title-screen {
             align-items: center;
             justify-content: center;
-            background: #06080c;
+            background: #040810;
             position: relative;
             overflow: hidden;
+            padding: 8px 0;
         }
 
         /* ---- Water environment ---- */
-        .water-surface {
+        .water-bg {
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background:
-                radial-gradient(ellipse at 50% 70%, rgba(0,70,140,0.14) 0%, transparent 65%),
-                radial-gradient(ellipse at 25% 85%, rgba(0,50,110,0.10) 0%, transparent 50%),
-                radial-gradient(ellipse at 75% 50%, rgba(0,80,150,0.06) 0%, transparent 50%),
-                linear-gradient(180deg, #06080c 0%, #081420 25%, #0a2038 55%, #071828 100%);
+                radial-gradient(ellipse at 50% 30%, rgba(0,80,160,0.12) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 80%, rgba(0,60,130,0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 60%, rgba(0,90,170,0.06) 0%, transparent 50%),
+                linear-gradient(180deg, #040810 0%, #061020 20%, #081830 50%, #0a2040 80%, #061828 100%);
             z-index: 0;
         }
-
         .water-caustics {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 1;
-            opacity: 0.35;
-            mix-blend-mode: screen;
+            position: absolute; top:0;left:0;right:0;bottom:0; z-index:1;
+            opacity:0.3; mix-blend-mode:screen; pointer-events:none;
             background:
                 conic-gradient(from 0deg at 20% 70%, transparent 0deg, rgba(50,150,220,0.05) 10deg, transparent 20deg, transparent 90deg, rgba(50,150,220,0.04) 100deg, transparent 110deg, transparent 180deg, rgba(50,150,220,0.05) 190deg, transparent 200deg, transparent 270deg, rgba(50,150,220,0.04) 280deg, transparent 290deg),
                 conic-gradient(from 45deg at 80% 30%, transparent 0deg, rgba(40,130,200,0.04) 15deg, transparent 30deg, transparent 120deg, rgba(40,130,200,0.03) 135deg, transparent 150deg, transparent 240deg, rgba(40,130,200,0.04) 255deg, transparent 270deg);
@@ -211,567 +208,48 @@
             50% { transform: scale(1.08) rotate(2deg); opacity: 0.5; }
             100% { transform: scale(1) rotate(0deg); opacity: 0.3; }
         }
-
-        .water-waves {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 1;
-            pointer-events: none;
-        }
-        .water-waves::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -50%; right: -50%; bottom: 0;
-            background: repeating-linear-gradient(0deg, transparent 0px, transparent 44px, rgba(60,150,220,0.018) 46px, transparent 48px, transparent 90px);
-            animation: waveSlide 9s ease-in-out infinite;
-            transform: skewY(-1.5deg);
-        }
-        .water-waves::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -50%; right: -50%; bottom: 0;
-            background: repeating-linear-gradient(0deg, transparent 0px, transparent 60px, rgba(50,130,200,0.015) 62px, transparent 64px, transparent 120px);
-            animation: waveSlide2 13s ease-in-out infinite;
-            transform: skewY(1deg);
-        }
-        @keyframes waveSlide {
-            0% { transform: skewY(-1.5deg) translateY(0) translateX(0); }
-            50% { transform: skewY(-1deg) translateY(10px) translateX(16px); }
-            100% { transform: skewY(-1.5deg) translateY(0) translateX(0); }
-        }
-        @keyframes waveSlide2 {
-            0% { transform: skewY(1deg) translateY(0) translateX(0); }
-            50% { transform: skewY(0.5deg) translateY(-7px) translateX(-12px); }
-            100% { transform: skewY(1deg) translateY(0) translateX(0); }
-        }
-
-        .water-lightrays {
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
+        .water-particles {
+            position: absolute; top:0;left:0;right:0;bottom:0; z-index:1; pointer-events:none;
             background:
-                linear-gradient(170deg, transparent 0%, transparent 42%, rgba(0,120,200,0.02) 44%, transparent 46%),
-                linear-gradient(178deg, transparent 0%, transparent 52%, rgba(0,140,220,0.018) 54%, transparent 56%),
-                linear-gradient(185deg, transparent 0%, transparent 58%, rgba(0,100,180,0.022) 60%, transparent 62%);
-            animation: lightRayPulse 12s ease-in-out infinite;
+                radial-gradient(1.5px 1.5px at 10% 20%, rgba(120,190,240,0.4), transparent),
+                radial-gradient(1px 1px at 30% 65%, rgba(140,200,240,0.3), transparent),
+                radial-gradient(1.5px 1.5px at 55% 15%, rgba(100,170,230,0.35), transparent),
+                radial-gradient(1px 1px at 75% 80%, rgba(120,190,240,0.3), transparent),
+                radial-gradient(1.5px 1.5px at 90% 45%, rgba(100,170,230,0.35), transparent),
+                radial-gradient(1px 1px at 45% 90%, rgba(140,200,240,0.25), transparent);
+            animation: particleDrift 14s ease-in-out infinite;
         }
-        @keyframes lightRayPulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        /* Ripple rings from stone tablet */
-        .water-ripples {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 0; height: 0;
-            z-index: 1;
-            pointer-events: none;
-        }
-        .ripple-ring {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            border: 1px solid rgba(80,160,220,0.10);
-            border-radius: 50%;
-            animation: rippleExpand 7s ease-out infinite;
-        }
-        .ripple-ring:nth-child(1) { animation-delay: 0s; }
-        .ripple-ring:nth-child(2) { animation-delay: 1.75s; }
-        .ripple-ring:nth-child(3) { animation-delay: 3.5s; }
-        .ripple-ring:nth-child(4) { animation-delay: 5.25s; }
-        @keyframes rippleExpand {
-            0% { width: 220px; height: 130px; opacity: 0.35; border-color: rgba(80,160,220,0.12); }
-            100% { width: 900px; height: 550px; opacity: 0; border-color: rgba(80,160,220,0); }
+        @keyframes particleDrift {
+            0%, 100% { transform: translateY(0); opacity: 0.3; }
+            50% { transform: translateY(-10px); opacity: 0.6; }
         }
 
-        /* Water sparkles */
-        .water-sparkles {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            z-index: 2;
-            pointer-events: none;
-        }
-        .water-sparkles::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background:
-                radial-gradient(1.5px 1.5px at 10% 20%, rgba(120,190,240,0.5), transparent),
-                radial-gradient(1px 1px at 25% 75%, rgba(140,200,240,0.35), transparent),
-                radial-gradient(1.5px 1.5px at 45% 30%, rgba(100,170,230,0.4), transparent),
-                radial-gradient(1px 1px at 65% 85%, rgba(120,190,240,0.35), transparent),
-                radial-gradient(1.5px 1.5px at 80% 15%, rgba(100,170,230,0.45), transparent),
-                radial-gradient(1px 1px at 90% 60%, rgba(140,200,240,0.3), transparent);
-            animation: sparkleFloat 11s ease-in-out infinite;
-        }
-        .water-sparkles::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background:
-                radial-gradient(1px 1px at 8% 50%, rgba(180,220,250,0.4), transparent),
-                radial-gradient(1px 1px at 35% 65%, rgba(160,210,245,0.3), transparent),
-                radial-gradient(1px 1px at 55% 10%, rgba(180,220,250,0.35), transparent),
-                radial-gradient(1px 1px at 75% 80%, rgba(160,210,245,0.3), transparent),
-                radial-gradient(1px 1px at 92% 40%, rgba(180,220,250,0.35), transparent);
-            animation: sparkleFloat2 14s ease-in-out infinite;
-        }
-        @keyframes sparkleFloat {
-            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.4; }
-            33% { transform: translateY(-8px) translateX(6px); opacity: 0.7; }
-            66% { transform: translateY(5px) translateX(-5px); opacity: 0.35; }
-        }
-        @keyframes sparkleFloat2 {
-            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.25; }
-            25% { transform: translateY(6px) translateX(-8px); opacity: 0.5; }
-            75% { transform: translateY(3px) translateX(8px); opacity: 0.45; }
-        }
-
-        /* ===== THE STONE TABLET ===== */
-        .tablet-device {
-            position: relative;
-            z-index: 3;
-            animation: tabletFloat 6s ease-in-out infinite;
-        }
-        @keyframes tabletFloat {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            30% { transform: translateY(-6px) rotate(0.3deg); }
-            60% { transform: translateY(3px) rotate(-0.2deg); }
-        }
-
-        .tablet-frame {
-            background:
-                linear-gradient(175deg, rgba(255,255,255,0.06) 0%, transparent 30%),
-                linear-gradient(145deg, #4a4540 0%, #3a352e 15%, #2e2a24 35%, #262220 55%, #1e1b18 80%, #161412 100%);
-            border-radius: 6px;
-            padding: 18px 16px 16px;
-            position: relative;
-            max-width: 560px;
-            width: 90vw;
-            border: 2px solid rgba(90,80,65,0.4);
-            box-shadow:
-                0 35px 80px rgba(0,0,0,0.8),
-                0 0 50px rgba(0,60,120,0.06),
-                0 0 100px rgba(0,40,80,0.03),
-                inset 0 1px 0 rgba(255,255,255,0.08),
-                inset 0 -1px 0 rgba(0,0,0,0.4),
-                inset 2px 2px 6px rgba(0,0,0,0.3),
-                inset -2px -2px 6px rgba(0,0,0,0.2);
-        }
-        /* Stone texture overlay */
-        .tablet-frame::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 6px;
-            background:
-                radial-gradient(3px 3px at 12% 8%, rgba(255,255,255,0.04), transparent),
-                radial-gradient(2px 2px at 28% 22%, rgba(255,255,255,0.03), transparent),
-                radial-gradient(4px 3px at 45% 12%, rgba(255,255,255,0.025), transparent),
-                radial-gradient(2px 2px at 62% 35%, rgba(255,255,255,0.04), transparent),
-                radial-gradient(3px 2px at 78% 18%, rgba(255,255,255,0.03), transparent),
-                radial-gradient(2px 3px at 88% 42%, rgba(255,255,255,0.025), transparent),
-                radial-gradient(3px 3px at 18% 55%, rgba(255,255,255,0.03), transparent),
-                radial-gradient(2px 2px at 35% 70%, rgba(255,255,255,0.025), transparent),
-                radial-gradient(4px 2px at 55% 62%, rgba(255,255,255,0.04), transparent),
-                radial-gradient(2px 3px at 72% 78%, rgba(255,255,255,0.03), transparent),
-                radial-gradient(3px 2px at 85% 65%, rgba(255,255,255,0.025), transparent),
-                radial-gradient(2px 2px at 15% 88%, rgba(255,255,255,0.03), transparent),
-                radial-gradient(3px 3px at 50% 85%, rgba(255,255,255,0.025), transparent),
-                radial-gradient(2px 2px at 70% 92%, rgba(255,255,255,0.04), transparent);
-            pointer-events: none;
-            z-index: 0;
-        }
-        /* Chiseled edge effect — top/left lighter, bottom/right darker */
-        .tablet-frame::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 6px;
-            border-top: 1px solid rgba(180,170,150,0.12);
-            border-left: 1px solid rgba(180,170,150,0.08);
-            border-bottom: 1px solid rgba(0,0,0,0.3);
-            border-right: 1px solid rgba(0,0,0,0.2);
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* Engraved inner area */
-        .tablet-screen {
-            background:
-                linear-gradient(175deg, rgba(255,255,255,0.03) 0%, transparent 40%),
-                linear-gradient(180deg, #1a1714 0%, #161310 50%, #121010 100%);
-            border-radius: 3px;
-            padding: 22px 16px 16px;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 480px;
-            border: 1px solid rgba(60,55,45,0.5);
-            box-shadow:
-                inset 0 2px 8px rgba(0,0,0,0.6),
-                inset 0 0 20px rgba(0,0,0,0.3),
-                inset 0 -1px 0 rgba(255,255,255,0.03);
-        }
-        /* Carved groove lines — horizontal */
-        .tablet-screen::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 3px;
-            background:
-                linear-gradient(0deg, transparent 0%, transparent 3px, rgba(60,55,45,0.08) 3px, transparent 4px, transparent 100%),
-                linear-gradient(0deg, transparent 0%, transparent 97%, rgba(60,55,45,0.08) 97%, transparent 98%, transparent 100%),
-                linear-gradient(90deg, transparent 0%, transparent 3px, rgba(60,55,45,0.06) 3px, transparent 4px, transparent 100%),
-                linear-gradient(90deg, transparent 0%, transparent 97%, rgba(60,55,45,0.06) 97%, transparent 98%, transparent 100%);
-            pointer-events: none;
-            z-index: 10;
-        }
-        /* Subtle noise/grain for stone feel */
-        .tablet-screen::after {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background:
-                radial-gradient(1px 1px at 10% 15%, rgba(200,190,170,0.05), transparent),
-                radial-gradient(1px 1px at 30% 40%, rgba(200,190,170,0.04), transparent),
-                radial-gradient(1px 1px at 55% 25%, rgba(200,190,170,0.05), transparent),
-                radial-gradient(1px 1px at 75% 60%, rgba(200,190,170,0.04), transparent),
-                radial-gradient(1px 1px at 20% 70%, rgba(200,190,170,0.05), transparent),
-                radial-gradient(1px 1px at 60% 80%, rgba(200,190,170,0.04), transparent),
-                radial-gradient(1px 1px at 85% 35%, rgba(200,190,170,0.05), transparent),
-                radial-gradient(1px 1px at 40% 90%, rgba(200,190,170,0.04), transparent);
-            pointer-events: none;
-            z-index: 10;
-            border-radius: 3px;
-        }
-
-        /* Water reflection below stone tablet */
-        .tablet-reflection {
-            position: absolute;
-            bottom: -70px;
-            left: 50%;
-            transform: translateX(-50%) scaleY(-0.25) scaleX(0.85);
-            width: 90vw;
-            max-width: 560px;
-            height: 180px;
-            background: linear-gradient(180deg, rgba(40,35,28,0.25) 0%, transparent 55%);
-            border-radius: 6px;
-            filter: blur(10px);
-            opacity: 0.35;
-            z-index: 2;
-            pointer-events: none;
-            animation: reflectionPulse 6s ease-in-out infinite;
-        }
-        @keyframes reflectionPulse {
-            0%, 100% { opacity: 0.25; transform: translateX(-50%) scaleY(-0.25) scaleX(0.85); }
-            50% { opacity: 0.4; transform: translateX(-50%) scaleY(-0.28) scaleX(0.88); }
-        }
-
-        /* Glow on water beneath stone */
-        .tablet-water-glow {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 480px;
-            height: 280px;
-            background: radial-gradient(ellipse, rgba(0,80,160,0.06) 0%, rgba(0,50,120,0.03) 40%, transparent 70%);
-            z-index: 2;
-            pointer-events: none;
-            animation: waterGlow 6s ease-in-out infinite;
-        }
-        @keyframes waterGlow {
-            0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
-        }
-
-        /* ---- Card showcase orbiting on stone surface ---- */
-        .title-showcase {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 280px; height: 280px;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .showcase-card {
-            position: absolute;
-            width: 50px;
-            aspect-ratio: 0.686;
-            border-radius: 3px;
-            overflow: hidden;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.6), 0 0 8px rgba(180,160,120,0.08);
-            opacity: 0;
-            animation: showcaseOrbit 24s linear infinite;
-            transform-origin: center center;
-        }
-        .showcase-card:nth-child(1) { animation-delay: 0s; }
-        .showcase-card:nth-child(2) { animation-delay: -3s; }
-        .showcase-card:nth-child(3) { animation-delay: -6s; }
-        .showcase-card:nth-child(4) { animation-delay: -9s; }
-        .showcase-card:nth-child(5) { animation-delay: -12s; }
-        .showcase-card:nth-child(6) { animation-delay: -15s; }
-        .showcase-card:nth-child(7) { animation-delay: -18s; }
-        .showcase-card:nth-child(8) { animation-delay: -21s; }
-        @keyframes showcaseOrbit {
-            0% { transform: translate(-50%,-50%) rotate(0deg) translateX(110px) rotate(0deg) scale(0.55); opacity: 0; filter: blur(2px) brightness(0.3); }
-            5% { opacity: 0.35; }
-            12.5% { transform: translate(-50%,-50%) rotate(45deg) translateX(110px) rotate(-45deg) scale(0.75); opacity: 0.6; filter: blur(0) brightness(0.8); }
-            25% { transform: translate(-50%,-50%) rotate(90deg) translateX(110px) rotate(-90deg) scale(0.85); opacity: 0.7; filter: blur(0) brightness(0.9); }
-            37.5% { transform: translate(-50%,-50%) rotate(135deg) translateX(110px) rotate(-135deg) scale(0.75); opacity: 0.6; filter: blur(0) brightness(0.8); }
-            50% { transform: translate(-50%,-50%) rotate(180deg) translateX(110px) rotate(-180deg) scale(0.55); opacity: 0.35; filter: blur(1px) brightness(0.4); }
-            55% { opacity: 0; }
-            100% { transform: translate(-50%,-50%) rotate(360deg) translateX(110px) rotate(-360deg) scale(0.55); opacity: 0; filter: blur(2px) brightness(0.3); }
-        }
-
-        /* ---- Content on the stone tablet ---- */
-        .title-center {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            width: 100%;
-        }
-
-        /* Lobster mascot — carved / embossed look */
-        .title-lobster {
-            width: 90px;
-            height: 90px;
-            margin: 0 auto 6px;
-            position: relative;
-            animation: mascotFloat 5s ease-in-out infinite;
-            filter: drop-shadow(0 0 10px rgba(200,160,100,0.2)) drop-shadow(0 4px 16px rgba(0,0,0,0.5));
-        }
-        .title-lobster svg { width: 90px; height: 90px; }
-        .title-lobster::before {
-            content: '';
-            position: absolute;
-            top: -16px; left: -16px; right: -16px; bottom: -16px;
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(200,160,100,0.08) 0%, transparent 60%);
-            animation: glowBreath 4s ease-in-out infinite;
-            z-index: -1;
-        }
-        @keyframes mascotFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-5px); }
-        }
-        @keyframes glowBreath {
-            0%, 100% { transform: scale(1); opacity: 0.4; }
-            50% { transform: scale(1.08); opacity: 0.8; }
-        }
-
-        /* Title text — engraved / chiseled stone look */
-        .title-logo {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            margin-bottom: 4px;
-        }
-        .title-logo h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 26px;
-            font-weight: 900;
-            letter-spacing: 4px;
-            line-height: 1.15;
-            color: transparent;
-            background: linear-gradient(
-                180deg,
-                #d4c8a8 0%,
-                #c0b088 20%,
-                #a89870 40%,
-                #8a7a58 60%,
-                #6e6244 80%,
-                #584e38 100%
-            );
-            background-size: 100% 200%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: titleGradShift 5s ease-in-out infinite alternate;
-            position: relative;
-            text-shadow: none;
-            filter: drop-shadow(0 1px 0 rgba(0,0,0,0.8)) drop-shadow(0 -1px 0 rgba(255,255,255,0.06)) drop-shadow(0 0 20px rgba(200,170,100,0.12));
-        }
-        /* Shimmer pass over engraved text */
-        .title-logo h1::after {
-            content: 'CRUSTACEAN\A COMBAT';
-            white-space: pre-line;
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            background: linear-gradient(90deg, transparent 15%, rgba(255,240,200,0.15) 50%, transparent 85%);
-            background-size: 250% 100%;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: titleHighlight 5s ease-in-out infinite;
-            pointer-events: none;
-        }
-        @keyframes titleGradShift {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 0% 50%; }
-        }
-        @keyframes titleHighlight {
-            0%, 100% { background-position: 250% 0; }
-            50% { background-position: -250% 0; }
-        }
-        .title-logo .subtitle {
-            font-family: 'Chakra Petch', sans-serif;
-            font-size: 9px;
-            color: rgba(180,165,130,0.35);
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            margin-top: 4px;
-            font-weight: 600;
-        }
-
-        /* Engraved decorative line */
-        .title-tagline {
-            font-family: 'Chakra Petch', sans-serif;
-            font-size: 11px;
-            color: rgba(160,145,115,0.4);
-            font-weight: 500;
-            margin-bottom: 18px;
-            letter-spacing: 1px;
-            position: relative;
-            padding-bottom: 14px;
-        }
-        .title-tagline::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(160,145,115,0.2), rgba(200,180,140,0.3), rgba(160,145,115,0.2), transparent);
-            border-radius: 1px;
-            box-shadow: 0 1px 0 rgba(0,0,0,0.4);
-        }
-
-        /* Menu buttons — carved stone buttons */
-        .menu-buttons {
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-            width: 100%;
-        }
-        .menu-btn {
-            padding: 12px 20px;
-            border-radius: 4px;
-            font-family: 'Chakra Petch', sans-serif;
-            font-size: 12px;
-            font-weight: 600;
-            letter-spacing: 2px;
-            transition: all 0.25s cubic-bezier(.4,0,.2,1);
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-        }
-        .menu-btn:active { transform: scale(0.96); }
-        .menu-btn.primary {
-            background: linear-gradient(145deg, #4a3a20 0%, #3a2c16 30%, #2e2210 60%, #221a0c 100%);
-            color: #d4c090;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 15px;
-            font-weight: 900;
-            padding: 16px 20px;
-            letter-spacing: 5px;
-            border-radius: 5px;
-            box-shadow:
-                0 4px 20px rgba(0,0,0,0.5),
-                inset 0 1px 0 rgba(255,240,200,0.1),
-                inset 0 -2px 0 rgba(0,0,0,0.3);
-            border: 1px solid rgba(160,130,80,0.2);
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5), 0 0 12px rgba(200,170,100,0.15);
-        }
-        .menu-btn.primary::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,240,200,0.08), transparent);
-            animation: btnSweep 5s ease-in-out infinite;
-        }
-        @keyframes btnSweep {
-            0%, 70% { left: -100%; }
-            100% { left: 200%; }
-        }
-        .menu-btn.primary:active {
-            transform: scale(0.97);
-            box-shadow:
-                0 2px 10px rgba(0,0,0,0.5),
-                inset 0 2px 4px rgba(0,0,0,0.4),
-                inset 0 -1px 0 rgba(255,240,200,0.05);
-        }
-        .menu-btn.secondary {
-            background: linear-gradient(145deg, rgba(60,55,42,0.4) 0%, rgba(40,36,28,0.5) 100%);
-            color: rgba(180,165,130,0.55);
-            border: 1px solid rgba(120,105,75,0.12);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,240,200,0.03), inset 0 -1px 0 rgba(0,0,0,0.2);
-        }
-        .menu-btn.secondary:hover {
-            background: linear-gradient(145deg, rgba(70,62,48,0.5) 0%, rgba(50,44,34,0.6) 100%);
-            border-color: rgba(140,120,85,0.18);
-            color: rgba(210,195,160,0.7);
-        }
-        .menu-btn.secondary:active {
-            background: linear-gradient(145deg, rgba(45,40,30,0.6) 0%, rgba(35,30,22,0.7) 100%);
-            transform: scale(0.97);
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
-        }
-
-        /* Info bar — wallet + coins inline below tagline */
+        /* ---- Info bar (above DUEL button) ---- */
         .title-info-bar {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            width: 100%;
-            margin-bottom: 14px;
-            z-index: 3;
+            position: relative; z-index: 10;
+            display: flex; justify-content: center; align-items: center;
+            gap: 12px;
+            margin-top: 6px;
         }
         .coin-display {
-            background: rgba(30,28,20,0.6);
-            border: 1px solid rgba(80,200,80,0.12);
-            padding: 5px 12px;
-            border-radius: 3px;
-            font-weight: 800;
-            color: #50c850;
-            font-size: 11px;
+            background: rgba(10,20,10,0.6);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(80,200,80,0.15);
+            padding: 6px 14px; border-radius: 20px;
+            font-weight: 800; color: #50c850; font-size: 12px;
             letter-spacing: 0.5px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
         }
         .wallet-display {
-            background: rgba(20,25,30,0.6);
-            border: 1px solid rgba(0,180,255,0.1);
-            padding: 5px 12px;
-            border-radius: 3px;
-            font-weight: 700;
-            color: #00c8f0;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+            background: rgba(10,15,25,0.6);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,180,255,0.12);
+            padding: 6px 14px; border-radius: 20px;
+            font-weight: 700; color: #00c8f0; font-size: 11px;
+            display: flex; align-items: center; gap: 6px;
         }
-        .wallet-display .wallet-addr {
-            font-family: monospace;
-            font-size: 9px;
-        }
+        .wallet-display .wallet-addr { font-family: monospace; font-size: 9px; }
         .wallet-display .wallet-change-btn {
-            background: rgba(255,255,255,0.06);
-            color: #6b7a94;
-            border: none;
+            background: rgba(255,255,255,0.08); color: #6b7a94; border: none;
             padding: 2px 8px;
             border-radius: 3px;
             font-size: 9px;
@@ -784,49 +262,157 @@
         }
         .wallet-display .wallet-change-btn:hover { background: rgba(255,255,255,0.12); }
 
-        /* Bottom stats — etched into stone */
+        /* ---- Title hero section ---- */
+        .title-hero {
+            position: relative; z-index: 10;
+            display: flex; flex-direction: column; align-items: center;
+            margin-top: 12px;
+            gap: 2px;
+        }
+        .title-logo-img {
+            width: 160px;
+            max-width: 40vw;
+            height: auto;
+            border-radius: 10px;
+            filter: drop-shadow(0 4px 24px rgba(0,80,180,0.3));
+            flex-shrink: 1;
+        }
+        .title-tagline {
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 9px;
+            letter-spacing: 2px;
+            color: rgba(100,160,220,0.25);
+            margin-top: 8px;
+        }
+
+        /* ---- Hero DUEL button ---- */
+        .duel-hero-btn {
+            position: relative; z-index: 10;
+            margin: 10px 0 8px;
+            padding: 12px 48px;
+            border-radius: 12px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 8px;
+            color: #fff;
+            background: linear-gradient(135deg, #1050a0 0%, #1878d0 40%, #2090ff 100%);
+            border: 1px solid rgba(40,150,255,0.25);
+            cursor: pointer;
+            text-shadow: 0 2px 8px rgba(0,60,160,0.5);
+            box-shadow: 0 0 30px rgba(0,100,220,0.2), 0 4px 16px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.08);
+            transition: all 0.2s;
+        }
+        .duel-hero-btn:active { transform: scale(0.96); box-shadow: 0 0 15px rgba(0,100,220,0.15), 0 2px 8px rgba(0,0,0,0.3); }
+
+        /* ---- Main row: side menus + logo ---- */
+        .title-main-row {
+            position: relative; z-index: 10;
+            display: flex; align-items: center; justify-content: center;
+            gap: 10px; width: 100%; padding: 4px 10px 0;
+        }
+        .menu-col {
+            display: flex; flex-direction: column; gap: 6px;
+            flex-shrink: 0; width: 90px;
+        }
+        .menu-tile {
+            padding: 8px 4px;
+            border-radius: 8px;
+            background: rgba(8,18,35,0.65);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(40,120,200,0.1);
+            color: rgba(140,190,240,0.75);
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            width: 100%;
+        }
+        .menu-tile:active { transform: scale(0.96); }
+
+        /* ---- Showcase (mini card strip) ---- */
+        .title-showcase {
+            position: relative; z-index: 10;
+            display: flex; gap: 6px;
+            justify-content: center;
+            margin: 14px 0 6px;
+            min-height: 52px;
+            overflow: hidden;
+            max-width: 320px;
+        }
+        .showcase-card {
+            width: 36px; height: 50px;
+            border-radius: 3px;
+            overflow: hidden;
+            opacity: 0.5;
+            flex-shrink: 0;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .showcase-card:hover { opacity: 0.9; transform: translateY(-3px); }
+        .showcase-card .card { width: 100% !important; height: 100% !important; border-radius: 3px; }
+
+        /* ---- Stats footer ---- */
         .title-stats {
+            position: relative; z-index: 10;
             display: flex;
             justify-content: center;
             gap: 24px;
-            margin-top: 14px;
-            z-index: 3;
+            margin-top: 10px;
             width: 100%;
-            padding-top: 10px;
-            border-top: 1px solid rgba(120,105,75,0.1);
+            padding: 10px 0;
+            border-top: 1px solid rgba(40,120,200,0.08);
         }
-        .title-stat {
-            text-align: center;
-        }
+        .title-stat { text-align: center; }
         .title-stat-value {
             font-family: 'Orbitron', sans-serif;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 900;
-            background: linear-gradient(180deg, #c8b888 0%, #8a7a58 100%);
+            background: linear-gradient(180deg, #a0d0f0 0%, #5090c0 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            filter: drop-shadow(0 1px 0 rgba(0,0,0,0.6));
+            filter: drop-shadow(0 1px 0 rgba(0,0,0,0.5));
         }
         .title-stat-label {
             font-family: 'Chakra Petch', sans-serif;
             font-size: 8px;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: rgba(140,125,95,0.4);
+            color: rgba(80,140,200,0.35);
             font-weight: 600;
         }
 
         /* Version tag */
         .title-version {
             position: absolute;
-            bottom: 8px;
-            right: 8px;
+            bottom: 8px; right: 8px;
             font-size: 8px;
-            color: rgba(100,90,70,0.2);
+            color: rgba(60,100,160,0.2);
             letter-spacing: 1px;
             z-index: 12;
         }
+
+        /* ---- General menu-btn (used outside title screen) ---- */
+        .menu-btn {
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid rgba(40,120,200,0.2);
+            background: linear-gradient(135deg, #1050a0, #1878d0);
+            color: #fff;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        }
+        .menu-btn:active { transform: scale(0.96); }
 
         /* ===== MULTIPLAYER LOBBY ===== */
         #mp-lobby { flex-direction: column; background: #06080c; }
@@ -1585,37 +1171,16 @@
         .detail-close:active { transform: scale(0.95); }
 
         /* ===== PACK OPENING ===== */
-        #pack-screen .pack-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            padding: 16px;
-            flex: 1;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-        .pack-item {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 16px;
-            background: rgba(255,255,255,0.03);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: border-color 0.2s;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+        #pack-list {
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         }
         .pack-icon {
-            width: 64px;
-            height: 84px;
-            border-radius: 10px;
+            width: 50px;
+            height: 66px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
-            flex-shrink: 0;
             position: relative;
             overflow: hidden;
         }
@@ -1623,27 +1188,16 @@
             content: '';
             position: absolute;
             top: -50%; left: -50%; right: -50%; bottom: -50%;
-            background: linear-gradient(45deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%);
+            background: linear-gradient(45deg, transparent 40%, rgba(100,180,255,0.06) 50%, transparent 60%);
             animation: shimmer-bg 3s ease-in-out infinite;
         }
-        .pack-info { flex: 1; }
-        .pack-info h3 { font-size: 16px; font-weight: 800; letter-spacing: 0.3px; }
-        .pack-info p { font-size: 12px; color: #6b7a94; margin-top: 3px; }
-        .pack-buy-btn {
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 13px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
-            color: #1a1a1a;
-            box-shadow: 0 2px 12px rgba(255,215,0,0.2);
-            transition: transform 0.15s, box-shadow 0.15s;
-        }
-        .pack-buy-btn:active { transform: scale(0.95); }
-        .pack-buy-btn:disabled {
-            background: rgba(255,255,255,0.06);
-            color: #444;
-            box-shadow: none;
+        .pack-desc {
+            font-size: 9px;
+            color: rgba(140,190,240,0.4);
+            font-family: 'Chakra Petch', sans-serif;
+            text-align: center;
+            line-height: 1.3;
+            margin-top: -2px;
         }
         .pack-reveal {
             display: none;
@@ -1687,37 +1241,45 @@
         }
 
         /* ===== SHOP TABS & STORE ===== */
+        #pack-screen { background: #040810; }
+        #pack-screen .header-bar { padding: 8px 12px; gap: 10px; }
+        #pack-screen .header-bar h2 { font-size: 16px; }
         .shop-tabs {
             display: flex;
-            gap: 0;
-            padding: 0 16px;
+            gap: 3px;
+            padding: 4px 8px;
             flex-shrink: 0;
-            border-bottom: 1px solid rgba(255,255,255,0.06);
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            border-bottom: 1px solid rgba(40,120,200,0.06);
         }
+        .shop-tabs::-webkit-scrollbar { display: none; }
         .shop-tab {
-            flex: 1;
-            padding: 12px 16px;
-            font-size: 14px;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-            background: none;
-            color: rgba(150,160,180,0.5);
-            border: none;
-            border-bottom: 2px solid transparent;
+            flex: 0 0 auto;
+            padding: 5px 9px;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            background: rgba(8,18,35,0.5);
+            color: rgba(140,190,240,0.45);
+            border: 1px solid rgba(40,120,200,0.08);
+            border-radius: 6px;
             cursor: pointer;
-            font-family: 'Nunito', sans-serif;
-            min-height: 44px;
+            font-family: 'Chakra Petch', sans-serif;
             transition: all 0.2s;
         }
         .shop-tab.active {
-            color: #ffd700;
-            border-bottom-color: #ffd700;
+            color: rgba(140,200,255,0.9);
+            background: rgba(20,60,120,0.3);
+            border-color: rgba(40,140,220,0.25);
         }
         .store-section {
             display: none;
             flex-direction: column;
-            gap: 16px;
-            padding: 16px;
+            gap: 8px;
+            padding: 8px 10px;
             flex: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -1727,10 +1289,11 @@
             display: flex;
             align-items: center;
             gap: 14px;
-            padding: 18px 20px;
-            background: linear-gradient(135deg, rgba(255,215,0,0.06) 0%, rgba(255,170,0,0.03) 100%);
-            border: 1px solid rgba(255,215,0,0.1);
-            border-radius: 16px;
+            padding: 16px 18px;
+            background: rgba(8,18,35,0.6);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(40,120,200,0.1);
+            border-radius: 12px;
             position: relative;
             overflow: hidden;
         }
@@ -1738,33 +1301,34 @@
             content: '';
             position: absolute;
             top: 0; left: -100%; width: 60%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.04), transparent);
+            background: linear-gradient(90deg, transparent, rgba(40,140,220,0.04), transparent);
             animation: shimmer-bg 4s ease-in-out infinite;
         }
         .store-banner-icon { flex-shrink: 0; }
         .store-banner-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 900;
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            background: linear-gradient(135deg, #7ab8e0, #a0d0f0);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
         .store-banner-sub {
-            font-size: 12px;
-            color: rgba(200,210,225,0.5);
+            font-size: 11px;
+            color: rgba(140,190,240,0.4);
             margin-top: 2px;
         }
         .store-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 12px;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
         }
         .store-tier {
-            background: rgba(255,255,255,0.025);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: 16px;
-            padding: 20px 16px;
+            background: rgba(8,18,35,0.65);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(40,120,200,0.1);
+            border-radius: 12px;
+            padding: 18px 14px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -1772,16 +1336,16 @@
             cursor: pointer;
         }
         .store-tier:active { transform: scale(0.97); }
-        .store-tier:hover { border-color: rgba(255,215,0,0.15); }
+        .store-tier:hover { border-color: rgba(40,140,220,0.25); }
         .store-tier.popular {
-            border-color: rgba(255,215,0,0.2);
-            background: linear-gradient(180deg, rgba(255,215,0,0.04) 0%, rgba(255,170,0,0.01) 100%);
+            border-color: rgba(40,140,220,0.25);
+            background: rgba(10,30,60,0.7);
         }
         .store-tier-badge {
             position: absolute;
             top: 8px; right: 8px;
-            background: linear-gradient(135deg, #ffd700, #ff8c00);
-            color: #1a1a1a;
+            background: linear-gradient(135deg, #2090ff, #1060c0);
+            color: #fff;
             font-size: 8px;
             font-weight: 900;
             padding: 2px 8px;
@@ -1790,58 +1354,61 @@
             text-transform: uppercase;
         }
         .store-tier-amount {
-            font-size: 32px;
+            font-size: 30px;
             font-weight: 900;
-            background: linear-gradient(180deg, #fff 0%, #aab8d0 100%);
+            background: linear-gradient(180deg, #e8f4ff 0%, #7ab8e0 100%);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             line-height: 1.1;
         }
         .store-tier-label {
-            font-size: 11px;
-            color: rgba(150,160,180,0.6);
+            font-size: 10px;
+            color: rgba(140,190,240,0.45);
             font-weight: 700;
             margin-top: 2px;
             letter-spacing: 0.5px;
         }
         .store-tier-bonus {
             font-size: 10px;
-            color: #50c850;
+            color: #40c0a0;
             font-weight: 700;
             margin-top: 6px;
             min-height: 15px;
         }
         .store-tier-price {
-            margin-top: 12px;
-            padding: 10px 16px;
-            border-radius: 12px;
-            font-size: 13px;
+            margin-top: 10px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 12px;
             font-weight: 800;
-            background: linear-gradient(135deg, #ffd700 0%, #ffaa00 100%);
-            color: #1a1a1a;
-            border: none;
+            background: linear-gradient(135deg, #1050a0 0%, #1878d0 40%, #2090ff 100%);
+            color: #fff;
+            border: 1px solid rgba(40,150,255,0.2);
             cursor: pointer;
             font-family: 'Nunito', sans-serif;
-            min-height: 40px;
+            min-height: 38px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 4px;
-            box-shadow: 0 2px 10px rgba(255,215,0,0.15);
+            text-shadow: 0 1px 4px rgba(0,60,160,0.4);
+            box-shadow: 0 0 15px rgba(0,100,220,0.15);
             transition: transform 0.15s, box-shadow 0.15s;
         }
         .store-tier-price:active { transform: scale(0.95); }
         .store-tier-price:disabled {
-            background: rgba(255,255,255,0.06);
-            color: #555;
+            background: rgba(20,40,60,0.5);
+            color: rgba(140,190,240,0.3);
             box-shadow: none;
             cursor: not-allowed;
+            border-color: rgba(40,120,200,0.06);
+            text-shadow: none;
         }
         .store-tier-price .claws-icon {
             display: inline-flex;
             width: 14px; height: 14px;
-            background: rgba(0,0,0,0.15);
+            background: rgba(255,255,255,0.1);
             border-radius: 50%;
             align-items: center;
             justify-content: center;
@@ -1853,7 +1420,7 @@
         }
         .store-footer-note {
             font-size: 10px;
-            color: rgba(150,160,180,0.3);
+            color: rgba(80,140,200,0.3);
             text-align: center;
             line-height: 1.5;
         }
@@ -1861,8 +1428,8 @@
         .cosmetic-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 12px;
-            padding: 12px;
+            gap: 10px;
+            padding: 10px;
         }
         .cosmetic-item {
             display: flex;
@@ -1870,39 +1437,44 @@
             align-items: center;
             gap: 8px;
             padding: 12px 8px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.04);
+            background: rgba(8,18,35,0.65);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(40,120,200,0.1);
             border-radius: 10px;
             transition: border-color 0.2s;
         }
-        .cosmetic-item.equipped { border-color: rgba(255,215,0,0.25); background: rgba(255,215,0,0.03); }
+        .cosmetic-item.equipped { border-color: rgba(40,140,220,0.3); background: rgba(20,60,120,0.3); }
         .cosmetic-name {
             font-family: 'Chakra Petch', sans-serif;
             font-size: 11px;
             font-weight: 700;
-            color: #c0b890;
+            color: rgba(140,200,255,0.8);
             text-align: center;
         }
         .cosmetic-btn {
             padding: 6px 14px;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 10px;
             font-weight: 800;
             font-family: 'Nunito', sans-serif;
             letter-spacing: 1px;
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.08);
-            background: rgba(255,255,255,0.04);
-            color: #8a9ab0;
+            border: 1px solid rgba(40,120,200,0.12);
+            background: rgba(8,18,35,0.5);
+            color: rgba(140,190,240,0.5);
             transition: all 0.2s;
         }
-        .cosmetic-btn.buy { background: rgba(255,215,0,0.08); color: #d4c090; border-color: rgba(255,215,0,0.15); }
-        .cosmetic-btn.active { background: rgba(255,215,0,0.12); color: #ffd700; border-color: rgba(255,215,0,0.3); }
+        .cosmetic-btn.buy {
+            background: linear-gradient(135deg, #1050a0 0%, #1878d0 40%, #2090ff 100%);
+            color: #fff; border-color: rgba(40,150,255,0.2);
+            text-shadow: 0 1px 4px rgba(0,60,160,0.4);
+        }
+        .cosmetic-btn.active { background: rgba(20,60,120,0.4); color: rgba(140,200,255,0.9); border-color: rgba(40,140,220,0.3); }
         .sleeve-preview {
             width: 60px;
             aspect-ratio: 0.686;
             border-radius: 5px;
-            border: 2px solid #6a4018;
+            border: 2px solid rgba(40,120,200,0.2);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1922,7 +1494,7 @@
             width: 100%;
             aspect-ratio: 2;
             border-radius: 6px;
-            border: 1px solid rgba(255,255,255,0.06);
+            border: 1px solid rgba(40,120,200,0.12);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -2617,27 +2189,211 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
 
+        /* ===== GALLERY SCREEN ===== */
+        #gallery-screen { flex-direction: column; }
+        .gallery-settings-btn {
+            background: rgba(255,255,255,0.06); color: #8892a8; border: 1px solid rgba(255,255,255,0.06);
+            padding: 6px 14px; border-radius: 16px; font-size: 11px; font-weight: 700;
+            cursor: pointer; font-family: 'Nunito', sans-serif; transition: all 0.2s;
+        }
+        .gallery-settings-btn:active { transform: scale(0.95); }
+        .gallery-settings {
+            display: none; flex-direction: column; gap: 10px;
+            padding: 12px 16px; background: rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .gallery-settings.open { display: flex; }
+        .gallery-setting-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .gallery-setting-label {
+            font-family: 'Chakra Petch', sans-serif; font-size: 9px; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase; color: rgba(140,160,200,0.4);
+            min-width: 52px;
+        }
+        .gallery-setting-opts { display: flex; gap: 4px; flex-wrap: wrap; }
+        .gallery-opt {
+            padding: 5px 10px; border-radius: 6px; font-size: 10px; font-weight: 700;
+            font-family: 'Nunito', sans-serif; cursor: pointer; transition: all 0.15s;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
+            color: rgba(160,180,210,0.5);
+        }
+        .gallery-opt.active { background: rgba(40,120,200,0.15); border-color: rgba(40,140,220,0.3); color: #7ab8e0; }
+        .gallery-opt:active { transform: scale(0.95); }
+
+        .gallery-display {
+            flex: 1; overflow-y: auto; padding: 16px;
+            display: flex; align-items: flex-start; justify-content: center;
+        }
+        .gallery-board {
+            width: 100%; max-width: 400px; min-height: 300px;
+            border-radius: 14px; padding: 16px; position: relative;
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .gallery-board::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 14px; pointer-events: none; z-index: 1;
+        }
+
+        /* Gallery layouts */
+        .gallery-layout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .gallery-layout-shelf {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px 8px;
+        }
+        .gallery-layout-shelf .gallery-slot { transform: perspective(400px) rotateX(4deg); }
+        .gallery-layout-fan {
+            display: flex; justify-content: center; align-items: flex-end;
+            min-height: 340px; padding-bottom: 20px; flex-wrap: nowrap; gap: 0;
+        }
+        .gallery-layout-cascade {
+            display: flex; flex-direction: column; align-items: center; gap: 0;
+            padding: 10px; min-height: 360px; position: relative;
+        }
+        .gallery-layout-spotlight {
+            display: grid; grid-template-columns: 1fr 1.6fr 1fr; grid-template-rows: auto auto;
+            gap: 8px; align-items: center; justify-items: center;
+        }
+
+        /* Gallery slots */
+        .gallery-slot {
+            aspect-ratio: 0.686; border-radius: 6px; position: relative;
+            overflow: hidden; transition: transform 0.2s;
+        }
+        .gallery-slot.empty {
+            border: 1.5px dashed rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; background: rgba(255,255,255,0.02);
+        }
+        .gallery-slot.empty:active { transform: scale(0.96); }
+        .gallery-add-icon {
+            font-size: 22px; color: rgba(255,255,255,0.12); font-weight: 900;
+        }
+        .gallery-slot.filled { cursor: pointer; }
+        .gallery-slot.filled .card { width: 100% !important; height: 100% !important; border-radius: 6px; }
+        .gallery-remove-btn {
+            position: absolute; top: 3px; right: 3px; z-index: 5;
+            width: 18px; height: 18px; border-radius: 50%;
+            background: rgba(180,30,30,0.7); color: #fff; border: none;
+            font-size: 10px; font-weight: 900; cursor: pointer;
+            display: none; align-items: center; justify-content: center;
+            line-height: 1;
+        }
+        .gallery-slot.filled:hover .gallery-remove-btn,
+        .gallery-slot.filled:active .gallery-remove-btn { display: flex; }
+
+        /* Fan layout positioning */
+        .gallery-layout-fan .gallery-slot { width: 70px; flex-shrink: 0; position: relative; }
+        .gallery-layout-fan .gallery-slot:nth-child(1) { transform: rotate(-18deg) translateY(20px); }
+        .gallery-layout-fan .gallery-slot:nth-child(2) { transform: rotate(-12deg) translateY(10px); }
+        .gallery-layout-fan .gallery-slot:nth-child(3) { transform: rotate(-6deg) translateY(3px); }
+        .gallery-layout-fan .gallery-slot:nth-child(4) { transform: rotate(0deg) translateY(0); z-index: 2; }
+        .gallery-layout-fan .gallery-slot:nth-child(5) { transform: rotate(6deg) translateY(3px); }
+        .gallery-layout-fan .gallery-slot:nth-child(6) { transform: rotate(12deg) translateY(10px); }
+        .gallery-layout-fan .gallery-slot:nth-child(7) { transform: rotate(18deg) translateY(20px); }
+
+        /* Cascade layout positioning */
+        .gallery-layout-cascade .gallery-slot {
+            width: 100px; margin-top: -40px; position: relative;
+        }
+        .gallery-layout-cascade .gallery-slot:first-child { margin-top: 0; }
+        .gallery-layout-cascade .gallery-slot:nth-child(odd) { align-self: flex-start; margin-left: 10%; }
+        .gallery-layout-cascade .gallery-slot:nth-child(even) { align-self: flex-end; margin-right: 10%; }
+
+        /* Spotlight layout */
+        .gallery-layout-spotlight .gallery-slot { width: 100%; }
+        .gallery-layout-spotlight .gallery-slot:nth-child(2) { grid-row: 1 / 3; transform: scale(1.1); z-index: 2; }
+
+        /* Border styles */
+        .gallery-border-gold .gallery-slot { box-shadow: 0 0 8px rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); }
+        .gallery-border-silver .gallery-slot { box-shadow: 0 0 6px rgba(180,200,230,0.08); border: 1px solid rgba(180,200,230,0.3); }
+        .gallery-border-crystal .gallery-slot { box-shadow: 0 0 12px rgba(100,160,255,0.08); border: 1px solid rgba(100,160,255,0.25); }
+        .gallery-border-coral .gallery-slot { box-shadow: 0 0 8px rgba(220,100,140,0.08); border: 1px solid rgba(220,100,140,0.25); }
+        .gallery-border-abyssal .gallery-slot { box-shadow: 0 0 10px rgba(120,60,220,0.1); border: 1px solid rgba(120,60,220,0.25); }
+
+        /* Lighting ambient effects */
+        .gallery-light-glow::before { background: radial-gradient(ellipse at 50% 30%, rgba(40,140,220,0.08) 0%, transparent 60%); }
+        .gallery-light-caustic::before {
+            background: conic-gradient(from 0deg at 30% 60%, transparent 0deg, rgba(50,150,220,0.04) 10deg, transparent 20deg, transparent 90deg, rgba(50,150,220,0.03) 100deg, transparent 110deg);
+            animation: causticShift 16s ease-in-out infinite;
+        }
+        .gallery-light-ember::before {
+            background:
+                radial-gradient(2px 2px at 20% 70%, rgba(255,120,40,0.3), transparent),
+                radial-gradient(1.5px 1.5px at 60% 30%, rgba(255,160,60,0.25), transparent),
+                radial-gradient(2px 2px at 80% 80%, rgba(255,100,30,0.3), transparent),
+                radial-gradient(1px 1px at 40% 50%, rgba(255,140,50,0.2), transparent);
+            animation: particleDrift 10s ease-in-out infinite;
+        }
+        .gallery-light-biolum::before {
+            background:
+                radial-gradient(3px 3px at 15% 25%, rgba(0,220,180,0.25), transparent),
+                radial-gradient(2px 2px at 45% 75%, rgba(0,180,255,0.2), transparent),
+                radial-gradient(2.5px 2.5px at 75% 40%, rgba(100,220,255,0.2), transparent),
+                radial-gradient(2px 2px at 90% 85%, rgba(0,255,200,0.15), transparent);
+            animation: particleDrift 12s ease-in-out infinite;
+        }
+        .gallery-light-shimmer::before {
+            background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.03) 50%, transparent 70%);
+            background-size: 200% 200%;
+            animation: shimmerSweep 6s ease-in-out infinite;
+        }
+        @keyframes shimmerSweep { 0%,100% { background-position: 0% 0%; } 50% { background-position: 100% 100%; } }
+
+        /* Gallery picker overlay */
+        .gallery-picker {
+            display: none; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            flex-direction: column; background: rgba(4,6,12,0.97);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            z-index: 30;
+        }
+        .gallery-picker.open { display: flex; }
+        .gallery-picker-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 700;
+            color: #a0b0c8; letter-spacing: 2px;
+        }
+        .gallery-picker-close {
+            background: rgba(255,255,255,0.06); color: #8892a8; border: 1px solid rgba(255,255,255,0.06);
+            padding: 6px 14px; border-radius: 16px; font-size: 11px; font-weight: 700;
+            cursor: pointer; font-family: 'Nunito', sans-serif;
+        }
+        .gallery-picker-grid {
+            flex: 1; overflow-y: auto; padding: 12px;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px;
+        }
+        .gallery-pick-card { cursor: pointer; border-radius: 6px; overflow: hidden; transition: transform 0.15s; }
+        .gallery-pick-card:active { transform: scale(0.95); }
+        .gallery-pick-card .card { width: 100% !important; height: auto !important; }
+        .gallery-pick-card.in-gallery { opacity: 0.3; pointer-events: none; }
+
+        /* Board preview in store */
+        .board-preview {
+            width: 100%; aspect-ratio: 1.5; border-radius: 8px;
+            position: relative; overflow: hidden; margin-bottom: 8px;
+        }
+        .board-preview-slots {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px;
+            padding: 10px; height: 100%; align-content: center;
+        }
+        .board-preview-slot {
+            aspect-ratio: 0.686; border-radius: 2px;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.06);
+        }
+        .board-desc {
+            font-size: 9px; color: rgba(150,160,180,0.4); text-align: center;
+            margin-top: 2px; margin-bottom: 6px;
+        }
+
         /* ===== TABLET / SMALL DESKTOP (768px+) ===== */
         @media (min-width: 768px) {
-            .title-logo h1 { font-size: 42px; letter-spacing: 5px; }
-            .title-lobster { width: 180px; height: 180px; }
-            .title-lobster svg { width: 180px; height: 180px; }
-            .menu-buttons { width: 360px; }
-            .showcase-card { width: 100px; }
-            .title-showcase { width: 600px; height: 600px; }
-            @keyframes showcaseOrbit {
-                0% { transform: translate(-50%,-50%) rotate(0deg) translateX(220px) rotate(0deg) scale(0.7); opacity: 0; filter: blur(2px) brightness(0.5); }
-                5% { opacity: 0.5; }
-                12.5% { transform: translate(-50%,-50%) rotate(45deg) translateX(220px) rotate(-45deg) scale(0.9); opacity: 0.8; filter: blur(0px) brightness(1); }
-                25% { transform: translate(-50%,-50%) rotate(90deg) translateX(220px) rotate(-90deg) scale(1); opacity: 0.9; filter: blur(0px) brightness(1.1); }
-                37.5% { transform: translate(-50%,-50%) rotate(135deg) translateX(220px) rotate(-135deg) scale(0.9); opacity: 0.8; }
-                50% { transform: translate(-50%,-50%) rotate(180deg) translateX(220px) rotate(-180deg) scale(0.7); opacity: 0.5; filter: blur(1px) brightness(0.7); }
-                55% { opacity: 0; }
-                100% { transform: translate(-50%,-50%) rotate(360deg) translateX(220px) rotate(-360deg) scale(0.7); opacity: 0; filter: blur(2px) brightness(0.5); }
-            }
-            .title-tagline { font-size: 16px; }
+            .title-logo-img { width: 240px; }
+            .menu-col { width: 120px; gap: 8px; }
+            .menu-tile { padding: 12px 8px; font-size: 11px; }
+            .showcase-card { width: 48px; height: 66px; }
+            .title-showcase { max-width: 500px; }
+            .duel-hero-btn { font-size: 22px; padding: 18px 70px; }
+            .title-tagline { font-size: 11px; }
             .title-stats { gap: 48px; }
-            .title-stat-value { font-size: 26px; }
+            .title-stat-value { font-size: 22px; }
             .card-grid {
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             }
@@ -2649,8 +2405,7 @@
             .detail-card-wrap .card-type-label { font-size: 9px; }
             .detail-info { max-width: 340px; }
             .deck-cards-row .card { width: 64px; }
-            .pack-item { flex-direction: row; }
-            .pack-icon { width: 72px; height: 94px; }
+            .pack-icon { width: 56px; height: 72px; }
             /* Duel — tablet */
             .field-zone { width: 52px; height: 72px; }
             .field-row { gap: 4px; }
@@ -2670,11 +2425,12 @@
 
         /* ===== DESKTOP (1024px+) ===== */
         @media (min-width: 1024px) {
-            .title-logo h1 { font-size: 52px; letter-spacing: 6px; }
-            .title-lobster { width: 200px; height: 200px; }
-            .title-lobster svg { width: 200px; height: 200px; }
-            .showcase-card { width: 110px; }
-            .title-tagline { font-size: 17px; }
+            .title-logo-img { width: 300px; }
+            .menu-col { width: 140px; gap: 10px; }
+            .menu-tile { padding: 14px 10px; font-size: 12px; letter-spacing: 2px; }
+            .showcase-card { width: 56px; height: 78px; }
+            .duel-hero-btn { font-size: 24px; padding: 20px 80px; }
+            .title-tagline { font-size: 12px; }
             .card-grid {
                 grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
                 gap: 14px;
@@ -2720,22 +2476,19 @@
             .card-preview-panel .card .card-desc-box { font-size: 10px; line-height: 1.4; display: block; }
             .card-preview-panel .card .card-stats-bar { font-size: 12px; }
             .card-preview-panel .card .card-type-label { font-size: 8px; }
-            .menu-btn:hover {
+            .menu-btn:hover, .duel-hero-btn:hover {
                 filter: brightness(1.15);
                 transform: scale(1.02);
             }
-            .menu-btn:active { transform: scale(0.96); }
+            .menu-btn:active, .duel-hero-btn:active { transform: scale(0.96); }
+            .menu-tile:hover { border-color: rgba(40,140,220,0.25); background: rgba(10,28,55,0.75); transform: scale(1.02); }
             .phase-btn.clickable:hover {
                 filter: brightness(1.2);
                 transform: scale(1.05);
             }
             .action-btn:hover { filter: brightness(1.2); }
             .filter-btn:hover { background: rgba(255,255,255,0.08); }
-            .pack-buy-btn:hover:not(:disabled) {
-                filter: brightness(1.1);
-                transform: scale(1.03);
-            }
-            .pack-item:hover { border-color: rgba(255,255,255,0.1); }
+            .cosmetic-item:hover { border-color: rgba(40,140,220,0.2); }
             .detail-close:hover { background: rgba(255,255,255,0.1); }
             .back-btn:hover { background: rgba(255,255,255,0.1); }
         }
@@ -2860,116 +2613,44 @@
     <!-- ===== TITLE SCREEN ===== -->
     <div id="title-screen" class="screen active">
         <!-- Water environment -->
-        <div class="water-surface"></div>
+        <div class="water-bg"></div>
         <div class="water-caustics"></div>
-        <div class="water-waves"></div>
-        <div class="water-lightrays"></div>
-        <div class="water-sparkles"></div>
+        <div class="water-particles"></div>
 
-        <!-- Ripple rings from stone tablet -->
-        <div class="water-ripples">
-            <div class="ripple-ring"></div>
-            <div class="ripple-ring"></div>
-            <div class="ripple-ring"></div>
-            <div class="ripple-ring"></div>
-        </div>
-
-        <!-- Water glow beneath -->
-        <div class="tablet-water-glow"></div>
-
-        <!-- The stone tablet -->
-        <div class="tablet-device">
-            <div class="tablet-frame">
-                <!-- Engraved inner surface -->
-                <div class="tablet-screen">
-                    <!-- Card showcase orbiting -->
-                    <div class="title-showcase" id="title-showcase"></div>
-
-                    <!-- Stone tablet content -->
-                    <div class="title-center">
-                        <div class="title-logo">
-                            <div class="title-lobster">
-                                <svg viewBox="0 0 120 120" width="90" height="90">
-                                    <defs>
-                                        <linearGradient id="lobster-grad" x1="0" y1="0" x2="1" y2="1">
-                                            <stop offset="0%" stop-color="#d4a050"/>
-                                            <stop offset="50%" stop-color="#b07030"/>
-                                            <stop offset="100%" stop-color="#8a4a18"/>
-                                        </linearGradient>
-                                        <filter id="lobster-glow">
-                                            <feGaussianBlur stdDeviation="3" result="g"/>
-                                            <feComposite in="g" in2="g" operator="arithmetic" k1="0" k2="2.5" k3="0" k4="0"/>
-                                        </filter>
-                                    </defs>
-                                    <!-- Glow behind -->
-                                    <g filter="url(#lobster-glow)" opacity="0.3">
-                                        <ellipse cx="60" cy="68" rx="24" ry="30" fill="#c07030"/>
-                                    </g>
-                                    <!-- Legs — wide power stance -->
-                                    <line x1="46" y1="76" x2="26" y2="94" stroke="#907038" stroke-width="3" stroke-linecap="round"/>
-                                    <line x1="50" y1="80" x2="34" y2="100" stroke="#907038" stroke-width="2.5" stroke-linecap="round"/>
-                                    <line x1="74" y1="76" x2="94" y2="94" stroke="#907038" stroke-width="3" stroke-linecap="round"/>
-                                    <line x1="70" y1="80" x2="86" y2="100" stroke="#907038" stroke-width="2.5" stroke-linecap="round"/>
-                                    <!-- Tail fan -->
-                                    <path d="M48 88 L38 108 L52 100 L60 112 L68 100 L82 108 L72 88Z" fill="url(#lobster-grad)"/>
-                                    <!-- Body -->
-                                    <ellipse cx="60" cy="66" rx="18" ry="26" fill="url(#lobster-grad)"/>
-                                    <!-- Shell lines -->
-                                    <ellipse cx="60" cy="56" rx="14" ry="2" fill="none" stroke="rgba(255,220,150,0.12)" stroke-width="0.8"/>
-                                    <ellipse cx="60" cy="66" rx="16" ry="2" fill="none" stroke="rgba(255,220,150,0.10)" stroke-width="0.8"/>
-                                    <ellipse cx="60" cy="76" rx="14" ry="2" fill="none" stroke="rgba(255,220,150,0.08)" stroke-width="0.8"/>
-                                    <!-- Arms — thick, claws raised high -->
-                                    <path d="M44 50 Q34 38 26 22" stroke="url(#lobster-grad)" stroke-width="6" stroke-linecap="round" fill="none"/>
-                                    <path d="M76 50 Q86 38 94 22" stroke="url(#lobster-grad)" stroke-width="6" stroke-linecap="round" fill="none"/>
-                                    <!-- Left claw — big, open -->
-                                    <path d="M26 22 L14 8 L20 22 L10 18 L22 26Z" fill="#d4a050" stroke="#a06020" stroke-width="1"/>
-                                    <!-- Right claw — big, open -->
-                                    <path d="M94 22 L106 8 L100 22 L110 18 L98 26Z" fill="#d4a050" stroke="#a06020" stroke-width="1"/>
-                                    <!-- Head -->
-                                    <circle cx="60" cy="38" r="14" fill="url(#lobster-grad)"/>
-                                    <!-- Angry brow -->
-                                    <path d="M49 32 L56 29" stroke="#6a3010" stroke-width="2.5" stroke-linecap="round"/>
-                                    <path d="M71 32 L64 29" stroke="#6a3010" stroke-width="2.5" stroke-linecap="round"/>
-                                    <!-- Eyes — fierce -->
-                                    <ellipse cx="53" cy="35" rx="3.5" ry="3" fill="rgba(255,250,220,0.85)"/>
-                                    <ellipse cx="67" cy="35" rx="3.5" ry="3" fill="rgba(255,250,220,0.85)"/>
-                                    <circle cx="54" cy="35" r="2" fill="#7a1008"/>
-                                    <circle cx="68" cy="35" r="2" fill="#7a1008"/>
-                                    <circle cx="54.6" cy="34.2" r="0.8" fill="rgba(255,240,200,0.8)"/>
-                                    <circle cx="68.6" cy="34.2" r="0.8" fill="rgba(255,240,200,0.8)"/>
-                                    <!-- Mouth — aggressive V snarl -->
-                                    <path d="M54 42 L60 44 L66 42" stroke="#6a3010" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                                    <!-- Antennae — swept back -->
-                                    <path d="M52 26 Q40 10 24 4" stroke="#b89050" fill="none" stroke-width="2.5" stroke-linecap="round"/>
-                                    <path d="M68 26 Q80 10 96 4" stroke="#b89050" fill="none" stroke-width="2.5" stroke-linecap="round"/>
-                                </svg>
-                            </div>
-                            <h1>CRUSTACEAN<br>COMBAT</h1>
-                            <div class="subtitle">Trading Card Game</div>
-                        </div>
-                        <div class="title-tagline">Battle. Collect. Dominate the Reef.</div>
-                        <div class="title-info-bar">
-                            <div class="coin-display" id="title-coins">$DD 0</div>
-                            <div class="wallet-display" id="title-wallet">
-                                <span class="wallet-addr" id="title-wallet-addr">No Wallet</span>
-                                <button class="wallet-change-btn" id="title-wallet-btn" onclick="showWalletModal()">Connect</button>
-                            </div>
-                        </div>
-                        <div class="menu-buttons">
-                            <button class="menu-btn primary" onclick="showDuelSetup()">DUEL</button>
-                            <button class="menu-btn secondary" onclick="showScreen('collection-screen')">COLLECTION</button>
-                            <button class="menu-btn secondary" onclick="showScreen('pack-screen')">STORE</button>
-                            <button class="menu-btn secondary" onclick="showScreen('deckbuilder-screen')">DECK BUILDER</button>
-                            <button class="menu-btn secondary" onclick="showScreen('howto-screen')">HOW TO PLAY</button>
-                            <button class="menu-btn secondary" onclick="showScreen('mp-lobby')">MULTIPLAYER</button>
-                            <button class="menu-btn secondary" onclick="showProfile()">PROFILE</button>
-                        </div>
-                        <div class="title-stats" id="title-stats"></div>
-                    </div>
-                </div>
+        <!-- Hero + side menus -->
+        <div class="title-main-row">
+            <div class="menu-col">
+                <button class="menu-tile" onclick="showScreen('collection-screen')">Collection</button>
+                <button class="menu-tile" onclick="showScreen('pack-screen')">Store</button>
+                <button class="menu-tile" onclick="showScreen('deckbuilder-screen')">Deck Builder</button>
+                <button class="menu-tile" onclick="showScreen('howto-screen')">How to Play</button>
             </div>
-            <div class="tablet-reflection"></div>
+            <div class="title-hero">
+                <img class="title-logo-img" src="https://raw.githubusercontent.com/stuart5915/inclawbate-apps/master/apps/card-art/logo.jpg" alt="Crustacean Combat">
+                <div class="title-tagline">Battle. Collect. Dominate the Reef.</div>
+            </div>
+            <div class="menu-col">
+                <button class="menu-tile" onclick="showScreen('mp-lobby')">Multiplayer</button>
+                <button class="menu-tile" onclick="showProfile()">Profile</button>
+                <button class="menu-tile" onclick="showScreen('gallery-screen')">Gallery</button>
+                <button class="menu-tile" onclick="openStore()">Buy $DD</button>
+            </div>
         </div>
+
+        <!-- Info bar (coins + wallet) -->
+        <div class="title-info-bar">
+            <div class="coin-display" id="title-coins">$DD 0</div>
+            <div class="wallet-display" id="title-wallet">
+                <span class="wallet-addr" id="title-wallet-addr">No Wallet</span>
+                <button class="wallet-change-btn" id="title-wallet-btn" onclick="showWalletModal()">Connect</button>
+            </div>
+        </div>
+
+        <!-- Hero DUEL button -->
+        <button class="duel-hero-btn" onclick="showDuelSetup()">DUEL</button>
+
+        <!-- Stats -->
+        <div class="title-stats" id="title-stats"></div>
 
         <div class="title-version">v1.0</div>
     </div>
@@ -3039,9 +2720,13 @@
             <button class="shop-tab active" id="tab-packs" onclick="switchShopTab('packs')">Packs</button>
             <button class="shop-tab" id="tab-sleeves" onclick="switchShopTab('sleeves')">Sleeves</button>
             <button class="shop-tab" id="tab-playmats" onclick="switchShopTab('playmats')">Playmats</button>
+            <button class="shop-tab" id="tab-boards" onclick="switchShopTab('boards')">Boards</button>
+            <button class="shop-tab" id="tab-layouts" onclick="switchShopTab('layouts')">Layouts</button>
+            <button class="shop-tab" id="tab-borders" onclick="switchShopTab('borders')">Borders</button>
+            <button class="shop-tab" id="tab-lighting" onclick="switchShopTab('lighting')">Lighting</button>
             <button class="shop-tab" id="tab-store" onclick="switchShopTab('store')">Buy $DD</button>
         </div>
-        <div class="pack-list" id="pack-list"></div>
+        <div class="cosmetic-grid" id="pack-list"></div>
         <!-- Sleeves section -->
         <div class="store-section" id="sleeves-section">
             <div class="cosmetic-grid" id="sleeves-grid"></div>
@@ -3049,6 +2734,22 @@
         <!-- Playmats section -->
         <div class="store-section" id="playmats-section">
             <div class="cosmetic-grid" id="playmats-grid"></div>
+        </div>
+        <!-- Boards section -->
+        <div class="store-section" id="boards-section">
+            <div class="cosmetic-grid" id="boards-grid"></div>
+        </div>
+        <!-- Layouts section -->
+        <div class="store-section" id="layouts-section">
+            <div class="cosmetic-grid" id="layouts-grid"></div>
+        </div>
+        <!-- Borders section -->
+        <div class="store-section" id="borders-section">
+            <div class="cosmetic-grid" id="borders-grid"></div>
+        </div>
+        <!-- Lighting section -->
+        <div class="store-section" id="lighting-section">
+            <div class="cosmetic-grid" id="lighting-grid"></div>
         </div>
         <!-- Store section -->
         <div class="store-section" id="store-section">
@@ -3222,6 +2923,44 @@
         <div class="profile-lookup">
             <input type="text" id="profile-lookup-input" placeholder="Enter wallet address to view profile...">
             <button onclick="lookupProfile()">View</button>
+        </div>
+    </div>
+
+    <!-- ===== GALLERY SCREEN ===== -->
+    <div id="gallery-screen" class="screen">
+        <div class="header-bar">
+            <button class="back-btn" onclick="showScreen('title-screen')">← Back</button>
+            <h2>Gallery</h2>
+            <button class="gallery-settings-btn" onclick="toggleGallerySettings()">Customize</button>
+        </div>
+        <div class="gallery-settings" id="gallery-settings">
+            <div class="gallery-setting-row">
+                <span class="gallery-setting-label">Layout</span>
+                <div class="gallery-setting-opts" id="gallery-layout-opts"></div>
+            </div>
+            <div class="gallery-setting-row">
+                <span class="gallery-setting-label">Border</span>
+                <div class="gallery-setting-opts" id="gallery-border-opts"></div>
+            </div>
+            <div class="gallery-setting-row">
+                <span class="gallery-setting-label">Lighting</span>
+                <div class="gallery-setting-opts" id="gallery-lighting-opts"></div>
+            </div>
+            <div class="gallery-setting-row">
+                <span class="gallery-setting-label">Board</span>
+                <div class="gallery-setting-opts" id="gallery-board-opts"></div>
+            </div>
+        </div>
+        <div class="gallery-display" id="gallery-display">
+            <div class="gallery-board" id="gallery-board"></div>
+        </div>
+        <!-- Card picker overlay -->
+        <div class="gallery-picker" id="gallery-picker">
+            <div class="gallery-picker-header">
+                <span>Select a Card</span>
+                <button class="gallery-picker-close" onclick="closeGalleryPicker()">Cancel</button>
+            </div>
+            <div class="gallery-picker-grid" id="gallery-picker-grid"></div>
         </div>
     </div>
 
@@ -3420,14 +3159,14 @@ const CARDS = [
         art: { bg: ['#1a0a2e','#0d0518'], color: '#a855c8' }
     }),
     makeCard(5, 'Shell Knight', 'monster', 'normal', {
-        level: 4, atk: 1400, def: 1800, attribute: 'EARTH', rarity: 'R',
+        level: 4, atk: 1400, def: 1500, attribute: 'EARTH', rarity: 'R',
         desc: 'An armored warrior whose reinforced carapace turns aside even the mightiest blows. [Shell 3]',
         art: { bg: ['#2a1a08','#180e04'], color: '#c89040' }, shell: 3
     }),
 
     // === EFFECT MONSTERS (Low Level) ===
     makeCard(6, 'Molt Striker', 'monster', 'effect', {
-        level: 3, atk: 1000, def: 500, attribute: 'WATER', rarity: 'R',
+        level: 3, atk: 1000, def: 700, attribute: 'WATER', rarity: 'R',
         desc: 'When this card is Normal Summoned: It gains 500 ATK until the end of this turn.',
         art: { bg: ['#1a3848','#0c2028'], color: '#50c8a0' },
         effects: [{ trigger: 'onSummon', action: 'atkBuff', value: 500, duration: 'turn', target: 'self' }]
@@ -3451,7 +3190,7 @@ const CARDS = [
         effects: [{ trigger: 'passive', action: 'mustAttack' }, { trigger: 'passive', action: 'cantChangePos' }]
     }),
     makeCard(10, 'Hermit Lobster', 'monster', 'effect', {
-        level: 3, atk: 800, def: 2000, attribute: 'EARTH', rarity: 'SR',
+        level: 3, atk: 900, def: 1400, attribute: 'EARTH', rarity: 'SR',
         desc: 'This card cannot be destroyed by battle while in Defense Position. [Shell 2]',
         art: { bg: ['#281a08','#180e04'], color: '#a08040' }, shell: 2,
         effects: [{ trigger: 'passive', action: 'battleIndestructibleDef' }]
@@ -3658,8 +3397,8 @@ const CARDS = [
 makeCard(41,'Kelp Runner','monster','normal',{level:1,atk:300,def:500,attribute:'WATER',rarity:'C',desc:'A nimble crustacean that races through kelp forests, evading predators with ease.',art:{bg:['#0a2838','#051420'],color:'#4090c0'}}),
 makeCard(42,'Sand Burrower','monster','normal',{level:2,atk:700,def:900,attribute:'EARTH',rarity:'C',desc:'It hides beneath the ocean floor, waiting to ambush anything that passes above.',art:{bg:['#1a1808','#0c0c04'],color:'#a08040'}}),
 makeCard(43,'Coral Bastion','monster','normal',{level:3,atk:1300,def:1300,attribute:'WATER',rarity:'C',desc:'A living fortress of hardened coral, impervious to the currents of the deep.',art:{bg:['#0a2838','#051420'],color:'#50a8d0'}}),
-makeCard(44,'Trench Stalker','monster','normal',{level:4,atk:1800,def:1000,attribute:'DARK',rarity:'R',desc:'Born in the lightless trenches, its eyes pierce through absolute darkness.',art:{bg:['#0a0828','#050418'],color:'#7040a0'}}),
-makeCard(45,'Ironshell Crab','monster','normal',{level:4,atk:1500,def:1800,attribute:'EARTH',rarity:'R',desc:'Its mineral-infused shell is harder than tempered steel. [Shell 3]',art:{bg:['#1a1808','#0c0c04'],color:'#c0a050'},shell:3}),
+makeCard(44,'Trench Stalker','monster','normal',{level:4,atk:1600,def:1000,attribute:'DARK',rarity:'R',desc:'Born in the lightless trenches, its eyes pierce through absolute darkness.',art:{bg:['#0a0828','#050418'],color:'#7040a0'}}),
+makeCard(45,'Ironshell Crab','monster','normal',{level:4,atk:1500,def:1500,attribute:'EARTH',rarity:'R',desc:'Its mineral-infused shell is harder than tempered steel. [Shell 3]',art:{bg:['#1a1808','#0c0c04'],color:'#c0a050'},shell:3}),
 makeCard(46,'Ember Urchin','monster','normal',{level:3,atk:1400,def:1100,attribute:'FIRE',rarity:'C',desc:'A sea urchin that radiates volcanic heat from its spines.',art:{bg:['#2a0808','#180404'],color:'#e05030'}}),
 makeCard(47,'Gale Fin','monster','normal',{level:2,atk:900,def:600,attribute:'WIND',rarity:'C',desc:'It rides powerful underwater gales, moving faster than the eye can follow.',art:{bg:['#082a18','#041808'],color:'#40a860'}}),
 makeCard(48,'Prism Jellyfish','monster','normal',{level:1,atk:200,def:400,attribute:'LIGHT',rarity:'C',desc:'Its translucent body refracts light into dazzling prismatic displays.',art:{bg:['#2a2808','#181804'],color:'#d0a030'}}),
@@ -3681,20 +3420,20 @@ makeCard(62,'Hydra Polyp','monster','effect',{level:4,atk:1400,def:1000,attribut
 makeCard(63,'Whirlpool Eel','monster','effect',{level:4,atk:1700,def:600,attribute:'WATER',rarity:'R',desc:'This card must attack if able.',art:{bg:['#0a2838','#051420'],color:'#3080b0'},effects:[{trigger:'passive',action:'mustAttack'}]}),
 makeCard(64,'Magma Hermit','monster','effect',{level:3,atk:1000,def:1400,attribute:'FIRE',rarity:'R',desc:'Your opponent cannot activate Trap Cards during battles involving this card.',art:{bg:['#2a0808','#180404'],color:'#ff6040'},effects:[{trigger:'passive',action:'immuneTraps'}]}),
 makeCard(65,'Brine Wasp','monster','effect',{level:1,atk:300,def:100,attribute:'WIND',rarity:'C',desc:'If you control a monster: Special Summon this card from your hand.',art:{bg:['#082a18','#041808'],color:'#50c070'},effects:[{trigger:'hand',action:'specialSummonSelf',condition:'controlMonster'}]}),
-makeCard(66,'Abyssal Remora','monster','effect',{level:4,atk:1300,def:1500,attribute:'DARK',rarity:'SR',desc:'Once per turn: You can destroy 1 Set Spell/Trap card on the field.',art:{bg:['#0a0828','#050418'],color:'#8050b0'},effects:[{trigger:'activated',action:'destroySetST',value:1,target:'any'}]}),
+makeCard(66,'Abyssal Remora','monster','effect',{level:4,atk:1300,def:1400,attribute:'DARK',rarity:'SR',desc:'Once per turn: You can destroy 1 Set Spell/Trap card on the field.',art:{bg:['#0a0828','#050418'],color:'#8050b0'},effects:[{trigger:'activated',action:'destroySetST',value:1,target:'any'}]}),
 // === NEW MID-LEVEL EFFECT MONSTERS (67-72) ===
 makeCard(67,'Nautilus Warden','monster','effect',{level:5,atk:2100,def:1600,attribute:'WATER',rarity:'SR',desc:'When this card is Normal Summoned: Target 1 opponent\'s monster; it cannot attack during their next Battle Phase.',art:{bg:['#0a2838','#051420'],color:'#50a8d0'},effects:[{trigger:'onSummon',action:'freeze',value:1,target:'opponent'}]}),
 makeCard(68,'Hydrothermal Drake','monster','effect',{level:6,atk:2400,def:1800,attribute:'FIRE',rarity:'UR',desc:'When this card destroys an opponent\'s monster by battle: Inflict 600 damage to your opponent.',art:{bg:['#2a0808','#180404'],color:'#e05030'},effects:[{trigger:'onBattleDestroy',action:'damage',value:600,target:'opponent'}]}),
 makeCard(69,'Deepwater Titan','monster','effect',{level:6,atk:2300,def:2000,attribute:'WATER',rarity:'UR',desc:'When this card is destroyed: Special Summon 2 "Lobster Tokens" (WATER/Level 1/ATK 300/DEF 300). [Shell 3]',art:{bg:['#0a2838','#051420'],color:'#4090c0'},shell:3,effects:[{trigger:'onDestroy',action:'spawnTokens',count:2,tokenAtk:300,tokenDef:300}]}),
 makeCard(70,'Stormfin Serpent','monster','effect',{level:5,atk:2000,def:1500,attribute:'WIND',rarity:'SR',desc:'When this card is Normal Summoned: Destroy 1 Spell/Trap card on the field.',art:{bg:['#082a18','#041808'],color:'#40a860'},effects:[{trigger:'onSummon',action:'destroyST',value:1,target:'any'}]}),
 makeCard(71,'Gilded Cephalopod','monster','effect',{level:5,atk:1900,def:1800,attribute:'LIGHT',rarity:'SR',desc:'When this card is Normal Summoned: Draw 1 card.',art:{bg:['#2a2808','#181804'],color:'#e0b840'},effects:[{trigger:'onSummon',action:'draw',value:1,target:'self'}]}),
-makeCard(72,'Oblivion Crawler','monster','effect',{level:6,atk:2500,def:1400,attribute:'DARK',rarity:'UR',desc:'While this card is face-up: All monsters your opponent controls lose 300 ATK.',art:{bg:['#0a0828','#050418'],color:'#7040a0'},effects:[{trigger:'passive',action:'atkDebuffAll',value:300,target:'opponent'}]}),
+makeCard(72,'Oblivion Crawler','monster','effect',{level:6,atk:2500,def:1800,attribute:'DARK',rarity:'UR',desc:'While this card is face-up: All monsters your opponent controls lose 300 ATK.',art:{bg:['#0a0828','#050418'],color:'#7040a0'},effects:[{trigger:'passive',action:'atkDebuffAll',value:300,target:'opponent'}]}),
 // === NEW RITUAL MONSTERS (73-74) ===
-makeCard(73,'Charybdis the Devourer','monster','ritual',{level:9,atk:3200,def:2700,attribute:'WATER',rarity:'ScR',desc:'You can Ritual Summon this card with "Vortex Sacrament". Once per turn: You can destroy 1 card on the field.',art:{bg:['#081838','#040c20'],color:'#4080d0'},ritualSpell:137,effects:[{trigger:'activated',action:'destroyAny',value:1,target:'any'}]}),
+makeCard(73,'Charybdis the Devourer','monster','ritual',{level:9,atk:3400,def:2900,attribute:'WATER',rarity:'ScR',desc:'You can Ritual Summon this card with "Vortex Sacrament". Once per turn: You can destroy 1 card on the field.',art:{bg:['#081838','#040c20'],color:'#4080d0'},ritualSpell:137,effects:[{trigger:'activated',action:'destroyAny',value:1,target:'any'}]}),
 makeCard(74,'Pyroclasm Leviathan','monster','ritual',{level:8,atk:2900,def:2500,attribute:'FIRE',rarity:'StR',desc:'You can Ritual Summon this card with "Magma Rite". When this card destroys a monster by battle: Gain 800 LP.',art:{bg:['#2a0808','#180404'],color:'#ff6040'},ritualSpell:138,effects:[{trigger:'onBattleDestroy',action:'heal',value:800,target:'self'}]}),
 // === NEW HIGH-LEVEL EFFECT MONSTERS (75-76) ===
 makeCard(75,'Kraken Overlord','monster','effect',{level:7,atk:2700,def:2200,attribute:'WATER',rarity:'UR',desc:'When this card is Normal Summoned: Destroy all Spell/Trap cards your opponent controls.',art:{bg:['#0a2838','#051420'],color:'#4090c0'},effects:[{trigger:'onSummon',action:'destroyAllOpponentST'}]}),
-makeCard(76,'Abyssal Monarch','monster','effect',{level:8,atk:3000,def:2500,attribute:'DARK',rarity:'ScR',desc:'If your opponent controls more monsters than you: Special Summon this card from your hand.',art:{bg:['#0a0828','#050418'],color:'#8050b0'},effects:[{trigger:'hand',action:'specialSummonSelf',condition:'opponentMoreMonsters'}]}),
+makeCard(76,'Abyssal Monarch','monster','effect',{level:8,atk:3100,def:2600,attribute:'DARK',rarity:'ScR',desc:'If your opponent controls more monsters than you: Special Summon this card from your hand.',art:{bg:['#0a0828','#050418'],color:'#8050b0'},effects:[{trigger:'hand',action:'specialSummonSelf',condition:'opponentMoreMonsters'}]}),
 // === NEW CONDUIT MONSTERS (77-80) ===
 makeCard(77,'Current Sprite','monster','effect',{level:1,atk:200,def:300,attribute:'WATER',rarity:'C',isTuner:true,desc:'[Conduit] When this card is used as Surge Material: Gain 300 LP.',art:{bg:['#0a2838','#051420'],color:'#50a8d0'},effects:[{trigger:'onSurgeMaterial',action:'heal',value:300,target:'self'}]}),
 makeCard(78,'Reef Chanter','monster','effect',{level:2,atk:600,def:500,attribute:'WATER',rarity:'R',isTuner:true,desc:'[Conduit] When this card is used as Surge Material: Draw 1 card.',art:{bg:['#0a2838','#051420'],color:'#4090c0'},effects:[{trigger:'onSurgeMaterial',action:'draw',value:1,target:'self'}]}),
@@ -3703,15 +3442,15 @@ makeCard(80,'Magma Wisp','monster','effect',{level:3,atk:900,def:700,attribute:'
 // === NEW SURGE MONSTERS (81-85) ===
 makeCard(81,'Maelstrom Dragon','monster','surge',{level:7,atk:2600,def:2100,attribute:'WATER',rarity:'SR',desc:'1 Conduit + 1 or more non-Conduit monsters\nWhen this card is Surge Summoned: Destroy 1 Spell/Trap card on the field.',art:{bg:['#101830','#081020'],color:'#90c0e8'},effects:[{trigger:'onSummon',action:'destroyST',value:1,target:'any'}]}),
 makeCard(82,'Abyssal Hydra','monster','surge',{level:8,atk:2800,def:2300,attribute:'DARK',rarity:'UR',desc:'1 Conduit + 1 or more non-Conduit monsters\nWhen this card is Surge Summoned: Inflict 800 damage to your opponent.',art:{bg:['#100020','#080010'],color:'#8060c0'},effects:[{trigger:'onSummon',action:'damage',value:800,target:'opponent'}]}),
-makeCard(83,'Celestial Nautilus','monster','surge',{level:9,atk:3100,def:2600,attribute:'LIGHT',rarity:'ScR',desc:'1 Conduit + 1 or more non-Conduit monsters\nWhen this card is Surge Summoned: Draw 2 cards.',art:{bg:['#2a2808','#181804'],color:'#e0b840'},effects:[{trigger:'onSummon',action:'draw',value:2,target:'self'}]}),
+makeCard(83,'Celestial Nautilus','monster','surge',{level:9,atk:3300,def:2800,attribute:'LIGHT',rarity:'ScR',desc:'1 Conduit + 1 or more non-Conduit monsters\nWhen this card is Surge Summoned: Draw 2 cards.',art:{bg:['#2a2808','#181804'],color:'#e0b840'},effects:[{trigger:'onSummon',action:'draw',value:2,target:'self'}]}),
 makeCard(84,'Tempest Wyrm','monster','surge',{level:5,atk:2200,def:1600,attribute:'WIND',rarity:'GhR',desc:'1 Conduit + 1 or more non-Conduit monsters\nThis card is unaffected by Trap effects.',art:{bg:['#082a18','#041808'],color:'#50c070'},effects:[{trigger:'passive',action:'immuneTraps'}]}),
 makeCard(85,'Inferno Crustacean','monster','surge',{level:6,atk:2400,def:1900,attribute:'FIRE',rarity:'UltR',desc:'1 Conduit + 1 or more non-Conduit monsters\nThis card can attack twice during each Battle Phase.',art:{bg:['#2a0808','#180404'],color:'#ff6040'},effects:[{trigger:'passive',action:'doubleAttack'}]}),
 // === NEW FUSION MONSTERS (86-90) ===
-makeCard(86,'Leviathan Prime','monster','fusion',{level:9,atk:3300,def:2800,attribute:'WATER',rarity:'StR',desc:'"Kraken Overlord" + "Reef Sentinel"\nWhen this card is Summoned: Destroy all Spell/Trap cards your opponent controls.',art:{bg:['#200830','#100418'],color:'#a050d0'},fusionMaterials:[75,3],effects:[{trigger:'onSummon',action:'destroyAllOpponentST'}]}),
-makeCard(87,'Obsidian Shellbreaker','monster','fusion',{level:8,atk:3000,def:2400,attribute:'DARK',rarity:'ScR',desc:'"Trench Stalker" + "Abyssal Pincer"\nWhile face-up: All opponent\'s monsters lose 400 ATK.',art:{bg:['#280838','#140420'],color:'#c040e0'},fusionMaterials:[44,4],effects:[{trigger:'passive',action:'atkDebuffAll',value:400,target:'opponent'}]}),
+makeCard(86,'Leviathan Prime','monster','fusion',{level:9,atk:3500,def:3000,attribute:'WATER',rarity:'StR',desc:'"Kraken Overlord" + "Reef Sentinel"\nWhen this card is Summoned: Destroy all Spell/Trap cards your opponent controls.',art:{bg:['#200830','#100418'],color:'#a050d0'},fusionMaterials:[75,3],effects:[{trigger:'onSummon',action:'destroyAllOpponentST'}]}),
+makeCard(87,'Obsidian Shellbreaker','monster','fusion',{level:8,atk:3100,def:2500,attribute:'DARK',rarity:'ScR',desc:'"Trench Stalker" + "Abyssal Pincer"\nWhile face-up: All opponent\'s monsters lose 400 ATK.',art:{bg:['#280838','#140420'],color:'#c040e0'},fusionMaterials:[44,4],effects:[{trigger:'passive',action:'atkDebuffAll',value:400,target:'opponent'}]}),
 makeCard(88,'Coral Colossus','monster','fusion',{level:7,atk:2700,def:2300,attribute:'EARTH',rarity:'UR',desc:'"Ironshell Crab" + "Shell Knight"\nThis card cannot be destroyed by battle. [Shell 5]',art:{bg:['#2a1a08','#180e04'],color:'#d0a050'},fusionMaterials:[45,5],shell:5,effects:[{trigger:'passive',action:'battleIndestructibleDef'}]}),
 makeCard(89,'Infernal Tidecaller','monster','fusion',{level:8,atk:2900,def:2200,attribute:'FIRE',rarity:'UR',desc:'"Hydrothermal Drake" + "Ember Urchin"\nWhen this card destroys a monster by battle: Gain 1000 LP.',art:{bg:['#3a1008','#200804'],color:'#ff6030'},fusionMaterials:[68,46],effects:[{trigger:'onBattleDestroy',action:'heal',value:1000,target:'self'}]}),
-makeCard(90,'Phantom Maw','monster','fusion',{level:9,atk:3200,def:2600,attribute:'DARK',rarity:'ScR',desc:'"Abyssal Monarch" + "Gloom Squid"\nThis card can attack twice during each Battle Phase.',art:{bg:['#100020','#080010'],color:'#8060c0'},fusionMaterials:[76,59],effects:[{trigger:'passive',action:'doubleAttack'}]}),
+makeCard(90,'Phantom Maw','monster','fusion',{level:9,atk:3400,def:2900,attribute:'DARK',rarity:'ScR',desc:'"Abyssal Monarch" + "Gloom Squid"\nThis card can attack twice during each Battle Phase.',art:{bg:['#100020','#080010'],color:'#8060c0'},fusionMaterials:[76,59],effects:[{trigger:'passive',action:'doubleAttack'}]}),
 // === NEW NORMAL SPELLS (91-110) ===
 makeCard(91,'Plankton Surge','spell','normal',{rarity:'C',desc:'Gain 800 LP.',art:{bg:['#082820','#041810'],icon:'heal'},effects:[{action:'heal',value:800,target:'self'}]}),
 makeCard(92,'Depth Charge','spell','normal',{rarity:'R',desc:'Inflict 800 damage to your opponent.',art:{bg:['#0a3020','#051810'],icon:'damage'},effects:[{action:'damage',value:800,target:'opponent'}]}),
@@ -3834,7 +3573,7 @@ makeCard(192,'Reef Stalker','monster','normal',{
     art:{bg:['#0a2838','#051820'],color:'#e07050'}
 }),
 makeCard(193,'Volcanic Vent Crab','monster','normal',{
-    level:4, atk:1400, def:1600, attribute:'FIRE', rarity:'R', shell:2,
+    level:4, atk:1400, def:1400, attribute:'FIRE', rarity:'R', shell:2,
     desc:'Forged in hydrothermal vents, its shell is hardened by extreme heat. Superheated steam erupts from cracks in its armor.',
     art:{bg:['#2a0808','#180404'],color:'#ff8040'}
 }),
@@ -3844,7 +3583,7 @@ makeCard(194,'Phantom Jellyfish','monster','normal',{
     art:{bg:['#100830','#080418'],color:'#c080ff'}
 }),
 makeCard(195,'Chain Urchin','monster','effect',{
-    level:4, atk:1300, def:1800, attribute:'EARTH', rarity:'SR', shell:3,
+    level:4, atk:1300, def:1500, attribute:'EARTH', rarity:'SR', shell:3,
     desc:'When this card is destroyed in battle: inflict 500 damage to your opponent.',
     art:{bg:['#1a1808','#0c0c04'],color:'#a0c060'},
     effects:[{trigger:'onDestroyed',action:'damage',value:500,target:'opponent'}]
@@ -3861,18 +3600,18 @@ makeCard(197,'Kraken Hatchling','monster','normal',{
     art:{bg:['#081838','#040c20'],color:'#50a0d0'}
 }),
 makeCard(198,'Ironclad Nautilus','monster','normal',{
-    level:6, atk:1800, def:2400, attribute:'EARTH', rarity:'SR', shell:3,
+    level:6, atk:2200, def:2100, attribute:'EARTH', rarity:'SR', shell:3,
     desc:'An ancient nautilus whose shell has calcified into living armor. It has survived extinction events that wiped out entire species.',
     art:{bg:['#1a1808','#0c0c04'],color:'#c0a060'}
 }),
 makeCard(199,'Bioluminescent Dragon Eel','monster','effect',{
-    level:7, atk:2600, def:2000, attribute:'LIGHT', rarity:'UR',
+    level:7, atk:2700, def:2200, attribute:'LIGHT', rarity:'UR',
     desc:'When this card is Normal Summoned: draw 1 card. This serpent commands respect in the deepest trenches.',
     art:{bg:['#2a2818','#18180c'],color:'#60ffb0'},
     effects:[{trigger:'onSummon',action:'draw',value:1,target:'self'}]
 }),
 makeCard(200,'Claw of Dominion','monster','normal',{
-    level:8, atk:3000, def:2500, attribute:'FIRE', rarity:'ScR',
+    level:8, atk:3200, def:2700, attribute:'FIRE', rarity:'ScR',
     desc:'The ultimate weapon of the Inclawbate realm. A titanic lobster deity wreathed in volcanic flame. Legends say its claw can shatter any defense.',
     art:{bg:['#2a0808','#180404'],color:'#ffc040'}
 }),
@@ -4034,10 +3773,8 @@ function renderCard(card, opts = {}) {
                 </div>
                 <div class="card-holo-overlay"></div>
             </div>
-            <div class="card-back"${_sl?` style="background:${_sl.bg};border-color:${_sl.border}"`:''}>
-                <div class="card-back-pattern"${_sl?` style="background:${_sl.pattern}"`:''}>
-                    <span class="card-back-text"${_sl?` style="color:${_sl.text}"`:''}>CC</span>
-                </div>
+            <div class="card-back"${_sl?` style="border-color:${_sl.border}"`:''}>
+                ${_sl ? `<img src="${_cardArtUrl(_sl.art)}" alt="${_sl.name}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">` : `<div class="card-back-pattern"><span class="card-back-text">CC</span></div>`}
             </div>
         </div>
     `;
@@ -4097,7 +3834,12 @@ let playerData = {
     ownedSleeves: [],   // sleeve IDs owned
     ownedPlaymats: [],  // playmat IDs owned
     activeSleeve: null, // equipped sleeve ID
-    activePlaymat: null // equipped playmat ID
+    activePlaymat: null, // equipped playmat ID
+    gallery: { slots: [], layout: 'grid', boardId: 'gb_default', borderStyle: 'none', lighting: 'none' },
+    ownedBoards: ['gb_default'],
+    ownedLayouts: ['grid'],
+    ownedBorders: ['none'],
+    ownedLightings: ['none']
 };
 
 function saveData() {
@@ -4124,6 +3866,11 @@ function loadData() {
     }
     // Ensure collectedDates exists for migration
     if (!playerData.collectedDates) playerData.collectedDates = {};
+    if (!playerData.gallery) playerData.gallery = { slots: [], layout: 'grid', boardId: 'gb_default', borderStyle: 'none', lighting: 'none' };
+    if (!playerData.ownedBoards) playerData.ownedBoards = ['gb_default'];
+    if (!playerData.ownedLayouts) playerData.ownedLayouts = ['grid'];
+    if (!playerData.ownedBorders) playerData.ownedBorders = ['none'];
+    if (!playerData.ownedLightings) playerData.ownedLightings = ['none'];
     // Grant new cards added since last load
     let grantedNew = false;
     const now = Date.now();
@@ -4446,7 +4193,7 @@ function initTitleShowcase() {
         if (!card) return;
         const div = document.createElement('div');
         div.className = 'showcase-card';
-        div.innerHTML = getCardHTML(card, false);
+        div.innerHTML = renderCard(card);
         showcase.appendChild(div);
     });
     // Populate stats
@@ -4471,6 +4218,7 @@ function showScreen(id) {
     if (id === 'pack-screen') renderPackShop();
     if (id === 'deckbuilder-screen') renderDeckBuilder();
     if (id === 'profile-screen') renderOwnProfile();
+    if (id === 'gallery-screen') renderGallery();
 }
 
 function updateCoinsDisplay() {
@@ -4620,25 +4368,25 @@ const PACKS = [
       guarantee: 'R',
       colors: ['#2a4a6a','#1a2a3a']
     },
-    { id: 'reef', name: 'Reef Pack', desc: '5 cards. Guaranteed 1 Super Rare+', cost: 100, count: 5,
+    { id: 'reef', name: 'Reef Pack', desc: '5 cards. Guaranteed 1 Super Rare', cost: 2000, count: 5,
       pool: () => CARDS.filter(c => ['C','R','SR'].includes(c.rarity)),
       guarantee: 'SR',
       colors: ['#1a5a4a','#0a2a20']
     },
-    { id: 'abyss', name: 'Abyssal Pack', desc: '5 cards. Guaranteed 1 Ultra Rare+', cost: 250, count: 5,
+    { id: 'abyss', name: 'Abyssal Pack', desc: '5 cards. Guaranteed 1 Ultra Rare', cost: 5000, count: 5,
       pool: () => CARDS.filter(c => ['C','R','SR','UR'].includes(c.rarity)),
       guarantee: 'UR',
       colors: ['#2a1a4a','#100828']
     },
-    { id: 'legend', name: 'Legendary Pack', desc: '5 cards. Guaranteed 1 Secret/Phantom/Embossed/Cosmic!', cost: 500, count: 5,
-      pool: () => CARDS,
-      guarantee: 'ScR',
-      colors: ['#3a2a08','#1a1204']
-    },
-    { id: 'mega', name: 'Mega Pack', desc: '10 cards. Guaranteed 2 Ultra Rare+', cost: 1000, count: 10,
+    { id: 'mega', name: 'Mega Pack', desc: '10 cards. Guaranteed 2 Ultra Rare', cost: 20000, count: 10,
       pool: () => CARDS,
       guarantee: 'UR', guaranteeCount: 2,
       colors: ['#3a0828','#1a0418']
+    },
+    { id: 'legend', name: 'Legendary Pack', desc: '5 cards. Guaranteed 1 rare pull: Secret 80% / Phantom 15% / Embossed 4% / Cosmic 1%', cost: 50000, count: 5,
+      pool: () => CARDS,
+      guarantee: 'legendaryWeighted',
+      colors: ['#3a2a08','#1a1204']
     },
 ];
 
@@ -4647,21 +4395,18 @@ let packBuys = {};
 function renderPackShop() {
     const list = document.getElementById('pack-list');
     document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
-    // Reset tabs to packs view
     switchShopTab('packs');
     list.innerHTML = PACKS.map(p => {
         const bought = packBuys[p.id] || 0;
         const canBuy = playerData.coins >= p.cost && (!p.maxBuys || bought < p.maxBuys);
         const soldOut = p.maxBuys && bought >= p.maxBuys;
-        return `<div class="pack-item">
+        return `<div class="cosmetic-item">
             <div class="pack-icon" style="background:linear-gradient(135deg,${p.colors[0]},${p.colors[1]});border:1px solid rgba(255,255,255,0.15)">
-                <svg viewBox="0 0 40 50" width="40" height="50"><rect x="5" y="5" width="30" height="40" rx="3" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><text x="20" y="30" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="900">CW</text></svg>
+                <svg viewBox="0 0 40 50" width="28" height="38"><rect x="5" y="5" width="30" height="40" rx="3" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><text x="20" y="30" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="900">CC</text></svg>
             </div>
-            <div class="pack-info">
-                <h3>${p.name}</h3>
-                <p>${p.desc}</p>
-            </div>
-            <button class="pack-buy-btn" onclick="buyPack('${p.id}')" ${canBuy ? '' : 'disabled'}>
+            <div class="cosmetic-name">${p.name}</div>
+            <div class="pack-desc">${p.desc}</div>
+            <button class="cosmetic-btn${canBuy && !soldOut ? ' buy' : ''}" onclick="buyPack('${p.id}')" ${canBuy ? '' : 'disabled'}>
                 ${soldOut ? 'SOLD OUT' : (p.cost === 0 ? 'FREE' : '$DD ' + p.cost)}
             </button>
         </div>`;
@@ -4681,10 +4426,18 @@ function buyPack(packId) {
     const pulled = [];
 
     // Guarantee
-    if (pack.guarantee) {
-        const rarityOrder = ['C','R','SR','UR','ScR','GhR','UltR','StR'];
-        const minIdx = rarityOrder.indexOf(pack.guarantee);
-        const guaranteePool = CARDS.filter(c => rarityOrder.indexOf(c.rarity) >= minIdx);
+    if (pack.guarantee === 'legendaryWeighted') {
+        // Weighted single rare pull: ScR 80%, GhR 15%, UltR 4%, StR 1%
+        const roll = Math.random();
+        let gRarity;
+        if (roll < 0.80) gRarity = 'ScR';
+        else if (roll < 0.95) gRarity = 'GhR';
+        else if (roll < 0.99) gRarity = 'UltR';
+        else gRarity = 'StR';
+        const gPool = CARDS.filter(c => c.rarity === gRarity);
+        if (gPool.length > 0) pulled.push(gPool[Math.floor(Math.random() * gPool.length)]);
+    } else if (pack.guarantee) {
+        const guaranteePool = CARDS.filter(c => c.rarity === pack.guarantee);
         const gCount = pack.guaranteeCount || 1;
         for (let g = 0; g < gCount && guaranteePool.length > 0; g++) {
             pulled.push(guaranteePool[Math.floor(Math.random() * guaranteePool.length)]);
@@ -4726,7 +4479,7 @@ function buyPack(packId) {
 }
 
 function showReveal(cards, newCardIds) {
-    document.querySelector('.pack-list').style.display = 'none';
+    document.getElementById('pack-list').style.display = 'none';
     const reveal = document.getElementById('pack-reveal');
     reveal.classList.add('active');
     const row = document.getElementById('reveal-cards');
@@ -4741,7 +4494,7 @@ function showReveal(cards, newCardIds) {
 
 function closeReveal() {
     document.getElementById('pack-reveal').classList.remove('active');
-    document.querySelector('.pack-list').style.display = '';
+    document.getElementById('pack-list').style.display = '';
     renderPackShop();
 }
 
@@ -4802,17 +4555,25 @@ function formatClaws(n) {
 
 
 function switchShopTab(tab) {
-    ['packs','sleeves','playmats','store'].forEach(t => {
+    ['packs','sleeves','playmats','boards','layouts','borders','lighting','store'].forEach(t => {
         var el = document.getElementById('tab-'+t);
         if (el) el.classList.toggle('active', tab === t);
     });
     document.getElementById('pack-list').style.display = tab === 'packs' ? '' : 'none';
     document.getElementById('sleeves-section').classList.toggle('active', tab === 'sleeves');
     document.getElementById('playmats-section').classList.toggle('active', tab === 'playmats');
+    document.getElementById('boards-section').classList.toggle('active', tab === 'boards');
+    document.getElementById('layouts-section').classList.toggle('active', tab === 'layouts');
+    document.getElementById('borders-section').classList.toggle('active', tab === 'borders');
+    document.getElementById('lighting-section').classList.toggle('active', tab === 'lighting');
     document.getElementById('store-section').classList.toggle('active', tab === 'store');
     if (tab === 'store') renderStore();
     if (tab === 'sleeves') renderSleeves();
     if (tab === 'playmats') renderPlaymats();
+    if (tab === 'boards') renderBoards();
+    if (tab === 'layouts') renderShopLayouts();
+    if (tab === 'borders') renderShopBorders();
+    if (tab === 'lighting') renderShopLighting();
 }
 
 let storePriceInterval = null;
@@ -4920,16 +4681,16 @@ function showStoreToast(text) {
 // SLEEVES & PLAYMATS
 // ============================================================
 const SLEEVES = [
-    { id:'s1', name:'Crimson Tide', bg:'radial-gradient(ellipse at 50% 50%, #4a1010 0%, #1a0404 70%)', border:'#a03030', pattern:'repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,80,80,0.06) 4px,rgba(255,80,80,0.06) 5px),repeating-linear-gradient(-45deg,transparent,transparent 4px,rgba(255,80,80,0.06) 4px,rgba(255,80,80,0.06) 5px)', text:'#c04040' },
-    { id:'s2', name:'Deep Abyss', bg:'radial-gradient(ellipse at 50% 50%, #081838 0%, #020810 70%)', border:'#2060a0', pattern:'repeating-linear-gradient(30deg,transparent,transparent 5px,rgba(40,120,200,0.05) 5px,rgba(40,120,200,0.05) 6px),repeating-linear-gradient(-30deg,transparent,transparent 5px,rgba(40,120,200,0.05) 5px,rgba(40,120,200,0.05) 6px)', text:'#3080c0' },
-    { id:'s3', name:'Jade Emperor', bg:'radial-gradient(ellipse at 50% 50%, #0a3018 0%, #020c06 70%)', border:'#30a050', pattern:'repeating-linear-gradient(60deg,transparent,transparent 3px,rgba(60,200,100,0.05) 3px,rgba(60,200,100,0.05) 4px),repeating-linear-gradient(-60deg,transparent,transparent 3px,rgba(60,200,100,0.05) 3px,rgba(60,200,100,0.05) 4px)', text:'#40b060' },
-    { id:'s4', name:'Solar Flare', bg:'radial-gradient(ellipse at 50% 50%, #3a2808 0%, #181004 70%)', border:'#c09030', pattern:'repeating-conic-gradient(from 0deg at 50% 50%,transparent 0deg,rgba(255,180,60,0.04) 15deg,transparent 30deg)', text:'#d0a040' },
-    { id:'s5', name:'Void Walker', bg:'radial-gradient(ellipse at 50% 50%, #18082a 0%, #080410 70%)', border:'#7040a0', pattern:'repeating-linear-gradient(0deg,transparent,transparent 6px,rgba(140,80,200,0.04) 6px,rgba(140,80,200,0.04) 7px)', text:'#9060c0' },
-    { id:'s6', name:'Arctic Frost', bg:'radial-gradient(ellipse at 50% 50%, #102838 0%, #060e18 70%)', border:'#60a8d0', pattern:'repeating-linear-gradient(120deg,transparent,transparent 4px,rgba(120,200,240,0.04) 4px,rgba(120,200,240,0.04) 5px),repeating-linear-gradient(-120deg,transparent,transparent 4px,rgba(120,200,240,0.04) 4px,rgba(120,200,240,0.04) 5px)', text:'#70b8e0' },
-    { id:'s7', name:'Obsidian', bg:'radial-gradient(ellipse at 50% 50%, #1a1a1a 0%, #080808 70%)', border:'#505050', pattern:'repeating-linear-gradient(45deg,transparent,transparent 3px,rgba(255,255,255,0.02) 3px,rgba(255,255,255,0.02) 4px),repeating-linear-gradient(-45deg,transparent,transparent 3px,rgba(255,255,255,0.02) 3px,rgba(255,255,255,0.02) 4px)', text:'#666' },
-    { id:'s8', name:'Coral Bloom', bg:'radial-gradient(ellipse at 50% 50%, #381828 0%, #140810 70%)', border:'#c06090', pattern:'repeating-conic-gradient(from 45deg at 50% 50%,transparent 0deg,rgba(220,100,160,0.04) 10deg,transparent 20deg)', text:'#d070a0' },
-    { id:'s9', name:'Thunder Strike', bg:'radial-gradient(ellipse at 40% 30%, #282018 0%, #0c0a04 70%)', border:'#b0a040', pattern:'repeating-linear-gradient(75deg,transparent,transparent 8px,rgba(220,200,80,0.03) 8px,rgba(220,200,80,0.03) 9px)', text:'#c0b050' },
-    { id:'s10', name:'Neon Depths', bg:'radial-gradient(ellipse at 50% 50%, #081820 0%, #040a10 70%)', border:'#30d0a0', pattern:'repeating-linear-gradient(0deg,transparent,transparent 5px,rgba(60,220,170,0.04) 5px,rgba(60,220,170,0.04) 6px),repeating-linear-gradient(90deg,transparent,transparent 5px,rgba(60,220,170,0.04) 5px,rgba(60,220,170,0.04) 6px)', text:'#40e0b0' },
+    { id:'s1', name:'Crimson Tide', art:'Thermidor the Blaze', border:'#a03030' },
+    { id:'s2', name:'Deep Abyss', art:'Abyssal Lurker', border:'#2060a0' },
+    { id:'s3', name:'Jade Emperor', art:'Emperor Crustacean', border:'#30a050' },
+    { id:'s4', name:'Solar Flare', art:'Coconut Crab King', border:'#c09030' },
+    { id:'s5', name:'Void Walker', art:'Abyssal Sovereign', border:'#7040a0' },
+    { id:'s6', name:'Arctic Frost', art:'Glacial Lobster', border:'#60a8d0' },
+    { id:'s7', name:'Obsidian', art:'Deep Sea Berserker', border:'#505050' },
+    { id:'s8', name:'Coral Bloom', art:'Coral Witch', border:'#c06090' },
+    { id:'s9', name:'Thunder Strike', art:'Twin Claw Dragon', border:'#b0a040' },
+    { id:'s10', name:'Neon Depths', art:"Poseidon's Chosen", border:'#30d0a0' },
 ];
 
 const PLAYMATS = [
@@ -4951,11 +4712,10 @@ function renderSleeves() {
     grid.innerHTML = SLEEVES.map(s => {
         const owned = (playerData.ownedSleeves||[]).includes(s.id);
         const equipped = playerData.activeSleeve === s.id;
+        const artUrl = _cardArtUrl(s.art);
         return `<div class="cosmetic-item${equipped?' equipped':''}">
-            <div class="sleeve-preview" style="background:${s.bg};border-color:${s.border}">
-                <div class="sleeve-preview-pattern" style="background:${s.pattern}">
-                    <span style="color:${s.text};font-family:'Orbitron',sans-serif;font-size:8px;font-weight:900;letter-spacing:2px;transform:rotate(-25deg);opacity:.5">CC</span>
-                </div>
+            <div class="sleeve-preview" style="border-color:${s.border}">
+                <img src="${artUrl}" alt="${s.name}" style="width:100%;height:100%;object-fit:cover;border-radius:3px;">
             </div>
             <div class="cosmetic-name">${s.name}</div>
             ${owned
@@ -5025,6 +4785,265 @@ function getActiveSleeve() {
 
 function getActivePlaymat() {
     return PLAYMATS.find(m => m.id === playerData.activePlaymat) || null;
+}
+
+// GALLERY BOARDS & GALLERY
+// ============================================================
+const GALLERY_BOARDS = [
+    { id:'gb_default', name:'Reef Display', desc:'Standard coral reef display board', cost:0,
+      bg:'linear-gradient(180deg, #081020 0%, #0c1830 40%, #102040 70%, #081828 100%)', slotBorder:'rgba(40,120,200,0.15)' },
+    { id:'gb_ocean_floor', name:'Deep Ocean Floor', desc:'Cards rest on the sandy ocean bottom', cost:1000,
+      bg:'linear-gradient(180deg, #040810 0%, #081018 30%, #0c1828 60%, #0a1420 100%)', slotBorder:'rgba(60,140,220,0.15)' },
+    { id:'gb_coral_throne', name:'Coral Throne Room', desc:'A majestic coral palace display', cost:1000,
+      bg:'radial-gradient(ellipse at 50% 80%, #2a1020 0%, #180810 40%, #0c0408 100%)', slotBorder:'rgba(220,100,160,0.2)' },
+    { id:'gb_volcanic', name:'Volcanic Vent', desc:'Cards displayed near searing thermal vents', cost:1000,
+      bg:'linear-gradient(180deg, #1a0808 0%, #2a0c08 30%, #3a1810 60%, #201008 100%)', slotBorder:'rgba(255,120,60,0.2)' },
+    { id:'gb_crystal', name:'Crystal Cave', desc:'Shimmering crystals illuminate your cards', cost:1000,
+      bg:'radial-gradient(ellipse at 30% 20%, rgba(100,60,220,0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 70%, rgba(60,180,220,0.1) 0%, transparent 40%), linear-gradient(180deg, #0a0818 0%, #100c28 50%, #080618 100%)', slotBorder:'rgba(140,100,255,0.25)' },
+    { id:'gb_shipwreck', name:'Shipwreck Display', desc:'Cards arranged in an ancient sunken vessel', cost:1000,
+      bg:'linear-gradient(180deg, #0c1018 0%, #141810 30%, #181c14 60%, #0c1008 100%)', slotBorder:'rgba(160,180,100,0.2)' },
+    { id:'gb_abyss', name:'Abyssal Shrine', desc:'A void-touched shrine in the deepest trench', cost:1000,
+      bg:'radial-gradient(ellipse at 50% 50%, #0a0a14 0%, #040408 70%, #000002 100%)', slotBorder:'rgba(120,80,255,0.15)' },
+    { id:'gb_golden', name:'Golden Vault', desc:'The most prestigious display in all the reef', cost:1000,
+      bg:'radial-gradient(ellipse at 50% 30%, rgba(255,215,0,0.08) 0%, transparent 60%), linear-gradient(180deg, #181408 0%, #201a08 30%, #282010 60%, #181408 100%)', slotBorder:'rgba(255,215,0,0.3)' },
+];
+
+const GALLERY_LAYOUTS = [
+    { id:'grid', name:'Grid', slots:12, cost:0, desc:'Standard 3-column grid display' },
+    { id:'shelf', name:'Shelf', slots:9, cost:1000, desc:'Cards displayed on perspective shelves' },
+    { id:'fan', name:'Fan', slots:7, cost:1000, desc:'Cards arranged in an elegant arc' },
+    { id:'cascade', name:'Cascade', slots:8, cost:1000, desc:'Overlapping diagonal cascade' },
+    { id:'spotlight', name:'Spotlight', slots:5, cost:1000, desc:'One hero card with supporting cast' },
+];
+const GALLERY_BORDERS = [
+    { id:'none', name:'None', cost:0, desc:'No border effect' },
+    { id:'gold', name:'Gold', cost:1000, desc:'Golden glow around each card' },
+    { id:'silver', name:'Silver', cost:1000, desc:'Cool silver edge highlight' },
+    { id:'crystal', name:'Crystal', cost:1000, desc:'Shimmering crystal blue aura' },
+    { id:'coral', name:'Coral', cost:1000, desc:'Warm coral reef radiance' },
+    { id:'abyssal', name:'Abyssal', cost:1000, desc:'Deep void purple energy' },
+];
+const GALLERY_LIGHTINGS = [
+    { id:'none', name:'None', cost:0, desc:'No ambient lighting' },
+    { id:'glow', name:'Glow', cost:1000, desc:'Soft blue radial glow' },
+    { id:'caustic', name:'Caustic', cost:1000, desc:'Underwater light refraction' },
+    { id:'ember', name:'Ember', cost:1000, desc:'Floating warm ember particles' },
+    { id:'biolum', name:'Bioluminescent', cost:1000, desc:'Deep sea bioluminescent dots' },
+    { id:'shimmer', name:'Shimmer', cost:1000, desc:'Prismatic light sweep' },
+];
+
+let currentGallerySlot = 0;
+
+function getGallerySlotCount() {
+    const l = GALLERY_LAYOUTS.find(x => x.id === playerData.gallery.layout);
+    return l ? l.slots : 12;
+}
+
+function renderGallery() {
+    const g = playerData.gallery;
+    const board = GALLERY_BOARDS.find(b => b.id === g.boardId) || GALLERY_BOARDS[0];
+    const boardEl = document.getElementById('gallery-board');
+    boardEl.style.background = board.bg;
+    let cls = 'gallery-board gallery-layout-' + g.layout;
+    if (g.borderStyle !== 'none') cls += ' gallery-border-' + g.borderStyle;
+    if (g.lighting !== 'none') cls += ' gallery-light-' + g.lighting;
+    boardEl.className = cls;
+
+    const maxSlots = getGallerySlotCount();
+    const slots = g.slots || [];
+    let html = '';
+    for (let i = 0; i < maxSlots; i++) {
+        const cid = slots[i];
+        const card = cid ? CARDS.find(c => c.id === cid) : null;
+        if (card && playerData.collection[cid] > 0) {
+            html += `<div class="gallery-slot filled" onclick="openGalleryPicker(${i})">
+                ${renderCard(card)}
+                <button class="gallery-remove-btn" onclick="event.stopPropagation();removeGalleryCard(${i})">x</button>
+            </div>`;
+        } else {
+            html += `<div class="gallery-slot empty" onclick="openGalleryPicker(${i})">
+                <div class="gallery-add-icon">+</div>
+            </div>`;
+        }
+    }
+    boardEl.innerHTML = html;
+    renderGallerySettings();
+}
+
+function renderGallerySettings() {
+    const g = playerData.gallery;
+    const oL = playerData.ownedLayouts || ['grid'];
+    const oB = playerData.ownedBorders || ['none'];
+    const oLt = playerData.ownedLightings || ['none'];
+    const oBd = playerData.ownedBoards || ['gb_default'];
+    // Layouts (only owned)
+    document.getElementById('gallery-layout-opts').innerHTML = GALLERY_LAYOUTS.filter(l => oL.includes(l.id)).map(l =>
+        `<button class="gallery-opt${g.layout===l.id?' active':''}" onclick="setGalleryOpt('layout','${l.id}')">${l.name}</button>`
+    ).join('');
+    // Borders (only owned)
+    document.getElementById('gallery-border-opts').innerHTML = GALLERY_BORDERS.filter(b => oB.includes(b.id)).map(b =>
+        `<button class="gallery-opt${g.borderStyle===b.id?' active':''}" onclick="setGalleryOpt('borderStyle','${b.id}')">${b.name}</button>`
+    ).join('');
+    // Lighting (only owned)
+    document.getElementById('gallery-lighting-opts').innerHTML = GALLERY_LIGHTINGS.filter(l => oLt.includes(l.id)).map(l =>
+        `<button class="gallery-opt${g.lighting===l.id?' active':''}" onclick="setGalleryOpt('lighting','${l.id}')">${l.name}</button>`
+    ).join('');
+    // Boards (only owned)
+    document.getElementById('gallery-board-opts').innerHTML = GALLERY_BOARDS.filter(b => oBd.includes(b.id)).map(b =>
+        `<button class="gallery-opt${g.boardId===b.id?' active':''}" onclick="setGalleryOpt('boardId','${b.id}')">${b.name}</button>`
+    ).join('');
+}
+
+function setGalleryOpt(key, val) {
+    playerData.gallery[key] = val;
+    saveData();
+    renderGallery();
+}
+
+function toggleGallerySettings() {
+    document.getElementById('gallery-settings').classList.toggle('open');
+}
+
+function openGalleryPicker(slotIndex) {
+    currentGallerySlot = slotIndex;
+    const picker = document.getElementById('gallery-picker');
+    picker.classList.add('open');
+    const grid = document.getElementById('gallery-picker-grid');
+    const owned = Object.keys(playerData.collection).filter(id => playerData.collection[id] > 0).map(Number);
+    const inGallery = new Set((playerData.gallery.slots || []).filter(Boolean));
+    grid.innerHTML = owned.map(cid => {
+        const card = CARDS.find(c => c.id === cid);
+        if (!card) return '';
+        const already = inGallery.has(cid);
+        return `<div class="gallery-pick-card${already?' in-gallery':''}" onclick="${already?'':'selectGalleryCard('+cid+')'}">
+            ${renderCard(card)}
+        </div>`;
+    }).join('');
+}
+
+function selectGalleryCard(cardId) {
+    if (!playerData.gallery.slots) playerData.gallery.slots = [];
+    playerData.gallery.slots[currentGallerySlot] = cardId;
+    saveData();
+    closeGalleryPicker();
+    renderGallery();
+}
+
+function removeGalleryCard(i) {
+    playerData.gallery.slots[i] = null;
+    saveData();
+    renderGallery();
+}
+
+function closeGalleryPicker() {
+    document.getElementById('gallery-picker').classList.remove('open');
+}
+
+// Board store
+function renderBoards() {
+    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    const grid = document.getElementById('boards-grid');
+    grid.innerHTML = GALLERY_BOARDS.map(b => {
+        const owned = (playerData.ownedBoards || ['gb_default']).includes(b.id);
+        const equipped = playerData.gallery.boardId === b.id;
+        return `<div class="cosmetic-item${equipped?' equipped':''}">
+            <div class="board-preview" style="background:${b.bg}">
+                <div class="board-preview-slots">${[0,1,2,3,4,5].map(()=>'<div class="board-preview-slot" style="border-color:'+b.slotBorder+'"></div>').join('')}</div>
+            </div>
+            <div class="cosmetic-name">${b.name}</div>
+            <div class="board-desc">${b.desc}</div>
+            ${owned
+                ? `<button class="cosmetic-btn${equipped?' active':''}" onclick="equipBoard('${b.id}')">${equipped?'EQUIPPED':'EQUIP'}</button>`
+                : `<button class="cosmetic-btn buy" onclick="buyBoard('${b.id}')">${b.cost===0?'FREE':b.cost.toLocaleString()+' $DD'}</button>`
+            }
+        </div>`;
+    }).join('');
+}
+
+function buyBoard(id) {
+    const board = GALLERY_BOARDS.find(b => b.id === id);
+    if (!board) return;
+    if (board.cost > 0 && playerData.coins < board.cost) { alert('Not enough $DD!'); return; }
+    if ((playerData.ownedBoards||[]).includes(id)) return;
+    playerData.coins -= board.cost;
+    if (!playerData.ownedBoards) playerData.ownedBoards = ['gb_default'];
+    playerData.ownedBoards.push(id);
+    playerData.gallery.boardId = id;
+    saveData(); updateCoinsDisplay(); renderBoards();
+}
+
+function equipBoard(id) {
+    playerData.gallery.boardId = playerData.gallery.boardId === id ? 'gb_default' : id;
+    saveData(); renderBoards();
+}
+
+// Shop: Layouts
+function renderShopLayouts() {
+    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    const owned = playerData.ownedLayouts || ['grid'];
+    document.getElementById('layouts-grid').innerHTML = GALLERY_LAYOUTS.map(l => {
+        const has = owned.includes(l.id);
+        const active = playerData.gallery.layout === l.id;
+        return `<div class="cosmetic-item${active?' equipped':''}">
+            <div class="cosmetic-name">${l.name}</div>
+            <div class="board-desc">${l.desc} (${l.slots} slots)</div>
+            ${has
+                ? `<button class="cosmetic-btn${active?' active':''}" onclick="equipGalleryOpt('layout','${l.id}','renderShopLayouts')">${active?'EQUIPPED':'EQUIP'}</button>`
+                : `<button class="cosmetic-btn buy" onclick="buyGalleryItem('ownedLayouts','${l.id}',${l.cost},'renderShopLayouts')">${l.cost.toLocaleString()} $DD</button>`
+            }
+        </div>`;
+    }).join('');
+}
+
+// Shop: Borders
+function renderShopBorders() {
+    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    const owned = playerData.ownedBorders || ['none'];
+    document.getElementById('borders-grid').innerHTML = GALLERY_BORDERS.map(b => {
+        const has = owned.includes(b.id);
+        const active = playerData.gallery.borderStyle === b.id;
+        return `<div class="cosmetic-item${active?' equipped':''}">
+            <div class="cosmetic-name">${b.name}</div>
+            <div class="board-desc">${b.desc}</div>
+            ${has
+                ? `<button class="cosmetic-btn${active?' active':''}" onclick="equipGalleryOpt('borderStyle','${b.id}','renderShopBorders')">${active?'EQUIPPED':'EQUIP'}</button>`
+                : `<button class="cosmetic-btn buy" onclick="buyGalleryItem('ownedBorders','${b.id}',${b.cost},'renderShopBorders')">${b.cost.toLocaleString()} $DD</button>`
+            }
+        </div>`;
+    }).join('');
+}
+
+// Shop: Lighting
+function renderShopLighting() {
+    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    const owned = playerData.ownedLightings || ['none'];
+    document.getElementById('lighting-grid').innerHTML = GALLERY_LIGHTINGS.map(l => {
+        const has = owned.includes(l.id);
+        const active = playerData.gallery.lighting === l.id;
+        return `<div class="cosmetic-item${active?' equipped':''}">
+            <div class="cosmetic-name">${l.name}</div>
+            <div class="board-desc">${l.desc}</div>
+            ${has
+                ? `<button class="cosmetic-btn${active?' active':''}" onclick="equipGalleryOpt('lighting','${l.id}','renderShopLighting')">${active?'EQUIPPED':'EQUIP'}</button>`
+                : `<button class="cosmetic-btn buy" onclick="buyGalleryItem('ownedLightings','${l.id}',${l.cost},'renderShopLighting')">${l.cost.toLocaleString()} $DD</button>`
+            }
+        </div>`;
+    }).join('');
+}
+
+function buyGalleryItem(ownedKey, id, cost, renderFn) {
+    if (cost > 0 && playerData.coins < cost) { alert('Not enough $DD!'); return; }
+    if ((playerData[ownedKey]||[]).includes(id)) return;
+    playerData.coins -= cost;
+    if (!playerData[ownedKey]) playerData[ownedKey] = [];
+    playerData[ownedKey].push(id);
+    saveData(); updateCoinsDisplay(); window[renderFn]();
+}
+
+function equipGalleryOpt(galleryKey, id, renderFn) {
+    const defaultVal = galleryKey === 'layout' ? 'grid' : 'none';
+    playerData.gallery[galleryKey] = playerData.gallery[galleryKey] === id ? defaultVal : id;
+    saveData(); window[renderFn]();
 }
 
 // DECK BUILDER
