@@ -3010,6 +3010,7 @@
             <button class="back-btn" onclick="showScreen('title-screen')">← Back</button>
             <h2>Collection</h2>
             <span id="coll-count" style="font-size:12px;color:#6b7a94"></span>
+            <button id="dev-unlock-btn" onclick="unlockAllCards()" style="display:none;padding:4px 10px;border-radius:12px;background:rgba(255,200,60,0.15);color:#e8c860;font-size:10px;font-weight:700;border:1px solid rgba(255,200,60,0.3);cursor:pointer;">Unlock All</button>
         </div>
         <div class="coll-search-sort">
             <input type="text" class="coll-search" id="coll-search" placeholder="Search cards..." oninput="renderCollection()">
@@ -3942,9 +3943,12 @@ function _cardArtUrl(name) {
 }
 // Preload card art images that exist in the repo
 const _CARD_ART_NAMES = [
-    'Abyssal Pincer','Antenna Oracle','Barnacle Parasite','Claw Recruit','Coral Witch',
-    'Deep Sea Berserker','Hermit Lobster','Larval Drifter','Molt Striker','Phosphor Shrimp',
-    'Pincer Duelist','Reef Sentinel','Shell Knight','Thermidor the Blaze','Tidal Crawler','Tide Caller'
+    'Abyssal Lurker','Abyssal Pincer','Abyssal Sovereign','Antenna Oracle','Barnacle Parasite',
+    'Brood Mother','Claw Recruit','Coconut Crab King','Coral Bastion','Coral Witch',
+    'Deep Sea Berserker','Emperor Crustacean','Glacial Lobster','Hermit Lobster','Kelp Runner',
+    'Larval Drifter','Leviathan Lobster','Molt Striker','Phosphor Shrimp','Pincer Duelist',
+    "Poseidon's Chosen",'Reef Sentinel','Sand Burrower','Shell Knight','Thermidor the Blaze',
+    'Tidal Crawler','Tide Caller','Twin Claw Dragon'
 ];
 _CARD_ART_NAMES.forEach(name => { _cardArtImages[name] = _cardArtUrl(name); });
 
@@ -4183,6 +4187,22 @@ function renameDeck(name) {
         playerData.decks[playerData.activeDeck].name = name.trim() || ('Deck ' + (playerData.activeDeck + 1));
         saveData();
     }
+}
+
+function unlockAllCards() {
+    const now = Date.now();
+    CARDS.forEach(c => {
+        playerData.collection[c.id] = 3;
+        if (!playerData.collectedDates[c.id]) playerData.collectedDates[c.id] = now;
+    });
+    playerData.coins = 99999;
+    saveData();
+    updateCoinDisplays();
+    if (document.getElementById('collection-screen').classList.contains('active') ||
+        document.getElementById('collection-screen').style.display !== 'none') {
+        renderCollection();
+    }
+    alert('All 210 cards unlocked (x3 each) + 99999 $DD');
 }
 
 function giveStarterCards() {
@@ -7536,6 +7556,16 @@ loadData();
 updateCoinsDisplay();
 initWalletConnect();
 initTitleShowcase();
+
+// Show dev tools for creator wallet only
+const _creatorWallet = '0x18b18E245122f4bDA5F2ee4F25c702E05C241D49';
+(function() {
+    const w = getWalletFromCookie();
+    if (w && w.toLowerCase() === _creatorWallet.toLowerCase()) {
+        const btn = document.getElementById('dev-unlock-btn');
+        if (btn) btn.style.display = '';
+    }
+})();
 
 // Close modal on overlay click
 document.getElementById('card-modal').addEventListener('click', function(e) {
