@@ -14,6 +14,98 @@
             initial-value: 135deg;
         }
 
+        /* ===== LOADING SCREEN ===== */
+        #loading-screen {
+            position: fixed; inset: 0; z-index: 99999;
+            background: #020508;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+            overflow: hidden;
+        }
+        #loading-screen.fade-out { opacity: 0; visibility: hidden; }
+        .load-ocean {
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse at 50% 110%, rgba(8,60,140,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 30% -10%, rgba(4,40,100,0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 50%, rgba(6,50,120,0.1) 0%, transparent 45%),
+                linear-gradient(180deg, #010408 0%, #030a14 40%, #051020 70%, #081830 100%);
+        }
+        .load-bubbles {
+            position: absolute; inset: 0; pointer-events: none;
+        }
+        .load-bubble {
+            position: absolute; border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, rgba(100,180,255,0.25), rgba(60,140,220,0.08));
+            border: 1px solid rgba(100,180,255,0.12);
+            animation: loadBubbleRise linear infinite;
+        }
+        .load-bubble:nth-child(1) { width:8px;height:8px; left:12%; bottom:-10px; animation-duration:2.8s; animation-delay:0s; }
+        .load-bubble:nth-child(2) { width:5px;height:5px; left:28%; bottom:-10px; animation-duration:3.4s; animation-delay:0.3s; }
+        .load-bubble:nth-child(3) { width:11px;height:11px; left:45%; bottom:-10px; animation-duration:2.5s; animation-delay:0.1s; }
+        .load-bubble:nth-child(4) { width:6px;height:6px; left:62%; bottom:-10px; animation-duration:3.1s; animation-delay:0.6s; }
+        .load-bubble:nth-child(5) { width:9px;height:9px; left:78%; bottom:-10px; animation-duration:2.7s; animation-delay:0.2s; }
+        .load-bubble:nth-child(6) { width:4px;height:4px; left:90%; bottom:-10px; animation-duration:3.6s; animation-delay:0.5s; }
+        .load-bubble:nth-child(7) { width:7px;height:7px; left:5%; bottom:-10px; animation-duration:3.0s; animation-delay:0.8s; }
+        .load-bubble:nth-child(8) { width:10px;height:10px; left:52%; bottom:-10px; animation-duration:2.4s; animation-delay:0.4s; }
+        @keyframes loadBubbleRise {
+            0% { transform: translateY(0) translateX(0) scale(0.5); opacity: 0; }
+            10% { opacity: 0.8; transform: translateY(-10vh) translateX(3px) scale(0.8); }
+            50% { transform: translateY(-50vh) translateX(-5px) scale(1); opacity: 0.6; }
+            100% { transform: translateY(-110vh) translateX(4px) scale(0.6); opacity: 0; }
+        }
+        .load-claw {
+            position: relative; z-index: 2; margin-bottom: 24px;
+        }
+        .load-claw svg { filter: drop-shadow(0 0 20px rgba(40,140,255,0.3)) drop-shadow(0 0 60px rgba(20,80,180,0.15)); }
+        .load-claw-glow {
+            position: absolute; inset: -40px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(40,120,220,0.15) 0%, transparent 70%);
+            animation: loadClawPulse 1.2s ease-in-out infinite;
+        }
+        @keyframes loadClawPulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 1; }
+        }
+        .load-title {
+            position: relative; z-index: 2;
+            font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900;
+            letter-spacing: 5px; text-transform: uppercase;
+            background: linear-gradient(135deg, #4098d0, #80c8ff, #4098d0);
+            background-size: 200% 100%;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: loadTitleShimmer 1.5s ease-in-out infinite;
+            text-shadow: none;
+        }
+        @keyframes loadTitleShimmer {
+            0% { background-position: 200% center; }
+            100% { background-position: -200% center; }
+        }
+        .load-sub {
+            position: relative; z-index: 2;
+            font-family: 'Nunito', sans-serif; font-size: 11px; font-weight: 600;
+            color: rgba(100,170,240,0.45); letter-spacing: 3px; margin-top: 6px;
+        }
+        .load-bar-wrap {
+            position: relative; z-index: 2; margin-top: 32px;
+            width: 180px; height: 3px; border-radius: 3px;
+            background: rgba(40,100,180,0.12); overflow: hidden;
+        }
+        .load-bar-fill {
+            height: 100%; border-radius: 3px; width: 0%;
+            background: linear-gradient(90deg, rgba(40,140,255,0.6), rgba(100,200,255,0.9));
+            box-shadow: 0 0 8px rgba(60,160,255,0.4);
+            animation: loadBarFill 1.4s ease-out forwards;
+        }
+        @keyframes loadBarFill {
+            0% { width: 0%; }
+            30% { width: 35%; }
+            60% { width: 65%; }
+            85% { width: 88%; }
+            100% { width: 100%; }
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
@@ -1202,6 +1294,53 @@
             transition: all 0.2s;
         }
         .detail-close:active { transform: scale(0.95); }
+        .detail-nav-btn {
+            position: absolute; top: 50%; transform: translateY(-50%); z-index: 5;
+            width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(8,18,35,0.7); border: 1px solid rgba(40,120,200,0.15);
+            color: rgba(140,200,255,0.8); font-size: 26px; cursor: pointer;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            transition: all 0.2s; font-family: sans-serif; line-height: 1; padding: 0 0 2px 0;
+        }
+        .detail-nav-btn.visible { display: flex; }
+        .detail-nav-btn:active { transform: translateY(-50%) scale(0.9); }
+        .detail-nav-btn.prev { left: 10px; }
+        .detail-nav-btn.next { right: 10px; }
+        .deck-hover-wrap {
+            position: relative; transition: transform 0.15s ease;
+        }
+        .deck-hover-wrap:hover { transform: scale(1.35); z-index: 10; }
+        .premade-decks-popup {
+            position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center;
+        }
+        .premade-decks-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); }
+        .premade-decks-box {
+            position: relative; z-index: 1; background: rgba(8,18,35,0.95); border: 1px solid rgba(40,120,200,0.15);
+            border-radius: 20px; padding: 20px; max-width: 440px; width: 92%; max-height: 80vh; overflow-y: auto;
+        }
+        .premade-decks-title {
+            font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 900;
+            color: rgba(140,200,255,0.95); letter-spacing: 2px; text-align: center; margin-bottom: 14px;
+        }
+        .premade-deck-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(40,120,200,0.1);
+            border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: all 0.2s;
+        }
+        .premade-deck-item:hover { background: rgba(40,120,200,0.1); border-color: rgba(40,120,200,0.3); }
+        .premade-deck-icon {
+            width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 22px;
+        }
+        .premade-deck-info { flex: 1; }
+        .premade-deck-name { font-weight: 800; font-size: 14px; color: rgba(140,200,255,0.95); }
+        .premade-deck-desc { font-size: 10px; color: rgba(140,200,255,0.45); margin-top: 2px; }
+        .premade-deck-load {
+            padding: 6px 14px; border-radius: 8px; font-size: 11px; font-weight: 700;
+            background: linear-gradient(135deg, #1050a0, #2090ff); color: #fff; border: none;
+            cursor: pointer; font-family: 'Nunito', sans-serif; flex-shrink: 0;
+        }
 
         /* ===== PACK OPENING ===== */
         #pack-list {
@@ -1638,6 +1777,28 @@
             letter-spacing: 0.5px;
         }
         .deck-save-btn:active { transform: scale(0.97); }
+        .deck-save-btn.clear { background: linear-gradient(135deg, #802020, #a03030); border-color: rgba(255,80,80,0.2); box-shadow: 0 0 15px rgba(200,40,40,0.15); }
+        .deck-builder-btns { display: flex; gap: 10px; padding: 0 16px; }
+        .deck-builder-btns .deck-save-btn { flex: 1; margin: 14px 0; }
+        .deck-type-badge {
+            position: absolute; top: 2px; left: 2px; z-index: 5; width: 16px; height: 16px;
+            border-radius: 50%; font-size: 9px; display: flex; align-items: center; justify-content: center;
+            font-weight: 900; line-height: 1; pointer-events: none;
+        }
+        .deck-type-badge.normal { background: rgba(180,180,180,0.8); color: #333; }
+        .deck-type-badge.effect { background: rgba(255,165,0,0.85); color: #fff; }
+        .deck-type-badge.fusion { background: rgba(160,50,220,0.85); color: #fff; }
+        .deck-type-badge.surge { background: rgba(50,180,255,0.85); color: #fff; }
+        .deck-type-badge.ritual { background: rgba(30,80,180,0.85); color: #fff; }
+        .deck-type-badge.conduit { background: rgba(50,200,120,0.85); color: #fff; }
+        .deck-type-badge.spell { background: rgba(200,136,64,0.85); color: #fff; }
+        .deck-type-badge.trap { background: rgba(42,144,144,0.85); color: #fff; }
+        .deck-modal-action-btn {
+            margin-top: 10px; padding: 10px 24px; border-radius: 10px; font-size: 14px; font-weight: 800;
+            border: none; cursor: pointer; font-family: 'Nunito', sans-serif; width: 100%;
+        }
+        .deck-modal-action-btn.add { background: linear-gradient(135deg, #1050a0, #2090ff); color: #fff; }
+        .deck-modal-action-btn.remove { background: linear-gradient(135deg, #802020, #c03030); color: #fff; }
         .deck-slots-bar { display:flex; gap:6px; padding:10px 16px; overflow-x:auto; flex-shrink:0; border-bottom:1px solid rgba(40,120,200,0.06); -webkit-overflow-scrolling:touch; }
         .deck-slot-btn { padding:7px 14px; border-radius:16px; font-size:12px; font-weight:700; background:rgba(8,18,35,0.5); border:1px solid rgba(40,120,200,0.08); color:rgba(140,190,240,0.5); white-space:nowrap; transition:all .2s; font-family:'Chakra Petch',sans-serif; }
         .deck-slot-btn.active { background:rgba(20,60,120,0.3); border-color:rgba(40,140,220,0.25); color:rgba(140,200,255,0.9); }
@@ -2515,6 +2676,73 @@
             padding: 6px 14px; border-radius: 16px; font-size: 11px; font-weight: 700;
             cursor: pointer; font-family: 'Nunito', sans-serif;
         }
+        .no-coin-popup {
+            position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center;
+        }
+        .no-coin-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); }
+        .no-coin-box {
+            position: relative; z-index: 1; background: rgba(8,18,35,0.95); border: 1px solid rgba(40,120,200,0.15);
+            border-radius: 20px; padding: 28px 24px; text-align: center; max-width: 320px; width: 85%;
+        }
+        .starter-picker-overlay {
+            position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.85);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .starter-picker-box {
+            background: rgba(8,18,35,0.95); border: 1px solid rgba(40,120,200,0.15);
+            border-radius: 20px; padding: 28px 20px; max-width: 440px; width: 92%; text-align: center;
+        }
+        .starter-picker-title {
+            font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900;
+            color: rgba(140,200,255,0.95); letter-spacing: 2px; margin-bottom: 4px;
+        }
+        .starter-picker-sub { font-size: 12px; color: rgba(140,200,255,0.5); margin-bottom: 20px; }
+        .starter-picker-decks { display: flex; flex-direction: column; gap: 12px; }
+        .starter-deck-option {
+            display: flex; align-items: center; gap: 12px; padding: 14px;
+            background: rgba(255,255,255,0.03); border: 1px solid rgba(40,120,200,0.1);
+            border-radius: 12px; cursor: pointer; text-align: left; transition: all 0.2s;
+        }
+        .starter-deck-option:hover { background: rgba(40,120,200,0.1); border-color: rgba(40,120,200,0.3); }
+        .starter-deck-icon {
+            width: 56px; height: 56px; border-radius: 12px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .starter-deck-name { font-weight: 800; font-size: 15px; color: rgba(140,200,255,0.95); }
+        .starter-deck-desc { font-size: 11px; color: rgba(140,200,255,0.5); margin-top: 2px; }
+        .starter-deck-count { font-size: 10px; color: rgba(40,120,200,0.6); margin-top: 4px; font-weight: 700; }
+        .profile-gallery-btn {
+            margin-top: 8px; padding: 6px 16px; border-radius: 16px; font-size: 12px; font-weight: 700;
+            background: linear-gradient(135deg, #1050a0, #2090ff); color: #fff; border: none;
+            cursor: pointer; font-family: 'Nunito', sans-serif;
+        }
+        .player-gallery-modal {
+            position: fixed; inset: 0; z-index: 10000; display: flex; align-items: center; justify-content: center;
+        }
+        .player-gallery-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.7); }
+        .player-gallery-content {
+            position: relative; z-index: 1; background: rgba(8,18,35,0.95); border: 1px solid rgba(40,120,200,0.15);
+            border-radius: 16px; padding: 16px; max-width: 420px; width: 90%; max-height: 80vh; overflow-y: auto;
+        }
+        .player-gallery-header {
+            display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;
+            font-family: 'Orbitron', sans-serif; font-size: 14px; color: #a0b0c8; letter-spacing: 1px;
+        }
+        .player-gallery-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+        }
+        .player-gallery-card .card { width: 100% !important; height: auto !important; aspect-ratio: 0.686 !important; }
+        .player-gallery-empty {
+            aspect-ratio: 0.686; background: rgba(255,255,255,0.03); border-radius: 6px;
+            border: 1px dashed rgba(255,255,255,0.06);
+        }
+        .gallery-search-input {
+            width: calc(100% - 32px); margin: 8px 16px 0; padding: 8px 12px; border-radius: 8px;
+            border: 1px solid rgba(40,120,200,0.15); background: rgba(8,18,35,0.6);
+            color: rgba(140,200,255,0.9); font-family: 'Nunito', sans-serif; font-size: 13px;
+            outline: none;
+        }
+        .gallery-search-input:focus { border-color: rgba(40,120,200,0.4); }
         .gallery-picker-grid {
             flex: 1; overflow-y: auto; padding: 12px;
             display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px;
@@ -2818,6 +3046,50 @@
 </head>
 <body>
 
+    <!-- ===== LOADING SCREEN ===== -->
+    <div id="loading-screen">
+        <div class="load-ocean"></div>
+        <div class="load-bubbles">
+            <div class="load-bubble"></div><div class="load-bubble"></div><div class="load-bubble"></div>
+            <div class="load-bubble"></div><div class="load-bubble"></div><div class="load-bubble"></div>
+            <div class="load-bubble"></div><div class="load-bubble"></div>
+        </div>
+        <div class="load-claw">
+            <div class="load-claw-glow"></div>
+            <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
+                <!-- Sword blade -->
+                <line x1="50" y1="4" x2="50" y2="62" stroke="rgba(160,210,255,0.7)" stroke-width="2.5" stroke-linecap="round"/>
+                <!-- Sword tip -->
+                <path d="M50 2 L47 10 L50 4 L53 10 Z" fill="rgba(160,210,255,0.6)"/>
+                <!-- Sword edge shine -->
+                <line x1="50" y1="8" x2="50" y2="50" stroke="rgba(200,230,255,0.3)" stroke-width="0.8"/>
+                <!-- Crossguard -->
+                <path d="M38 58 Q44 54, 50 56 Q56 54, 62 58 Q56 62, 50 60 Q44 62, 38 58Z" fill="rgba(60,140,220,0.4)" stroke="rgba(100,180,255,0.6)" stroke-width="1.2"/>
+                <!-- Grip -->
+                <rect x="48" y="60" width="4" height="12" rx="1" fill="rgba(40,100,180,0.35)" stroke="rgba(80,160,240,0.5)" stroke-width="1"/>
+                <!-- Pommel -->
+                <circle cx="50" cy="75" r="3" fill="rgba(60,140,220,0.4)" stroke="rgba(100,180,255,0.6)" stroke-width="1"/>
+                <!-- Left claw arm -->
+                <path d="M38 56 C30 50, 20 52, 14 58 C10 62, 10 70, 16 72 C22 74, 28 68, 30 62" fill="rgba(30,100,180,0.25)" stroke="rgba(80,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+                <!-- Left claw pincer top -->
+                <path d="M14 58 C10 52, 4 50, 2 54 C0 58, 4 62, 8 60" fill="rgba(30,100,180,0.2)" stroke="rgba(80,170,255,0.6)" stroke-width="1.3" stroke-linecap="round"/>
+                <!-- Left claw pincer bottom -->
+                <path d="M16 72 C12 76, 6 78, 4 74 C2 70, 6 66, 10 68" fill="rgba(30,100,180,0.2)" stroke="rgba(80,170,255,0.6)" stroke-width="1.3" stroke-linecap="round"/>
+                <!-- Right claw arm -->
+                <path d="M62 56 C70 50, 80 52, 86 58 C90 62, 90 70, 84 72 C78 74, 72 68, 70 62" fill="rgba(30,100,180,0.25)" stroke="rgba(80,170,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+                <!-- Right claw pincer top -->
+                <path d="M86 58 C90 52, 96 50, 98 54 C100 58, 96 62, 92 60" fill="rgba(30,100,180,0.2)" stroke="rgba(80,170,255,0.6)" stroke-width="1.3" stroke-linecap="round"/>
+                <!-- Right claw pincer bottom -->
+                <path d="M84 72 C88 76, 94 78, 96 74 C98 70, 94 66, 90 68" fill="rgba(30,100,180,0.2)" stroke="rgba(80,170,255,0.6)" stroke-width="1.3" stroke-linecap="round"/>
+                <!-- Sword gem -->
+                <circle cx="50" cy="56" r="2.5" fill="rgba(100,200,255,0.8)"/>
+            </svg>
+        </div>
+        <div class="load-title">Crustacean Combat</div>
+        <div class="load-sub">LOADING</div>
+        <div class="load-bar-wrap"><div class="load-bar-fill"></div></div>
+    </div>
+
     <!-- ===== WALLET CONNECT MODAL ===== -->
     <div class="wallet-modal-overlay" id="wallet-modal">
         <div class="wallet-modal">
@@ -2943,6 +3215,7 @@
         <!-- Tab bar -->
         <div class="shop-tabs">
             <button class="shop-tab active" id="tab-packs" onclick="switchShopTab('packs')">Packs</button>
+            <button class="shop-tab" id="tab-decks" onclick="switchShopTab('decks')">Decks</button>
             <button class="shop-tab" id="tab-sleeves" onclick="switchShopTab('sleeves')">Sleeves</button>
             <button class="shop-tab" id="tab-playmats" onclick="switchShopTab('playmats')">Playmats</button>
             <button class="shop-tab" id="tab-boards" onclick="switchShopTab('boards')">Boards</button>
@@ -2952,6 +3225,10 @@
             <button class="shop-tab" id="tab-store" onclick="switchShopTab('store')">Buy $DD</button>
         </div>
         <div class="cosmetic-grid" id="pack-list"></div>
+        <!-- Decks section -->
+        <div class="store-section" id="decks-section">
+            <div class="cosmetic-grid" id="decks-grid"></div>
+        </div>
         <!-- Sleeves section -->
         <div class="store-section" id="sleeves-section">
             <div class="cosmetic-grid" id="sleeves-grid"></div>
@@ -3038,7 +3315,7 @@
                 <li>Level 5-6 monsters: Tribute 1 monster you control</li>
                 <li>Level 7+ monsters: Tribute 2 monsters you control</li>
                 <li>Fusion: Use "Shell Fusion" + listed materials</li>
-                <li>Sync: Conduit + non-Conduit(s) whose levels equal the Sync monster's level</li>
+                <li>Surge: Conduit + non-Conduit(s) whose levels equal the Surge monster's level</li>
                 <li>Ritual: Use a Ritual Spell + tributes matching the level</li>
             </ul>
             <h3>Battle</h3>
@@ -3276,12 +3553,15 @@
                 <span>Select a Card</span>
                 <button class="gallery-picker-close" onclick="closeGalleryPicker()">Cancel</button>
             </div>
+            <input type="text" class="gallery-search-input" id="gallery-search-input" placeholder="Search cards..." oninput="filterGalleryPicker()">
             <div class="gallery-picker-grid" id="gallery-picker-grid"></div>
         </div>
     </div>
 
     <!-- ===== CARD DETAIL MODAL ===== -->
     <div class="modal-overlay" id="card-modal">
+        <button class="detail-nav-btn prev" id="detail-prev" onclick="detailNav(-1)">‹</button>
+        <button class="detail-nav-btn next" id="detail-next" onclick="detailNav(1)">›</button>
         <div class="detail-card-wrap card-detail-view" id="detail-card-wrap"></div>
         <div class="detail-info">
             <div class="detail-rarity" id="detail-rarity"></div>
@@ -4268,32 +4548,89 @@ function unlockAllCards() {
     alert('All 210 cards unlocked (x3 each) + 99999 $DD');
 }
 
+const STARTER_DECKS = [
+    {
+        id: 'tidal_fury', name: 'Tidal Fury', theme: 'WATER',
+        desc: 'An aggressive water deck that overwhelms opponents with powerful crustacean warriors.',
+        color: ['#0a3858','#051828'],
+        main: [1,1,2,2,3,3,5,5,6,6,11,11,49,49,58,58,52,52,
+               26,26,27,28,93,93,32,33,111,29,
+               35,35,36,36,39,39,141,141,142,142,145,145],
+        extra: [22]
+    },
+    {
+        id: 'abyssal_shadow', name: 'Abyssal Shadow', theme: 'DARK',
+        desc: 'A cunning dark control deck that disrupts opponents and strikes from the shadows.',
+        color: ['#180838','#0c0418'],
+        main: [4,4,44,44,55,55,59,59,13,13,60,60,9,9,42,42,
+               116,34,27,27,92,93,94,105,135,95,
+               38,38,37,37,40,40,143,143,156,156,144,144,38,151],
+        extra: [87]
+    },
+    {
+        id: 'volcanic_blaze', name: 'Volcanic Blaze', theme: 'FIRE',
+        desc: 'A fiery burn deck that scorches opponents with relentless damage and flame creatures.',
+        color: ['#380808','#1c0404'],
+        main: [46,46,53,53,64,64,1,1,43,43,42,42,50,50,12,12,
+               112,133,118,32,92,92,101,101,34,124,
+               35,35,146,146,165,165,166,166,150,150,36,36,170,170],
+        extra: [89]
+    }
+];
+
 function giveStarterCards() {
     const now = Date.now();
-    // Give all commons x3 and rares x2
     CARDS.forEach(c => {
         if (c.rarity === 'C') { playerData.collection[c.id] = 3; playerData.collectedDates[c.id] = now; }
         else if (c.rarity === 'R') { playerData.collection[c.id] = 2; playerData.collectedDates[c.id] = now; }
     });
-    // Give 1 of each SR
     CARDS.forEach(c => {
         if (c.rarity === 'SR') { playerData.collection[c.id] = 1; playerData.collectedDates[c.id] = now; }
     });
     saveData();
+    showStarterDeckPicker();
+}
+
+function showStarterDeckPicker() {
+    const overlay = document.createElement('div');
+    overlay.className = 'starter-picker-overlay';
+    overlay.id = 'starter-picker-overlay';
+    overlay.innerHTML = `
+        <div class="starter-picker-box">
+            <div class="starter-picker-title">Choose Your Starter Deck</div>
+            <div class="starter-picker-sub">Pick a deck to begin your journey</div>
+            <div class="starter-picker-decks">
+                ${STARTER_DECKS.map(d => `
+                    <div class="starter-deck-option" onclick="pickStarterDeck('${d.id}')">
+                        <div class="starter-deck-icon" style="background:linear-gradient(135deg,${d.color[0]},${d.color[1]})">
+                            <span style="font-size:28px">${d.theme==='WATER'?'🌊':d.theme==='DARK'?'🌑':'🔥'}</span>
+                        </div>
+                        <div class="starter-deck-name">${d.name}</div>
+                        <div class="starter-deck-desc">${d.desc}</div>
+                        <div class="starter-deck-count">${d.main.length} cards</div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+}
+
+function pickStarterDeck(deckId) {
+    const deck = STARTER_DECKS.find(d => d.id === deckId);
+    if (!deck) return;
+    playerData.deck = [...deck.main];
+    playerData.extraDeck = [...deck.extra];
+    playerData.decks[0].name = deck.name;
+    saveData();
+    const overlay = document.getElementById('starter-picker-overlay');
+    if (overlay) overlay.remove();
 }
 
 function buildStarterDeck() {
-    playerData.deck = [
-        1,1, 2,2, 3,3, 4,4, 5,5,       // 10 normal monsters
-        6,6, 8, 9, 12,12, 13,           // 7 effect monsters
-        15,15, 14,                       // 3 tuners
-        26,26, 27, 28, 29,29,           // 6 spells
-        32, 34,                          // 2 more spells
-        35,35, 36,36, 39,               // 5 traps
-    ]; // 33 cards, need 40 minimum
-    // Pad to 40
-    playerData.deck.push(7, 10, 11, 6, 3, 2, 27);
-    playerData.extraDeck = [25]; // Abyssal Sovereign (if they have it)
+    // Fallback if no picker shown
+    playerData.deck = [...STARTER_DECKS[0].main];
+    playerData.extraDeck = [...STARTER_DECKS[0].extra];
     saveData();
 }
 
@@ -4436,6 +4773,7 @@ async function saveProfile() {
                 stats: { ...playerData.stats },
                 cards: owned,
                 achievements: playerData.achievements || [],
+                gallery: (playerData.gallery?.slots || []).slice(0, 12),
                 updated: Date.now()
             };
             window.AppDB.setGlobal('profile_'+connectedWallet.toLowerCase(), pubData).catch(()=>{});
@@ -4493,6 +4831,7 @@ function renderViewedProfile(data) {
                 <div class="profile-name">${data.name}</div>
                 <div class="profile-wallet-addr">${data.wallet||''}</div>
                 <div class="profile-viewed-badge">PUBLIC PROFILE</div>
+                ${(data.gallery && data.gallery.some(Boolean)) ? `<button class="profile-gallery-btn" onclick="viewPlayerGallery(${JSON.stringify(data.gallery).replace(/"/g,'&quot;')}, '${(data.name||'Player').replace(/'/g,"\\'")}')">View Gallery</button>` : ''}
             </div>
         </div>
         <div class="profile-stats-grid">
@@ -4515,6 +4854,29 @@ function renderViewedProfile(data) {
             }).join('')}
         </div>
     `;
+}
+
+function viewPlayerGallery(slots, playerName) {
+    const modal = document.createElement('div');
+    modal.className = 'player-gallery-modal';
+    modal.innerHTML = `
+        <div class="player-gallery-overlay" onclick="this.parentElement.remove()"></div>
+        <div class="player-gallery-content">
+            <div class="player-gallery-header">
+                <span>${playerName}'s Gallery</span>
+                <button onclick="this.closest('.player-gallery-modal').remove()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);color:#8892a8;padding:6px 14px;border-radius:16px;font-size:11px;cursor:pointer;font-family:'Nunito',sans-serif">Close</button>
+            </div>
+            <div class="player-gallery-grid">
+                ${(slots||[]).map(cid => {
+                    if (!cid) return '<div class="player-gallery-empty"></div>';
+                    const card = CARDS.find(c => c.id === cid);
+                    if (!card) return '<div class="player-gallery-empty"></div>';
+                    return `<div class="player-gallery-card">${renderCard(card)}</div>`;
+                }).join('')}
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
 }
 
 function renderViewedProfileError(msg) {
@@ -5285,10 +5647,11 @@ function renderCollection() {
     document.getElementById('coll-count').textContent = `${owned}/${CARDS.length}`;
 
     const grid = document.getElementById('coll-grid');
+    const collNavList = cards.map(c => c.id);
     grid.innerHTML = cards.map(c => {
         const count = playerData.collection[c.id] || 0;
         const locked = count === 0;
-        return `<div style="position:relative" onclick="showCardDetail(${c.id})">
+        return `<div style="position:relative" onclick="showCardDetail(${c.id},[${collNavList}])">
             ${count > 0 ? `<div class="card-count-badge">${count}</div>` : ''}
             <div class="${locked ? 'card-locked' : ''}">${renderCard(c)}</div>
         </div>`;
@@ -5303,25 +5666,88 @@ function setCollFilter(f) {
 // ============================================================
 // CARD DETAIL MODAL
 // ============================================================
-function showCardDetail(cardId) {
+let _detailNavList = [];
+let _detailNavIndex = 0;
+let _detailNavMode = null; // null, 'deck-main', 'deck-extra', 'deck-avail'
+
+function showCardDetail(cardId, navList) {
+    if (navList && navList.length > 1) {
+        _detailNavList = navList;
+        _detailNavIndex = navList.indexOf(cardId);
+        if (_detailNavIndex < 0) _detailNavIndex = 0;
+    } else {
+        _detailNavList = [];
+        _detailNavIndex = 0;
+    }
+    _detailNavMode = null;
+    _renderDetailCard(cardId);
+}
+
+function _renderDetailCard(cardId) {
     const card = getCard(cardId);
     if (!card) return;
     const wrap = document.getElementById('detail-card-wrap');
     wrap.innerHTML = renderCard(card);
     document.getElementById('detail-rarity').textContent = RARITIES[card.rarity] || card.rarity;
 
+    // Nav buttons
+    const prevBtn = document.getElementById('detail-prev');
+    const nextBtn = document.getElementById('detail-next');
+    if (_detailNavList.length > 1) {
+        prevBtn.classList.toggle('visible', _detailNavIndex > 0);
+        nextBtn.classList.toggle('visible', _detailNavIndex < _detailNavList.length - 1);
+    } else {
+        prevBtn.classList.remove('visible');
+        nextBtn.classList.remove('visible');
+    }
+
     const modal = document.getElementById('card-modal');
     modal.classList.add('active');
 
-    // Setup holographic tilt on detail card
     const cardEl = wrap.querySelector('.card');
     if (cardEl && card.rarity !== 'C') {
         setupHoloTilt(cardEl);
     }
 }
 
+function detailNav(dir) {
+    if (_detailNavList.length <= 1) return;
+    _detailNavIndex = Math.max(0, Math.min(_detailNavList.length - 1, _detailNavIndex + dir));
+    const cardId = _detailNavList[_detailNavIndex];
+
+    // Remove old deck action button if present
+    const actionBtn = document.getElementById('deck-modal-action');
+    if (actionBtn) actionBtn.remove();
+
+    _renderDetailCard(cardId);
+
+    // Re-add deck action button if in deck builder context
+    if (_detailNavMode) {
+        let btnHtml = '';
+        if (_detailNavMode === 'deck-main') {
+            btnHtml = `<button class="deck-modal-action-btn remove" onclick="removeFromDeck(${_detailNavIndex},'main');closeModal();renderDeckBuilder()">Remove from Deck</button>`;
+        } else if (_detailNavMode === 'deck-extra') {
+            btnHtml = `<button class="deck-modal-action-btn remove" onclick="removeFromDeck(${_detailNavIndex},'extra');closeModal();renderDeckBuilder()">Remove from Vault</button>`;
+        } else if (_detailNavMode === 'deck-avail') {
+            btnHtml = `<button class="deck-modal-action-btn add" onclick="addToDeck(${cardId});closeModal();renderDeckBuilder()">Add to Deck</button>`;
+        }
+        if (btnHtml) {
+            const btnEl = document.createElement('div');
+            btnEl.id = 'deck-modal-action';
+            btnEl.innerHTML = btnHtml;
+            document.getElementById('detail-rarity').parentElement.appendChild(btnEl);
+        }
+    }
+}
+
 function closeModal() {
     document.getElementById('card-modal').classList.remove('active');
+    const actionBtn = document.getElementById('deck-modal-action');
+    if (actionBtn) actionBtn.remove();
+    document.getElementById('detail-prev').classList.remove('visible');
+    document.getElementById('detail-next').classList.remove('visible');
+    _detailNavList = [];
+    _detailNavMode = null;
 }
 
 function setupHoloTilt(el) {
@@ -5378,6 +5804,85 @@ const PACKS = [
     },
 ];
 
+const SHOP_DECKS = [
+    ...STARTER_DECKS,
+    {
+        id: 'storm_conduit', name: 'Storm Conduit', theme: 'WIND',
+        desc: 'A surge-focused deck using Conduit monsters to bring out devastating synchro creatures.',
+        color: ['#0a3818','#041c08'],
+        main: [47,47,65,65,41,41,43,43,77,77,78,78,79,79,80,80,
+               93,93,114,32,34,27,28,125,127,129,
+               35,35,36,36,39,39,141,141,142,142,38,38,170,170],
+        extra: [81,84,85]
+    },
+    {
+        id: 'deep_ritual', name: 'Deep Ritual', theme: 'WATER',
+        desc: 'A ritual-focused deck that summons ancient deep-sea leviathans through powerful ceremonies.',
+        color: ['#081848','#040c28'],
+        main: [1,1,3,3,5,5,48,48,52,52,56,56,57,57,61,61,
+               31,31,137,138,26,93,93,100,91,96,97,97,
+               35,35,36,36,141,141,145,145,143,143,38,38],
+        extra: [22,23]
+    }
+];
+
+let deckBuys = {};
+
+function renderShopDecks() {
+    const grid = document.getElementById('decks-grid');
+    grid.innerHTML = SHOP_DECKS.map(d => {
+        const bought = deckBuys[d.id] || false;
+        const canBuy = !bought && playerData.coins >= 15000;
+        return `<div class="cosmetic-item">
+            <div class="pack-icon" style="background:linear-gradient(135deg,${d.color[0]},${d.color[1]});border:1px solid rgba(255,255,255,0.15)">
+                <span style="font-size:22px">${d.theme==='WATER'?'🌊':d.theme==='DARK'?'🌑':d.theme==='FIRE'?'🔥':d.theme==='WIND'?'🌪️':'⚡'}</span>
+            </div>
+            <div class="cosmetic-name">${d.name}</div>
+            <div class="pack-desc">${d.desc}</div>
+            <div class="pack-desc" style="color:rgba(140,200,255,0.5)">${d.main.length} cards + ${d.extra.length} vault</div>
+            <button class="cosmetic-btn${canBuy ? ' buy' : ''}" onclick="buyShopDeck('${d.id}')" ${canBuy ? '' : 'disabled'}>
+                ${bought ? 'OWNED' : '$DD 15000'}
+            </button>
+        </div>`;
+    }).join('');
+}
+
+function buyShopDeck(deckId) {
+    if (playerData.coins < 15000) {
+        showNoCoinPopup();
+        return;
+    }
+    const deck = SHOP_DECKS.find(d => d.id === deckId);
+    if (!deck || deckBuys[deckId]) return;
+
+    playerData.coins -= 15000;
+    deckBuys[deckId] = true;
+    const now = Date.now();
+
+    // Give all cards in the deck (add to collection)
+    const allIds = [...deck.main, ...deck.extra];
+    allIds.forEach(cid => {
+        playerData.collection[cid] = (playerData.collection[cid] || 0) + 1;
+        if (!playerData.collectedDates[cid]) playerData.collectedDates[cid] = now;
+    });
+
+    // Give 1 foil rare (SR) card as bonus - pick one SR from the deck's theme
+    const themeAttr = deck.theme;
+    const foilPool = CARDS.filter(c => c.rarity === 'SR' && (c.attribute === themeAttr || c.type !== 'monster'));
+    if (foilPool.length > 0) {
+        const bonus = foilPool[Math.floor(Math.random() * foilPool.length)];
+        playerData.collection[bonus.id] = (playerData.collection[bonus.id] || 0) + 1;
+        if (!playerData.collectedDates[bonus.id]) playerData.collectedDates[bonus.id] = now;
+    }
+
+    // Create a new deck slot with these cards
+    playerData.decks.push({ name: deck.name, cards: [...deck.main], extra: [...deck.extra] });
+
+    saveData();
+    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    renderShopDecks();
+}
+
 let packBuys = {};
 
 function renderPackShop() {
@@ -5401,9 +5906,38 @@ function renderPackShop() {
     }).join('');
 }
 
+function showNoCoinPopup() {
+    if (document.getElementById('no-coin-popup')) return;
+    const popup = document.createElement('div');
+    popup.id = 'no-coin-popup';
+    popup.className = 'no-coin-popup';
+    popup.innerHTML = `
+        <div class="no-coin-overlay" onclick="closeNoCoinPopup()"></div>
+        <div class="no-coin-box">
+            <div style="font-size:32px;margin-bottom:8px">💰</div>
+            <div style="font-size:15px;font-weight:800;color:rgba(140,200,255,0.95);margin-bottom:6px">Not Enough $DD</div>
+            <div style="font-size:12px;color:rgba(140,200,255,0.5);margin-bottom:16px">Would you like to purchase some DuckDollars?</div>
+            <div style="display:flex;gap:10px;justify-content:center">
+                <button onclick="closeNoCoinPopup();switchShopTab('store')" style="padding:8px 20px;border-radius:10px;background:linear-gradient(135deg,#1050a0,#2090ff);color:#fff;border:none;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;font-size:13px">Buy $DD</button>
+                <button onclick="closeNoCoinPopup()" style="padding:8px 20px;border-radius:10px;background:rgba(255,255,255,0.06);color:#8892a8;border:1px solid rgba(255,255,255,0.06);font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;font-size:13px">Cancel</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(popup);
+}
+
+function closeNoCoinPopup() {
+    const popup = document.getElementById('no-coin-popup');
+    if (popup) popup.remove();
+}
+
 function buyPack(packId) {
     const pack = PACKS.find(p => p.id === packId);
-    if (!pack || playerData.coins < pack.cost) return;
+    if (!pack) return;
+    if (pack.cost > 0 && playerData.coins < pack.cost) {
+        showNoCoinPopup();
+        return;
+    }
     if (pack.maxBuys && (packBuys[pack.id] || 0) >= pack.maxBuys) return;
 
     playerData.coins -= pack.cost;
@@ -5543,11 +6077,12 @@ function formatClaws(n) {
 
 
 function switchShopTab(tab) {
-    ['packs','sleeves','playmats','boards','layouts','borders','lighting','store'].forEach(t => {
+    ['packs','decks','sleeves','playmats','boards','layouts','borders','lighting','store'].forEach(t => {
         var el = document.getElementById('tab-'+t);
         if (el) el.classList.toggle('active', tab === t);
     });
     document.getElementById('pack-list').style.display = tab === 'packs' ? '' : 'none';
+    document.getElementById('decks-section').classList.toggle('active', tab === 'decks');
     document.getElementById('sleeves-section').classList.toggle('active', tab === 'sleeves');
     document.getElementById('playmats-section').classList.toggle('active', tab === 'playmats');
     document.getElementById('boards-section').classList.toggle('active', tab === 'boards');
@@ -5556,6 +6091,7 @@ function switchShopTab(tab) {
     document.getElementById('lighting-section').classList.toggle('active', tab === 'lighting');
     document.getElementById('store-section').classList.toggle('active', tab === 'store');
     if (tab === 'store') renderStore();
+    if (tab === 'decks') renderShopDecks();
     if (tab === 'sleeves') renderSleeves();
     if (tab === 'playmats') renderPlaymats();
     if (tab === 'boards') renderBoards();
@@ -5892,16 +6428,27 @@ function toggleGallerySettings() {
     document.getElementById('gallery-settings').classList.toggle('open');
 }
 
+let _galleryPickerOwned = [];
 function openGalleryPicker(slotIndex) {
     currentGallerySlot = slotIndex;
     const picker = document.getElementById('gallery-picker');
     picker.classList.add('open');
+    const searchInput = document.getElementById('gallery-search-input');
+    if (searchInput) searchInput.value = '';
+    _galleryPickerOwned = Object.keys(playerData.collection).filter(id => playerData.collection[id] > 0).map(Number);
+    filterGalleryPicker();
+}
+
+function filterGalleryPicker() {
     const grid = document.getElementById('gallery-picker-grid');
-    const owned = Object.keys(playerData.collection).filter(id => playerData.collection[id] > 0).map(Number);
+    const query = (document.getElementById('gallery-search-input')?.value || '').toLowerCase();
     const inGallery = new Set((playerData.gallery.slots || []).filter(Boolean));
-    grid.innerHTML = owned.map(cid => {
+    grid.innerHTML = _galleryPickerOwned.filter(cid => {
         const card = CARDS.find(c => c.id === cid);
-        if (!card) return '';
+        if (!card) return false;
+        return !query || card.name.toLowerCase().includes(query);
+    }).map(cid => {
+        const card = CARDS.find(c => c.id === cid);
         const already = inGallery.has(cid);
         return `<div class="gallery-pick-card${already?' in-gallery':''}" onclick="${already?'':'selectGalleryCard('+cid+')'}">
             ${renderCard(card)}
@@ -6036,6 +6583,103 @@ function equipGalleryOpt(galleryKey, id, renderFn) {
 
 // DECK BUILDER
 // ============================================================
+function getDeckTypeBadge(card) {
+    if (card.type === 'monster') {
+        if (card.subtype === 'fusion') return '<div class="deck-type-badge fusion">∞</div>';
+        if (card.subtype === 'surge') return '<div class="deck-type-badge surge">⚡</div>';
+        if (card.subtype === 'ritual') return '<div class="deck-type-badge ritual">◎</div>';
+        if (card.isTuner) return '<div class="deck-type-badge conduit">⟡</div>';
+        if (card.subtype === 'effect') return '<div class="deck-type-badge effect">★</div>';
+        return '<div class="deck-type-badge normal">●</div>';
+    }
+    if (card.type === 'spell') return '<div class="deck-type-badge spell">◆</div>';
+    if (card.type === 'trap') return '<div class="deck-type-badge trap">▲</div>';
+    return '';
+}
+
+function deckCardZoom(cardId, action, index, navList) {
+    // Set up navigation
+    if (navList && navList.length > 1) {
+        _detailNavList = navList;
+        _detailNavIndex = navList.indexOf(cardId);
+        if (_detailNavIndex < 0) _detailNavIndex = 0;
+    } else {
+        _detailNavList = [];
+        _detailNavIndex = 0;
+    }
+    _detailNavMode = action === 'remove-main' ? 'deck-main' : action === 'remove-extra' ? 'deck-extra' : 'deck-avail';
+
+    _renderDetailCard(cardId);
+
+    // Add action button
+    let btnHtml = '';
+    if (action === 'remove-main') {
+        btnHtml = `<button class="deck-modal-action-btn remove" onclick="removeFromDeck(${index},'main');closeModal();renderDeckBuilder()">Remove from Deck</button>`;
+    } else if (action === 'remove-extra') {
+        btnHtml = `<button class="deck-modal-action-btn remove" onclick="removeFromDeck(${index},'extra');closeModal();renderDeckBuilder()">Remove from Vault</button>`;
+    } else if (action === 'add') {
+        btnHtml = `<button class="deck-modal-action-btn add" onclick="addToDeck(${cardId});closeModal();renderDeckBuilder()">Add to Deck</button>`;
+    }
+
+    let existingBtn = document.getElementById('deck-modal-action');
+    if (existingBtn) existingBtn.remove();
+    const btnEl = document.createElement('div');
+    btnEl.id = 'deck-modal-action';
+    btnEl.innerHTML = btnHtml;
+    document.getElementById('detail-rarity').parentElement.appendChild(btnEl);
+}
+
+function clearAllDeck() {
+    playerData.deck = [];
+    playerData.extraDeck = [];
+    saveData();
+    renderDeckBuilder();
+}
+
+function showPremadeDecks() {
+    if (document.getElementById('premade-decks-popup')) return;
+    const allDecks = [...STARTER_DECKS, ...SHOP_DECKS.filter(d => !STARTER_DECKS.find(s => s.id === d.id))];
+    const popup = document.createElement('div');
+    popup.id = 'premade-decks-popup';
+    popup.className = 'premade-decks-popup';
+    popup.innerHTML = `
+        <div class="premade-decks-overlay" onclick="closePremadeDecks()"></div>
+        <div class="premade-decks-box">
+            <div class="premade-decks-title">PREMADE DECKS</div>
+            ${allDecks.map(d => `
+                <div class="premade-deck-item">
+                    <div class="premade-deck-icon" style="background:linear-gradient(135deg,${d.color[0]},${d.color[1]})">
+                        ${d.theme==='WATER'?'🌊':d.theme==='DARK'?'🌑':d.theme==='FIRE'?'🔥':d.theme==='WIND'?'🌪️':'⚡'}
+                    </div>
+                    <div class="premade-deck-info">
+                        <div class="premade-deck-name">${d.name}</div>
+                        <div class="premade-deck-desc">${d.desc}</div>
+                    </div>
+                    <button class="premade-deck-load" onclick="loadPremadeDeck('${d.id}')">Load</button>
+                </div>
+            `).join('')}
+            <button onclick="closePremadeDecks()" style="margin-top:10px;width:100%;padding:10px;border-radius:10px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);color:#8892a8;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;font-size:13px">Close</button>
+        </div>
+    `;
+    document.body.appendChild(popup);
+}
+
+function closePremadeDecks() {
+    const popup = document.getElementById('premade-decks-popup');
+    if (popup) popup.remove();
+}
+
+function loadPremadeDeck(deckId) {
+    const allDecks = [...STARTER_DECKS, ...SHOP_DECKS];
+    const deck = allDecks.find(d => d.id === deckId);
+    if (!deck) return;
+    playerData.deck = [...deck.main];
+    playerData.extraDeck = [...(deck.extra || [])];
+    saveData();
+    closePremadeDecks();
+    renderDeckBuilder();
+}
+
 function renderDeckBuilder() {
     // Deck slots bar
     const slotsBar = document.getElementById('deck-slots-bar');
@@ -6071,12 +6715,19 @@ function renderDeckBuilder() {
         if (available > 0) owned.push({ card, available });
     });
 
+    const mainIds = mainCards.map(c => c.id);
+    const extraIds = extraCards.map(c => c.id);
+    const availIds = owned.map(o => o.card.id);
+
     area.innerHTML = `
         <div class="deck-zone-label">Main Deck (${mainCount})</div>
         <div class="deck-section">
             <div class="deck-cards-row">
                 ${mainCards.map((c, i) =>
-                    `<div style="position:relative" onclick="removeFromDeck(${i},'main')">${renderCard(c)}</div>`
+                    `<div class="deck-hover-wrap" onclick="deckCardZoom(${c.id},'remove-main',${i},[${mainIds}])">
+                        ${getDeckTypeBadge(c)}
+                        ${renderCard(c)}
+                    </div>`
                 ).join('')}
                 ${mainCount === 0 ? '<div style="color:#555;font-size:12px;padding:20px">Tap cards below to add</div>' : ''}
             </div>
@@ -6085,23 +6736,31 @@ function renderDeckBuilder() {
         <div class="deck-section">
             <div class="deck-cards-row">
                 ${extraCards.map((c, i) =>
-                    `<div style="position:relative" onclick="removeFromDeck(${i},'extra')">${renderCard(c)}</div>`
+                    `<div class="deck-hover-wrap" onclick="deckCardZoom(${c.id},'remove-extra',${i},[${extraIds}])">
+                        ${getDeckTypeBadge(c)}
+                        ${renderCard(c)}
+                    </div>`
                 ).join('')}
-                ${extraCount === 0 ? '<div style="color:#555;font-size:12px;padding:10px">Merge/Sync monsters go here</div>' : ''}
+                ${extraCount === 0 ? '<div style="color:#555;font-size:12px;padding:10px">Fusion/Surge monsters go here</div>' : ''}
             </div>
         </div>
         <div class="deck-zone-label">Available Cards</div>
         <div class="deck-section">
             <div class="deck-cards-row">
                 ${owned.map(({ card: c, available }) =>
-                    `<div style="position:relative" onclick="addToDeck(${c.id})">
+                    `<div class="deck-hover-wrap" onclick="deckCardZoom(${c.id},'add',0,[${availIds}])">
+                        ${getDeckTypeBadge(c)}
                         <div class="card-count-badge" style="background:#27ae60">${available}</div>
                         ${renderCard(c)}
                     </div>`
                 ).join('')}
             </div>
         </div>
-        <button class="deck-save-btn" onclick="autoFillDeck()">Auto-Fill Deck</button>
+        <div class="deck-builder-btns">
+            <button class="deck-save-btn" onclick="showPremadeDecks()">Premade Decks</button>
+            <button class="deck-save-btn" onclick="autoFillDeck()">Auto-Fill</button>
+            <button class="deck-save-btn clear" onclick="clearAllDeck()">Clear All</button>
+        </div>
     `;
 }
 
@@ -8674,6 +9333,12 @@ loadData();
 updateCoinsDisplay();
 initWalletConnect();
 initTitleShowcase();
+
+// Dismiss loading screen after 1.5s
+setTimeout(() => {
+    const ls = document.getElementById('loading-screen');
+    if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
+}, 1500);
 setTimeout(() => checkTradeClaims(), 2000);
 
 // Show dev tools for creator wallet only
