@@ -3609,9 +3609,9 @@
 
 
 <script>
-// ============================================================
+// ====
 // WALLET CONNECT SYSTEM
-// ============================================================
+// ====
 let connectedWallet = null;
 let offlineMode = false;
 
@@ -3745,9 +3745,9 @@ function updateWalletDisplay() {
     }
 }
 
-// ============================================================
+// ====
 // CARD DATABASE
-// ============================================================
+// ====
 const RARITIES = {
     C: 'Common', R: 'Rare', SR: 'Super Rare', UR: 'Ultra Rare',
     ScR: 'Secret Rare', GhR: 'Phantom Rare', UltR: 'Embossed Rare', StR: 'Cosmic Rare'
@@ -4305,9 +4305,9 @@ makeCard(210,'Tidal Entrapment','trap','continuous',{rarity:'SR',
 function getCard(id) { return CARDS.find(c => c.id === id); }
 
 
-// ============================================================
+// ====
 // CARD ART — loaded from GitHub
-// ============================================================
+// ====
 const _CARD_ART_BASE = 'https://raw.githubusercontent.com/stuart5915/inclawbate-apps/master/apps/card-art/';
 const _cardArtImages = {};
 function _cardArtUrl(name) {
@@ -4316,23 +4316,25 @@ function _cardArtUrl(name) {
 // Preload card art images that exist in the repo
 const _CARD_ART_NAMES = [
     'Abyssal Lurker','Abyssal Monarch','Abyssal Pincer','Abyssal Remora','Abyssal Sovereign',
-    'Antenna Oracle','Barnacle Parasite','Barnacle Scout','Brine Wasp','Brood Mother',
-    'Claw Recruit','Coconut Crab King','Coral Bastion','Coral Witch','Cuttlebone Spy',
-    'Deep Sea Berserker','Deepwater Titan','Drift Anemone','Ember Urchin','Emperor Crustacean',
-    'Gale Fin','Gilded Cephalopod','Glacial Lobster','Gloom Squid','Hermit Lobster',
-    'Hydra Polyp','Hydrothermal Drake','Ironshell Crab','Kelp Runner','Lantern Angler',
-    'Larval Drifter','Leviathan Lobster','Magma Hermit','Mantis Shrimp','Molt Striker',
-    'Nautilus Warden','Pearl Diver','Phosphor Shrimp','Pincer Duelist','Pistol Shrimp',
-    "Poseidon's Chosen",'Prism Jellyfish','Reef Sentinel','Riptide Crab','Sand Burrower',
+    'Antenna Oracle','Barnacle Parasite','Barnacle Scout','Biolume Minnow','Brine Wasp',
+    'Brood Mother','Charybdis the Devourer','Claw Recruit','Coconut Crab King','Coral Bastion',
+    'Coral Witch','Current Sprite','Cuttlebone Spy','Deep Sea Berserker','Deepwater Titan',
+    'Drift Anemone','Ember Urchin','Emperor Crustacean','Gale Fin','Gilded Cephalopod',
+    'Glacial Lobster','Gloom Squid','Hermit Lobster','Hydra Polyp','Hydrothermal Drake',
+    'Ironshell Crab','Kelp Runner','Kraken Overlord','Lantern Angler','Larval Drifter',
+    'Leviathan Lobster','Maelstrom Dragon','Magma Hermit','Magma Wisp','Mantis Shrimp',
+    'Molt Striker','Nautilus Warden','Oblivion Crawler','Pearl Diver','Phosphor Shrimp',
+    'Pincer Duelist','Pistol Shrimp',"Poseidon's Chosen",'Prism Jellyfish','Pyroclasm Leviathan',
+    'Reef Chanter','Reef Sentinel','Reef Stalker','Riptide Crab','Sand Burrower',
     'Shell Knight','Siphon Worm','Spore Polyp','Stormfin Serpent','Thermidor the Blaze',
     'Tidal Crawler','Tide Caller','Tide Pool Lurker','Trench Stalker','Twin Claw Dragon',
     'Volcanic Krill','Whirlpool Eel'
 ];
 _CARD_ART_NAMES.forEach(name => { _cardArtImages[name] = _cardArtUrl(name); });
 
-// ============================================================
+// ====
 // CARD HTML RENDERING
-// ============================================================
+// ====
 function getFrameClass(card) {
     if (card.type === 'spell') return 'spell';
     if (card.type === 'trap') return 'trap';
@@ -4441,14 +4443,16 @@ function renderCardMini(card) {
     </div>`;
 }
 
-// ============================================================
+// ====
 // SAVE / LOAD / PLAYER DATA
-// ============================================================
-// ============================================================
+// ====
+// ====
 // $DD — DuckDollars Token (Base chain)
-// ============================================================
+// ====
 const DD_TOKEN = '0x0c6a04473c00725deadcc266b100889f62fa4113';
 const BASE_RPC = 'https://mainnet.base.org';
+const DD_CREATOR_WALLET = '0x18b18E245122f4bDA5F2ee4F25c702E05C241D49';
+let _onChainDD = null; // cached on-chain DD balance
 
 async function fetchDDBalance(wallet) {
     if (!wallet) wallet = connectedWallet;
@@ -4470,12 +4474,42 @@ async function fetchDDBalance(wallet) {
 }
 
 async function syncDDBalance() {
-    if (offlineMode || !connectedWallet) return;
+    if (offlineMode || !connectedWallet) { _onChainDD = null; return; }
     const balance = await fetchDDBalance(connectedWallet);
     if (balance !== null) {
-        playerData.coins = balance;
-        saveData();
+        _onChainDD = balance;
         updateCoinsDisplay();
+    }
+}
+
+function getDisplayBalance() {
+    if (connectedWallet && !offlineMode && _onChainDD !== null) return _onChainDD;
+    return playerData.coins;
+}
+
+function canPurchase() { return navigator.onLine && connectedWallet && !offlineMode; }
+
+// Transfer DD tokens on-chain from user wallet to creator wallet
+async function spendDD(amount) {
+    if (!navigator.onLine) { alert('You are offline. Connect to the internet to make purchases.'); return false; }
+    if (!connectedWallet || offlineMode) { alert('Connect your wallet to make purchases.'); showWalletModal(); return false; }
+    // Check on-chain balance
+    const bal = await fetchDDBalance(connectedWallet);
+    if (bal === null || bal < amount) { showNoCoinPopup(); return false; }
+    if (!window.ethereum) { alert('Wallet provider not found'); return false; }
+    try {
+        const recipient = window.CLAWS?.creatorWallet || DD_CREATOR_WALLET;
+        const amountWei = (BigInt(amount) * BigInt(1e18)).toString(16);
+        const txData = '0xa9059cbb' + recipient.slice(2).toLowerCase().padStart(64, '0') + amountWei.padStart(64, '0');
+        await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [{ from: connectedWallet, to: DD_TOKEN, data: txData }]
+        });
+        setTimeout(() => syncDDBalance(), 3000);
+        return true;
+    } catch(e) {
+        if (e.code !== 4001) alert('Transaction failed');
+        return false;
     }
 }
 
@@ -4518,6 +4552,22 @@ function loadData() {
         }
     } catch(e) {}
 
+    // Also try AppDB cloud restore (async — merges in if localStorage was empty)
+    if (window.AppDB) {
+        window.AppDB.get('cc_data').then(cloud => {
+            if (!cloud) return;
+            const localEmpty = Object.keys(playerData.collection).length <= 10 && playerData.stats.totalDuels === 0;
+            if (localEmpty) {
+                playerData = { ...playerData, ...cloud };
+                saveData();
+                updateCoinsDisplay();
+            }
+        }).catch(() => {});
+    }
+
+    _finishLoad();
+}
+function _finishLoad() {
     // Give starter cards if new player
     if (Object.keys(playerData.collection).length === 0) {
         giveStarterCards();
@@ -4702,9 +4752,9 @@ function buildStarterDeck() {
     saveData();
 }
 
-// ============================================================
+// ====
 // PROFILE & ACHIEVEMENTS
-// ============================================================
+// ====
 const ACHIEVEMENTS = [
     {id:'first_win',name:'First Blood',desc:'Win your first duel',icon:'⚔️',check:()=>playerData.stats.wins>=1},
     {id:'wins_10',name:'Seasoned Fighter',desc:'Win 10 duels',icon:'🔥',check:()=>playerData.stats.wins>=10},
@@ -4969,9 +5019,9 @@ function showProfileMsg(msg, isError) {
     setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { if (el.parentNode) el.remove(); }, 300); }, 3000);
 }
 
-// ============================================================
+// ====
 // TRADE HUB
-// ============================================================
+// ====
 let tradeTab = 'browse';
 let tradeOfferCards = [];
 let tradeWantCards = [];
@@ -5105,7 +5155,7 @@ function renderMarketListing(listing, myWallet) {
     if (isMine) {
         actions = `<div class="trade-listing-actions"><button class="trade-cancel-btn" style="flex:1" onclick="cancelListing('${listing.id}')">Cancel Listing</button></div>`;
     } else {
-        const canAfford = playerData.coins >= listing.price;
+        const canAfford = getDisplayBalance() >= listing.price;
         actions = `<div class="trade-listing-actions"><button class="market-buy-btn" style="flex:1" ${canAfford ? '' : 'disabled style="flex:1;opacity:0.4;cursor:not-allowed;"'} onclick="buyMarketListing('${listing.id}')">Buy for ${listing.price} $DD</button></div>`;
         if (!canAfford) actions += '<div style="font-size:9px;color:#ff6b6b;text-align:center;margin-top:4px;">not enough $DD</div>';
     }
@@ -5261,9 +5311,9 @@ async function postTradeListing() {
     }
 }
 
-// ============================================================
+// ====
 // MARKETPLACE
-// ============================================================
+// ====
 let marketTab = 'browse';
 let marketSellCards = [];
 
@@ -5436,9 +5486,8 @@ async function buyMarketListing(listingId) {
             return;
         }
 
-        if (playerData.coins < listing.price) { alert('Not enough $DD.'); return; }
-
-        playerData.coins -= listing.price;
+        const paid = await spendDD(listing.price);
+        if (!paid) return;
 
         for (const cid of listing.cards) {
             playerData.collection[cid] = (playerData.collection[cid] || 0) + 1;
@@ -5563,7 +5612,7 @@ async function checkTradeClaims() {
             playerData.collection[cid] = (playerData.collection[cid] || 0) + 1;
             if (!playerData.collectedDates[cid]) playerData.collectedDates[cid] = Date.now();
         }
-        if (claim.dd > 0) playerData.coins += claim.dd;
+        if (claim.dd > 0 && (!connectedWallet || offlineMode)) playerData.coins += claim.dd;
     }
 
     saveData();
@@ -5588,9 +5637,9 @@ function showCreatorMsg(elId, msg, isError) {
     setTimeout(() => { el.style.display = 'none'; }, 3000);
 }
 
-// ============================================================
+// ====
 // SCREENS
-// ============================================================
+// ====
 let titleShowcaseInit = false;
 function initTitleShowcase() {
     // Populate showcase cards with random cards from collection
@@ -5638,16 +5687,17 @@ function showScreen(id) {
 }
 
 function updateCoinsDisplay() {
-    document.getElementById('title-coins').textContent = '$DD ' + playerData.coins;
+    const bal = getDisplayBalance();
+    document.getElementById('title-coins').textContent = '$DD ' + bal;
     const pc = document.getElementById('pack-coins');
-    if (pc) pc.textContent = '$DD ' + playerData.coins;
+    if (pc) pc.textContent = '$DD ' + bal;
     const mc = document.getElementById('market-coins');
-    if (mc) mc.textContent = '$DD ' + playerData.coins;
+    if (mc) mc.textContent = '$DD ' + bal;
 }
 
-// ============================================================
+// ====
 // COLLECTION
-// ============================================================
+// ====
 let collFilter = 'all';
 const RARITY_ORDER = { C: 0, R: 1, SR: 2, UR: 3, ScR: 4, GhR: 5, UltR: 6, StR: 7 };
 
@@ -5731,9 +5781,9 @@ function setCollFilter(f) {
     renderCollection();
 }
 
-// ============================================================
+// ====
 // CARD DETAIL MODAL
-// ============================================================
+// ====
 let _detailNavList = [];
 let _detailNavIndex = 0;
 let _detailNavMode = null; // null, 'deck-main', 'deck-extra', 'deck-avail'
@@ -5841,9 +5891,9 @@ function setupHoloTilt(el) {
     el.addEventListener('touchend', handleEnd);
 }
 
-// ============================================================
+// ====
 // PACK OPENING
-// ============================================================
+// ====
 const PACKS = [
     { id: 'starter', name: 'Free Pack', desc: '5 cards — Commons & Rares. Claimable every 24 hours!', cost: 0, count: 5, isFree: true,
       pool: () => CARDS.filter(c => c.rarity === 'C' || c.rarity === 'R'),
@@ -5898,9 +5948,10 @@ let deckBuys = {};
 
 function renderShopDecks() {
     const grid = document.getElementById('decks-grid');
+    const online = canPurchase();
     grid.innerHTML = SHOP_DECKS.map(d => {
         const bought = deckBuys[d.id] || false;
-        const canBuy = !bought && playerData.coins >= 15000;
+        const canBuy = online && !bought && getDisplayBalance() >= 15000;
         return `<div class="cosmetic-item">
             <div class="pack-icon" style="background:linear-gradient(135deg,${d.color[0]},${d.color[1]});border:1px solid rgba(255,255,255,0.15)">
                 <span style="font-size:22px">${d.theme==='WATER'?'🌊':d.theme==='DARK'?'🌑':d.theme==='FIRE'?'🔥':d.theme==='WIND'?'🌪️':'⚡'}</span>
@@ -5909,21 +5960,18 @@ function renderShopDecks() {
             <div class="pack-desc">${d.desc}</div>
             <div class="pack-desc" style="color:rgba(140,200,255,0.5)">${d.main.length} cards + ${d.extra.length} vault</div>
             <button class="cosmetic-btn${canBuy ? ' buy' : ''}" onclick="buyShopDeck('${d.id}')" ${canBuy ? '' : 'disabled'}>
-                ${bought ? 'OWNED' : '$DD 15000'}
+                ${bought ? 'OWNED' : !online ? 'UNAVAILABLE' : '$DD 15000'}
             </button>
         </div>`;
     }).join('');
 }
 
-function buyShopDeck(deckId) {
-    if (playerData.coins < 15000) {
-        showNoCoinPopup();
-        return;
-    }
+async function buyShopDeck(deckId) {
     const deck = SHOP_DECKS.find(d => d.id === deckId);
     if (!deck || deckBuys[deckId]) return;
 
-    playerData.coins -= 15000;
+    const paid = await spendDD(15000);
+    if (!paid) return;
     deckBuys[deckId] = true;
     const now = Date.now();
 
@@ -5956,21 +6004,24 @@ let packBuys = {};
 let _freePackTimer = null;
 function renderPackShop() {
     const list = document.getElementById('pack-list');
-    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
     switchShopTab('packs');
     if (_freePackTimer) { clearInterval(_freePackTimer); _freePackTimer = null; }
+    const online = canPurchase();
     list.innerHTML = PACKS.map(p => {
         const bought = packBuys[p.id] || 0;
         const onCooldown = p.isFree && playerData.freePackCooldown && (Date.now() - playerData.freePackCooldown < 86400000);
-        const canBuy = !onCooldown && playerData.coins >= p.cost && (!p.maxBuys || bought < p.maxBuys);
+        const canBuy = online && !onCooldown && getDisplayBalance() >= p.cost && (!p.maxBuys || bought < p.maxBuys);
         const soldOut = p.maxBuys && bought >= p.maxBuys;
         let btnHTML;
-        if (onCooldown) {
+        if (!online && !p.isFree) {
+            btnHTML = `<button class="cosmetic-btn" disabled>UNAVAILABLE</button>`;
+        } else if (onCooldown) {
             btnHTML = `<button class="cosmetic-btn" disabled id="free-pack-btn"><span id="free-pack-cd"></span></button>`;
         } else if (soldOut) {
             btnHTML = `<button class="cosmetic-btn" disabled>SOLD OUT</button>`;
         } else {
-            btnHTML = `<button class="cosmetic-btn${canBuy ? ' buy' : ''}" onclick="buyPack('${p.id}')" ${canBuy ? '' : 'disabled'}>${p.cost === 0 ? 'FREE' : '$DD ' + p.cost}</button>`;
+            btnHTML = `<button class="cosmetic-btn${canBuy ? ' buy' : ''}" onclick="buyPack('${p.id}')" ${canBuy || p.isFree ? '' : 'disabled'}>${p.cost === 0 ? 'FREE' : '$DD ' + p.cost}</button>`;
         }
         return `<div class="cosmetic-item">
             <div class="pack-icon" style="background:linear-gradient(135deg,${p.colors[0]},${p.colors[1]});border:1px solid rgba(255,255,255,0.15)">
@@ -6022,20 +6073,19 @@ function closeNoCoinPopup() {
     if (popup) popup.remove();
 }
 
-function buyPack(packId) {
+async function buyPack(packId) {
     const pack = PACKS.find(p => p.id === packId);
     if (!pack) return;
     // Free pack cooldown check
     if (pack.isFree) {
         if (playerData.freePackCooldown && (Date.now() - playerData.freePackCooldown < 86400000)) return;
     }
-    if (pack.cost > 0 && playerData.coins < pack.cost) {
-        showNoCoinPopup();
-        return;
-    }
     if (pack.maxBuys && (packBuys[pack.id] || 0) >= pack.maxBuys) return;
 
-    playerData.coins -= pack.cost;
+    if (pack.cost > 0) {
+        const paid = await spendDD(pack.cost);
+        if (!paid) return;
+    }
     packBuys[pack.id] = (packBuys[pack.id] || 0) + 1;
     if (pack.isFree) playerData.freePackCooldown = Date.now();
 
@@ -6123,9 +6173,9 @@ function closeReveal() {
     renderPackShop();
 }
 
-// ============================================================
+// ====
 // $DD STORE
-// ============================================================
+// ====
 const DD_TIERS = [
     { id: 'dd100', amount: 100, bonus: null },
     { id: 'dd500', amount: 500, bonus: '+50 bonus', popular: true },
@@ -6144,6 +6194,9 @@ let ddPrice = null;    // USD per DD
 let priceLastFetch = 0;
 const PRICE_CACHE_MS = 60000; // refresh every 60s
 
+// Fallback fixed rate: 1 CLAWS = 100 $DD (used when live prices unavailable)
+const FALLBACK_CLAWS_PER_DD = 0.01; // 0.01 CLAWS per 1 $DD
+
 async function fetchTokenPrices() {
     const now = Date.now();
     if (clawsPrice && ddPrice && now - priceLastFetch < PRICE_CACHE_MS) return;
@@ -6158,16 +6211,18 @@ async function fetchTokenPrices() {
         if (ddPair) ddPrice = parseFloat(ddPair.priceUsd);
         priceLastFetch = now;
     } catch(e) {
-        console.log('[store] Price fetch failed:', e);
+        console.log('[store] Price fetch failed, using fallback rate');
     }
 }
 
 function getClawsCost(ddAmount) {
-    if (!clawsPrice || !ddPrice) return null;
-    const ddValue = ddAmount * ddPrice;
-    const claws = ddValue / clawsPrice;
-    // Round to 2 decimals, minimum 0.01
-    return Math.max(0.01, Math.round(claws * 100) / 100);
+    if (clawsPrice && ddPrice) {
+        const ddValue = ddAmount * ddPrice;
+        const claws = ddValue / clawsPrice;
+        return Math.max(0.01, Math.round(claws * 100) / 100);
+    }
+    // Fallback fixed rate
+    return Math.max(0.01, Math.round(ddAmount * FALLBACK_CLAWS_PER_DD * 100) / 100);
 }
 
 function formatClaws(n) {
@@ -6219,68 +6274,64 @@ function openStore() {
 
 async function renderStore() {
     const grid = document.getElementById('store-grid');
-    const hasWallet = !!connectedWallet && !offlineMode;
+    const online = canPurchase();
+
+    if (!online) {
+        grid.innerHTML = `<div class="store-tier" style="grid-column:1/-1;padding:24px;text-align:center">
+            <div style="font-size:28px;margin-bottom:10px">&#x1F6AB;</div>
+            <div style="font-size:14px;font-weight:800;color:rgba(140,200,255,0.9);margin-bottom:8px">Store Unavailable</div>
+            <div style="font-size:12px;color:rgba(140,200,255,0.45);margin-bottom:16px;line-height:1.5">${!navigator.onLine ? 'You are offline. Connect to the internet to purchase $DD.' : 'Connect your wallet to purchase $DD with CLAWS.'}</div>
+            ${navigator.onLine ? `<button class="store-tier-price" onclick="showWalletModal()" style="max-width:200px;margin:0 auto">Connect Wallet</button>` : ''}
+        </div>`;
+        return;
+    }
 
     await fetchTokenPrices();
     const hasPrices = clawsPrice && ddPrice;
 
     grid.innerHTML = DD_TIERS.map(t => {
         const cost = getClawsCost(t.amount);
-        const priceLabel = cost !== null ? formatClaws(cost) + ' CLAWS' : 'Loading...';
-        const canBuy = hasWallet && cost !== null;
+        const priceLabel = formatClaws(cost) + ' CLAWS';
         return `<div class="store-tier${t.popular ? ' popular' : ''}">
             ${t.popular ? '<div class="store-tier-badge">Best Value</div>' : ''}
             <div class="store-tier-amount">${t.amount.toLocaleString()}</div>
             <div class="store-tier-label">$DD</div>
             <div class="store-tier-bonus">${t.bonus || ''}</div>
-            <button class="store-tier-price" onclick="buyDD('${t.id}')" ${canBuy ? '' : 'disabled'}>
+            <button class="store-tier-price" onclick="buyDD('${t.id}')">
                 <span class="claws-icon">C</span> ${priceLabel}
             </button>
         </div>`;
     }).join('') +
-    (hasPrices ? `<div style="grid-column:1/-1;text-align:center;font-size:10px;color:rgba(150,160,180,0.35);padding:4px 0">
-        Live rate: 1 CLAWS = $${clawsPrice.toFixed(6)} · 1 $DD = $${ddPrice.toFixed(6)} · Updates every 60s
-    </div>` : '') +
-    (!hasWallet ? `<div class="store-tier" style="grid-column:1/-1;padding:16px">
-            <div style="font-size:13px;color:rgba(200,210,225,0.5);margin-bottom:10px">Connect your wallet to purchase $DD</div>
-            <button class="store-tier-price" onclick="showWalletModal()" style="max-width:200px;margin:0 auto">
-                Connect Wallet
-            </button>
-        </div>` : '');
+    `<div style="grid-column:1/-1;text-align:center;font-size:10px;color:rgba(150,160,180,0.35);padding:4px 0">
+        ${hasPrices ? `Live rate: 1 CLAWS = $${clawsPrice.toFixed(6)} · 1 $DD = $${ddPrice.toFixed(6)} · Updates every 60s` : 'Using fixed rate: 1 CLAWS = 100 $DD'}
+    </div>`;
 }
 
 async function buyDD(tierId) {
     const tier = DD_TIERS.find(t => t.id === tierId);
     if (!tier) return;
-    if (!connectedWallet || offlineMode) {
-        showWalletModal();
-        return;
-    }
+    if (!navigator.onLine) { alert('You are offline. Connect to the internet to purchase $DD.'); return; }
+    if (!connectedWallet || offlineMode) { showWalletModal(); return; }
 
     // Re-fetch prices to get freshest rate
     await fetchTokenPrices();
     const cost = getClawsCost(tier.amount);
-    if (!cost) {
-        showStoreToast('Price unavailable');
-        return;
-    }
 
-    // Use CLAWS SDK if available
+    // Use CLAWS SDK to pay CLAWS to creator — DD tokens sent to user's wallet
     if (window.CLAWS) {
         try {
-            await window.CLAWS.gate(Math.ceil(cost), (error, txHash) => {
-                if (error) {
-                    console.log('Purchase failed:', error);
-                    return;
-                }
-                creditDD(tier);
-            });
+            const recipient = window.CLAWS.creatorWallet || DD_CREATOR_WALLET;
+            const txHash = await window.CLAWS.pay(Math.ceil(cost), recipient);
+            if (txHash) {
+                const total = tier.amount + (DD_BONUSES[tier.id] || 0);
+                showStoreToast('Paid! ' + total.toLocaleString() + ' $DD will arrive in your wallet');
+                setTimeout(() => syncDDBalance(), 5000);
+            }
         } catch(e) {
-            console.log('CLAWS gate error:', e);
-            creditDD(tier);
+            if (e.code !== 4001) showStoreToast('Purchase failed');
         }
     } else {
-        // Local dev / no SDK — credit directly for testing
+        // Local dev / no SDK — credit locally for testing
         creditDD(tier);
     }
 }
@@ -6289,7 +6340,6 @@ const DD_BONUSES = { dd500:50, dd1000:200, dd5000:1000, dd10000:3000, dd25000:80
 function creditDD(tier) {
     const total = tier.amount + (DD_BONUSES[tier.id] || 0);
     playerData.coins += total;
-    playerData.stats.totalEarned = (playerData.stats.totalEarned || 0) + total;
     saveData();
     updateCoinsDisplay();
     renderStore();
@@ -6303,10 +6353,10 @@ function showStoreToast(text) {
     setTimeout(() => toast.classList.remove('active'), 2000);
 }
 
-// ============================================================
-// ============================================================
+// ====
+// ====
 // SLEEVES & PLAYMATS
-// ============================================================
+// ====
 const SLEEVES = [
     { id:'s1', name:'Crimson Tide', art:'Thermidor the Blaze', border:'#a03030' },
     { id:'s2', name:'Deep Abyss', art:'Abyssal Lurker', border:'#2060a0' },
@@ -6334,8 +6384,9 @@ const PLAYMATS = [
 ];
 
 function renderSleeves() {
-    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
     const grid = document.getElementById('sleeves-grid');
+    const online = canPurchase();
     grid.innerHTML = SLEEVES.map(s => {
         const owned = (playerData.ownedSleeves||[]).includes(s.id);
         const equipped = playerData.activeSleeve === s.id;
@@ -6347,15 +6398,16 @@ function renderSleeves() {
             <div class="cosmetic-name">${s.name}</div>
             ${owned
                 ? `<button class="cosmetic-btn${equipped?' active':''}" onclick="equipSleeve('${s.id}')">${equipped?'EQUIPPED':'EQUIP'}</button>`
-                : `<button class="cosmetic-btn buy" onclick="buySleeve('${s.id}')">1000 $DD</button>`
+                : `<button class="cosmetic-btn${online?' buy':''}" onclick="buySleeve('${s.id}')" ${online?'':'disabled'}>${online?'1000 $DD':'UNAVAILABLE'}</button>`
             }
         </div>`;
     }).join('');
 }
 
 function renderPlaymats() {
-    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
     const grid = document.getElementById('playmats-grid');
+    const online = canPurchase();
     grid.innerHTML = PLAYMATS.map(m => {
         const owned = (playerData.ownedPlaymats||[]).includes(m.id);
         const equipped = playerData.activePlaymat === m.id;
@@ -6368,16 +6420,16 @@ function renderPlaymats() {
             <div class="cosmetic-name">${m.name}</div>
             ${owned
                 ? `<button class="cosmetic-btn${equipped?' active':''}" onclick="equipPlaymat('${m.id}')">${equipped?'EQUIPPED':'EQUIP'}</button>`
-                : `<button class="cosmetic-btn buy" onclick="buyPlaymat('${m.id}')">1000 $DD</button>`
+                : `<button class="cosmetic-btn${online?' buy':''}" onclick="buyPlaymat('${m.id}')" ${online?'':'disabled'}>${online?'1000 $DD':'UNAVAILABLE'}</button>`
             }
         </div>`;
     }).join('');
 }
 
-function buySleeve(id) {
-    if (playerData.coins < 1000) { alert('Not enough $DD!'); return; }
+async function buySleeve(id) {
     if ((playerData.ownedSleeves||[]).includes(id)) return;
-    playerData.coins -= 1000;
+    const paid = await spendDD(1000);
+    if (!paid) return;
     if (!playerData.ownedSleeves) playerData.ownedSleeves = [];
     playerData.ownedSleeves.push(id);
     playerData.activeSleeve = id;
@@ -6385,10 +6437,10 @@ function buySleeve(id) {
     saveData(); updateCoinsDisplay(); renderSleeves();
 }
 
-function buyPlaymat(id) {
-    if (playerData.coins < 1000) { alert('Not enough $DD!'); return; }
+async function buyPlaymat(id) {
     if ((playerData.ownedPlaymats||[]).includes(id)) return;
-    playerData.coins -= 1000;
+    const paid = await spendDD(1000);
+    if (!paid) return;
     if (!playerData.ownedPlaymats) playerData.ownedPlaymats = [];
     playerData.ownedPlaymats.push(id);
     playerData.activePlaymat = id;
@@ -6415,7 +6467,7 @@ function getActivePlaymat() {
 }
 
 // GALLERY BOARDS & GALLERY
-// ============================================================
+// ====
 const GALLERY_BOARDS = [
     { id:'gb_default', name:'Reef Display', desc:'Standard coral reef display board', cost:0,
       bg:'linear-gradient(180deg, #081020 0%, #0c1830 40%, #102040 70%, #081828 100%)', slotBorder:'rgba(40,120,200,0.15)' },
@@ -6579,8 +6631,9 @@ function closeGalleryPicker() {
 
 // Board store
 function renderBoards() {
-    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
     const grid = document.getElementById('boards-grid');
+    const online = canPurchase();
     grid.innerHTML = GALLERY_BOARDS.map(b => {
         const owned = (playerData.ownedBoards || ['gb_default']).includes(b.id);
         const equipped = playerData.gallery.boardId === b.id;
@@ -6592,18 +6645,20 @@ function renderBoards() {
             <div class="board-desc">${b.desc}</div>
             ${owned
                 ? `<button class="cosmetic-btn${equipped?' active':''}" onclick="equipBoard('${b.id}')">${equipped?'EQUIPPED':'EQUIP'}</button>`
-                : `<button class="cosmetic-btn buy" onclick="buyBoard('${b.id}')">${b.cost===0?'FREE':b.cost.toLocaleString()+' $DD'}</button>`
+                : `<button class="cosmetic-btn${online||b.cost===0?' buy':''}" onclick="buyBoard('${b.id}')" ${online||b.cost===0?'':'disabled'}>${!online&&b.cost>0?'UNAVAILABLE':b.cost===0?'FREE':b.cost.toLocaleString()+' $DD'}</button>`
             }
         </div>`;
     }).join('');
 }
 
-function buyBoard(id) {
+async function buyBoard(id) {
     const board = GALLERY_BOARDS.find(b => b.id === id);
     if (!board) return;
-    if (board.cost > 0 && playerData.coins < board.cost) { alert('Not enough $DD!'); return; }
     if ((playerData.ownedBoards||[]).includes(id)) return;
-    playerData.coins -= board.cost;
+    if (board.cost > 0) {
+        const paid = await spendDD(board.cost);
+        if (!paid) return;
+    }
     if (!playerData.ownedBoards) playerData.ownedBoards = ['gb_default'];
     playerData.ownedBoards.push(id);
     playerData.gallery.boardId = id;
@@ -6617,8 +6672,9 @@ function equipBoard(id) {
 
 // Shop: Layouts
 function renderShopLayouts() {
-    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
     const owned = playerData.ownedLayouts || ['grid'];
+    const online = canPurchase();
     document.getElementById('layouts-grid').innerHTML = GALLERY_LAYOUTS.map(l => {
         const has = owned.includes(l.id);
         const active = playerData.gallery.layout === l.id;
@@ -6627,7 +6683,7 @@ function renderShopLayouts() {
             <div class="board-desc">${l.desc} (${l.slots} slots)</div>
             ${has
                 ? `<button class="cosmetic-btn${active?' active':''}" onclick="equipGalleryOpt('layout','${l.id}','renderShopLayouts')">${active?'EQUIPPED':'EQUIP'}</button>`
-                : `<button class="cosmetic-btn buy" onclick="buyGalleryItem('ownedLayouts','${l.id}',${l.cost},'renderShopLayouts')">${l.cost.toLocaleString()} $DD</button>`
+                : `<button class="cosmetic-btn${online?' buy':''}" onclick="buyGalleryItem('ownedLayouts','${l.id}',${l.cost},'renderShopLayouts')" ${online?'':'disabled'}>${online?l.cost.toLocaleString()+' $DD':'UNAVAILABLE'}</button>`
             }
         </div>`;
     }).join('');
@@ -6635,8 +6691,9 @@ function renderShopLayouts() {
 
 // Shop: Borders
 function renderShopBorders() {
-    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
     const owned = playerData.ownedBorders || ['none'];
+    const online = canPurchase();
     document.getElementById('borders-grid').innerHTML = GALLERY_BORDERS.map(b => {
         const has = owned.includes(b.id);
         const active = playerData.gallery.borderStyle === b.id;
@@ -6645,7 +6702,7 @@ function renderShopBorders() {
             <div class="board-desc">${b.desc}</div>
             ${has
                 ? `<button class="cosmetic-btn${active?' active':''}" onclick="equipGalleryOpt('borderStyle','${b.id}','renderShopBorders')">${active?'EQUIPPED':'EQUIP'}</button>`
-                : `<button class="cosmetic-btn buy" onclick="buyGalleryItem('ownedBorders','${b.id}',${b.cost},'renderShopBorders')">${b.cost.toLocaleString()} $DD</button>`
+                : `<button class="cosmetic-btn${online?' buy':''}" onclick="buyGalleryItem('ownedBorders','${b.id}',${b.cost},'renderShopBorders')" ${online?'':'disabled'}>${online?b.cost.toLocaleString()+' $DD':'UNAVAILABLE'}</button>`
             }
         </div>`;
     }).join('');
@@ -6653,8 +6710,9 @@ function renderShopBorders() {
 
 // Shop: Lighting
 function renderShopLighting() {
-    document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+    document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
     const owned = playerData.ownedLightings || ['none'];
+    const online = canPurchase();
     document.getElementById('lighting-grid').innerHTML = GALLERY_LIGHTINGS.map(l => {
         const has = owned.includes(l.id);
         const active = playerData.gallery.lighting === l.id;
@@ -6663,16 +6721,18 @@ function renderShopLighting() {
             <div class="board-desc">${l.desc}</div>
             ${has
                 ? `<button class="cosmetic-btn${active?' active':''}" onclick="equipGalleryOpt('lighting','${l.id}','renderShopLighting')">${active?'EQUIPPED':'EQUIP'}</button>`
-                : `<button class="cosmetic-btn buy" onclick="buyGalleryItem('ownedLightings','${l.id}',${l.cost},'renderShopLighting')">${l.cost.toLocaleString()} $DD</button>`
+                : `<button class="cosmetic-btn${online?' buy':''}" onclick="buyGalleryItem('ownedLightings','${l.id}',${l.cost},'renderShopLighting')" ${online?'':'disabled'}>${online?l.cost.toLocaleString()+' $DD':'UNAVAILABLE'}</button>`
             }
         </div>`;
     }).join('');
 }
 
-function buyGalleryItem(ownedKey, id, cost, renderFn) {
-    if (cost > 0 && playerData.coins < cost) { alert('Not enough $DD!'); return; }
+async function buyGalleryItem(ownedKey, id, cost, renderFn) {
     if ((playerData[ownedKey]||[]).includes(id)) return;
-    playerData.coins -= cost;
+    if (cost > 0) {
+        const paid = await spendDD(cost);
+        if (!paid) return;
+    }
     if (!playerData[ownedKey]) playerData[ownedKey] = [];
     playerData[ownedKey].push(id);
     saveData(); updateCoinsDisplay(); window[renderFn]();
@@ -6685,7 +6745,7 @@ function equipGalleryOpt(galleryKey, id, renderFn) {
 }
 
 // DECK BUILDER
-// ============================================================
+// ====
 function getDeckTypeBadge(card) {
     if (card.type === 'monster') {
         if (card.subtype === 'fusion') return '<div class="deck-type-badge fusion">∞</div>';
@@ -7019,9 +7079,9 @@ function autoFillDeck() {
     renderDeckBuilder();
 }
 
-// ============================================================
+// ====
 // DUEL ENGINE
-// ============================================================
+// ====
 let duel = null;
 
 function createPlayerState(deckIds, extraIds) {
@@ -7065,9 +7125,9 @@ function createFieldCard(card, position, faceUp) {
     };
 }
 
-// ============================================================
+// ====
 // DUEL SETUP
-// ============================================================
+// ====
 let aiDifficulty = 'normal';
 let selectedDeckChoice = 'slot-0';
 
@@ -7421,9 +7481,9 @@ function endDuelResult(result) {
     overlay.classList.add('active');
 }
 
-// ============================================================
+// ====
 // DUEL PHASES
-// ============================================================
+// ====
 function advanceToPhase(target) {
     if (duel.gameOver || duel.currentPlayer !== 'player') return;
     hideActionMenu();
@@ -7499,9 +7559,9 @@ function endTurn() {
     setTimeout(() => aiTurn(), 800);
 }
 
-// ============================================================
+// ====
 // PLAYER ACTIONS
-// ============================================================
+// ====
 function handleHandCardClick(handIdx) {
     if (duel.currentPlayer !== 'player' || duel.gameOver) return;
     if (duel.phase !== 'main1') return;
@@ -7835,9 +7895,9 @@ function specialSummonFromHand(handIdx) {
     renderDuel();
 }
 
-// ============================================================
+// ====
 // ATTACK RESOLUTION
-// ============================================================
+// ====
 function performAttack(atkZoneIdx, defZoneIdx) {
     duel.uiState = 'idle';
     duel.pendingAction = null;
@@ -7945,9 +8005,9 @@ function performDirectAttack(atkZoneIdx) {
     renderDuel();
 }
 
-// ============================================================
+// ====
 // SPELL / TRAP ACTIVATION
-// ============================================================
+// ====
 function activateSpell(handIdx) {
     hideActionMenu();
     const card = duel.player.hand.splice(handIdx, 1)[0];
@@ -8327,9 +8387,9 @@ function activateMonsterEffect(who, zoneIdx) {
     renderDuel();
 }
 
-// ============================================================
+// ====
 // TRAPS
-// ============================================================
+// ====
 function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
     if (trapIdx >= traps.length) { callback(false); return; }
     const trap = traps[trapIdx];
@@ -8500,9 +8560,9 @@ function resolveTrapEffect(who, zoneIdx, trigger, context) {
     }
 }
 
-// ============================================================
+// ====
 // FUSION / SURGE / RITUAL
-// ============================================================
+// ====
 function canFusionSummon(who) {
     return duel[who].extraDeck.some(c => c.subtype === 'fusion' && c.fusionMaterials);
 }
@@ -8696,9 +8756,9 @@ function completeRitualSummon() {
     document.getElementById('tribute-prompt').classList.remove('active');
 }
 
-// ============================================================
+// ====
 // AI ENGINE
-// ============================================================
+// ====
 function aiTurn() {
     if (duel.gameOver) return;
 
@@ -9215,9 +9275,9 @@ function aiEndPhase() {
     }, 800);
 }
 
-// ============================================================
+// ====
 // DUEL RENDERING
-// ============================================================
+// ====
 function renderDuel() {
     if (!duel) return;
 
@@ -9470,9 +9530,9 @@ function showGraveyard(who) {
     overlay.classList.add('active');
 }
 
-// ============================================================
+// ====
 // INIT
-// ============================================================
+// ====
 loadData();
 updateCoinsDisplay();
 initWalletConnect();
@@ -9484,12 +9544,13 @@ setTimeout(() => {
     if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
 }, 1500);
 setTimeout(() => checkTradeClaims(), 2000);
+// Refresh on-chain DD balance every 30s
+setInterval(() => syncDDBalance(), 30000);
 
 // Show dev tools for creator wallet only
-const _creatorWallet = '0x18b18E245122f4bDA5F2ee4F25c702E05C241D49';
 (function() {
     const w = getWalletFromCookie();
-    if (w && w.toLowerCase() === _creatorWallet.toLowerCase()) {
+    if (w && w.toLowerCase() === DD_CREATOR_WALLET.toLowerCase()) {
         const btn = document.getElementById('dev-unlock-btn');
         if (btn) btn.style.display = '';
     }
@@ -9507,9 +9568,9 @@ document.querySelector('.game-over-btn')?.addEventListener('click', function() {
 });
 
 
-// ============================================================
+// ====
 // MULTIPLAYER SYSTEM
-// ============================================================
+// ====
 
 let mp = { active: false, room: null, role: null, opponentId: null, session: 0 };
 
@@ -9565,15 +9626,11 @@ async function mpConnect(code) {
     document.getElementById('mp-players-list').innerHTML = '';
 
     try {
-        await Promise.race([
-            Realtime.connect('cc-' + code),
-            new Promise((_, rej) => setTimeout(() => rej(new Error('timeout')), 10000))
-        ]);
+        await Realtime.connect('cc-' + code);
     } catch (e) {
         if (sess !== mp.session) return;
         mp.room = null;
-        document.getElementById('mp-status-text').textContent = e.message === 'timeout'
-            ? 'Connection timed out.' : 'Connection failed.';
+        document.getElementById('mp-status-text').textContent = 'Connection failed. Check your connection.';
         document.getElementById('mp-retry-btn').style.display = 'inline-block';
         document.getElementById('mp-retry-btn').onclick = () => { mpResetLobbyUI(); };
         return;
@@ -9995,9 +10052,9 @@ function mpRxFlip(d) {
     if (m) { m.card = c; m.faceUp = true; m.position = 'atk'; duelLog('Opponent flip summons ' + c.name + '!'); renderDuel(); }
 }
 
-// ============================================================
+// ====
 // MONKEY-PATCH existing functions for MP broadcasting
-// ============================================================
+// ====
 
 const _mpOrigEndTurn = endTurn;
 endTurn = function() {
