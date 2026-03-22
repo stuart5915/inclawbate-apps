@@ -1718,45 +1718,43 @@
 
         /* ===== DECK BUILDER ===== */
         #deckbuilder-screen { background: #040810; }
-        #deckbuilder-screen .deck-stats {
-            padding: 12px 16px;
-            display: flex;
-            gap: 14px;
-            font-size: 13px;
-            color: rgba(140,190,240,0.5);
-            flex-shrink: 0;
-            background: rgba(255,255,255,0.02);
-            border-bottom: 1px solid rgba(255,255,255,0.04);
+        .db-tabs {
+            display: flex; gap: 0; border-bottom: 1px solid rgba(40,120,200,0.1); flex-shrink: 0;
         }
-        .deck-stats span { font-weight: 800; color: rgba(140,200,255,0.9); }
-        .deck-zone-label {
-            padding: 8px 16px;
-            font-size: 12px;
-            font-weight: 800;
-            color: rgba(140,200,255,0.9);
-            text-transform: uppercase;
-            font-family: 'Chakra Petch', sans-serif;
-            letter-spacing: 1px;
-            letter-spacing: 1.5px;
-            border-bottom: 1px solid rgba(255,215,0,0.08);
+        .db-tab {
+            flex: 1; padding: 10px 0; text-align: center; font-size: 13px; font-weight: 800;
+            color: rgba(140,200,255,0.35); background: none; border: none;
+            border-bottom: 2px solid transparent; cursor: pointer;
+            font-family: 'Nunito', sans-serif; transition: all 0.2s;
         }
-        .deck-section {
-            padding: 10px 16px;
+        .db-tab.active { color: rgba(140,200,255,0.95); border-bottom-color: rgba(40,140,220,0.6); }
+        .db-tab span { font-weight: 600; font-size: 11px; opacity: 0.6; margin-left: 4px; }
+        .db-top-row { display: flex; align-items: center; gap: 8px; padding: 8px 16px; flex-shrink: 0; }
+        .db-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+        .db-search {
+            width: calc(100% - 24px); margin: 10px 12px 6px; padding: 8px 12px; border-radius: 8px;
+            border: 1px solid rgba(40,120,200,0.12); background: rgba(8,18,35,0.5);
+            color: rgba(140,200,255,0.9); font-family: 'Nunito', sans-serif; font-size: 13px; outline: none;
         }
-        .deck-cards-row {
-            display: flex;
-            gap: 4px;
-            flex-wrap: wrap;
+        .db-search:focus { border-color: rgba(40,120,200,0.35); }
+        .db-filters {
+            display: flex; gap: 6px; padding: 4px 12px 8px; flex-wrap: wrap;
         }
-        .deck-cards-row .card {
-            width: 48px;
-            aspect-ratio: 0.686;
-            cursor: pointer;
-            font-size: 4px;
+        .db-filter {
+            padding: 4px 12px; border-radius: 14px; font-size: 11px; font-weight: 700;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(40,120,200,0.08);
+            color: rgba(140,200,255,0.4); cursor: pointer; font-family: 'Nunito', sans-serif;
         }
-        .deck-cards-row .card .card-desc-box { display: none; }
-        .deck-cards-row .card .card-stats-bar { font-size: 5px; }
-        .deck-add-area {
+        .db-filter.active { background: rgba(20,60,120,0.25); border-color: rgba(40,140,220,0.25); color: rgba(140,200,255,0.9); }
+        .db-empty {
+            text-align: center; padding: 30px 20px; color: rgba(140,200,255,0.25); font-size: 13px;
+        }
+        .db-section-label {
+            padding: 10px 14px 4px; font-size: 11px; font-weight: 700;
+            color: rgba(140,200,255,0.35); letter-spacing: 1px; text-transform: uppercase;
+        }
+        .deck-section { padding: 10px 16px; }
+        .db-body {
             flex: 1;
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
@@ -1778,8 +1776,45 @@
         }
         .deck-save-btn:active { transform: scale(0.97); }
         .deck-save-btn.clear { background: linear-gradient(135deg, #802020, #a03030); border-color: rgba(255,80,80,0.2); box-shadow: 0 0 15px rgba(200,40,40,0.15); }
+        .deck-mini-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 5px;
+            padding: 8px 10px;
+        }
+        .deck-mini-grid .deck-hover-wrap { position: relative; }
+        .deck-mini-grid .deck-type-badge { width: 14px; height: 14px; font-size: 7px; top: 1px; left: 1px; }
+        .deck-mini-grid .card-count-badge { font-size: 8px; min-width: 14px; height: 14px; top: -2px; right: -2px; }
         .deck-builder-btns { display: flex; gap: 10px; padding: 0 16px; }
         .deck-builder-btns .deck-save-btn { flex: 1; margin: 14px 0; }
+        .card-mini {
+            border-radius: 5px; overflow: hidden; position: relative;
+            aspect-ratio: 0.75; width: 100%;
+        }
+        .card-mini.spell { border: 1.5px solid rgba(192,136,64,0.5); }
+        .card-mini.trap { border: 1.5px solid rgba(42,144,144,0.5); }
+        .card-mini.monster { border: 1.5px solid rgba(200,180,80,0.4); }
+        .card-mini.fusion { border: 1.5px solid rgba(160,50,220,0.5); }
+        .card-mini.surge { border: 1.5px solid rgba(50,180,255,0.5); }
+        .card-mini.ritual { border: 1.5px solid rgba(30,80,180,0.5); }
+        .card-mini-art {
+            position: relative; width: 100%; height: 0; padding-bottom: 100%; overflow: hidden;
+        }
+        .card-mini-stars {
+            position: absolute; top: 2px; left: 2px; right: 2px; z-index: 2;
+            display: flex; gap: 1px; flex-wrap: wrap; justify-content: center;
+        }
+        .card-mini-stars .level-star { width: 8px; height: 8px; }
+        .card-mini-attr {
+            position: absolute; top: 2px; right: 2px; z-index: 2;
+            width: 14px; height: 14px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 8px; color: #fff;
+        }
+        .card-mini-name {
+            font-size: 7px; font-weight: 700; text-align: center; padding: 2px 2px;
+            color: rgba(200,220,240,0.9); background: rgba(4,8,16,0.85);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            line-height: 1.3;
+        }
         .deck-type-badge {
             position: absolute; top: 2px; left: 2px; z-index: 5; width: 16px; height: 16px;
             border-radius: 50%; font-size: 9px; display: flex; align-items: center; justify-content: center;
@@ -2791,7 +2826,6 @@
             .detail-card-wrap .card-stats-bar { font-size: 14px; padding: 5px 12px; }
             .detail-card-wrap .card-type-label { font-size: 9px; }
             .detail-info { max-width: 340px; }
-            .deck-cards-row .card { width: 64px; }
             .pack-icon { width: 56px; height: 72px; }
             /* Duel — tablet */
             .field-zone { width: 64px; height: 72px; }
@@ -3282,9 +3316,12 @@
             <h2>Deck Builder</h2>
         </div>
         <div class="deck-slots-bar" id="deck-slots-bar"></div>
-        <div class="deck-name-row" id="deck-name-row"></div>
-        <div class="deck-stats" id="deck-stats"></div>
-        <div class="deck-add-area" id="deck-area"></div>
+        <div class="db-top-row" id="deck-name-row"></div>
+        <div class="db-tabs">
+            <button class="db-tab active" id="db-tab-deck" onclick="switchDeckTab('deck')">My Deck <span id="db-deck-count">0/60</span></button>
+            <button class="db-tab" id="db-tab-add" onclick="switchDeckTab('add')">Add Cards</button>
+        </div>
+        <div class="db-body" id="deck-area"></div>
     </div>
 
     <!-- ===== HOW TO PLAY ===== -->
@@ -4278,15 +4315,18 @@ function _cardArtUrl(name) {
 }
 // Preload card art images that exist in the repo
 const _CARD_ART_NAMES = [
-    'Abyssal Lurker','Abyssal Monarch','Abyssal Pincer','Abyssal Sovereign','Antenna Oracle',
-    'Barnacle Parasite','Barnacle Scout','Brood Mother','Claw Recruit','Coconut Crab King',
-    'Coral Bastion','Coral Witch','Cuttlebone Spy','Deep Sea Berserker','Drift Anemone',
-    'Ember Urchin','Emperor Crustacean','Gale Fin','Glacial Lobster','Gloom Squid',
-    'Hermit Lobster','Ironshell Crab','Kelp Runner','Lantern Angler','Larval Drifter',
-    'Leviathan Lobster','Mantis Shrimp','Molt Striker','Phosphor Shrimp','Pincer Duelist',
-    'Pistol Shrimp',"Poseidon's Chosen",'Prism Jellyfish','Reef Sentinel','Riptide Crab',
-    'Sand Burrower','Shell Knight','Spore Polyp','Thermidor the Blaze','Tidal Crawler',
-    'Tide Caller','Tide Pool Lurker','Trench Stalker','Twin Claw Dragon','Volcanic Krill'
+    'Abyssal Lurker','Abyssal Monarch','Abyssal Pincer','Abyssal Remora','Abyssal Sovereign',
+    'Antenna Oracle','Barnacle Parasite','Barnacle Scout','Brine Wasp','Brood Mother',
+    'Claw Recruit','Coconut Crab King','Coral Bastion','Coral Witch','Cuttlebone Spy',
+    'Deep Sea Berserker','Deepwater Titan','Drift Anemone','Ember Urchin','Emperor Crustacean',
+    'Gale Fin','Gilded Cephalopod','Glacial Lobster','Gloom Squid','Hermit Lobster',
+    'Hydra Polyp','Hydrothermal Drake','Ironshell Crab','Kelp Runner','Lantern Angler',
+    'Larval Drifter','Leviathan Lobster','Magma Hermit','Mantis Shrimp','Molt Striker',
+    'Nautilus Warden','Pearl Diver','Phosphor Shrimp','Pincer Duelist','Pistol Shrimp',
+    "Poseidon's Chosen",'Prism Jellyfish','Reef Sentinel','Riptide Crab','Sand Burrower',
+    'Shell Knight','Siphon Worm','Spore Polyp','Stormfin Serpent','Thermidor the Blaze',
+    'Tidal Crawler','Tide Caller','Tide Pool Lurker','Trench Stalker','Twin Claw Dragon',
+    'Volcanic Krill','Whirlpool Eel'
 ];
 _CARD_ART_NAMES.forEach(name => { _cardArtImages[name] = _cardArtUrl(name); });
 
@@ -4380,6 +4420,27 @@ function renderCard(card, opts = {}) {
     return html;
 }
 
+function renderCardMini(card) {
+    const frameClass = getFrameClass(card);
+    const bg = card.art?.bg || ['#1a1a2e','#0d0d18'];
+    const artImg = _cardArtImages?.[card.name] || null;
+    let levelHTML = '';
+    if (card.type === 'monster' && card.level) {
+        levelHTML = `<div class="card-mini-stars">${Array(card.level).fill('<div class="level-star"></div>').join('')}</div>`;
+    }
+    const attrKey = card.type === 'monster' ? (card.attribute || 'WATER') : (card.type === 'spell' ? 'SPELL' : 'TRAP');
+    const attrColor = card.type === 'monster' ? (ATTR_COLORS[card.attribute] || '#555')
+        : card.type === 'spell' ? '#3898b0' : '#2a9090';
+    return `<div class="card-mini ${frameClass}" data-card-id="${card.id}">
+        <div class="card-mini-art" style="background:linear-gradient(135deg,${bg[0]},${bg[1]})">
+            ${artImg ? `<img src="${artImg}" alt="${card.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;"/>` : ''}
+            ${levelHTML}
+            <div class="card-mini-attr" style="background:${attrColor}">${ATTR_ICONS[attrKey]||''}</div>
+        </div>
+        <div class="card-mini-name">${card.name}</div>
+    </div>`;
+}
+
 // ============================================================
 // SAVE / LOAD / PLAYER DATA
 // ============================================================
@@ -4438,7 +4499,8 @@ let playerData = {
     ownedBoards: ['gb_default'],
     ownedLayouts: ['grid'],
     ownedBorders: ['none'],
-    ownedLightings: ['none']
+    ownedLightings: ['none'],
+    freePackCooldown: 0
 };
 
 function saveData() {
@@ -4582,6 +4644,7 @@ const STARTER_DECKS = [
 ];
 
 function giveStarterCards() {
+    if (playerData.starterClaimed) return;
     const now = Date.now();
     CARDS.forEach(c => {
         if (c.rarity === 'C') { playerData.collection[c.id] = 3; playerData.collectedDates[c.id] = now; }
@@ -4595,6 +4658,7 @@ function giveStarterCards() {
 }
 
 function showStarterDeckPicker() {
+    if (playerData.starterClaimed) return;
     const overlay = document.createElement('div');
     overlay.className = 'starter-picker-overlay';
     overlay.id = 'starter-picker-overlay';
@@ -4625,6 +4689,7 @@ function pickStarterDeck(deckId) {
     playerData.deck = [...deck.main];
     playerData.extraDeck = [...deck.extra];
     playerData.decks[0].name = deck.name;
+    playerData.starterClaimed = true;
     saveData();
     const overlay = document.getElementById('starter-picker-overlay');
     if (overlay) overlay.remove();
@@ -5780,7 +5845,7 @@ function setupHoloTilt(el) {
 // PACK OPENING
 // ============================================================
 const PACKS = [
-    { id: 'starter', name: 'Starter Pack', desc: '5 cards. Great for beginners!', cost: 0, count: 5, maxBuys: 1,
+    { id: 'starter', name: 'Free Pack', desc: '5 cards — Commons & Rares. Claimable every 24 hours!', cost: 0, count: 5, isFree: true,
       pool: () => CARDS.filter(c => c.rarity === 'C' || c.rarity === 'R'),
       guarantee: 'R',
       colors: ['#2a4a6a','#1a2a3a']
@@ -5796,7 +5861,7 @@ const PACKS = [
       colors: ['#2a1a4a','#100828']
     },
     { id: 'mega', name: 'Mega Pack', desc: '10 cards. Guaranteed 2 Ultra Rare', cost: 20000, count: 10,
-      pool: () => CARDS,
+      pool: () => CARDS.filter(c => c.rarity !== 'StR'),
       guarantee: 'UR', guaranteeCount: 2,
       colors: ['#3a0828','#1a0418']
     },
@@ -5888,25 +5953,48 @@ function buyShopDeck(deckId) {
 
 let packBuys = {};
 
+let _freePackTimer = null;
 function renderPackShop() {
     const list = document.getElementById('pack-list');
     document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
     switchShopTab('packs');
+    if (_freePackTimer) { clearInterval(_freePackTimer); _freePackTimer = null; }
     list.innerHTML = PACKS.map(p => {
         const bought = packBuys[p.id] || 0;
-        const canBuy = playerData.coins >= p.cost && (!p.maxBuys || bought < p.maxBuys);
+        const onCooldown = p.isFree && playerData.freePackCooldown && (Date.now() - playerData.freePackCooldown < 86400000);
+        const canBuy = !onCooldown && playerData.coins >= p.cost && (!p.maxBuys || bought < p.maxBuys);
         const soldOut = p.maxBuys && bought >= p.maxBuys;
+        let btnHTML;
+        if (onCooldown) {
+            btnHTML = `<button class="cosmetic-btn" disabled id="free-pack-btn"><span id="free-pack-cd"></span></button>`;
+        } else if (soldOut) {
+            btnHTML = `<button class="cosmetic-btn" disabled>SOLD OUT</button>`;
+        } else {
+            btnHTML = `<button class="cosmetic-btn${canBuy ? ' buy' : ''}" onclick="buyPack('${p.id}')" ${canBuy ? '' : 'disabled'}>${p.cost === 0 ? 'FREE' : '$DD ' + p.cost}</button>`;
+        }
         return `<div class="cosmetic-item">
             <div class="pack-icon" style="background:linear-gradient(135deg,${p.colors[0]},${p.colors[1]});border:1px solid rgba(255,255,255,0.15)">
                 <svg viewBox="0 0 40 50" width="28" height="38"><rect x="5" y="5" width="30" height="40" rx="3" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><text x="20" y="30" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="900">CC</text></svg>
             </div>
             <div class="cosmetic-name">${p.name}</div>
             <div class="pack-desc">${p.desc}</div>
-            <button class="cosmetic-btn${canBuy && !soldOut ? ' buy' : ''}" onclick="buyPack('${p.id}')" ${canBuy ? '' : 'disabled'}>
-                ${soldOut ? 'SOLD OUT' : (p.cost === 0 ? 'FREE' : '$DD ' + p.cost)}
-            </button>
+            ${btnHTML}
         </div>`;
     }).join('');
+    _updateFreeCd();
+    if (playerData.freePackCooldown && (Date.now() - playerData.freePackCooldown < 86400000)) {
+        _freePackTimer = setInterval(_updateFreeCd, 1000);
+    }
+}
+function _updateFreeCd() {
+    const el = document.getElementById('free-pack-cd');
+    if (!el) return;
+    const left = 86400000 - (Date.now() - (playerData.freePackCooldown || 0));
+    if (left <= 0) { if (_freePackTimer) clearInterval(_freePackTimer); renderPackShop(); return; }
+    const h = Math.floor(left / 3600000);
+    const m = Math.floor((left % 3600000) / 60000);
+    const s = Math.floor((left % 60000) / 1000);
+    el.textContent = `${h}h ${m}m ${s}s`;
 }
 
 function showNoCoinPopup() {
@@ -5937,6 +6025,10 @@ function closeNoCoinPopup() {
 function buyPack(packId) {
     const pack = PACKS.find(p => p.id === packId);
     if (!pack) return;
+    // Free pack cooldown check
+    if (pack.isFree) {
+        if (playerData.freePackCooldown && (Date.now() - playerData.freePackCooldown < 86400000)) return;
+    }
     if (pack.cost > 0 && playerData.coins < pack.cost) {
         showNoCoinPopup();
         return;
@@ -5945,6 +6037,7 @@ function buyPack(packId) {
 
     playerData.coins -= pack.cost;
     packBuys[pack.id] = (packBuys[pack.id] || 0) + 1;
+    if (pack.isFree) playerData.freePackCooldown = Date.now();
 
     // Generate cards
     const pool = pack.pool();
@@ -5971,6 +6064,13 @@ function buyPack(packId) {
 
     // Fill rest
     while (pulled.length < pack.count) {
+        // Free pack: 0.000005% chance per card for a higher rarity (never StR/Cosmic)
+        if (pack.isFree && Math.random() < 0.00000005) {
+            const luckyRarities = ['SR','UR','ScR','GhR','UltR'];
+            const lr = luckyRarities[Math.floor(Math.random() * luckyRarities.length)];
+            const luckyPool = CARDS.filter(c => c.rarity === lr);
+            if (luckyPool.length > 0) { pulled.push(luckyPool[Math.floor(Math.random() * luckyPool.length)]); continue; }
+        }
         // Weighted random
         const r = Math.random();
         let rarityFilter;
@@ -6683,88 +6783,129 @@ function loadPremadeDeck(deckId) {
     renderDeckBuilder();
 }
 
+let _dbTab = 'deck';
+let _dbFilter = 'all';
+
+function switchDeckTab(tab) {
+    _dbTab = tab;
+    document.getElementById('db-tab-deck').classList.toggle('active', tab === 'deck');
+    document.getElementById('db-tab-add').classList.toggle('active', tab === 'add');
+    renderDeckArea();
+}
+
+function setDbFilter(f) {
+    _dbFilter = f;
+    renderDeckArea();
+}
+
 function renderDeckBuilder() {
-    // Deck slots bar
+    // Deck slots
     const slotsBar = document.getElementById('deck-slots-bar');
     slotsBar.innerHTML = playerData.decks.map((d, i) =>
-        `<button class="deck-slot-btn${i === playerData.activeDeck ? ' active' : ''}" onclick="switchDeck(${i})">${d.name} <span style="font-size:10px;opacity:.5">(${(d.cards||[]).length})</span></button>`
+        `<button class="deck-slot-btn${i === playerData.activeDeck ? ' active' : ''}" onclick="switchDeck(${i})">${d.name}</button>`
     ).join('') + `<button class="deck-slot-btn add-slot" onclick="createDeck()">+</button>`;
 
-    // Name row
+    // Top row: name + delete
     const nameRow = document.getElementById('deck-name-row');
     const dn = playerData.decks[playerData.activeDeck]?.name || '';
     nameRow.innerHTML = `<input class="deck-name-input" value="${dn}" onchange="renameDeck(this.value)" placeholder="Deck name">` +
         (playerData.decks.length > 1 ? `<button class="deck-del-btn" onclick="deleteDeck()">Delete</button>` : '');
 
-    const statsEl = document.getElementById('deck-stats');
+    // Update tab count
+    document.getElementById('db-deck-count').textContent = `${playerData.deck.length}/60`;
+
+    renderDeckArea();
+}
+
+function renderDeckArea() {
+    const area = document.getElementById('deck-area');
     const mainCount = playerData.deck.length;
     const extraCount = playerData.extraDeck.length;
-    statsEl.innerHTML = `Main Deck: <span>${mainCount}/60</span> | Vault: <span>${extraCount}/15</span>`;
 
-    const area = document.getElementById('deck-area');
+    if (_dbTab === 'deck') {
+        const mainCards = playerData.deck.map(id => getCard(id)).filter(Boolean);
+        const extraCards = playerData.extraDeck.map(id => getCard(id)).filter(Boolean);
+        const mainIds = mainCards.map(c => c.id);
+        const extraIds = extraCards.map(c => c.id);
 
-    // Current deck
-    const mainCards = playerData.deck.map(id => getCard(id)).filter(Boolean);
-    const extraCards = playerData.extraDeck.map(id => getCard(id)).filter(Boolean);
-
-    // Available cards (owned but could add more)
-    const owned = [];
-    Object.entries(playerData.collection).forEach(([id, count]) => {
-        const card = getCard(parseInt(id));
-        if (!card) return;
-        const inDeck = playerData.deck.filter(d => d === card.id).length +
-                       playerData.extraDeck.filter(d => d === card.id).length;
-        const available = count - inDeck;
-        if (available > 0) owned.push({ card, available });
-    });
-
-    const mainIds = mainCards.map(c => c.id);
-    const extraIds = extraCards.map(c => c.id);
-    const availIds = owned.map(o => o.card.id);
-
-    area.innerHTML = `
-        <div class="deck-zone-label">Main Deck (${mainCount})</div>
-        <div class="deck-section">
-            <div class="deck-cards-row">
-                ${mainCards.map((c, i) =>
-                    `<div class="deck-hover-wrap" onclick="deckCardZoom(${c.id},'remove-main',${i},[${mainIds}])">
-                        ${getDeckTypeBadge(c)}
-                        ${renderCard(c)}
-                    </div>`
-                ).join('')}
-                ${mainCount === 0 ? '<div style="color:#555;font-size:12px;padding:20px">Tap cards below to add</div>' : ''}
+        area.innerHTML = `
+            ${mainCount > 0 ? `
+                <div class="db-section-label">Main Deck (${mainCount})</div>
+                <div class="deck-mini-grid">
+                    ${mainCards.map((c, i) =>
+                        `<div class="deck-hover-wrap" onclick="deckCardZoom(${c.id},'remove-main',${i},[${mainIds}])">
+                            ${getDeckTypeBadge(c)}
+                            ${renderCardMini(c)}
+                        </div>`
+                    ).join('')}
+                </div>
+            ` : ''}
+            ${extraCount > 0 ? `
+                <div class="db-section-label">Vault (${extraCount})</div>
+                <div class="deck-mini-grid">
+                    ${extraCards.map((c, i) =>
+                        `<div class="deck-hover-wrap" onclick="deckCardZoom(${c.id},'remove-extra',${i},[${extraIds}])">
+                            ${getDeckTypeBadge(c)}
+                            ${renderCardMini(c)}
+                        </div>`
+                    ).join('')}
+                </div>
+            ` : ''}
+            ${mainCount === 0 && extraCount === 0 ? `<div class="db-empty">Your deck is empty.<br>Tap "Add Cards" to get started.</div>` : ''}
+            <div class="deck-builder-btns">
+                <button class="deck-save-btn" onclick="showPremadeDecks()">Premade</button>
+                <button class="deck-save-btn" onclick="autoFillDeck()">Auto-Fill</button>
+                <button class="deck-save-btn clear" onclick="clearAllDeck()">Clear</button>
             </div>
-        </div>
-        <div class="deck-zone-label">Vault (${extraCount})</div>
-        <div class="deck-section">
-            <div class="deck-cards-row">
-                ${extraCards.map((c, i) =>
-                    `<div class="deck-hover-wrap" onclick="deckCardZoom(${c.id},'remove-extra',${i},[${extraIds}])">
-                        ${getDeckTypeBadge(c)}
-                        ${renderCard(c)}
-                    </div>`
-                ).join('')}
-                ${extraCount === 0 ? '<div style="color:#555;font-size:12px;padding:10px">Fusion/Surge monsters go here</div>' : ''}
+        `;
+    } else {
+        // Add Cards tab
+        const owned = [];
+        Object.entries(playerData.collection).forEach(([id, count]) => {
+            const card = getCard(parseInt(id));
+            if (!card) return;
+            const inDeck = playerData.deck.filter(d => d === card.id).length +
+                           playerData.extraDeck.filter(d => d === card.id).length;
+            const available = count - inDeck;
+            if (available > 0) owned.push({ card, available });
+        });
+
+        const searchVal = document.getElementById('db-add-search')?.value || '';
+        const query = searchVal.toLowerCase();
+
+        let filtered = owned;
+        if (_dbFilter === 'monster') filtered = filtered.filter(o => o.card.type === 'monster');
+        else if (_dbFilter === 'spell') filtered = filtered.filter(o => o.card.type === 'spell');
+        else if (_dbFilter === 'trap') filtered = filtered.filter(o => o.card.type === 'trap');
+        if (query) filtered = filtered.filter(o => o.card.name.toLowerCase().includes(query));
+
+        const availIds = filtered.map(o => o.card.id);
+
+        area.innerHTML = `
+            <input type="text" class="db-search" id="db-add-search" placeholder="Search cards..." value="${searchVal}" oninput="renderDeckArea()">
+            <div class="db-filters">
+                <button class="db-filter${_dbFilter==='all'?' active':''}" onclick="setDbFilter('all')">All</button>
+                <button class="db-filter${_dbFilter==='monster'?' active':''}" onclick="setDbFilter('monster')">Monsters</button>
+                <button class="db-filter${_dbFilter==='spell'?' active':''}" onclick="setDbFilter('spell')">Spells</button>
+                <button class="db-filter${_dbFilter==='trap'?' active':''}" onclick="setDbFilter('trap')">Traps</button>
             </div>
-        </div>
-        <div class="deck-zone-label">Available Cards</div>
-        <div class="deck-section">
-            <div class="deck-cards-row">
-                ${owned.map(({ card: c, available }) =>
-                    `<div class="deck-hover-wrap" onclick="deckCardZoom(${c.id},'add',0,[${availIds}])">
-                        ${getDeckTypeBadge(c)}
-                        <div class="card-count-badge" style="background:#27ae60">${available}</div>
-                        ${renderCard(c)}
-                    </div>`
-                ).join('')}
-            </div>
-        </div>
-        <div class="deck-builder-btns">
-            <button class="deck-save-btn" onclick="showPremadeDecks()">Premade Decks</button>
-            <button class="deck-save-btn" onclick="autoFillDeck()">Auto-Fill</button>
-            <button class="deck-save-btn clear" onclick="clearAllDeck()">Clear All</button>
-        </div>
-    `;
+            ${filtered.length > 0 ? `
+                <div class="deck-mini-grid">
+                    ${filtered.map(({ card: c, available }) =>
+                        `<div class="deck-hover-wrap" onclick="deckCardZoom(${c.id},'add',0,[${availIds}])">
+                            ${getDeckTypeBadge(c)}
+                            <div class="card-count-badge" style="background:#27ae60">${available}</div>
+                            ${renderCardMini(c)}
+                        </div>`
+                    ).join('')}
+                </div>
+            ` : `<div class="db-empty">No cards found</div>`}
+        `;
+
+        // Restore cursor position in search
+        const el = document.getElementById('db-add-search');
+        if (el && query) { el.focus(); el.setSelectionRange(searchVal.length, searchVal.length); }
+    }
 }
 
 function addToDeck(cardId) {
