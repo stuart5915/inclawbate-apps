@@ -189,24 +189,40 @@
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
             background:
-                radial-gradient(ellipse at 50% 30%, rgba(0,80,160,0.12) 0%, transparent 60%),
-                radial-gradient(ellipse at 20% 80%, rgba(0,60,130,0.08) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 60%, rgba(0,90,170,0.06) 0%, transparent 50%),
-                linear-gradient(180deg, #040810 0%, #061020 20%, #081830 50%, #0a2040 80%, #061828 100%);
+                radial-gradient(ellipse at 50% 0%, rgba(10,60,140,0.18) 0%, transparent 55%),
+                radial-gradient(ellipse at 20% 80%, rgba(0,50,120,0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 85% 25%, rgba(0,70,150,0.08) 0%, transparent 45%),
+                radial-gradient(ellipse at 50% 100%, rgba(6,18,40,0.6) 0%, transparent 40%),
+                linear-gradient(180deg, #030610 0%, #051018 15%, #071828 40%, #0a2040 65%, #081830 85%, #040c18 100%);
             z-index: 0;
         }
         .water-caustics {
             position: absolute; top:0;left:0;right:0;bottom:0; z-index:1;
-            opacity:0.3; mix-blend-mode:screen; pointer-events:none;
+            opacity:0.35; mix-blend-mode:screen; pointer-events:none;
             background:
                 conic-gradient(from 0deg at 20% 70%, transparent 0deg, rgba(50,150,220,0.05) 10deg, transparent 20deg, transparent 90deg, rgba(50,150,220,0.04) 100deg, transparent 110deg, transparent 180deg, rgba(50,150,220,0.05) 190deg, transparent 200deg, transparent 270deg, rgba(50,150,220,0.04) 280deg, transparent 290deg),
-                conic-gradient(from 45deg at 80% 30%, transparent 0deg, rgba(40,130,200,0.04) 15deg, transparent 30deg, transparent 120deg, rgba(40,130,200,0.03) 135deg, transparent 150deg, transparent 240deg, rgba(40,130,200,0.04) 255deg, transparent 270deg);
+                conic-gradient(from 45deg at 80% 30%, transparent 0deg, rgba(40,130,200,0.04) 15deg, transparent 30deg, transparent 120deg, rgba(40,130,200,0.03) 135deg, transparent 150deg, transparent 240deg, rgba(40,130,200,0.04) 255deg, transparent 270deg),
+                conic-gradient(from 120deg at 50% 50%, transparent 0deg, rgba(30,120,190,0.03) 8deg, transparent 16deg, transparent 60deg, rgba(30,120,190,0.025) 68deg, transparent 76deg, transparent 120deg, rgba(30,120,190,0.03) 128deg, transparent 136deg, transparent 180deg, rgba(30,120,190,0.025) 188deg, transparent 196deg, transparent 240deg, rgba(30,120,190,0.03) 248deg, transparent 256deg, transparent 300deg, rgba(30,120,190,0.025) 308deg, transparent 316deg);
             animation: causticShift 16s ease-in-out infinite;
         }
         @keyframes causticShift {
-            0% { transform: scale(1) rotate(0deg); opacity: 0.3; }
-            50% { transform: scale(1.08) rotate(2deg); opacity: 0.5; }
-            100% { transform: scale(1) rotate(0deg); opacity: 0.3; }
+            0% { transform: scale(1) rotate(0deg); opacity: 0.35; }
+            50% { transform: scale(1.08) rotate(2deg); opacity: 0.55; }
+            100% { transform: scale(1) rotate(0deg); opacity: 0.35; }
+        }
+        .water-rays {
+            position: absolute; top:0;left:0;right:0;bottom:0; z-index:1; pointer-events:none;
+            opacity:0.12;
+            background:
+                linear-gradient(170deg, transparent 20%, rgba(40,140,220,0.08) 21%, transparent 23%),
+                linear-gradient(165deg, transparent 35%, rgba(40,140,220,0.06) 36%, transparent 38%),
+                linear-gradient(175deg, transparent 55%, rgba(40,140,220,0.07) 56%, transparent 58%),
+                linear-gradient(168deg, transparent 70%, rgba(40,140,220,0.05) 71%, transparent 73%);
+            animation: rayShift 20s ease-in-out infinite;
+        }
+        @keyframes rayShift {
+            0%, 100% { opacity:0.12; transform:translateX(0); }
+            50% { opacity:0.2; transform:translateX(8px); }
         }
         .water-particles {
             position: absolute; top:0;left:0;right:0;bottom:0; z-index:1; pointer-events:none;
@@ -216,12 +232,30 @@
                 radial-gradient(1.5px 1.5px at 55% 15%, rgba(100,170,230,0.35), transparent),
                 radial-gradient(1px 1px at 75% 80%, rgba(120,190,240,0.3), transparent),
                 radial-gradient(1.5px 1.5px at 90% 45%, rgba(100,170,230,0.35), transparent),
-                radial-gradient(1px 1px at 45% 90%, rgba(140,200,240,0.25), transparent);
+                radial-gradient(1px 1px at 45% 90%, rgba(140,200,240,0.25), transparent),
+                radial-gradient(2px 2px at 15% 50%, rgba(80,160,230,0.2), transparent),
+                radial-gradient(1px 1px at 65% 35%, rgba(100,180,240,0.25), transparent),
+                radial-gradient(1.5px 1.5px at 85% 70%, rgba(90,170,230,0.2), transparent),
+                radial-gradient(1px 1px at 40% 10%, rgba(120,200,250,0.3), transparent);
             animation: particleDrift 14s ease-in-out infinite;
         }
+        .water-particles::after {
+            content:''; position:absolute; top:0;left:0;right:0;bottom:0;
+            background:
+                radial-gradient(1px 1px at 5% 40%, rgba(100,180,240,0.2), transparent),
+                radial-gradient(1.5px 1.5px at 25% 85%, rgba(80,160,230,0.25), transparent),
+                radial-gradient(1px 1px at 50% 55%, rgba(110,190,240,0.2), transparent),
+                radial-gradient(1.5px 1.5px at 70% 15%, rgba(90,170,230,0.25), transparent),
+                radial-gradient(1px 1px at 95% 60%, rgba(100,180,240,0.2), transparent);
+            animation: particleDrift2 18s ease-in-out infinite;
+        }
         @keyframes particleDrift {
-            0%, 100% { transform: translateY(0); opacity: 0.3; }
+            0%, 100% { transform: translateY(0); opacity: 0.35; }
             50% { transform: translateY(-10px); opacity: 0.6; }
+        }
+        @keyframes particleDrift2 {
+            0%, 100% { transform: translateY(0) translateX(0); opacity: 0.2; }
+            50% { transform: translateY(-6px) translateX(4px); opacity: 0.45; }
         }
 
         /* ---- Info bar (above DUEL button) ---- */
@@ -1745,16 +1779,15 @@
         .field-row {
             display: flex;
             justify-content: center;
-            gap: 3px;
+            gap: 4px;
         }
         .field-zone {
             position: relative;
-            width: 42px;
+            width: 54px;
             height: 58px;
             border-radius: 6px;
             border: 1px solid rgba(0,212,255,0.08);
             background: rgba(0,15,30,0.4);
-            position: relative;
             cursor: pointer;
             transition: all 0.2s;
             min-height: 38px;
@@ -1767,17 +1800,33 @@
         }
         .field-zone.selected {
             border-color: #00d4ff;
-            box-shadow: 0 0 12px rgba(0,212,255,0.3), inset 0 0 8px rgba(0,212,255,0.08);
+            box-shadow: 0 0 16px rgba(0,212,255,0.5), 0 0 30px rgba(0,212,255,0.2), inset 0 0 10px rgba(0,212,255,0.15);
+            animation: selectedPulse 1.2s ease-in-out infinite;
+        }
+        @keyframes selectedPulse {
+            0%, 100% { box-shadow: 0 0 16px rgba(0,212,255,0.5), 0 0 30px rgba(0,212,255,0.2), inset 0 0 10px rgba(0,212,255,0.15); }
+            50% { box-shadow: 0 0 22px rgba(0,212,255,0.7), 0 0 40px rgba(0,212,255,0.35), inset 0 0 14px rgba(0,212,255,0.25); }
         }
         .field-zone.attack-target {
             border-color: #ff2d78;
-            box-shadow: 0 0 12px rgba(255,45,120,0.3), inset 0 0 8px rgba(255,45,120,0.08);
+            border-width: 2px;
+            box-shadow: 0 0 16px rgba(255,45,120,0.5), 0 0 30px rgba(255,45,120,0.2), inset 0 0 10px rgba(255,45,120,0.15);
+            animation: attackPulse 0.8s ease-in-out infinite;
+        }
+        @keyframes attackPulse {
+            0%, 100% { box-shadow: 0 0 16px rgba(255,45,120,0.5), 0 0 30px rgba(255,45,120,0.2); }
+            50% { box-shadow: 0 0 24px rgba(255,45,120,0.7), 0 0 40px rgba(255,45,120,0.35); }
         }
         .field-zone .card {
             position: absolute;
             top:1px;left:1px;right:1px;bottom:1px;
             border-radius: 4px;
         }
+        .field-zone .card .card-name-bar,
+        .field-zone .card .card-level-bar,
+        .field-zone .card .card-desc-box,
+        .field-zone .card .card-stats-bar,
+        .field-zone .card .card-type-label { display: none; }
         .field-zone .card.def-pos {
             transform: rotate(90deg) scale(0.85);
         }
@@ -1904,10 +1953,22 @@
             cursor: pointer;
             transition: transform 0.15s, margin-top 0.15s, box-shadow 0.2s;
         }
-        .hand-area .card:hover, .hand-area .card.selected {
-            transform: translateY(-12px) scale(1.05);
+        .hand-area .card:hover {
+            transform: translateY(-10px) scale(1.05);
             z-index: 10;
-            box-shadow: 0 10px 28px rgba(0,0,0,0.6), 0 0 16px rgba(0,212,255,0.15), 0 0 0 0.5px rgba(0,212,255,0.2);
+            box-shadow: 0 10px 28px rgba(0,0,0,0.6), 0 0 16px rgba(0,212,255,0.15);
+        }
+        .hand-area .card.selected {
+            transform: translateY(-16px) scale(1.1);
+            z-index: 10;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.7), 0 0 20px rgba(0,212,255,0.5), 0 0 40px rgba(0,212,255,0.25);
+            outline: 2px solid rgba(0,212,255,0.8);
+            outline-offset: 1px;
+            animation: handSelectedPulse 1s ease-in-out infinite;
+        }
+        @keyframes handSelectedPulse {
+            0%, 100% { outline-color: rgba(0,212,255,0.8); box-shadow: 0 12px 32px rgba(0,0,0,0.7), 0 0 20px rgba(0,212,255,0.5), 0 0 40px rgba(0,212,255,0.25); }
+            50% { outline-color: rgba(0,212,255,0.4); box-shadow: 0 12px 32px rgba(0,0,0,0.7), 0 0 12px rgba(0,212,255,0.3), 0 0 24px rgba(0,212,255,0.15); }
         }
         .hand-area .card .card-desc-box { display: none; }
 
@@ -1996,10 +2057,10 @@
             background: linear-gradient(135deg, rgba(30,12,55,0.95) 0%, rgba(10,20,40,0.95) 100%);
             border: 2px solid #ff2d78;
             border-radius: 18px;
-            padding: 24px;
+            padding: 20px;
             text-align: center;
-            max-width: 300px;
-            width: 90%;
+            max-width: 360px;
+            width: 92%;
             box-shadow: 0 0 80px rgba(255,45,120,0.2), 0 0 0 1px rgba(255,45,120,0.1), inset 0 1px 0 rgba(255,255,255,0.05);
             animation: trapSlideIn 0.25s ease-out;
         }
@@ -2008,23 +2069,46 @@
             to { transform: translateY(0) scale(1); opacity: 1; }
         }
         .trap-prompt-title {
-            font-size: 15px;
+            font-size: 13px;
             font-weight: 900;
             color: #ff2d78;
             margin-bottom: 14px;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             text-shadow: 0 0 16px rgba(255,45,120,0.4);
+            font-family: 'Chakra Petch', sans-serif;
+            line-height: 1.4;
         }
+        .trap-prompt-cards-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .trap-prompt-card-col {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .trap-prompt-card-label {
+            font-size: 8px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            font-family: 'Chakra Petch', sans-serif;
+        }
+        .trap-prompt-card-label.trigger-label { color: rgba(255,120,120,0.7); }
+        .trap-prompt-card-label.response-label { color: rgba(100,200,255,0.7); }
         .trap-prompt-card-area {
-            width: 140px;
+            width: 100px;
             aspect-ratio: 0.686;
-            margin: 0 auto 14px;
         }
         .trap-prompt-card-area .card { width: 100%; height: 100%; }
         .trap-prompt-desc {
             font-size: 11px;
-            color: #8892a8;
+            color: rgba(140,190,240,0.6);
             line-height: 1.5;
             margin-bottom: 18px;
             padding: 0 4px;
@@ -2051,6 +2135,75 @@
             background: rgba(255,255,255,0.06);
             color: #6b7a94;
             border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        /* Graveyard overlay */
+        .gy-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.88);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 90;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .gy-overlay.active { display: flex; }
+        .gy-overlay-title {
+            font-family: 'Chakra Petch', sans-serif;
+            font-size: 16px;
+            font-weight: 800;
+            color: rgba(140,200,255,0.9);
+            letter-spacing: 2px;
+            margin-bottom: 14px;
+        }
+        .gy-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+            width: 100%;
+            max-width: 400px;
+        }
+        .gy-grid .card { width: 100%; aspect-ratio: 0.686; cursor: pointer; }
+        .gy-close-btn {
+            margin-top: 16px;
+            padding: 10px 32px;
+            border-radius: 10px;
+            background: rgba(8,18,35,0.65);
+            border: 1px solid rgba(40,120,200,0.1);
+            color: rgba(140,190,240,0.6);
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        /* Field card stat overlay */
+        .field-zone .field-stat-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 1px 3px;
+            font-size: 7px;
+            font-weight: 900;
+            background: rgba(0,0,0,0.75);
+            color: #fff;
+            z-index: 2;
+            border-radius: 0 0 4px 4px;
+            pointer-events: none;
+        }
+        .field-zone .field-stat-overlay .fs-atk { color: #ff6b6b; }
+        .field-zone .field-stat-overlay .fs-def { color: #6bc5ff; }
+        /* Face-down peek indicator */
+        .field-zone .peek-eye {
+            position: absolute;
+            top: 2px; right: 2px;
+            font-size: 8px;
+            opacity: 0.5;
+            z-index: 3;
+            pointer-events: none;
         }
 
         /* Game over overlay */
@@ -2368,7 +2521,7 @@
         }
         .gallery-pick-card { cursor: pointer; border-radius: 6px; overflow: hidden; transition: transform 0.15s; }
         .gallery-pick-card:active { transform: scale(0.95); }
-        .gallery-pick-card .card { width: 100% !important; height: auto !important; }
+        .gallery-pick-card .card { width: 100% !important; aspect-ratio: 0.686 !important; height: auto !important; }
         .gallery-pick-card.in-gallery { opacity: 0.3; pointer-events: none; }
 
         /* Board preview in store */
@@ -2413,8 +2566,8 @@
             .deck-cards-row .card { width: 64px; }
             .pack-icon { width: 56px; height: 72px; }
             /* Duel — tablet */
-            .field-zone { width: 52px; height: 72px; }
-            .field-row { gap: 4px; }
+            .field-zone { width: 64px; height: 72px; }
+            .field-row { gap: 5px; }
             .field-zone.field-spell-zone { width: 46px; height: 64px; }
             .hand-area .card { width: 60px; height: 86px; }
             .hand-area { min-height: 95px; gap: 5px; }
@@ -2551,7 +2704,7 @@
             .lp-fill { width: 50px; height: 4px; }
             .lp-bar { padding: 3px 8px; }
             .turn-indicator { font-size: 9px; padding: 2px 6px; }
-            .field-zone { width: 38px; height: 52px; min-height: 32px; }
+            .field-zone { width: 46px; height: 52px; min-height: 32px; }
             .field-row { gap: 2px; }
             .duel-field { padding: 1px 6px; gap: 1px; }
             .hand-area { min-height: 60px; padding: 2px 6px 4px; gap: 2px; }
@@ -2564,7 +2717,7 @@
             .field-center-row { gap: 6px; padding: 1px 0; }
             .action-menu { bottom: 65px; }
             .trap-prompt-box { max-width: 240px; padding: 16px; }
-            .trap-prompt-card-area { width: 100px; }
+            .trap-prompt-card-area { width: 80px; }
         }
 
         /* ===== PROFILE SCREEN ===== */
@@ -2599,6 +2752,68 @@
         .profile-viewed-header { background:rgba(20,60,120,0.15); }
         .profile-viewed-badge { font-size:10px; color:rgba(140,190,240,0.4); letter-spacing:1px; text-transform:uppercase; }
 
+        /* ===== TRADE HUB ===== */
+        #trade-screen, #market-screen { background: #040810; }
+        .trade-tabs { display:flex; gap:0; padding:0 12px; margin-top:8px; }
+        .trade-tab { flex:1; padding:10px 8px; text-align:center; font-family:'Chakra Petch',sans-serif; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:rgba(140,190,240,0.4); background:rgba(8,18,35,0.4); border:1px solid rgba(40,120,200,0.06); cursor:pointer; transition:all 0.2s; }
+        .trade-tab:first-child { border-radius:8px 0 0 8px; }
+        .trade-tab:last-child { border-radius:0 8px 8px 0; }
+        .trade-tab.active { color:rgba(140,200,255,0.9); background:rgba(20,60,120,0.3); border-color:rgba(40,120,200,0.2); }
+        .trade-search-bar { display:flex; gap:6px; padding:8px 12px 0; }
+        .trade-search-bar input { flex:1; background:rgba(8,18,35,0.65); border:1px solid rgba(40,120,200,0.1); border-radius:6px; color:rgba(200,220,255,0.9); font-family:'Nunito',sans-serif; font-size:11px; padding:7px 10px; }
+        .trade-search-bar input::placeholder { color:rgba(140,190,240,0.3); }
+        .trade-create-bar { display:flex; gap:8px; padding:10px 12px; }
+        .trade-create-btn { flex:1; padding:10px; background:linear-gradient(135deg,#1050a0,#1878d0,#2090ff); color:#fff; border:1px solid rgba(40,150,255,0.2); border-radius:8px; font-weight:800; font-size:12px; cursor:pointer; text-align:center; font-family:'Nunito',sans-serif; }
+        .trade-coins-display { padding:10px 14px; background:rgba(8,18,35,0.65); border:1px solid rgba(40,120,200,0.1); border-radius:8px; font-family:'Chakra Petch',sans-serif; font-size:12px; font-weight:700; color:rgba(140,200,255,0.9); white-space:nowrap; }
+        .trade-list { flex:1; overflow-y:auto; padding:8px 12px; display:flex; flex-direction:column; gap:8px; }
+        .trade-listing { background:rgba(8,18,35,0.65); border:1px solid rgba(40,120,200,0.1); border-radius:10px; padding:12px; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+        .trade-listing-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+        .trade-listing-user { font-family:'Chakra Petch',sans-serif; font-size:12px; font-weight:700; color:rgba(140,200,255,0.9); }
+        .trade-listing-time { font-size:9px; color:rgba(140,190,240,0.3); }
+        .trade-listing-body { display:flex; align-items:center; gap:8px; }
+        .trade-listing-side { flex:1; min-width:0; }
+        .trade-listing-label { font-size:9px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:rgba(140,190,240,0.4); margin-bottom:4px; font-family:'Chakra Petch',sans-serif; }
+        .trade-card-row { display:flex; gap:4px; flex-wrap:wrap; }
+        .trade-card-mini { width:48px; aspect-ratio:0.686; border-radius:4px; overflow:hidden; cursor:pointer; }
+        .trade-card-mini .card { width:100%!important; aspect-ratio:0.686!important; height:auto!important; }
+        .trade-listing-arrow { font-size:20px; color:rgba(40,120,200,0.3); flex-shrink:0; padding:0 4px; }
+        .trade-dd-badge { display:inline-block; padding:3px 8px; background:rgba(40,120,200,0.15); border:1px solid rgba(40,120,200,0.15); border-radius:12px; font-size:10px; font-weight:700; color:rgba(140,200,255,0.8); margin-top:4px; font-family:'Chakra Petch',sans-serif; }
+        .market-listing { background:rgba(8,18,35,0.65); border:1px solid rgba(40,120,200,0.1); border-radius:10px; padding:12px; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+        .market-listing-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+        .market-listing-body { display:flex; align-items:center; gap:10px; }
+        .market-cards-area { flex:1; min-width:0; }
+        .market-price-area { flex-shrink:0; text-align:center; }
+        .market-price { font-family:'Chakra Petch',sans-serif; font-size:16px; font-weight:900; color:rgba(140,200,255,0.9); }
+        .market-price-label { font-size:8px; color:rgba(140,190,240,0.35); letter-spacing:1px; text-transform:uppercase; }
+        .market-buy-btn { margin-top:6px; padding:6px 16px; background:linear-gradient(135deg,#1050a0,#1878d0,#2090ff); color:#fff; border:1px solid rgba(40,150,255,0.2); border-radius:6px; font-weight:700; font-size:11px; cursor:pointer; }
+        .trade-listing-actions { display:flex; gap:6px; margin-top:10px; }
+        .trade-accept-btn { flex:1; padding:8px; background:linear-gradient(135deg,#1050a0,#1878d0,#2090ff); color:#fff; border:1px solid rgba(40,150,255,0.2); border-radius:6px; font-weight:700; font-size:11px; cursor:pointer; }
+        .trade-cancel-btn { padding:8px 14px; background:rgba(200,40,40,0.15); color:#ff6b6b; border:1px solid rgba(200,40,40,0.15); border-radius:6px; font-weight:700; font-size:11px; cursor:pointer; }
+        .trade-empty { text-align:center; padding:40px 20px; color:rgba(140,190,240,0.3); font-size:13px; }
+        /* Trade creation overlay */
+        .trade-creator { display:none; position:absolute; top:0; left:0; right:0; bottom:0; flex-direction:column; background:rgba(4,8,16,0.97); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:30; }
+        .trade-creator.open { display:flex; }
+        .trade-creator-header { display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border-bottom:1px solid rgba(40,120,200,0.06); }
+        .trade-creator-header span { font-family:'Orbitron',sans-serif; font-size:13px; font-weight:700; color:rgba(140,200,255,0.9); letter-spacing:2px; }
+        .trade-creator-close { background:rgba(255,255,255,0.06); color:#8892a8; border:1px solid rgba(255,255,255,0.06); padding:6px 14px; border-radius:16px; font-size:11px; font-weight:700; cursor:pointer; }
+        .trade-creator-body { flex:1; overflow-y:auto; padding:12px; }
+        .trade-section-label { font-family:'Chakra Petch',sans-serif; font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:rgba(140,190,240,0.5); margin:12px 0 6px; }
+        .trade-selected-cards { display:flex; gap:6px; flex-wrap:wrap; min-height:60px; padding:8px; background:rgba(8,18,35,0.4); border:1px dashed rgba(40,120,200,0.15); border-radius:8px; margin-bottom:8px; }
+        .trade-selected-card { width:52px; aspect-ratio:0.686; border-radius:4px; overflow:hidden; position:relative; cursor:pointer; }
+        .trade-selected-card .card { width:100%!important; aspect-ratio:0.686!important; height:auto!important; }
+        .trade-selected-card .remove-x { position:absolute; top:1px; right:1px; width:16px; height:16px; background:rgba(200,40,40,0.8); color:#fff; border-radius:50%; font-size:10px; display:flex; align-items:center; justify-content:center; z-index:2; cursor:pointer; line-height:1; }
+        .trade-pick-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(52px,1fr)); gap:4px; max-height:200px; overflow-y:auto; padding:4px; background:rgba(8,18,35,0.3); border-radius:8px; border:1px solid rgba(40,120,200,0.06); }
+        .trade-pick-card { aspect-ratio:0.686; border-radius:4px; overflow:hidden; cursor:pointer; opacity:0.7; transition:opacity 0.15s,transform 0.15s; }
+        .trade-pick-card:active { transform:scale(0.95); }
+        .trade-pick-card.picked { opacity:1; outline:2px solid rgba(0,212,255,0.6); }
+        .trade-pick-card .card { width:100%!important; aspect-ratio:0.686!important; height:auto!important; }
+        .trade-dd-input { display:flex; align-items:center; gap:8px; margin:8px 0; }
+        .trade-dd-input label { font-size:12px; color:rgba(140,190,240,0.6); white-space:nowrap; }
+        .trade-dd-input input { flex:1; background:rgba(8,18,35,0.65); border:1px solid rgba(40,120,200,0.1); border-radius:6px; color:rgba(200,220,255,0.9); font-family:'Nunito',sans-serif; font-size:14px; padding:8px 10px; max-width:120px; }
+        .trade-post-btn { width:100%; padding:12px; margin-top:16px; background:linear-gradient(135deg,#1050a0,#1878d0,#2090ff); color:#fff; border:1px solid rgba(40,150,255,0.2); border-radius:8px; font-weight:800; font-size:14px; cursor:pointer; font-family:'Nunito',sans-serif; }
+        .trade-post-btn:disabled { opacity:0.4; cursor:not-allowed; }
+        .trade-msg { text-align:center; padding:8px; font-size:12px; font-weight:700; border-radius:6px; margin:8px 0; }
+
     </style>
 </head>
 <body>
@@ -2622,24 +2837,27 @@
         <!-- Water environment -->
         <div class="water-bg"></div>
         <div class="water-caustics"></div>
+        <div class="water-rays"></div>
         <div class="water-particles"></div>
 
         <!-- Hero + side menus -->
         <div class="title-main-row">
             <div class="menu-col">
+                <button class="menu-tile" onclick="showScreen('howto-screen')">How to Play</button>
                 <button class="menu-tile" onclick="showScreen('collection-screen')">Collection</button>
                 <button class="menu-tile" onclick="showScreen('pack-screen')">Store</button>
                 <button class="menu-tile" onclick="showScreen('deckbuilder-screen')">Deck Builder</button>
-                <button class="menu-tile" onclick="showScreen('howto-screen')">How to Play</button>
+                <button class="menu-tile" onclick="showScreen('mp-lobby')">Multiplayer</button>
             </div>
             <div class="title-hero">
                 <img class="title-logo-img" src="https://raw.githubusercontent.com/stuart5915/inclawbate-apps/master/apps/card-art/logo.jpg" alt="Crustacean Combat">
                 <div class="title-tagline">Battle. Collect. Dominate the Reef.</div>
             </div>
             <div class="menu-col">
-                <button class="menu-tile" onclick="showScreen('mp-lobby')">Multiplayer</button>
                 <button class="menu-tile" onclick="showProfile()">Profile</button>
                 <button class="menu-tile" onclick="showScreen('gallery-screen')">Gallery</button>
+                <button class="menu-tile" onclick="showScreen('trade-screen')">Trade Hub</button>
+                <button class="menu-tile" onclick="showScreen('market-screen')">Marketplace</button>
                 <button class="menu-tile" onclick="openStore()">Buy $DD</button>
             </div>
         </div>
@@ -2878,11 +3096,20 @@
         <div class="trap-prompt-overlay" id="trap-prompt">
             <div class="trap-prompt-box">
                 <div class="trap-prompt-title">Activate Trap?</div>
-                <div class="trap-prompt-card-area" id="trap-prompt-card"></div>
+                <div class="trap-prompt-cards-row">
+                    <div class="trap-prompt-card-col">
+                        <div class="trap-prompt-card-label trigger-label">Played</div>
+                        <div class="trap-prompt-card-area" id="trap-trigger-card"></div>
+                    </div>
+                    <div class="trap-prompt-card-col">
+                        <div class="trap-prompt-card-label response-label">Your Response</div>
+                        <div class="trap-prompt-card-area" id="trap-prompt-card"></div>
+                    </div>
+                </div>
                 <div class="trap-prompt-desc" id="trap-prompt-desc"></div>
                 <div class="trap-prompt-buttons">
                     <button class="trap-prompt-btn trap-yes" id="trap-yes-btn">Activate</button>
-                    <button class="trap-prompt-btn trap-no" id="trap-no-btn">No</button>
+                    <button class="trap-prompt-btn trap-no" id="trap-no-btn">Skip</button>
                 </div>
             </div>
         </div>
@@ -2894,6 +3121,11 @@
             <div class="game-over-text" id="game-over-text"></div>
             <div class="game-over-reward" id="game-over-reward"></div>
             <button class="game-over-btn" onclick="showScreen('title-screen')">Return to Menu</button>
+        </div>
+        <div class="gy-overlay" id="gy-overlay">
+            <div class="gy-overlay-title" id="gy-overlay-title">Graveyard</div>
+            <div class="gy-grid" id="gy-overlay-grid"></div>
+            <button class="gy-close-btn" onclick="document.getElementById('gy-overlay').classList.remove('active')">Close</button>
         </div>
     </div>
 
@@ -2920,6 +3152,83 @@
         <div class="store-toast-label">$DD added to your balance</div>
     </div>
 
+    <!-- ===== TRADE HUB SCREEN ===== -->
+    <div id="trade-screen" class="screen" style="position:relative;">
+        <div class="header-bar">
+            <button class="back-btn" onclick="showScreen('title-screen')">← Back</button>
+            <h2>Trade Hub</h2>
+        </div>
+        <div class="trade-tabs">
+            <div class="trade-tab active" onclick="switchTradeTab('browse')" id="trade-tab-browse">Browse</div>
+            <div class="trade-tab" onclick="switchTradeTab('mine')" id="trade-tab-mine">My Trades</div>
+        </div>
+        <div class="trade-search-bar">
+            <input type="text" id="trade-search-card" placeholder="Search by card name..." oninput="loadTradeListings()">
+            <input type="text" id="trade-search-user" placeholder="Wallet or player name..." oninput="loadTradeListings()">
+        </div>
+        <div class="trade-create-bar">
+            <button class="trade-create-btn" onclick="openTradeCreator()">+ Create Trade</button>
+        </div>
+        <div class="trade-list" id="trade-list"></div>
+        <div class="trade-creator" id="trade-creator">
+            <div class="trade-creator-header">
+                <span>CREATE TRADE</span>
+                <button class="trade-creator-close" onclick="closeTradeCreator()">Cancel</button>
+            </div>
+            <div class="trade-creator-body">
+                <div class="trade-section-label">CARDS YOU'RE OFFERING</div>
+                <div class="trade-selected-cards" id="trade-offer-selected"></div>
+                <div class="trade-pick-grid" id="trade-offer-grid"></div>
+                <div class="trade-section-label">CARDS YOU WANT</div>
+                <div class="trade-selected-cards" id="trade-want-selected"></div>
+                <div class="trade-pick-grid" id="trade-want-grid"></div>
+                <div class="trade-msg" id="trade-creator-msg" style="display:none;"></div>
+                <button class="trade-post-btn" id="trade-post-btn" onclick="postTradeListing()">Post Trade</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MARKETPLACE SCREEN ===== -->
+    <div id="market-screen" class="screen" style="position:relative;">
+        <div class="header-bar">
+            <button class="back-btn" onclick="showScreen('title-screen')">← Back</button>
+            <h2>Marketplace</h2>
+            <div class="trade-coins-display" id="market-coins">$DD 0</div>
+        </div>
+        <div class="trade-tabs">
+            <div class="trade-tab active" onclick="switchMarketTab('browse')" id="market-tab-browse">Browse</div>
+            <div class="trade-tab" onclick="switchMarketTab('mine')" id="market-tab-mine">My Listings</div>
+        </div>
+        <div class="trade-search-bar">
+            <input type="text" id="market-search-card" placeholder="Search by card name..." oninput="loadMarketListings()">
+            <input type="text" id="market-search-user" placeholder="Wallet or player name..." oninput="loadMarketListings()">
+        </div>
+        <div class="trade-create-bar">
+            <button class="trade-create-btn" onclick="openMarketCreator()">+ Sell Cards</button>
+        </div>
+        <div class="trade-list" id="market-list"></div>
+        <div class="trade-creator" id="market-creator">
+            <div class="trade-creator-header">
+                <span>SELL CARDS</span>
+                <button class="trade-creator-close" onclick="closeMarketCreator()">Cancel</button>
+            </div>
+            <div class="trade-creator-body">
+                <div class="trade-section-label">CARDS TO SELL</div>
+                <div class="trade-selected-cards" id="market-sell-selected"></div>
+                <div class="trade-pick-grid" id="market-sell-grid"></div>
+                <div class="trade-section-label">ASKING PRICE ($DD)</div>
+                <div class="trade-dd-input">
+                    <label>Price:</label>
+                    <input type="number" id="market-price-input" min="1" value="100" placeholder="100">
+                    <label>$DD</label>
+                </div>
+                <div style="font-size:9px;color:rgba(140,190,240,0.3);margin-top:2px;">Set the total $DD price buyers will pay for these cards.</div>
+                <div class="trade-msg" id="market-creator-msg" style="display:none;"></div>
+                <button class="trade-post-btn" id="market-post-btn" onclick="postMarketListing()">List for Sale</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== PROFILE SCREEN ===== -->
     <div id="profile-screen" class="screen">
         <div class="header-bar">
@@ -2928,8 +3237,8 @@
         </div>
         <div style="overflow-y:auto;flex:1;padding-bottom:20px;" id="profile-content"></div>
         <div class="profile-lookup">
-            <input type="text" id="profile-lookup-input" placeholder="Enter wallet address to view profile...">
-            <button onclick="lookupProfile()">View</button>
+            <input type="text" id="profile-lookup-input" placeholder="Search by wallet address or display name...">
+            <button onclick="lookupProfile()">Search</button>
         </div>
     </div>
 
@@ -4051,7 +4360,8 @@ function renderOwnProfile() {
             <div class="profile-info">
                 <div class="profile-name">${displayName}</div>
                 <div class="profile-wallet-addr">${wallet}</div>
-                <input class="profile-name-edit" id="profile-name-input" placeholder="Display name..." value="${playerData.profileName||''}" maxlength="20">
+                <input class="profile-name-edit" id="profile-name-input" placeholder="Display name (unique)..." value="${playerData.profileName||''}" maxlength="20">
+                <div style="font-size:9px;color:rgba(140,190,240,0.35);margin-top:2px;">Display names must be unique — others can find you by name</div>
             </div>
         </div>
         <div class="profile-public-toggle">
@@ -4086,54 +4396,85 @@ function toggleProfilePublic() {
     sw.classList.toggle('on');
 }
 
-function saveProfile() {
+async function saveProfile() {
     const name = document.getElementById('profile-name-input').value.trim().slice(0,20);
     const isPublic = document.getElementById('profile-public-switch').classList.contains('on');
+    const oldName = playerData.profileName || '';
+
+    // Check display name uniqueness if name changed and is non-empty
+    if (name && name.toLowerCase() !== oldName.toLowerCase() && window.AppDB) {
+        try {
+            const existing = await window.AppDB.getGlobal('ccname_' + name.toLowerCase());
+            if (existing && existing !== (connectedWallet || '').toLowerCase()) {
+                showProfileMsg('That display name is already taken.', true);
+                return;
+            }
+        } catch(e) {}
+    }
+
+    // Release old name claim
+    if (oldName && oldName.toLowerCase() !== name.toLowerCase() && connectedWallet && window.AppDB) {
+        window.AppDB.deleteGlobal('ccname_' + oldName.toLowerCase()).catch(()=>{});
+    }
+
     playerData.profileName = name;
     playerData.profilePublic = isPublic;
     checkAchievements();
     saveData();
 
-    if (isPublic && connectedWallet && window.AppDB) {
-        const owned = Object.values(playerData.collection).filter(v=>v>0).length;
-        const pubData = {
-            name: name || connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4),
-            wallet: connectedWallet,
-            stats: { ...playerData.stats },
-            cards: owned,
-            achievements: playerData.achievements || [],
-            updated: Date.now()
-        };
-        window.AppDB.setGlobal('profile_'+connectedWallet.toLowerCase(), pubData).catch(()=>{});
-    } else if (!isPublic && connectedWallet && window.AppDB) {
-        window.AppDB.deleteGlobal('profile_'+connectedWallet.toLowerCase()).catch(()=>{});
+    if (connectedWallet && window.AppDB) {
+        // Register new name
+        if (name) {
+            window.AppDB.setGlobal('ccname_' + name.toLowerCase(), connectedWallet.toLowerCase()).catch(()=>{});
+        }
+
+        if (isPublic) {
+            const owned = Object.values(playerData.collection).filter(v=>v>0).length;
+            const pubData = {
+                name: name || connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4),
+                wallet: connectedWallet,
+                stats: { ...playerData.stats },
+                cards: owned,
+                achievements: playerData.achievements || [],
+                updated: Date.now()
+            };
+            window.AppDB.setGlobal('profile_'+connectedWallet.toLowerCase(), pubData).catch(()=>{});
+        } else {
+            window.AppDB.deleteGlobal('profile_'+connectedWallet.toLowerCase()).catch(()=>{});
+        }
     }
 
+    showProfileMsg('Profile saved!', false);
     renderOwnProfile();
 }
 
 async function lookupProfile() {
     const input = document.getElementById('profile-lookup-input').value.trim();
-    if (!input || input.length < 10) return;
-    const addr = input.toLowerCase();
-
-    if (connectedWallet && addr === connectedWallet.toLowerCase()) {
-        showProfile();
-        return;
-    }
+    if (!input || input.length < 2) return;
 
     if (!window.AppDB) {
         renderViewedProfileError('AppDB not available — profiles require inclawbate.com');
         return;
     }
 
+    const isWallet = /^0x[a-fA-F0-9]{40}$/.test(input);
+
     try {
-        const data = await window.AppDB.getGlobal('profile_'+addr);
-        if (!data) {
-            renderViewedProfileError('No public profile found for this wallet.');
-            return;
+        if (isWallet) {
+            const addr = input.toLowerCase();
+            if (connectedWallet && addr === connectedWallet.toLowerCase()) { showProfile(); return; }
+            const data = await window.AppDB.getGlobal('profile_' + addr);
+            if (!data) { renderViewedProfileError('No public profile found for this wallet.'); return; }
+            renderViewedProfile(data);
+        } else {
+            const nameKey = 'ccname_' + input.toLowerCase();
+            const wallet = await window.AppDB.getGlobal(nameKey);
+            if (!wallet) { renderViewedProfileError('No player found with that display name.'); return; }
+            if (connectedWallet && wallet === connectedWallet.toLowerCase()) { showProfile(); return; }
+            const data = await window.AppDB.getGlobal('profile_' + wallet);
+            if (!data) { renderViewedProfileError('Player found but their profile is not public.'); return; }
+            renderViewedProfile(data);
         }
-        renderViewedProfile(data);
     } catch(e) {
         renderViewedProfileError('Failed to load profile.');
     }
@@ -4181,6 +4522,642 @@ function renderViewedProfileError(msg) {
     el.innerHTML = `<div style="text-align:center;padding:40px 20px;color:rgba(226,232,240,0.5);font-size:14px;">${msg}</div>`;
 }
 
+function showProfileMsg(msg, isError) {
+    let el = document.getElementById('profile-msg');
+    if (!el) {
+        el = document.createElement('div');
+        el.id = 'profile-msg';
+        const content = document.getElementById('profile-content');
+        content.parentNode.insertBefore(el, content);
+    }
+    el.style.cssText = 'text-align:center;padding:8px 12px;margin:0 12px;border-radius:6px;font-size:12px;font-weight:700;transition:opacity 0.3s;';
+    el.style.background = isError ? 'rgba(200,40,40,0.15)' : 'rgba(40,140,220,0.15)';
+    el.style.color = isError ? '#ff6b6b' : 'rgba(140,200,255,0.9)';
+    el.style.border = isError ? '1px solid rgba(200,40,40,0.2)' : '1px solid rgba(40,140,220,0.2)';
+    el.textContent = msg;
+    el.style.opacity = '1';
+    setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { if (el.parentNode) el.remove(); }, 300); }, 3000);
+}
+
+// ============================================================
+// TRADE HUB
+// ============================================================
+let tradeTab = 'browse';
+let tradeOfferCards = [];
+let tradeWantCards = [];
+
+function switchTradeTab(tab) {
+    tradeTab = tab;
+    document.getElementById('trade-tab-browse').classList.toggle('active', tab === 'browse');
+    document.getElementById('trade-tab-mine').classList.toggle('active', tab === 'mine');
+    loadTradeListings();
+}
+
+function renderTradeHub() {
+    tradeTab = 'browse';
+    document.getElementById('trade-tab-browse').classList.add('active');
+    document.getElementById('trade-tab-mine').classList.remove('active');
+    loadTradeListings();
+}
+
+async function loadTradeListings() {
+    const list = document.getElementById('trade-list');
+    list.innerHTML = '<div class="trade-empty">Loading...</div>';
+
+    if (!window.AppDB) {
+        list.innerHTML = '<div class="trade-empty">Trade Hub requires inclawbate.com</div>';
+        return;
+    }
+
+    const cardQ = (document.getElementById('trade-search-card').value || '').trim().toLowerCase();
+    const userQ = (document.getElementById('trade-search-user').value || '').trim().toLowerCase();
+
+    try {
+        const all = await window.AppDB.listGlobal();
+        const myWallet = (connectedWallet || '').toLowerCase();
+        let trades = all
+            .filter(e => e.key.startsWith('cctrade_') && e.value && e.value.status === 'open')
+            .map(e => e.value)
+            .sort((a, b) => (b.created || 0) - (a.created || 0));
+
+        if (tradeTab === 'mine') {
+            trades = trades.filter(t => t.seller.wallet === myWallet);
+        } else {
+            trades = trades.filter(t => t.seller.wallet !== myWallet);
+        }
+
+        if (cardQ) {
+            trades = trades.filter(t => {
+                const allIds = [...(t.offering || []), ...(t.wanting || [])];
+                return allIds.some(cid => {
+                    const c = CARDS.find(x => x.id === cid);
+                    return c && c.name.toLowerCase().includes(cardQ);
+                });
+            });
+        }
+        if (userQ) {
+            trades = trades.filter(t =>
+                t.seller.name.toLowerCase().includes(userQ) ||
+                t.seller.wallet.includes(userQ)
+            );
+        }
+
+        if (trades.length === 0) {
+            list.innerHTML = `<div class="trade-empty">${tradeTab === 'mine' ? 'You have no active trades.' : 'No trades found.'}</div>`;
+            return;
+        }
+        list.innerHTML = trades.map(t => renderTradeListing(t, myWallet)).join('');
+    } catch(e) {
+        list.innerHTML = '<div class="trade-empty">Failed to load trades.</div>';
+    }
+}
+
+function renderTradeListing(trade, myWallet) {
+    const isMine = trade.seller.wallet === myWallet;
+    const timeAgo = getTimeAgo(trade.created);
+
+    const offerCards = (trade.offering || []).map(cid => {
+        const card = CARDS.find(c => c.id === cid);
+        if (!card) return '';
+        return `<div class="trade-card-mini" onclick="showCardDetail(${cid})">${renderCard(card)}</div>`;
+    }).join('');
+
+    const wantCards = (trade.wanting || []).map(cid => {
+        const card = CARDS.find(c => c.id === cid);
+        if (!card) return '';
+        return `<div class="trade-card-mini" onclick="showCardDetail(${cid})">${renderCard(card)}</div>`;
+    }).join('');
+
+    const wantSide = wantCards || '<span style="font-size:10px;color:rgba(140,190,240,0.3);">Accepting any offer</span>';
+
+    let actions = '';
+    if (isMine) {
+        actions = `<div class="trade-listing-actions"><button class="trade-cancel-btn" style="flex:1" onclick="cancelListing('${trade.id}')">Cancel Listing</button></div>`;
+    } else {
+        const hasCards = (trade.wanting || []).every(cid => (playerData.collection[cid] || 0) > 0);
+        actions = `<div class="trade-listing-actions"><button class="trade-accept-btn" ${hasCards ? '' : 'disabled style="opacity:0.4;cursor:not-allowed;"'} onclick="acceptTrade('${trade.id}')">Accept Trade</button></div>`;
+        if (!hasCards) {
+            actions += '<div style="font-size:9px;color:#ff6b6b;text-align:center;margin-top:4px;">missing required cards</div>';
+        }
+    }
+
+    return `<div class="trade-listing">
+        <div class="trade-listing-header">
+            <div class="trade-listing-user">${trade.seller.name}</div>
+            <div class="trade-listing-time">${timeAgo}</div>
+        </div>
+        <div class="trade-listing-body">
+            <div class="trade-listing-side">
+                <div class="trade-listing-label">Offering</div>
+                <div class="trade-card-row">${offerCards}</div>
+            </div>
+            <div class="trade-listing-arrow">⇄</div>
+            <div class="trade-listing-side">
+                <div class="trade-listing-label">Wants</div>
+                <div class="trade-card-row">${wantSide}</div>
+            </div>
+        </div>
+        ${actions}
+    </div>`;
+}
+
+function renderMarketListing(listing, myWallet) {
+    const isMine = listing.seller.wallet === myWallet;
+    const timeAgo = getTimeAgo(listing.created);
+
+    const cards = (listing.cards || []).map(cid => {
+        const card = CARDS.find(c => c.id === cid);
+        if (!card) return '';
+        return `<div class="trade-card-mini" onclick="showCardDetail(${cid})">${renderCard(card)}</div>`;
+    }).join('');
+
+    let actions = '';
+    if (isMine) {
+        actions = `<div class="trade-listing-actions"><button class="trade-cancel-btn" style="flex:1" onclick="cancelListing('${listing.id}')">Cancel Listing</button></div>`;
+    } else {
+        const canAfford = playerData.coins >= listing.price;
+        actions = `<div class="trade-listing-actions"><button class="market-buy-btn" style="flex:1" ${canAfford ? '' : 'disabled style="flex:1;opacity:0.4;cursor:not-allowed;"'} onclick="buyMarketListing('${listing.id}')">Buy for ${listing.price} $DD</button></div>`;
+        if (!canAfford) actions += '<div style="font-size:9px;color:#ff6b6b;text-align:center;margin-top:4px;">not enough $DD</div>';
+    }
+
+    return `<div class="market-listing">
+        <div class="market-listing-header">
+            <div class="trade-listing-user">${listing.seller.name}</div>
+            <div class="trade-listing-time">${timeAgo}</div>
+        </div>
+        <div class="market-listing-body">
+            <div class="market-cards-area">
+                <div class="trade-listing-label">Selling</div>
+                <div class="trade-card-row">${cards}</div>
+            </div>
+            <div class="market-price-area">
+                <div class="market-price-label">Price</div>
+                <div class="market-price">${listing.price}</div>
+                <div class="market-price-label">$DD</div>
+            </div>
+        </div>
+        ${actions}
+    </div>`;
+}
+
+function getTimeAgo(ts) {
+    if (!ts) return '';
+    const diff = Date.now() - ts;
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'just now';
+    if (mins < 60) return mins + 'm ago';
+    const hrs = Math.floor(mins / 60);
+    if (hrs < 24) return hrs + 'h ago';
+    const days = Math.floor(hrs / 24);
+    return days + 'd ago';
+}
+
+// ---- Trade Creator ----
+function openTradeCreator() {
+    if (!connectedWallet) { alert('Connect your wallet to create trades.'); return; }
+    tradeOfferCards = [];
+    tradeWantCards = [];
+    document.getElementById('trade-creator').classList.add('open');
+    renderTradeCreatorGrids();
+}
+
+function closeTradeCreator() {
+    document.getElementById('trade-creator').classList.remove('open');
+}
+
+function renderTradeCreatorGrids() {
+    const offerGrid = document.getElementById('trade-offer-grid');
+    const owned = Object.keys(playerData.collection).map(Number).filter(id => playerData.collection[id] > 0);
+    offerGrid.innerHTML = owned.map(cid => {
+        const card = CARDS.find(c => c.id === cid);
+        if (!card) return '';
+        const picked = tradeOfferCards.includes(cid);
+        return `<div class="trade-pick-card${picked ? ' picked' : ''}" onclick="toggleTradeOffer(${cid})">${renderCard(card)}</div>`;
+    }).join('');
+
+    const wantGrid = document.getElementById('trade-want-grid');
+    wantGrid.innerHTML = CARDS.map(card => {
+        const picked = tradeWantCards.includes(card.id);
+        return `<div class="trade-pick-card${picked ? ' picked' : ''}" onclick="toggleTradeWant(${card.id})">${renderCard(card)}</div>`;
+    }).join('');
+
+    renderTradeSelections();
+}
+
+function toggleTradeOffer(cid) {
+    const idx = tradeOfferCards.indexOf(cid);
+    if (idx >= 0) {
+        tradeOfferCards.splice(idx, 1);
+    } else {
+        const selectedCount = tradeOfferCards.filter(id => id === cid).length;
+        if (selectedCount >= (playerData.collection[cid] || 0)) return;
+        if (tradeOfferCards.length >= 10) return;
+        tradeOfferCards.push(cid);
+    }
+    renderTradeCreatorGrids();
+}
+
+function toggleTradeWant(cid) {
+    const idx = tradeWantCards.indexOf(cid);
+    if (idx >= 0) { tradeWantCards.splice(idx, 1); }
+    else { if (tradeWantCards.length >= 10) return; tradeWantCards.push(cid); }
+    renderTradeCreatorGrids();
+}
+
+function removeTradeOffer(cid) {
+    const idx = tradeOfferCards.indexOf(cid);
+    if (idx >= 0) tradeOfferCards.splice(idx, 1);
+    renderTradeCreatorGrids();
+}
+
+function removeTradeWant(cid) {
+    const idx = tradeWantCards.indexOf(cid);
+    if (idx >= 0) tradeWantCards.splice(idx, 1);
+    renderTradeCreatorGrids();
+}
+
+function renderTradeSelections() {
+    const offerEl = document.getElementById('trade-offer-selected');
+    const wantEl = document.getElementById('trade-want-selected');
+
+    offerEl.innerHTML = tradeOfferCards.length === 0
+        ? '<span style="font-size:10px;color:rgba(140,190,240,0.3);align-self:center;">Tap cards below to add</span>'
+        : tradeOfferCards.map(cid => {
+            const card = CARDS.find(c => c.id === cid);
+            if (!card) return '';
+            return `<div class="trade-selected-card">${renderCard(card)}<div class="remove-x" onclick="event.stopPropagation();removeTradeOffer(${cid})">×</div></div>`;
+        }).join('');
+
+    wantEl.innerHTML = tradeWantCards.length === 0
+        ? '<span style="font-size:10px;color:rgba(140,190,240,0.3);align-self:center;">Tap cards below to add (optional)</span>'
+        : tradeWantCards.map(cid => {
+            const card = CARDS.find(c => c.id === cid);
+            if (!card) return '';
+            return `<div class="trade-selected-card">${renderCard(card)}<div class="remove-x" onclick="event.stopPropagation();removeTradeWant(${cid})">×</div></div>`;
+        }).join('');
+
+    document.getElementById('trade-post-btn').disabled = tradeOfferCards.length === 0;
+}
+
+async function postTradeListing() {
+    if (tradeOfferCards.length === 0) return;
+    if (!connectedWallet) { alert('Connect wallet first.'); return; }
+    if (!window.AppDB) { alert('Trade Hub requires inclawbate.com'); return; }
+
+    const displayName = playerData.profileName || connectedWallet.slice(0, 6) + '...' + connectedWallet.slice(-4);
+    const trade = {
+        id: 'cctrade_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+        seller: { wallet: connectedWallet.toLowerCase(), name: displayName },
+        offering: [...tradeOfferCards],
+        wanting: [...tradeWantCards],
+        created: Date.now(),
+        status: 'open'
+    };
+
+    for (const cid of trade.offering) {
+        playerData.collection[cid] = (playerData.collection[cid] || 0) - 1;
+        if (playerData.collection[cid] < 0) playerData.collection[cid] = 0;
+    }
+    saveData();
+
+    try {
+        await window.AppDB.setGlobal(trade.id, trade);
+        closeTradeCreator();
+        switchTradeTab('mine');
+    } catch(e) {
+        for (const cid of trade.offering) { playerData.collection[cid] = (playerData.collection[cid] || 0) + 1; }
+        saveData();
+        showCreatorMsg('trade-creator-msg', 'Failed to post trade. Try again.', true);
+    }
+}
+
+// ============================================================
+// MARKETPLACE
+// ============================================================
+let marketTab = 'browse';
+let marketSellCards = [];
+
+function switchMarketTab(tab) {
+    marketTab = tab;
+    document.getElementById('market-tab-browse').classList.toggle('active', tab === 'browse');
+    document.getElementById('market-tab-mine').classList.toggle('active', tab === 'mine');
+    loadMarketListings();
+}
+
+function renderMarketplace() {
+    updateCoinsDisplay();
+    marketTab = 'browse';
+    document.getElementById('market-tab-browse').classList.add('active');
+    document.getElementById('market-tab-mine').classList.remove('active');
+    loadMarketListings();
+}
+
+async function loadMarketListings() {
+    const list = document.getElementById('market-list');
+    list.innerHTML = '<div class="trade-empty">Loading...</div>';
+
+    if (!window.AppDB) {
+        list.innerHTML = '<div class="trade-empty">Marketplace requires inclawbate.com</div>';
+        return;
+    }
+
+    const cardQ = (document.getElementById('market-search-card').value || '').trim().toLowerCase();
+    const userQ = (document.getElementById('market-search-user').value || '').trim().toLowerCase();
+
+    try {
+        const all = await window.AppDB.listGlobal();
+        const myWallet = (connectedWallet || '').toLowerCase();
+        let listings = all
+            .filter(e => e.key.startsWith('ccmarket_') && e.value && e.value.status === 'open')
+            .map(e => e.value)
+            .sort((a, b) => (b.created || 0) - (a.created || 0));
+
+        if (marketTab === 'mine') {
+            listings = listings.filter(t => t.seller.wallet === myWallet);
+        } else {
+            listings = listings.filter(t => t.seller.wallet !== myWallet);
+        }
+
+        if (cardQ) {
+            listings = listings.filter(t =>
+                (t.cards || []).some(cid => {
+                    const c = CARDS.find(x => x.id === cid);
+                    return c && c.name.toLowerCase().includes(cardQ);
+                })
+            );
+        }
+        if (userQ) {
+            listings = listings.filter(t =>
+                t.seller.name.toLowerCase().includes(userQ) ||
+                t.seller.wallet.includes(userQ)
+            );
+        }
+
+        if (listings.length === 0) {
+            list.innerHTML = `<div class="trade-empty">${marketTab === 'mine' ? 'You have no active listings.' : 'No listings found.'}</div>`;
+            return;
+        }
+        list.innerHTML = listings.map(t => renderMarketListing(t, myWallet)).join('');
+    } catch(e) {
+        list.innerHTML = '<div class="trade-empty">Failed to load listings.</div>';
+    }
+}
+
+// ---- Market Creator ----
+function openMarketCreator() {
+    if (!connectedWallet) { alert('Connect your wallet to sell cards.'); return; }
+    marketSellCards = [];
+    document.getElementById('market-price-input').value = '100';
+    document.getElementById('market-creator').classList.add('open');
+    renderMarketCreatorGrid();
+}
+
+function closeMarketCreator() {
+    document.getElementById('market-creator').classList.remove('open');
+}
+
+function renderMarketCreatorGrid() {
+    const grid = document.getElementById('market-sell-grid');
+    const owned = Object.keys(playerData.collection).map(Number).filter(id => playerData.collection[id] > 0);
+    grid.innerHTML = owned.map(cid => {
+        const card = CARDS.find(c => c.id === cid);
+        if (!card) return '';
+        const picked = marketSellCards.includes(cid);
+        return `<div class="trade-pick-card${picked ? ' picked' : ''}" onclick="toggleMarketSell(${cid})">${renderCard(card)}</div>`;
+    }).join('');
+    renderMarketSelections();
+}
+
+function toggleMarketSell(cid) {
+    const idx = marketSellCards.indexOf(cid);
+    if (idx >= 0) {
+        marketSellCards.splice(idx, 1);
+    } else {
+        const selectedCount = marketSellCards.filter(id => id === cid).length;
+        if (selectedCount >= (playerData.collection[cid] || 0)) return;
+        if (marketSellCards.length >= 10) return;
+        marketSellCards.push(cid);
+    }
+    renderMarketCreatorGrid();
+}
+
+function removeMarketSell(cid) {
+    const idx = marketSellCards.indexOf(cid);
+    if (idx >= 0) marketSellCards.splice(idx, 1);
+    renderMarketCreatorGrid();
+}
+
+function renderMarketSelections() {
+    const el = document.getElementById('market-sell-selected');
+    el.innerHTML = marketSellCards.length === 0
+        ? '<span style="font-size:10px;color:rgba(140,190,240,0.3);align-self:center;">Tap cards below to add</span>'
+        : marketSellCards.map(cid => {
+            const card = CARDS.find(c => c.id === cid);
+            if (!card) return '';
+            return `<div class="trade-selected-card">${renderCard(card)}<div class="remove-x" onclick="event.stopPropagation();removeMarketSell(${cid})">×</div></div>`;
+        }).join('');
+    document.getElementById('market-post-btn').disabled = marketSellCards.length === 0;
+}
+
+async function postMarketListing() {
+    if (marketSellCards.length === 0) return;
+    if (!connectedWallet) { alert('Connect wallet first.'); return; }
+    if (!window.AppDB) { alert('Marketplace requires inclawbate.com'); return; }
+
+    const price = Math.max(1, parseInt(document.getElementById('market-price-input').value) || 0);
+    if (price < 1) { showCreatorMsg('market-creator-msg', 'Price must be at least 1 $DD.', true); return; }
+
+    const displayName = playerData.profileName || connectedWallet.slice(0, 6) + '...' + connectedWallet.slice(-4);
+    const listing = {
+        id: 'ccmarket_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+        seller: { wallet: connectedWallet.toLowerCase(), name: displayName },
+        cards: [...marketSellCards],
+        price: price,
+        created: Date.now(),
+        status: 'open'
+    };
+
+    for (const cid of listing.cards) {
+        playerData.collection[cid] = (playerData.collection[cid] || 0) - 1;
+        if (playerData.collection[cid] < 0) playerData.collection[cid] = 0;
+    }
+    saveData();
+
+    try {
+        await window.AppDB.setGlobal(listing.id, listing);
+        closeMarketCreator();
+        switchMarketTab('mine');
+    } catch(e) {
+        for (const cid of listing.cards) { playerData.collection[cid] = (playerData.collection[cid] || 0) + 1; }
+        saveData();
+        showCreatorMsg('market-creator-msg', 'Failed to list cards. Try again.', true);
+    }
+}
+
+async function buyMarketListing(listingId) {
+    if (!connectedWallet) { alert('Connect wallet first.'); return; }
+    if (!window.AppDB) return;
+
+    try {
+        const listing = await window.AppDB.getGlobal(listingId);
+        if (!listing || listing.status !== 'open') {
+            alert('This listing is no longer available.');
+            loadMarketListings();
+            return;
+        }
+
+        if (playerData.coins < listing.price) { alert('Not enough $DD.'); return; }
+
+        playerData.coins -= listing.price;
+
+        for (const cid of listing.cards) {
+            playerData.collection[cid] = (playerData.collection[cid] || 0) + 1;
+            if (!playerData.collectedDates[cid]) playerData.collectedDates[cid] = Date.now();
+        }
+        saveData();
+
+        const claimData = {
+            tradeId: listing.id,
+            cards: [],
+            dd: listing.price,
+            from: connectedWallet.toLowerCase(),
+            fromName: playerData.profileName || connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4),
+            created: Date.now()
+        };
+        const sellerClaimsKey = 'ccclaims_' + listing.seller.wallet;
+        let claims = [];
+        try { claims = (await window.AppDB.getGlobal(sellerClaimsKey)) || []; } catch(e) {}
+        claims.push(claimData);
+        await window.AppDB.setGlobal(sellerClaimsKey, claims);
+
+        await window.AppDB.deleteGlobal(listingId);
+
+        alert('Purchase complete! Cards added to your collection.');
+        loadMarketListings();
+        updateCoinsDisplay();
+    } catch(e) {
+        alert('Purchase failed. Please try again.');
+    }
+}
+
+// ---- Shared: cancel, accept, claims ----
+function refreshActiveListings() {
+    if (document.getElementById('market-screen').classList.contains('active')) loadMarketListings();
+    else loadTradeListings();
+}
+
+async function cancelListing(listingId) {
+    if (!window.AppDB) return;
+
+    try {
+        const listing = await window.AppDB.getGlobal(listingId);
+        if (!listing) return;
+        if (listing.seller.wallet !== (connectedWallet || '').toLowerCase()) return;
+
+        const cards = listing.offering || listing.cards || [];
+        for (const cid of cards) {
+            playerData.collection[cid] = (playerData.collection[cid] || 0) + 1;
+        }
+        saveData();
+
+        await window.AppDB.deleteGlobal(listingId);
+        refreshActiveListings();
+    } catch(e) {
+        alert('Failed to cancel listing.');
+    }
+}
+
+async function acceptTrade(tradeId) {
+    if (!connectedWallet) { alert('Connect wallet first.'); return; }
+    if (!window.AppDB) return;
+
+    try {
+        const trade = await window.AppDB.getGlobal(tradeId);
+        if (!trade || trade.status !== 'open') {
+            alert('This trade is no longer available.');
+            loadTradeListings();
+            return;
+        }
+
+        for (const cid of (trade.wanting || [])) {
+            if ((playerData.collection[cid] || 0) < 1) {
+                alert('You don\'t have all the required cards.');
+                return;
+            }
+        }
+
+        for (const cid of (trade.wanting || [])) {
+            playerData.collection[cid] = (playerData.collection[cid] || 0) - 1;
+            if (playerData.collection[cid] < 0) playerData.collection[cid] = 0;
+        }
+
+        for (const cid of trade.offering) {
+            playerData.collection[cid] = (playerData.collection[cid] || 0) + 1;
+            if (!playerData.collectedDates[cid]) playerData.collectedDates[cid] = Date.now();
+        }
+        saveData();
+
+        const claimData = {
+            tradeId: trade.id,
+            cards: trade.wanting || [],
+            dd: 0,
+            from: connectedWallet.toLowerCase(),
+            fromName: playerData.profileName || connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4),
+            created: Date.now()
+        };
+        const sellerClaimsKey = 'ccclaims_' + trade.seller.wallet;
+        let claims = [];
+        try { claims = (await window.AppDB.getGlobal(sellerClaimsKey)) || []; } catch(e) {}
+        claims.push(claimData);
+        await window.AppDB.setGlobal(sellerClaimsKey, claims);
+
+        await window.AppDB.deleteGlobal(tradeId);
+
+        alert('Trade accepted! Cards added to your collection.');
+        loadTradeListings();
+    } catch(e) {
+        alert('Trade failed. Please try again.');
+    }
+}
+
+async function checkTradeClaims() {
+    if (!connectedWallet || !window.AppDB) return;
+
+    const claimsKey = 'ccclaims_' + connectedWallet.toLowerCase();
+    let claims = [];
+    try { claims = (await window.AppDB.getGlobal(claimsKey)) || []; } catch(e) {}
+    if (claims.length === 0) return;
+
+    for (const claim of claims) {
+        for (const cid of (claim.cards || [])) {
+            playerData.collection[cid] = (playerData.collection[cid] || 0) + 1;
+            if (!playerData.collectedDates[cid]) playerData.collectedDates[cid] = Date.now();
+        }
+        if (claim.dd > 0) playerData.coins += claim.dd;
+    }
+
+    saveData();
+    updateCoinsDisplay();
+    await window.AppDB.deleteGlobal(claimsKey);
+
+    const totalCards = claims.reduce((sum, c) => sum + (c.cards || []).length, 0);
+    const totalDD = claims.reduce((sum, c) => sum + (c.dd || 0), 0);
+    const parts = [];
+    if (totalCards > 0) parts.push(totalCards + ' card' + (totalCards > 1 ? 's' : ''));
+    if (totalDD > 0) parts.push(totalDD + ' $DD');
+    if (parts.length > 0) alert('Trade completed! You received: ' + parts.join(' + '));
+}
+
+function showCreatorMsg(elId, msg, isError) {
+    const el = document.getElementById(elId);
+    el.style.display = 'block';
+    el.style.background = isError ? 'rgba(200,40,40,0.15)' : 'rgba(40,140,220,0.15)';
+    el.style.color = isError ? '#ff6b6b' : 'rgba(140,200,255,0.9)';
+    el.style.border = isError ? '1px solid rgba(200,40,40,0.2)' : '1px solid rgba(40,140,220,0.2)';
+    el.textContent = msg;
+    setTimeout(() => { el.style.display = 'none'; }, 3000);
+}
+
 // ============================================================
 // SCREENS
 // ============================================================
@@ -4226,12 +5203,16 @@ function showScreen(id) {
     if (id === 'deckbuilder-screen') renderDeckBuilder();
     if (id === 'profile-screen') renderOwnProfile();
     if (id === 'gallery-screen') renderGallery();
+    if (id === 'trade-screen') renderTradeHub();
+    if (id === 'market-screen') renderMarketplace();
 }
 
 function updateCoinsDisplay() {
     document.getElementById('title-coins').textContent = '$DD ' + playerData.coins;
     const pc = document.getElementById('pack-coins');
     if (pc) pc.textContent = '$DD ' + playerData.coins;
+    const mc = document.getElementById('market-coins');
+    if (mc) mc.textContent = '$DD ' + playerData.coins;
 }
 
 // ============================================================
@@ -5942,18 +6923,27 @@ function handleFieldMonsterClick(who, zoneIdx) {
                 buttons.push({ label: 'Activate Effect', cls: 'activate', action: () => activateMonsterEffect('player', zoneIdx) });
             }
 
-            if (fc.faceUp) {
-                buttons.push({ label: 'View Card', cls: 'position', action: () => { hideActionMenu(); showCardDetail(fc.card.id); } });
-            }
+            buttons.push({ label: 'View Card', cls: 'position', action: () => { hideActionMenu(); showCardDetail(fc.card.id); } });
             buttons.push({ label: 'Cancel', cls: 'cancel', action: hideActionMenu });
             showActionMenu(buttons);
         }
     }
 
-    // Clicking AI face-up monsters or player monsters during non-main phases: show view option
+    // Clicking AI face-up monsters: show view option
     if (who === 'ai') {
         const fc = duel.ai.monsters[zoneIdx];
         if (fc && fc.faceUp && duel.uiState !== 'selectAttackTarget') {
+            showActionMenu([
+                { label: 'View Card', cls: 'position', action: () => { hideActionMenu(); showCardDetail(fc.card.id); } },
+                { label: 'Cancel', cls: 'cancel', action: hideActionMenu }
+            ]);
+        }
+    }
+
+    // Player clicking own monster outside main phase (e.g. during battle or AI turn) to view
+    if (who === 'player' && (duel.currentPlayer !== 'player' || duel.phase !== 'main1') && duel.uiState === 'idle') {
+        const fc = duel.player.monsters[zoneIdx];
+        if (fc) {
             showActionMenu([
                 { label: 'View Card', cls: 'position', action: () => { hideActionMenu(); showCardDetail(fc.card.id); } },
                 { label: 'Cancel', cls: 'cancel', action: hideActionMenu }
@@ -6542,10 +7532,42 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
     const trap = traps[trapIdx];
     const overlay = document.getElementById('trap-prompt');
     const cardArea = document.getElementById('trap-prompt-card');
+    const triggerCardArea = document.getElementById('trap-trigger-card');
     const descEl = document.getElementById('trap-prompt-desc');
 
+    // Show what triggered the prompt
+    const triggerLabels = {
+        onOpponentAttack: 'Opponent is attacking!',
+        onSpellActivation: 'Spell activated!',
+        onOpponentSpecialSummon: 'Special summon!',
+        onAnyActivation: 'Card activated!',
+        onFlip: 'Flip summon!'
+    };
+    const titleEl = overlay.querySelector('.trap-prompt-title');
+    const triggerText = triggerLabels[trigger] || 'Activate trap?';
+    const remainingCount = traps.length - trapIdx;
+    titleEl.textContent = `${triggerText} (${remainingCount} response${remainingCount > 1 ? 's' : ''} available)`;
+
+    // Show the card that triggered this response
+    let triggerCard = null;
+    if (context) {
+        if (context.card) triggerCard = context.card;
+        else if (context.atkZoneIdx !== undefined) {
+            const opp = duel.currentPlayer === 'player' ? 'ai' : 'player';
+            const fc = duel[opp].monsters[context.atkZoneIdx];
+            if (fc) triggerCard = fc.card;
+        }
+        else if (context.summonedCard) triggerCard = context.summonedCard;
+        else if (context.summonedZoneIdx !== undefined) {
+            const opp = duel.currentPlayer === 'player' ? 'ai' : 'player';
+            const fc = duel[opp].monsters[context.summonedZoneIdx];
+            if (fc) triggerCard = fc.card;
+        }
+    }
+    triggerCardArea.innerHTML = triggerCard ? renderCard(triggerCard) : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);border-radius:6px;color:rgba(255,255,255,0.2);font-size:9px;">Unknown</div>';
+
     cardArea.innerHTML = renderCard(trap.fc.card);
-    descEl.textContent = trap.fc.card.desc;
+    descEl.textContent = `${trap.fc.card.name}: ${trap.fc.card.desc}`;
     overlay.classList.add('active');
 
     document.getElementById('trap-yes-btn').onclick = () => {
@@ -6559,7 +7581,11 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
     };
     document.getElementById('trap-no-btn').onclick = () => {
         overlay.classList.remove('active');
-        showTrapPrompt(traps, trapIdx + 1, trigger, context, callback);
+        if (trapIdx + 1 < traps.length) {
+            showTrapPrompt(traps, trapIdx + 1, trigger, context, callback);
+        } else {
+            callback(false);
+        }
     };
 }
 
@@ -7489,18 +8515,30 @@ function renderFieldRow(who, zone) {
     return `<div class="field-row">
         ${slots.map((fc, i) => {
             let cardHTML = '';
+            let statOverlay = '';
+            let peekEye = '';
             if (fc) {
                 const isDefPos = fc.position === 'def';
                 cardHTML = renderCard(fc.card, { faceDown: !fc.faceUp, defPos: isDefPos, shell: fc.shell, atkMod: fc.atkMod, defMod: fc.defMod });
                 if (fc.depthTimer > 0 && !fc.faceUp) {
                     cardHTML += `<div class="depth-timer">${fc.depthTimer}</div>`;
                 }
+                // Show ATK/DEF overlay on face-up monsters
+                if (fc.faceUp && zone === 'monsters') {
+                    const atkVal = (fc.card.atk || 0) + (fc.atkMod || 0);
+                    const defVal = (fc.card.def || 0) + (fc.defMod || 0);
+                    statOverlay = `<div class="field-stat-overlay"><span class="fs-atk">${atkVal}</span><span class="fs-def">${defVal}</span></div>`;
+                }
+                // Show peek eye on player's own face-down cards
+                if (!fc.faceUp && who === 'player') {
+                    peekEye = '<div class="peek-eye">👁</div>';
+                }
             }
             const clickHandler = zone === 'monsters'
                 ? `onclick="handleFieldMonsterClick('${who}', ${i})"`
                 : `onclick="handleFieldSpellClick('${who}', ${i})"`;
             return `<div class="field-zone ${zoneClass}" ${clickHandler}>
-                ${cardHTML}
+                ${cardHTML}${statOverlay}${peekEye}
                 ${!fc ? `<span class="field-label">${zone === 'monsters' ? 'M' : 'S/T'}</span>` : ''}
             </div>`;
         }).join('')}
@@ -7560,16 +8598,20 @@ function handleFieldSpellClick(who, zoneIdx) {
     const fc = duel[who].spells[zoneIdx];
     if (!fc) return;
 
-    // Player activating set cards (Depth Charges auto-activate on timer, cannot be manually triggered)
-    if (who === 'player' && duel.currentPlayer === 'player' && !fc.faceUp && fc.turnSet < duel.turn) {
-        if ((fc.card.type === 'trap' && fc.card.subtype !== 'depthcharge') || fc.card.subtype === 'quickplay') {
-            const buttons = [
-                { label: 'Activate', cls: 'activate', action: () => activateSetCard(zoneIdx) },
-                { label: 'Cancel', cls: 'cancel', action: hideActionMenu }
-            ];
-            showActionMenu(buttons);
-            return;
+    // Player's face-down spell/trap
+    if (who === 'player' && !fc.faceUp) {
+        const buttons = [];
+        // Can activate if it's player's turn and not set this turn
+        if (duel.currentPlayer === 'player' && fc.turnSet < duel.turn) {
+            if ((fc.card.type === 'trap' && fc.card.subtype !== 'depthcharge') || fc.card.subtype === 'quickplay') {
+                buttons.push({ label: 'Activate', cls: 'activate', action: () => activateSetCard(zoneIdx) });
+            }
         }
+        // Always let player peek at their own face-down cards
+        buttons.push({ label: 'View Card', cls: 'position', action: () => { hideActionMenu(); showCardDetail(fc.card.id); } });
+        buttons.push({ label: 'Cancel', cls: 'cancel', action: hideActionMenu });
+        showActionMenu(buttons);
+        return;
     }
 
     // View face-up spell/trap (either side)
@@ -7611,13 +8653,18 @@ function playerSurgeSummon() {
 
 function showGraveyard(who) {
     const gy = duel[who].graveyard;
+    const overlay = document.getElementById('gy-overlay');
+    document.getElementById('gy-overlay-title').textContent =
+        (who === 'player' ? 'Your' : "AI's") + ` Graveyard (${gy.length})`;
+    const grid = document.getElementById('gy-overlay-grid');
     if (gy.length === 0) {
-        duelLog(`${who === 'player' ? 'Your' : 'AI\'s'} Graveyard is empty.`);
-        return;
+        grid.innerHTML = '<div style="color:rgba(140,190,240,0.4);font-size:13px;text-align:center;padding:30px;">Empty</div>';
+    } else {
+        grid.innerHTML = gy.map(c =>
+            `<div onclick="showCardDetail(${c.id})">${renderCard(c)}</div>`
+        ).join('');
     }
-    const last5 = gy.slice(-5);
-    const names = last5.map(c => c.name).join(', ');
-    duelLog(`GY (${gy.length}): ${names}${gy.length > 5 ? '...' : ''}`);
+    overlay.classList.add('active');
 }
 
 // ============================================================
@@ -7627,6 +8674,7 @@ loadData();
 updateCoinsDisplay();
 initWalletConnect();
 initTitleShowcase();
+setTimeout(() => checkTradeClaims(), 2000);
 
 // Show dev tools for creator wallet only
 const _creatorWallet = '0x18b18E245122f4bDA5F2ee4F25c702E05C241D49';
