@@ -4980,10 +4980,18 @@ function removeFriend(wallet) {
     renderFriendsTab();
 }
 
-function friendDuel(wallet) {
-    if (!connectedWallet || !_appdbReady) { alert('Connect wallet first'); return; }
+async function friendDuel(wallet) {
+    if (!_appdbReady) { alert('Not connected'); return; }
     const code = Math.random().toString(36).substr(2,6).toUpperCase();
-    AppDB.setGlobal('ccchall_' + wallet, {from: connectedWallet.toLowerCase(), n: playerData.profileName || connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4), room: code, ts: Date.now()}).catch(()=>{});
+    const myName = playerData.profileName || (connectedWallet ? connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4) : 'Anonymous');
+    const challData = {from:_onlineId, n:myName, room:code, ts:Date.now()};
+    try {
+        const all = await AppDB.listGlobal();
+        const now = Date.now();
+        const target = all.find(e => e.key.startsWith('ccon_') && typeof e.value === 'object' && e.value.w === wallet && (now - e.value.t) < 90000);
+        if (target) { await AppDB.setGlobal('ccchall_' + (target.value.id||target.key), challData); }
+        else { alert('Friend is not online right now'); return; }
+    } catch(e) { alert('Could not send challenge'); return; }
     showScreen('mp-lobby');
     mpConnect(code);
 }
@@ -9458,7 +9466,7 @@ async function _waitAppDB() {
 }
 async function _heartbeat() {
     if (!_appdbReady && !(await _waitAppDB())) return;
-    try { await AppDB.setGlobal(_onlineId, {t:Date.now(),w:(connectedWallet||'').toLowerCase(),n:playerData.profileName||''}); } catch(e) {}
+    try { await AppDB.setGlobal(_onlineId, {t:Date.now(),w:(connectedWallet||'').toLowerCase(),n:playerData.profileName||'',id:_onlineId}); } catch(e) {}
 }
 async function _countOnline() {
     if (!_appdbReady && !(await _waitAppDB())) return;
@@ -9523,14 +9531,14 @@ async function renderMPLobby() {
         const now = Date.now();
         const myW = (connectedWallet||'').toLowerCase();
         const online = all.filter(e => e.key.startsWith('ccon_') && e.key !== _onlineId && (now - (e.value?.t || Number(e.value))) < 90000 && typeof e.value === 'object')
-            .map(e => ({w:e.value.w||'', n:e.value.n||''}))
-            .filter(u => !myW || u.w !== myW);
+            .map(e => ({w:e.value.w||'', n:e.value.n||'', sid:e.value.id||e.key}))
+            .filter(u => !myW || !u.w || u.w !== myW);
         if (online.length === 0) {
             el.innerHTML = '<div class="mp-empty">No other players online right now</div>';
         } else {
             el.innerHTML = online.map(u => {
                 const name = u.n || (u.w ? u.w.slice(0,6)+'...'+u.w.slice(-4) : 'Anonymous');
-                return `<div class="mp-user-row"><span class="mp-uname">${name}</span>${u.w && connectedWallet ? `<button class="mp-dbtn" onclick="mpChallengeUser('${u.w}')">DUEL</button>` : ''}</div>`;
+                return `<div class="mp-user-row"><span class="mp-uname">${name}</span><button class="mp-dbtn" onclick="mpChallengeUser('${u.sid}')">DUEL</button></div>`;
             }).join('');
         }
     } catch(e) { el.innerHTML = '<div class="mp-empty">Could not load players</div>'; }
@@ -9544,17 +9552,18 @@ async function renderMPLobby() {
     }
 }
 
-function mpChallengeUser(wallet) {
-    if (!connectedWallet || !_appdbReady) { alert('Connect wallet first'); return; }
+function mpChallengeUser(targetSid) {
+    if (!_appdbReady) return;
     const code = Math.random().toString(36).substr(2,6).toUpperCase();
-    AppDB.setGlobal('ccchall_' + wallet, {from:connectedWallet.toLowerCase(), n:playerData.profileName||connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4), room:code, ts:Date.now()}).catch(()=>{});
+    const myName = playerData.profileName || (connectedWallet ? connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4) : 'Anonymous');
+    AppDB.setGlobal('ccchall_' + targetSid, {from:_onlineId, n:myName, room:code, ts:Date.now()}).catch(()=>{});
     mpConnect(code);
 }
 
 async function mpCheckChallenges() {
-    if (!connectedWallet || !_appdbReady) return;
+    if (!_appdbReady) return;
     try {
-        const chall = await AppDB.getGlobal('ccchall_' + connectedWallet.toLowerCase());
+        const chall = await AppDB.getGlobal('ccchall_' + _onlineId);
         if (!chall || Date.now() - chall.ts > 60000) return;
         if (document.getElementById('mp-chall-popup')) return;
         const div = document.createElement('div');
@@ -9568,7 +9577,7 @@ async function mpCheckChallenges() {
 function mpAcceptChall(room) {
     const el = document.getElementById('mp-chall-popup');
     if (el) el.remove();
-    if (connectedWallet) AppDB.deleteGlobal('ccchall_' + connectedWallet.toLowerCase()).catch(()=>{});
+    AppDB.deleteGlobal('ccchall_' + _onlineId).catch(()=>{});
     showScreen('mp-lobby');
     mpConnect(room);
 }
@@ -9576,7 +9585,7 @@ function mpAcceptChall(room) {
 function mpDeclineChall() {
     const el = document.getElementById('mp-chall-popup');
     if (el) el.remove();
-    if (connectedWallet) AppDB.deleteGlobal('ccchall_' + connectedWallet.toLowerCase()).catch(()=>{});
+    AppDB.deleteGlobal('ccchall_' + _onlineId).catch(()=>{});
 }
 
 function mpTogglePrivate() {
