@@ -4982,18 +4982,14 @@ function removeFriend(wallet) {
 
 async function friendDuel(wallet) {
     if (!_appdbReady) { alert('Not connected'); return; }
-    const code = Math.random().toString(36).substr(2,6).toUpperCase();
-    const myName = playerData.profileName || (connectedWallet ? connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4) : 'Anonymous');
-    const challData = {from:_onlineId, n:myName, room:code, ts:Date.now()};
     try {
         const all = await AppDB.listGlobal();
         const now = Date.now();
         const target = all.find(e => e.key.startsWith('ccon_') && typeof e.value === 'object' && e.value.w === wallet && (now - e.value.t) < 90000);
-        if (target) { await AppDB.setGlobal('ccchall_' + (target.value.id||target.key), challData); }
-        else { alert('Friend is not online right now'); return; }
-    } catch(e) { alert('Could not send challenge'); return; }
-    showScreen('mp-lobby');
-    mpConnect(code);
+        if (!target) { alert('Friend is not online right now'); return; }
+        showScreen('mp-lobby');
+        mpChallengeUser(target.value.id || target.key);
+    } catch(e) { alert('Could not send challenge'); }
 }
 
 function _dmKey(w1, w2) {
@@ -9552,40 +9548,71 @@ async function renderMPLobby() {
     }
 }
 
+let _challPending = null;
+let _challPollTimer = null;
+
 function mpChallengeUser(targetSid) {
     if (!_appdbReady) return;
-    const code = Math.random().toString(36).substr(2,6).toUpperCase();
     const myName = playerData.profileName || (connectedWallet ? connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4) : 'Anonymous');
-    AppDB.setGlobal('ccchall_' + targetSid, {from:_onlineId, n:myName, room:code, ts:Date.now()}).catch(()=>{});
-    mpConnect(code);
+    const challId = 'ccchall_' + targetSid;
+    _challPending = challId;
+    AppDB.setGlobal(challId, {from:_onlineId, n:myName, ts:Date.now(), status:'pending'}).catch(()=>{});
+    document.getElementById('mp-main-lobby').style.display = 'none';
+    const w = document.getElementById('mp-waiting');
+    w.style.display = 'flex';
+    document.getElementById('mp-room-display').textContent = '';
+    document.getElementById('mp-status-text').textContent = 'Waiting for response...';
+    document.getElementById('mp-start-btn').style.display = 'none';
+    document.getElementById('mp-players-list').innerHTML = '';
+    _challPollTimer = setInterval(async () => {
+        if (!_challPending) { clearInterval(_challPollTimer); _challPollTimer = null; return; }
+        try {
+            const c = await AppDB.getGlobal(_challPending);
+            if (!c) { clearInterval(_challPollTimer); _challPollTimer = null; _challPending = null; document.getElementById('mp-status-text').textContent = 'No response'; setTimeout(mpCancelWait, 2000); return; }
+            if (c.status === 'accepted' && c.room) {
+                clearInterval(_challPollTimer); _challPollTimer = null;
+                AppDB.deleteGlobal(_challPending).catch(()=>{});
+                _challPending = null;
+                mpConnect(c.room);
+            } else if (c.status === 'declined') {
+                clearInterval(_challPollTimer); _challPollTimer = null;
+                AppDB.deleteGlobal(_challPending).catch(()=>{});
+                _challPending = null;
+                document.getElementById('mp-status-text').textContent = 'Challenge declined';
+                setTimeout(mpCancelWait, 2000);
+            }
+        } catch(e) {}
+    }, 1500);
 }
 
 async function mpCheckChallenges() {
     if (!_appdbReady) return;
     try {
         const chall = await AppDB.getGlobal('ccchall_' + _onlineId);
-        if (!chall || Date.now() - chall.ts > 60000) return;
+        if (!chall || chall.status !== 'pending' || Date.now() - chall.ts > 60000) return;
         if (document.getElementById('mp-chall-popup')) return;
         const div = document.createElement('div');
         div.id = 'mp-chall-popup';
-        div.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(8,18,35,0.95);border:1px solid rgba(40,120,200,0.2);border-radius:12px;padding:16px 20px;z-index:500;text-align:center;backdrop-filter:blur(8px);max-width:300px;';
-        div.innerHTML = `<div style="font-family:'Chakra Petch',sans-serif;font-size:13px;color:rgba(140,200,255,0.9);margin-bottom:10px">${chall.n||'Someone'} challenges you!</div><div style="display:flex;gap:8px;justify-content:center"><button onclick="mpAcceptChall('${chall.room}')" style="padding:8px 20px;border-radius:6px;background:linear-gradient(135deg,#1050a0,#2090ff);color:#fff;font-weight:700;border:none;cursor:pointer;font-size:12px">ACCEPT</button><button onclick="mpDeclineChall()" style="padding:8px 20px;border-radius:6px;background:rgba(8,18,35,0.65);color:rgba(140,200,255,0.6);border:1px solid rgba(40,120,200,.1);cursor:pointer;font-size:12px">DECLINE</button></div>`;
+        div.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.85);z-index:600;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);';
+        div.innerHTML = `<div style="background:rgba(8,18,35,0.98);border:1px solid rgba(40,120,200,0.2);border-radius:14px;padding:24px 28px;text-align:center;max-width:320px;width:90%"><div style="font-family:'Chakra Petch',sans-serif;font-size:16px;font-weight:900;color:rgba(140,200,255,0.9);margin-bottom:6px">DUEL REQUEST</div><div style="font-size:13px;color:rgba(226,232,240,0.6);margin-bottom:16px">${chall.n||'Someone'} wants to duel you!</div><div style="display:flex;gap:10px;justify-content:center"><button onclick="mpAcceptChall('${chall.from}')" style="padding:10px 28px;border-radius:8px;background:linear-gradient(135deg,#1050a0,#2090ff);color:#fff;font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:13px;border:none;cursor:pointer;letter-spacing:1px">YES</button><button onclick="mpDeclineChall('${chall.from}')" style="padding:10px 28px;border-radius:8px;background:rgba(180,30,30,0.3);color:rgba(255,120,120,0.8);font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:13px;border:1px solid rgba(180,30,30,0.2);cursor:pointer;letter-spacing:1px">NO</button></div></div>`;
         document.body.appendChild(div);
     } catch(e) {}
 }
 
-function mpAcceptChall(room) {
+function mpAcceptChall(fromSid) {
     const el = document.getElementById('mp-chall-popup');
     if (el) el.remove();
-    AppDB.deleteGlobal('ccchall_' + _onlineId).catch(()=>{});
+    const room = Math.random().toString(36).substr(2,6).toUpperCase();
+    AppDB.setGlobal('ccchall_' + _onlineId, {status:'accepted', room:room, ts:Date.now()}).catch(()=>{});
     showScreen('mp-lobby');
     mpConnect(room);
 }
 
-function mpDeclineChall() {
+function mpDeclineChall(fromSid) {
     const el = document.getElementById('mp-chall-popup');
     if (el) el.remove();
-    AppDB.deleteGlobal('ccchall_' + _onlineId).catch(()=>{});
+    AppDB.setGlobal('ccchall_' + _onlineId, {status:'declined', ts:Date.now()}).catch(()=>{});
+    setTimeout(() => { AppDB.deleteGlobal('ccchall_' + _onlineId).catch(()=>{}); }, 5000);
 }
 
 function mpTogglePrivate() {
@@ -9606,6 +9633,8 @@ function mpJoinPrivate() {
 
 function mpCancelWait() {
     if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null; }
+    if (_challPollTimer) { clearInterval(_challPollTimer); _challPollTimer = null; }
+    if (_challPending) { AppDB.deleteGlobal(_challPending).catch(()=>{}); _challPending = null; }
     mp.session++; mp.room = null; mp.active = false; mp.opponentId = null;
     mpResetLobbyUI();
     renderMPLobby();
