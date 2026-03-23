@@ -541,23 +541,25 @@
         .menu-btn:active { transform: scale(0.96); }
 
         /* ===== MULTIPLAYER LOBBY ===== */
-        #mp-lobby { flex-direction: column; background: #040810; }
-        #mp-lobby-content { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; gap:20px; }
-        #mp-create-join { display:flex; flex-direction:column; align-items:center; gap:14px; width:100%; max-width:340px; }
-        .mp-action-btn { width:100%; padding:16px; border-radius:10px; font-family:'Chakra Petch',sans-serif; font-size:13px; font-weight:700; letter-spacing:3px; text-transform:uppercase; border:1px solid rgba(40,150,255,0.2); background:linear-gradient(135deg, #1050a0 0%, #1878d0 40%, #2090ff 100%); color:#fff; cursor:pointer; transition:all .2s; text-shadow:0 1px 4px rgba(0,60,160,0.4); }
-        .mp-action-btn:active { transform:scale(.97); }
-        .mp-join-row { display:flex; gap:8px; width:100%; }
-        .mp-join-row input { flex:1; background:rgba(8,18,35,0.65); border:1px solid rgba(40,120,200,0.1); border-radius:8px; padding:12px 14px; color:rgba(200,220,255,0.9); font-family:'Chakra Petch',sans-serif; font-size:16px; letter-spacing:4px; text-align:center; text-transform:uppercase; outline:none; }
-        .mp-join-row input::placeholder { color:rgba(140,190,240,0.3); letter-spacing:2px; font-size:11px; }
-        .mp-join-row button { padding:12px 20px; border-radius:8px; background:rgba(8,18,35,0.65); color:rgba(140,200,255,0.9); font-family:'Chakra Petch',sans-serif; font-size:12px; font-weight:700; letter-spacing:2px; border:1px solid rgba(40,120,200,0.1); cursor:pointer; }
-        .mp-or { font-family:'Chakra Petch',sans-serif; font-size:12px; color:rgba(140,190,240,0.3); letter-spacing:3px; text-transform:uppercase; }
-        #mp-waiting { display:none; flex-direction:column; align-items:center; gap:16px; text-align:center; }
-        #mp-room-display { font-family:'Chakra Petch',sans-serif; font-size:42px; font-weight:900; letter-spacing:12px; color:rgba(140,200,255,0.9); text-shadow:0 0 20px rgba(40,120,200,.2); padding:16px 28px; background:rgba(8,18,35,.65); border:1px solid rgba(40,120,200,.1); border-radius:8px; }
-        #mp-status-text { font-family:'Chakra Petch',sans-serif; font-size:14px; color:rgba(160,145,115,.6); white-space:pre-line; line-height:1.6; }
-        #mp-players-list { display:flex; gap:20px; }
-        .mp-player { font-family:'Chakra Petch',sans-serif; font-size:13px; color:rgba(180,165,130,.5); padding:8px 16px; background:rgba(20,18,14,.5); border:1px solid rgba(120,105,75,.1); border-radius:4px; }
-        #mp-start-btn { display:none; padding:16px 40px; border-radius:8px; font-family:'Orbitron',sans-serif; font-size:15px; font-weight:900; letter-spacing:4px; background:linear-gradient(135deg,#b22222,#e63c3c 40%,#ff5252 70%); color:#fff; border:1px solid rgba(255,150,100,.2); cursor:pointer; text-shadow:0 2px 4px rgba(0,0,0,.3); box-shadow:0 0 15px rgba(230,60,60,.25); }
-        .mp-surrender-btn { position:absolute; top:8px; right:8px; padding:4px 10px; border-radius:4px; background:rgba(180,30,30,.3); color:rgba(255,120,120,.6); border:1px solid rgba(180,30,30,.2); font-size:9px; font-weight:700; letter-spacing:1px; cursor:pointer; z-index:20; font-family:'Nunito',sans-serif; }
+        #mp-lobby { flex-direction:column; background:#040810; }
+        #mp-lobby-content { flex:1; display:flex; flex-direction:column; padding:12px; overflow-y:auto; }
+        .mp-sec-lbl { font-family:'Chakra Petch',sans-serif; font-size:10px; color:rgba(140,190,240,0.35); letter-spacing:3px; text-transform:uppercase; margin:10px 0 6px; }
+        .mp-user-list { display:flex; flex-direction:column; gap:6px; flex:1; min-height:60px; }
+        .mp-user-row { display:flex; align-items:center; gap:10px; padding:10px 12px; background:rgba(8,18,35,0.65); border:1px solid rgba(40,120,200,0.1); border-radius:8px; }
+        .mp-uname { flex:1; font-family:'Chakra Petch',sans-serif; font-size:13px; color:rgba(140,200,255,0.9); font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .mp-dbtn { padding:6px 14px; border-radius:6px; background:linear-gradient(135deg,#b22222,#e63c3c); color:#fff; font-size:10px; font-weight:700; letter-spacing:1px; border:none; cursor:pointer; font-family:'Chakra Petch',sans-serif; }
+        .mp-empty { text-align:center; padding:30px 20px; color:rgba(140,190,240,0.25); font-size:12px; line-height:1.8; }
+        .mp-priv-toggle { width:100%; padding:10px; border-radius:8px; background:rgba(8,18,35,0.4); border:1px solid rgba(40,120,200,0.06); color:rgba(140,190,240,0.35); font-family:'Chakra Petch',sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; cursor:pointer; margin-top:10px; text-align:center; }
+        .mp-priv-panel { padding:12px; background:rgba(8,18,35,0.4); border:1px solid rgba(40,120,200,0.06); border-radius:0 0 8px 8px; margin-top:-1px; }
+        .mp-priv-panel input { width:100%; background:rgba(8,18,35,0.65); border:1px solid rgba(40,120,200,0.1); border-radius:6px; padding:10px; color:rgba(200,220,255,0.9); font-family:'Chakra Petch',sans-serif; font-size:14px; letter-spacing:3px; text-align:center; outline:none; margin-bottom:8px; }
+        .mp-priv-panel button { flex:1; padding:10px; border-radius:6px; background:rgba(8,18,35,0.65); color:rgba(140,200,255,0.9); font-family:'Chakra Petch',sans-serif; font-size:12px; font-weight:700; border:1px solid rgba(40,120,200,0.1); cursor:pointer; }
+        #mp-waiting { display:none; flex-direction:column; align-items:center; gap:16px; text-align:center; padding-top:30px; }
+        #mp-room-display { font-family:'Chakra Petch',sans-serif; font-size:36px; font-weight:900; letter-spacing:10px; color:rgba(140,200,255,0.9); text-shadow:0 0 20px rgba(40,120,200,.2); padding:14px 24px; background:rgba(8,18,35,.65); border:1px solid rgba(40,120,200,.1); border-radius:8px; }
+        #mp-status-text { font-family:'Chakra Petch',sans-serif; font-size:13px; color:rgba(160,145,115,.5); white-space:pre-line; }
+        #mp-players-list { display:flex; gap:16px; }
+        .mp-player { font-family:'Chakra Petch',sans-serif; font-size:12px; color:rgba(180,165,130,.4); padding:6px 14px; background:rgba(20,18,14,.4); border:1px solid rgba(120,105,75,.08); border-radius:4px; }
+        #mp-start-btn { display:none; padding:14px 36px; border-radius:8px; font-family:'Orbitron',sans-serif; font-size:14px; font-weight:900; letter-spacing:4px; background:linear-gradient(135deg,#b22222,#e63c3c 40%,#ff5252 70%); color:#fff; border:1px solid rgba(255,150,100,.2); cursor:pointer; text-shadow:0 2px 4px rgba(0,0,0,.3); box-shadow:0 0 15px rgba(230,60,60,.25); }
+        .mp-surrender-btn { position:absolute; top:8px; right:8px; padding:4px 10px; border-radius:4px; background:rgba(180,30,30,.3); color:rgba(255,120,120,.6); border:1px solid rgba(180,30,30,.2); font-size:9px; font-weight:700; letter-spacing:1px; cursor:pointer; z-index:20; }
 
         /* ===== DUEL SETUP MODAL ===== */
         .duel-setup-overlay { display:none; position:fixed; top:0;left:0;right:0;bottom:0; background:rgba(0,0,0,.88); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); z-index:250; align-items:center; justify-content:center; flex-direction:column; }
@@ -3013,6 +3015,19 @@
         .profile-save-btn { display:block; margin:8px 12px 16px; background:linear-gradient(135deg, #1050a0 0%, #1878d0 40%, #2090ff 100%); color:#fff; border:1px solid rgba(40,150,255,0.2); border-radius:8px; padding:10px; font-weight:800; font-size:13px; cursor:pointer; width:calc(100% - 24px); text-shadow:0 1px 4px rgba(0,60,160,0.4); }
         .profile-viewed-header { background:rgba(20,60,120,0.15); }
         .profile-viewed-badge { font-size:10px; color:rgba(140,190,240,0.4); letter-spacing:1px; text-transform:uppercase; }
+        .prof-tabs { display:flex; border-bottom:1px solid rgba(40,120,200,0.1); flex-shrink:0; }
+        .prof-tab { flex:1; padding:10px; background:none; border:none; color:rgba(140,190,240,0.35); font-family:'Chakra Petch',sans-serif; font-size:11px; font-weight:700; letter-spacing:2px; cursor:pointer; border-bottom:2px solid transparent; transition:all .2s; }
+        .prof-tab.active { color:rgba(140,200,255,0.9); border-bottom-color:rgba(40,120,200,0.4); }
+        .fr-row { display:flex; align-items:center; gap:8px; padding:10px 12px; background:rgba(8,18,35,0.65); border:1px solid rgba(40,120,200,0.1); border-radius:8px; margin:0 12px 6px; }
+        .fr-name { flex:1; font-family:'Chakra Petch',sans-serif; font-size:13px; color:rgba(140,200,255,0.9); font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .fr-btn { padding:5px 10px; border-radius:5px; font-size:9px; font-weight:700; border:none; cursor:pointer; font-family:'Chakra Petch',sans-serif; letter-spacing:1px; }
+        .fr-btn-duel { background:linear-gradient(135deg,#b22222,#e63c3c); color:#fff; }
+        .fr-btn-msg { background:rgba(40,120,200,0.2); color:rgba(140,200,255,0.8); }
+        .fr-btn-del { background:rgba(200,40,40,0.15); color:rgba(255,120,120,0.6); }
+        .fr-btn-add { background:linear-gradient(135deg,#1050a0,#2090ff); color:#fff; }
+        .msg-row { display:flex; flex-direction:column; padding:10px 12px; background:rgba(8,18,35,0.65); border:1px solid rgba(40,120,200,0.1); border-radius:8px; margin:0 12px 6px; cursor:pointer; }
+        .msg-name { font-family:'Chakra Petch',sans-serif; font-size:12px; color:rgba(140,200,255,0.9); font-weight:700; }
+        .msg-preview { font-size:11px; color:rgba(140,190,240,0.3); margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
         /* ===== TRADE HUB ===== */
         #trade-screen, #market-screen { background: #040810; }
@@ -3195,25 +3210,26 @@
             <h2 class="screen-title">Multiplayer</h2>
         </div>
         <div id="mp-lobby-content">
-            <div id="mp-create-join">
-                <button class="mp-action-btn" onclick="mpCreateRoom()">CREATE ROOM</button>
-                <div class="mp-or">\u2014 or \u2014</div>
-                <div class="mp-join-row">
-                    <input id="mp-code-input" maxlength="4" placeholder="Code">
-                    <button onclick="mpJoinRoom()">JOIN</button>
+            <div id="mp-main-lobby">
+                <div class="mp-sec-lbl">ONLINE PLAYERS</div>
+                <div class="mp-user-list" id="mp-online-users"><div class="mp-empty">Loading...</div></div>
+                <button class="mp-priv-toggle" id="mp-priv-btn" onclick="mpTogglePrivate()">PRIVATE ROOM</button>
+                <div class="mp-priv-panel" id="mp-priv-panel">
+                    <input id="mp-code-input" maxlength="8" placeholder="Room code...">
+                    <div style="display:flex;gap:8px"><button onclick="mpCreatePrivate()">CREATE</button><button onclick="mpJoinPrivate()">JOIN</button></div>
                 </div>
             </div>
             <div id="mp-no-sdk" style="display:none;text-align:center;padding:20px;">
                 <div style="font-family:'Chakra Petch',sans-serif;font-size:14px;color:rgba(140,200,255,0.9);margin-bottom:12px;">Multiplayer Unavailable</div>
-                <div style="font-family:'Chakra Petch',sans-serif;font-size:13px;color:rgba(140,190,240,.4);line-height:1.6;">Realtime SDK not detected.<br>Multiplayer only works on<br><span style="color:rgba(140,200,255,0.9);">inclawbate.com</span></div>
+                <div style="font-size:13px;color:rgba(140,190,240,.4);">Realtime SDK not detected. Only works on inclawbate.com</div>
             </div>
             <div id="mp-waiting">
-                <div style="font-family:'Chakra Petch',sans-serif;font-size:11px;color:rgba(140,125,95,.4);letter-spacing:3px;text-transform:uppercase;">Room Code</div>
+                <div style="font-size:11px;color:rgba(140,125,95,.4);letter-spacing:3px;text-transform:uppercase;font-family:'Chakra Petch',sans-serif">Room Code</div>
                 <div id="mp-room-display">----</div>
                 <div id="mp-status-text">Connecting...</div>
                 <div id="mp-players-list"></div>
                 <button id="mp-start-btn" onclick="mpStartGame()">START DUEL</button>
-                <button id="mp-retry-btn" style="display:none;padding:10px 24px;border-radius:8px;background:rgba(8,18,35,0.65);color:rgba(140,200,255,0.9);font-family:'Chakra Petch',sans-serif;font-size:13px;border:1px solid rgba(40,120,200,.1);cursor:pointer;margin-top:8px;">TRY AGAIN</button>
+                <button onclick="mpCancelWait()" style="padding:10px 24px;border-radius:8px;background:rgba(8,18,35,0.65);color:rgba(140,200,255,0.7);font-family:'Chakra Petch',sans-serif;font-size:12px;border:1px solid rgba(40,120,200,.1);cursor:pointer">CANCEL</button>
             </div>
         </div>
     </div>
@@ -3551,11 +3567,12 @@
             <button class="back-btn" onclick="showScreen('title-screen')">← Back</button>
             <h2 class="screen-title">Profile</h2>
         </div>
-        <div style="overflow-y:auto;flex:1;padding-bottom:20px;" id="profile-content"></div>
-        <div class="profile-lookup">
-            <input type="text" id="profile-lookup-input" placeholder="Search by wallet address or display name...">
-            <button onclick="lookupProfile()">Search</button>
+        <div class="prof-tabs">
+            <button class="prof-tab active" onclick="profTab('profile')">PROFILE</button>
+            <button class="prof-tab" onclick="profTab('friends')">FRIENDS</button>
+            <button class="prof-tab" onclick="profTab('msgs')">MESSAGES</button>
         </div>
+        <div style="overflow-y:auto;flex:1;padding-bottom:20px;" id="profile-content"></div>
     </div>
 
     <!-- ===== GALLERY SCREEN ===== -->
@@ -3609,11 +3626,9 @@
     </div>
 
 
-
 <script>
-// ====
-// WALLET CONNECT SYSTEM
-// ====
+
+
 let connectedWallet = null;
 let offlineMode = false;
 
@@ -3737,9 +3752,7 @@ function updateWalletDisplay() {
     }
 }
 
-// ====
-// CARD DATABASE
-// ====
+
 const RARITIES = {
     C: 'Common', R: 'Rare', SR: 'Super Rare', UR: 'Ultra Rare',
     ScR: 'Secret Rare', GhR: 'Phantom Rare', UltR: 'Embossed Rare', StR: 'Cosmic Rare'
@@ -3762,7 +3775,6 @@ function makeCard(id, name, type, subtype, opts) {
 }
 
 const CARDS = [
-    // === NORMAL MONSTERS ===
     makeCard(1, 'Claw Recruit', 'monster', 'normal', {
         level: 2, atk: 800, def: 600, attribute: 'WATER', rarity: 'C',
         desc: 'A young lobster warrior still training at the reef academy. Its small claws belie a fierce determination.',
@@ -3789,7 +3801,7 @@ const CARDS = [
         art: { bg: ['#2a1a08','#180e04'], color: '#c89040' }, shell: 3
     }),
 
-    // === EFFECT MONSTERS (Low Level) ===
+
     makeCard(6, 'Molt Striker', 'monster', 'effect', {
         level: 3, atk: 1000, def: 700, attribute: 'WATER', rarity: 'R',
         desc: 'When this card is Normal Summoned: It gains 500 ATK until the end of this turn.',
@@ -3839,7 +3851,7 @@ const CARDS = [
         effects: [{ trigger: 'onOpponentSummon', action: 'specialSummonSelfDebuff', value: 500 }]
     }),
 
-    // === CONDUIT MONSTERS ===
+
     makeCard(14, 'Tide Caller', 'monster', 'effect', {
         level: 4, atk: 1500, def: 1000, attribute: 'WATER', rarity: 'SR', isTuner: true,
         desc: '[Conduit] When this card is used as Surge Material: Draw 1 card.',
@@ -3853,7 +3865,7 @@ const CARDS = [
         effects: [{ trigger: 'hand', action: 'specialSummonSelf', condition: 'controlMonster' }]
     }),
 
-    // === HIGH-LEVEL EFFECT MONSTERS ===
+
     makeCard(16, 'Thermidor the Blaze', 'monster', 'effect', {
         level: 5, atk: 2100, def: 1500, attribute: 'FIRE', rarity: 'UR',
         desc: 'When this card destroys an opponent\'s monster by battle: Gain 500 LP.',
@@ -3885,7 +3897,7 @@ const CARDS = [
         effects: [{ trigger: 'activated', action: 'destroySetST', value: 1, target: 'any' }]
     }),
 
-    // === RITUAL MONSTER ===
+
     makeCard(21, 'Leviathan Lobster', 'monster', 'ritual', {
         level: 8, atk: 2800, def: 2500, attribute: 'WATER', rarity: 'ScR',
         desc: 'You can Ritual Summon this card with "Ritual of the Deep". Once per turn: You can destroy 1 card on the field.',
@@ -3894,7 +3906,7 @@ const CARDS = [
         effects: [{ trigger: 'activated', action: 'destroyAny', value: 1, target: 'any' }]
     }),
 
-    // === MERGE MONSTERS ===
+
     makeCard(22, 'Emperor Crustacean', 'monster', 'fusion', {
         level: 8, atk: 3000, def: 2500, attribute: 'WATER', rarity: 'ScR',
         desc: '"Thermidor the Blaze" + "Abyssal Pincer"\nThis card is unaffected by Trap effects.',
@@ -3910,7 +3922,7 @@ const CARDS = [
         effects: [{ trigger: 'passive', action: 'doubleAttack' }]
     }),
 
-    // === SYNC MONSTERS ===
+
     makeCard(24, 'Poseidon\'s Chosen', 'monster', 'surge', {
         level: 8, atk: 2900, def: 2400, attribute: 'WATER', rarity: 'GhR',
         desc: '1 Conduit + 1 or more non-Conduit monsters\nWhen this card is Surge Summoned: Destroy all Spell and Trap Cards your opponent controls.',
@@ -3924,7 +3936,7 @@ const CARDS = [
         effects: [{ trigger: 'passive', action: 'atkDebuffAll', value: 300, target: 'opponent' }]
     }),
 
-    // === SPELL CARDS ===
+
     makeCard(26, 'Shell Fusion', 'spell', 'normal', {
         rarity: 'C',
         desc: 'Merge Summon 1 Merge Monster from your Vault, using monsters from your hand or field as materials.',
@@ -3981,7 +3993,7 @@ const CARDS = [
         effects: [{ action: 'revive', condition: 'level4OrLower' }]
     }),
 
-    // === TRAP CARDS ===
+
     makeCard(35, 'Pincer Trap', 'trap', 'normal', {
         rarity: 'R',
         desc: 'When an opponent\'s monster declares an attack: Negate the attack, and inflict 500 damage to your opponent.',
@@ -4297,15 +4309,11 @@ makeCard(210,'Tidal Entrapment','trap','continuous',{rarity:'SR',
 function getCard(id) { return CARDS.find(c => c.id === id); }
 
 
-// ====
-// CARD ART — loaded from GitHub
-// ====
 const _CARD_ART_BASE = 'https://raw.githubusercontent.com/stuart5915/inclawbate-apps/master/apps/card-art/';
 const _cardArtImages = {};
 function _cardArtUrl(name) {
     return _CARD_ART_BASE + encodeURIComponent(name) + '.png';
 }
-// Preload card art images that exist in the repo
 const _CARD_ART_NAMES = [
     'Abyssal Hydra','Abyssal Lurker','Abyssal Monarch','Abyssal Pincer','Abyssal Remora','Abyssal Sovereign',
     'Antenna Oracle','Barnacle Parasite','Barnacle Scout','Biolume Minnow','Brine Wasp',
@@ -4324,9 +4332,7 @@ const _CARD_ART_NAMES = [
 ];
 _CARD_ART_NAMES.forEach(name => { _cardArtImages[name] = _cardArtUrl(name); });
 
-// ====
-// CARD HTML RENDERING
-// ====
+
 function getFrameClass(card) {
     if (card.type === 'spell') return 'spell';
     if (card.type === 'trap') return 'trap';
@@ -4435,16 +4441,13 @@ function renderCardMini(card) {
     </div>`;
 }
 
-// ====
-// SAVE / LOAD / PLAYER DATA
-// ====
-// ====
+
 // $DD — DuckDollars Token (Base chain)
-// ====
+
 const DD_TOKEN = '0x0c6a04473c00725deadcc266b100889f62fa4113';
 const BASE_RPC = 'https://mainnet.base.org';
 const DD_CREATOR_WALLET = '0x18b18E245122f4bDA5F2ee4F25c702E05C241D49';
-let _onChainDD = null; // cached on-chain DD balance
+let _onChainDD = null;
 
 async function fetchDDBalance(wallet) {
     if (!wallet) wallet = connectedWallet;
@@ -4505,25 +4508,26 @@ async function spendDD(amount) {
 
 let playerData = {
     coins: 0,
-    collection: {}, // { cardId: count }
-    collectedDates: {}, // { cardId: timestamp of first acquisition }
-    deck: [],       // active main deck (card IDs)
-    extraDeck: [],  // active extra deck (card IDs)
-    decks: [],      // saved deck slots: [{ name, cards, extra }]
-    activeDeck: 0,  // index into decks array
+    collection: {},
+    collectedDates: {},
+    deck: [],
+    extraDeck: [],
+    decks: [],
+    activeDeck: 0,
     stats: { wins: 0, losses: 0, totalDuels: 0, bestStreak: 0, currentStreak: 0, totalEarned: 0 },
     achievements: [],
     profileName: '',
     profilePublic: true,
-    ownedSleeves: [],   // sleeve IDs owned
-    ownedPlaymats: [],  // playmat IDs owned
-    activeSleeve: null, // equipped sleeve ID
-    activePlaymat: null, // equipped playmat ID
+    ownedSleeves: [],
+    ownedPlaymats: [],
+    activeSleeve: null,
+    activePlaymat: null,
     gallery: { slots: [], layout: 'grid', boardId: 'gb_default', borderStyle: 'none', lighting: 'none' },
     ownedBoards: ['gb_default'],
     ownedLayouts: ['grid'],
     ownedBorders: ['none'],
     ownedLightings: ['none'],
+    friends: [],
     freePackCooldown: 0
 };
 
@@ -4736,9 +4740,7 @@ function buildStarterDeck() {
     saveData();
 }
 
-// ====
-// PROFILE & ACHIEVEMENTS
-// ====
+
 const ACHIEVEMENTS = [
     {id:'first_win',name:'First Blood',desc:'Win your first duel',icon:'⚔️',check:()=>playerData.stats.wins>=1},
     {id:'wins_10',name:'Seasoned Fighter',desc:'Win 10 duels',icon:'🔥',check:()=>playerData.stats.wins>=10},
@@ -4773,12 +4775,23 @@ function checkAchievements() {
     return newOnes;
 }
 
+let _profTab = 'profile';
+let _activeConvo = null;
+
+function profTab(tab) {
+    _profTab = tab;
+    document.querySelectorAll('.prof-tab').forEach((b,i) => b.classList.toggle('active', i === ['profile','friends','msgs'].indexOf(tab)));
+    if (tab === 'profile') renderOwnProfile();
+    else if (tab === 'friends') renderFriendsTab();
+    else renderMsgsTab();
+}
+
 function showProfile(viewWallet) {
     if (viewWallet) {
+        _profTab = 'profile';
         renderViewedProfile(viewWallet);
     } else {
         checkAchievements();
-        renderOwnProfile();
     }
     showScreen('profile-screen');
 }
@@ -4786,224 +4799,322 @@ function showProfile(viewWallet) {
 function renderOwnProfile() {
     const el = document.getElementById('profile-content');
     const wallet = connectedWallet || 'Not connected';
-    const shortWallet = connectedWallet ? connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4) : '';
-    const displayName = playerData.profileName || shortWallet || 'Anonymous';
-    const initial = displayName.charAt(0).toUpperCase();
+    const shortW = connectedWallet ? connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4) : '';
+    const dn = playerData.profileName || shortW || 'Anonymous';
     const owned = Object.values(playerData.collection).filter(v=>v>0).length;
-    const winRate = playerData.stats.totalDuels > 0 ? Math.round(playerData.stats.wins / playerData.stats.totalDuels * 100) : 0;
-    const isPublic = playerData.profilePublic !== false;
-
+    const wr = playerData.stats.totalDuels > 0 ? Math.round(playerData.stats.wins / playerData.stats.totalDuels * 100) : 0;
+    const isPub = playerData.profilePublic !== false;
+    const s = playerData.stats;
     el.innerHTML = `
         <div class="profile-header">
-            <div class="profile-avatar">${initial}</div>
+            <div class="profile-avatar">${dn.charAt(0).toUpperCase()}</div>
             <div class="profile-info">
-                <div class="profile-name">${displayName}</div>
-                <div class="profile-wallet-addr">${wallet}</div>
-                <input class="profile-name-edit" id="profile-name-input" placeholder="Display name (unique)..." value="${playerData.profileName||''}" maxlength="20">
-                <div style="font-size:9px;color:rgba(140,190,240,0.35);margin-top:2px;">Display names must be unique — others can find you by name</div>
+                <div class="profile-name">${dn}</div>
+                <div class="profile-wallet-addr">${shortW || wallet}</div>
             </div>
         </div>
-        <div class="profile-public-toggle">
-            <div class="profile-toggle-switch${isPublic?' on':''}" id="profile-public-switch" onclick="toggleProfilePublic()"></div>
-            <label>Public profile (others can view your stats)</label>
+        <div style="padding:0 12px">
+            <input class="profile-name-edit" id="profile-name-input" placeholder="Display name..." value="${playerData.profileName||''}" maxlength="20">
+            <div style="display:flex;align-items:center;gap:10px;margin:8px 0">
+                <div class="profile-toggle-switch${isPub?' on':''}" id="profile-public-switch" onclick="this.classList.toggle('on')"></div>
+                <span style="font-size:11px;color:rgba(226,232,240,0.5)">Public profile</span>
+                <button onclick="saveProfile()" style="margin-left:auto;padding:8px 18px;border-radius:6px;background:linear-gradient(135deg,#1050a0,#2090ff);color:#fff;font-size:11px;font-weight:700;border:none;cursor:pointer">Save</button>
+            </div>
         </div>
-        <button class="profile-save-btn" onclick="saveProfile()">Save Profile</button>
         <div class="profile-stats-grid">
-            <div class="profile-stat-card"><div class="profile-stat-val">${playerData.stats.wins}</div><div class="profile-stat-lbl">Wins</div></div>
-            <div class="profile-stat-card"><div class="profile-stat-val">${playerData.stats.losses}</div><div class="profile-stat-lbl">Losses</div></div>
-            <div class="profile-stat-card"><div class="profile-stat-val">${winRate}%</div><div class="profile-stat-lbl">Win Rate</div></div>
-            <div class="profile-stat-card"><div class="profile-stat-val">${playerData.stats.totalDuels}</div><div class="profile-stat-lbl">Duels</div></div>
+            <div class="profile-stat-card"><div class="profile-stat-val">${s.wins}</div><div class="profile-stat-lbl">Wins</div></div>
+            <div class="profile-stat-card"><div class="profile-stat-val">${s.losses}</div><div class="profile-stat-lbl">Losses</div></div>
+            <div class="profile-stat-card"><div class="profile-stat-val">${wr}%</div><div class="profile-stat-lbl">Win Rate</div></div>
+            <div class="profile-stat-card"><div class="profile-stat-val">${s.totalDuels}</div><div class="profile-stat-lbl">Duels</div></div>
             <div class="profile-stat-card"><div class="profile-stat-val">${owned}</div><div class="profile-stat-lbl">Cards</div></div>
-            <div class="profile-stat-card"><div class="profile-stat-val">${playerData.stats.bestStreak||0}</div><div class="profile-stat-lbl">Best Streak</div></div>
+            <div class="profile-stat-card"><div class="profile-stat-val">${s.bestStreak||0}</div><div class="profile-stat-lbl">Best Streak</div></div>
         </div>
-        <div class="profile-section-title">ACHIEVEMENTS (${getUnlockedAchievements().length}/${ACHIEVEMENTS.length})</div>
-        <div class="achievements-grid">
+        <div class="profile-section-title" onclick="document.getElementById('achv-grid').style.display=document.getElementById('achv-grid').style.display==='none'?'':'none'" style="cursor:pointer">ACHIEVEMENTS (${getUnlockedAchievements().length}/${ACHIEVEMENTS.length}) ▾</div>
+        <div class="achievements-grid" id="achv-grid">
             ${ACHIEVEMENTS.map(a => {
-                const unlocked = a.check();
-                return `<div class="achievement${unlocked?' unlocked':''}">
-                    <div class="achievement-icon">${a.icon}</div>
-                    <div class="achievement-name">${a.name}</div>
-                    <div class="achievement-desc">${a.desc}</div>
-                </div>`;
+                const u = a.check();
+                return `<div class="achievement${u?' unlocked':''}"><div class="achievement-icon">${a.icon}</div><div class="achievement-name">${a.name}</div><div class="achievement-desc">${a.desc}</div></div>`;
             }).join('')}
-        </div>
-    `;
+        </div>`;
 }
 
-function toggleProfilePublic() {
-    const sw = document.getElementById('profile-public-switch');
-    sw.classList.toggle('on');
-}
+function toggleProfilePublic() { document.getElementById('profile-public-switch').classList.toggle('on'); }
 
 async function saveProfile() {
     const name = document.getElementById('profile-name-input').value.trim().slice(0,20);
     const isPublic = document.getElementById('profile-public-switch').classList.contains('on');
     const oldName = playerData.profileName || '';
-
     if (name && name.toLowerCase() !== oldName.toLowerCase() && window.AppDB) {
         try {
             const existing = await window.AppDB.getGlobal('ccname_' + name.toLowerCase());
-            if (existing && existing !== (connectedWallet || '').toLowerCase()) {
-                showProfileMsg('That display name is already taken.', true);
-                return;
-            }
+            if (existing && existing !== (connectedWallet || '').toLowerCase()) { showProfileMsg('That display name is already taken.', true); return; }
         } catch(e) {}
     }
-
     if (oldName && oldName.toLowerCase() !== name.toLowerCase() && connectedWallet && window.AppDB) {
         window.AppDB.deleteGlobal('ccname_' + oldName.toLowerCase()).catch(()=>{});
     }
-
     playerData.profileName = name;
     playerData.profilePublic = isPublic;
-    checkAchievements();
-    saveData();
-
+    checkAchievements(); saveData();
     if (connectedWallet && window.AppDB) {
-        // Register new name
-        if (name) {
-            window.AppDB.setGlobal('ccname_' + name.toLowerCase(), connectedWallet.toLowerCase()).catch(()=>{});
-        }
-
+        if (name) window.AppDB.setGlobal('ccname_' + name.toLowerCase(), connectedWallet.toLowerCase()).catch(()=>{});
         if (isPublic) {
             const owned = Object.values(playerData.collection).filter(v=>v>0).length;
-            const pubData = {
+            window.AppDB.setGlobal('profile_'+connectedWallet.toLowerCase(), {
                 name: name || connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4),
-                wallet: connectedWallet,
-                stats: { ...playerData.stats },
-                cards: owned,
+                wallet: connectedWallet, stats: { ...playerData.stats }, cards: owned,
                 achievements: playerData.achievements || [],
-                gallery: (playerData.gallery?.slots || []).slice(0, 12),
-                updated: Date.now()
-            };
-            window.AppDB.setGlobal('profile_'+connectedWallet.toLowerCase(), pubData).catch(()=>{});
+                gallery: (playerData.gallery?.slots || []).slice(0, 12), updated: Date.now()
+            }).catch(()=>{});
         } else {
             window.AppDB.deleteGlobal('profile_'+connectedWallet.toLowerCase()).catch(()=>{});
         }
     }
-
     showProfileMsg('Profile saved!', false);
     renderOwnProfile();
 }
 
-async function lookupProfile() {
-    const input = document.getElementById('profile-lookup-input').value.trim();
-    if (!input || input.length < 2) return;
-
-    if (!window.AppDB) {
-        renderViewedProfileError('AppDB not available — profiles require inclawbate.com');
-        return;
-    }
-
-    const isWallet = /^0x[a-fA-F0-9]{40}$/.test(input);
-
-    try {
-        if (isWallet) {
-            const addr = input.toLowerCase();
-            if (connectedWallet && addr === connectedWallet.toLowerCase()) { showProfile(); return; }
-            const data = await window.AppDB.getGlobal('profile_' + addr);
-            if (!data) { renderViewedProfileError('No public profile found for this wallet.'); return; }
-            renderViewedProfile(data);
-        } else {
-            const nameKey = 'ccname_' + input.toLowerCase();
-            const wallet = await window.AppDB.getGlobal(nameKey);
-            if (!wallet) { renderViewedProfileError('No player found with that display name.'); return; }
-            if (connectedWallet && wallet === connectedWallet.toLowerCase()) { showProfile(); return; }
-            const data = await window.AppDB.getGlobal('profile_' + wallet);
-            if (!data) { renderViewedProfileError('Player found but their profile is not public.'); return; }
-            renderViewedProfile(data);
+async function renderFriendsTab() {
+    const el = document.getElementById('profile-content');
+    const friends = playerData.friends || [];
+    let html = `<div style="display:flex;gap:8px;padding:12px"><input id="fr-search" style="flex:1;background:rgba(8,18,35,0.65);border:1px solid rgba(40,120,200,0.1);border-radius:6px;color:rgba(200,220,255,0.9);font-size:12px;padding:8px 10px;outline:none" placeholder="Search by name or wallet..."><button onclick="searchFriend()" class="fr-btn fr-btn-add" style="padding:8px 14px">Search</button></div>`;
+    html += '<div id="fr-search-result"></div>';
+    html += `<div class="mp-sec-lbl" style="padding:0 12px;margin-top:4px">FRIENDS (${friends.length})</div>`;
+    if (friends.length === 0) {
+        html += '<div class="mp-empty">No friends yet. Search to add players!</div>';
+    } else {
+        for (const fw of friends) {
+            const name = await _getFriendName(fw);
+            html += `<div class="fr-row"><span class="fr-name">${name}</span><button class="fr-btn fr-btn-duel" onclick="friendDuel('${fw}')">DUEL</button><button class="fr-btn fr-btn-msg" onclick="_activeConvo='${fw}';profTab('msgs')">MSG</button><button class="fr-btn fr-btn-del" onclick="removeFriend('${fw}')">X</button></div>`;
         }
-    } catch(e) {
-        renderViewedProfileError('Failed to load profile.');
     }
+    let reqs = [];
+    if (connectedWallet && _appdbReady) {
+        try { reqs = await AppDB.getGlobal('ccfreq_' + connectedWallet.toLowerCase()) || []; } catch(e) {}
+    }
+    if (reqs.length > 0) {
+        html += `<div class="mp-sec-lbl" style="padding:0 12px;margin-top:12px">REQUESTS (${reqs.length})</div>`;
+        reqs.forEach((r,i) => {
+            html += `<div class="fr-row"><span class="fr-name">${r.n||r.from.slice(0,6)+'...'+r.from.slice(-4)}</span><button class="fr-btn fr-btn-add" onclick="acceptFriend(${i})">Accept</button><button class="fr-btn fr-btn-del" onclick="declineFriend(${i})">Decline</button></div>`;
+        });
+    }
+    el.innerHTML = html;
+}
+
+async function _getFriendName(wallet) {
+    if (!_appdbReady) return wallet.slice(0,6)+'...'+wallet.slice(-4);
+    try {
+        const p = await AppDB.getGlobal('profile_' + wallet.toLowerCase());
+        return p?.name || wallet.slice(0,6)+'...'+wallet.slice(-4);
+    } catch(e) { return wallet.slice(0,6)+'...'+wallet.slice(-4); }
+}
+
+async function searchFriend() {
+    const input = document.getElementById('fr-search').value.trim();
+    if (!input || input.length < 2 || !_appdbReady) return;
+    const el = document.getElementById('fr-search-result');
+    el.innerHTML = '<div style="text-align:center;padding:8px;color:rgba(140,190,240,0.3);font-size:11px">Searching...</div>';
+    try {
+        const isW = /^0x[a-fA-F0-9]{40}$/.test(input);
+        let wallet = isW ? input.toLowerCase() : null;
+        let profile = null;
+        if (isW) {
+            profile = await AppDB.getGlobal('profile_' + wallet);
+        } else {
+            wallet = await AppDB.getGlobal('ccname_' + input.toLowerCase());
+            if (wallet) profile = await AppDB.getGlobal('profile_' + wallet);
+        }
+        if (!wallet) { el.innerHTML = '<div style="text-align:center;padding:8px;color:rgba(255,120,120,0.6);font-size:11px">Player not found</div>'; return; }
+        if (connectedWallet && wallet === connectedWallet.toLowerCase()) { el.innerHTML = '<div style="text-align:center;padding:8px;color:rgba(140,190,240,0.3);font-size:11px">That\'s you!</div>'; return; }
+        const name = profile?.name || wallet.slice(0,6)+'...'+wallet.slice(-4);
+        const already = (playerData.friends||[]).includes(wallet);
+        el.innerHTML = `<div class="fr-row"><span class="fr-name">${name}</span>${already ? '<span style="font-size:10px;color:rgba(140,190,240,0.3)">Already friends</span>' : `<button class="fr-btn fr-btn-add" onclick="addFriend('${wallet}','${name.replace(/'/g,"\\'")}')">Add</button>`}</div>`;
+    } catch(e) { el.innerHTML = '<div style="text-align:center;padding:8px;color:rgba(255,120,120,0.6);font-size:11px">Search failed</div>'; }
+}
+
+async function addFriend(wallet, name) {
+    if (!connectedWallet || !_appdbReady) return;
+    if (!playerData.friends) playerData.friends = [];
+    if (playerData.friends.includes(wallet)) return;
+    playerData.friends.push(wallet);
+    saveData();
+    try {
+        let reqs = await AppDB.getGlobal('ccfreq_' + wallet) || [];
+        if (!reqs.some(r => r.from === connectedWallet.toLowerCase())) {
+            reqs.push({from: connectedWallet.toLowerCase(), n: playerData.profileName || connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4), ts: Date.now()});
+            await AppDB.setGlobal('ccfreq_' + wallet, reqs);
+        }
+    } catch(e) {}
+    showProfileMsg('Friend added!', false);
+    renderFriendsTab();
+}
+
+async function acceptFriend(idx) {
+    if (!connectedWallet || !_appdbReady) return;
+    try {
+        let reqs = await AppDB.getGlobal('ccfreq_' + connectedWallet.toLowerCase()) || [];
+        if (idx >= reqs.length) return;
+        const r = reqs[idx];
+        if (!playerData.friends) playerData.friends = [];
+        if (!playerData.friends.includes(r.from)) playerData.friends.push(r.from);
+        reqs.splice(idx, 1);
+        await AppDB.setGlobal('ccfreq_' + connectedWallet.toLowerCase(), reqs);
+        saveData();
+    } catch(e) {}
+    renderFriendsTab();
+}
+
+async function declineFriend(idx) {
+    if (!connectedWallet || !_appdbReady) return;
+    try {
+        let reqs = await AppDB.getGlobal('ccfreq_' + connectedWallet.toLowerCase()) || [];
+        reqs.splice(idx, 1);
+        await AppDB.setGlobal('ccfreq_' + connectedWallet.toLowerCase(), reqs);
+    } catch(e) {}
+    renderFriendsTab();
+}
+
+function removeFriend(wallet) {
+    playerData.friends = (playerData.friends||[]).filter(f => f !== wallet);
+    saveData();
+    renderFriendsTab();
+}
+
+function friendDuel(wallet) {
+    if (!connectedWallet || !_appdbReady) { alert('Connect wallet first'); return; }
+    const code = Math.random().toString(36).substr(2,6).toUpperCase();
+    AppDB.setGlobal('ccchall_' + wallet, {from: connectedWallet.toLowerCase(), n: playerData.profileName || connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4), room: code, ts: Date.now()}).catch(()=>{});
+    showScreen('mp-lobby');
+    mpConnect(code);
+}
+
+function _dmKey(w1, w2) {
+    const a = w1.toLowerCase(), b = w2.toLowerCase();
+    return 'ccdm_' + (a < b ? a+'_'+b : b+'_'+a);
+}
+
+async function renderMsgsTab() {
+    const el = document.getElementById('profile-content');
+    if (_activeConvo) { openConvo(_activeConvo); return; }
+    const friends = playerData.friends || [];
+    if (!friends.length) { el.innerHTML = '<div class="mp-empty">Add friends to start messaging</div>'; return; }
+    let html = '<div class="mp-sec-lbl" style="padding:0 12px">CONVERSATIONS</div>';
+    for (const fw of friends) {
+        let last = null;
+        if (_appdbReady) { try { const msgs = await AppDB.getGlobal(_dmKey(connectedWallet,fw)); last = msgs?.[msgs.length-1]; } catch(e) {} }
+        const name = await _getFriendName(fw);
+        const preview = last ? ((last.f===connectedWallet.toLowerCase()?'You: ':'')+last.t).slice(0,35) : 'No messages yet';
+        html += `<div class="msg-row" onclick="openConvo('${fw}')"><span class="msg-name">${name}</span><span class="msg-preview">${preview}</span></div>`;
+    }
+    el.innerHTML = html;
+}
+
+async function openConvo(wallet) {
+    _activeConvo = wallet;
+    const el = document.getElementById('profile-content');
+    const name = await _getFriendName(wallet);
+    let msgs = [];
+    if (_appdbReady && connectedWallet) { try { msgs = await AppDB.getGlobal(_dmKey(connectedWallet,wallet)) || []; } catch(e) {} }
+    const mw = connectedWallet?.toLowerCase();
+    el.innerHTML = `
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid rgba(40,120,200,0.1)">
+            <button onclick="_activeConvo=null;renderMsgsTab()" style="background:none;border:none;color:rgba(140,200,255,0.7);font-size:18px;cursor:pointer">←</button>
+            <span style="font-family:'Chakra Petch',sans-serif;font-size:13px;color:rgba(140,200,255,0.9);font-weight:700">${name}</span>
+        </div>
+        <div id="dm-msgs" style="flex:1;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:4px;min-height:200px">
+            ${msgs.map(m => `<div style="align-self:${m.f===mw?'flex-end':'flex-start'};max-width:75%;padding:7px 11px;border-radius:10px;font-size:12px;background:${m.f===mw?'rgba(40,120,200,0.2)':'rgba(8,18,35,0.65)'};color:rgba(226,232,240,0.8);word-break:break-word">${m.t}</div>`).join('')}
+        </div>
+        <div style="display:flex;gap:8px;padding:8px 12px;border-top:1px solid rgba(40,120,200,0.1)">
+            <input id="dm-input" style="flex:1;background:rgba(8,18,35,0.65);border:1px solid rgba(40,120,200,0.1);border-radius:6px;color:rgba(200,220,255,0.9);padding:8px;font-size:12px;outline:none" placeholder="Message..." onkeydown="if(event.key==='Enter')dmSend()">
+            <button onclick="dmSend()" style="padding:8px 14px;border-radius:6px;background:linear-gradient(135deg,#1050a0,#2090ff);color:#fff;font-weight:700;border:none;cursor:pointer;font-size:12px">Send</button>
+        </div>`;
+    const d = document.getElementById('dm-msgs');
+    if (d) d.scrollTop = d.scrollHeight;
+}
+
+async function dmSend() {
+    if (!_activeConvo || !connectedWallet || !_appdbReady) return;
+    const input = document.getElementById('dm-input');
+    const text = input.value.trim().slice(0,200);
+    if (!text) return;
+    input.value = '';
+    const key = _dmKey(connectedWallet, _activeConvo);
+    try {
+        let msgs = await AppDB.getGlobal(key) || [];
+        msgs.push({f:connectedWallet.toLowerCase(), t:text, ts:Date.now()});
+        if (msgs.length > 50) msgs = msgs.slice(-50);
+        await AppDB.setGlobal(key, msgs);
+    } catch(e) {}
+    openConvo(_activeConvo);
+}
+
+async function lookupProfile(input) {
+    if (!input) { input = document.getElementById('fr-search')?.value?.trim(); }
+    if (!input || input.length < 2 || !_appdbReady) return null;
+    const isW = /^0x[a-fA-F0-9]{40}$/.test(input);
+    try {
+        if (isW) {
+            return await AppDB.getGlobal('profile_' + input.toLowerCase());
+        } else {
+            const wallet = await AppDB.getGlobal('ccname_' + input.toLowerCase());
+            if (wallet) return await AppDB.getGlobal('profile_' + wallet);
+        }
+    } catch(e) {}
+    return null;
 }
 
 function renderViewedProfile(data) {
     const el = document.getElementById('profile-content');
-    const initial = (data.name||'?').charAt(0).toUpperCase();
-    const winRate = data.stats.totalDuels > 0 ? Math.round(data.stats.wins / data.stats.totalDuels * 100) : 0;
-    const unlocked = (data.achievements||[]).length;
-
+    const wr = data.stats.totalDuels > 0 ? Math.round(data.stats.wins / data.stats.totalDuels * 100) : 0;
+    const w = data.wallet?.toLowerCase();
+    const isFriend = (playerData.friends||[]).includes(w);
     el.innerHTML = `
         <div class="profile-header profile-viewed-header">
-            <div class="profile-avatar">${initial}</div>
+            <div class="profile-avatar">${(data.name||'?').charAt(0).toUpperCase()}</div>
             <div class="profile-info">
                 <div class="profile-name">${data.name}</div>
                 <div class="profile-wallet-addr">${data.wallet||''}</div>
                 <div class="profile-viewed-badge">PUBLIC PROFILE</div>
                 ${(data.gallery && data.gallery.some(Boolean)) ? `<button class="profile-gallery-btn" onclick="viewPlayerGallery(${JSON.stringify(data.gallery).replace(/"/g,'&quot;')}, '${(data.name||'Player').replace(/'/g,"\\'")}')">View Gallery</button>` : ''}
+                ${w && !isFriend && connectedWallet ? `<button class="fr-btn fr-btn-add" style="margin-top:6px" onclick="addFriend('${w}','${(data.name||'').replace(/'/g,"\\'")}')">Add Friend</button>` : ''}
             </div>
         </div>
         <div class="profile-stats-grid">
             <div class="profile-stat-card"><div class="profile-stat-val">${data.stats.wins}</div><div class="profile-stat-lbl">Wins</div></div>
             <div class="profile-stat-card"><div class="profile-stat-val">${data.stats.losses}</div><div class="profile-stat-lbl">Losses</div></div>
-            <div class="profile-stat-card"><div class="profile-stat-val">${winRate}%</div><div class="profile-stat-lbl">Win Rate</div></div>
+            <div class="profile-stat-card"><div class="profile-stat-val">${wr}%</div><div class="profile-stat-lbl">Win Rate</div></div>
             <div class="profile-stat-card"><div class="profile-stat-val">${data.stats.totalDuels}</div><div class="profile-stat-lbl">Duels</div></div>
             <div class="profile-stat-card"><div class="profile-stat-val">${data.cards||0}</div><div class="profile-stat-lbl">Cards</div></div>
             <div class="profile-stat-card"><div class="profile-stat-val">${data.stats.bestStreak||0}</div><div class="profile-stat-lbl">Best Streak</div></div>
         </div>
-        <div class="profile-section-title">ACHIEVEMENTS (${unlocked}/${ACHIEVEMENTS.length})</div>
+        <div class="profile-section-title">ACHIEVEMENTS (${(data.achievements||[]).length}/${ACHIEVEMENTS.length})</div>
         <div class="achievements-grid">
             ${ACHIEVEMENTS.map(a => {
                 const has = (data.achievements||[]).includes(a.id);
-                return `<div class="achievement${has?' unlocked':''}">
-                    <div class="achievement-icon">${a.icon}</div>
-                    <div class="achievement-name">${a.name}</div>
-                    <div class="achievement-desc">${a.desc}</div>
-                </div>`;
+                return `<div class="achievement${has?' unlocked':''}"><div class="achievement-icon">${a.icon}</div><div class="achievement-name">${a.name}</div><div class="achievement-desc">${a.desc}</div></div>`;
             }).join('')}
-        </div>
-    `;
+        </div>`;
 }
 
 function viewPlayerGallery(slots, playerName) {
     const modal = document.createElement('div');
     modal.className = 'player-gallery-modal';
-    modal.innerHTML = `
-        <div class="player-gallery-overlay" onclick="this.parentElement.remove()"></div>
-        <div class="player-gallery-content">
-            <div class="player-gallery-header">
-                <span>${playerName}'s Gallery</span>
-                <button onclick="this.closest('.player-gallery-modal').remove()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);color:#8892a8;padding:6px 14px;border-radius:16px;font-size:11px;cursor:pointer;font-family:'Nunito',sans-serif">Close</button>
-            </div>
-            <div class="player-gallery-grid">
-                ${(slots||[]).map(cid => {
-                    if (!cid) return '<div class="player-gallery-empty"></div>';
-                    const card = CARDS.find(c => c.id === cid);
-                    if (!card) return '<div class="player-gallery-empty"></div>';
-                    return `<div class="player-gallery-card">${renderCard(card)}</div>`;
-                }).join('')}
-            </div>
-        </div>
-    `;
+    modal.innerHTML = `<div class="player-gallery-overlay" onclick="this.parentElement.remove()"></div><div class="player-gallery-content"><div class="player-gallery-header"><span>${playerName}'s Gallery</span><button onclick="this.closest('.player-gallery-modal').remove()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);color:#8892a8;padding:6px 14px;border-radius:16px;font-size:11px;cursor:pointer">Close</button></div><div class="player-gallery-grid">${(slots||[]).map(cid => { if (!cid) return '<div class="player-gallery-empty"></div>'; const card = CARDS.find(c => c.id === cid); if (!card) return '<div class="player-gallery-empty"></div>'; return '<div class="player-gallery-card">'+renderCard(card)+'</div>'; }).join('')}</div></div>`;
     document.body.appendChild(modal);
-}
-
-function renderViewedProfileError(msg) {
-    const el = document.getElementById('profile-content');
-    el.innerHTML = `<div style="text-align:center;padding:40px 20px;color:rgba(226,232,240,0.5);font-size:14px;">${msg}</div>`;
 }
 
 function showProfileMsg(msg, isError) {
     let el = document.getElementById('profile-msg');
-    if (!el) {
-        el = document.createElement('div');
-        el.id = 'profile-msg';
-        const content = document.getElementById('profile-content');
-        content.parentNode.insertBefore(el, content);
-    }
+    if (!el) { el = document.createElement('div'); el.id = 'profile-msg'; const c = document.getElementById('profile-content'); c.parentNode.insertBefore(el, c); }
     el.style.cssText = 'text-align:center;padding:8px 12px;margin:0 12px;border-radius:6px;font-size:12px;font-weight:700;transition:opacity 0.3s;';
     el.style.background = isError ? 'rgba(200,40,40,0.15)' : 'rgba(40,140,220,0.15)';
     el.style.color = isError ? '#ff6b6b' : 'rgba(140,200,255,0.9)';
     el.style.border = isError ? '1px solid rgba(200,40,40,0.2)' : '1px solid rgba(40,140,220,0.2)';
-    el.textContent = msg;
-    el.style.opacity = '1';
+    el.textContent = msg; el.style.opacity = '1';
     setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { if (el.parentNode) el.remove(); }, 300); }, 3000);
 }
 
-// ====
-// TRADE HUB
-// ====
+
 let tradeTab = 'browse';
 let tradeOfferCards = [];
 let tradeWantCards = [];
@@ -5174,7 +5285,6 @@ function getTimeAgo(ts) {
     return days + 'd ago';
 }
 
-// ---- Trade Creator ----
 function openTradeCreator() {
     if (!connectedWallet) { alert('Connect your wallet to create trades.'); return; }
     tradeOfferCards = [];
@@ -5293,9 +5403,7 @@ async function postTradeListing() {
     }
 }
 
-// ====
-// MARKETPLACE
-// ====
+
 let marketTab = 'browse';
 let marketSellCards = [];
 
@@ -5365,7 +5473,6 @@ async function loadMarketListings() {
     }
 }
 
-// ---- Market Creator ----
 function openMarketCreator() {
     if (!connectedWallet) { alert('Connect your wallet to sell cards.'); return; }
     marketSellCards = [];
@@ -5501,7 +5608,6 @@ async function buyMarketListing(listingId) {
     }
 }
 
-// ---- Shared: cancel, accept, claims ----
 function refreshActiveListings() {
     if (document.getElementById('market-screen').classList.contains('active')) loadMarketListings();
     else loadTradeListings();
@@ -5619,12 +5725,9 @@ function showCreatorMsg(elId, msg, isError) {
     setTimeout(() => { el.style.display = 'none'; }, 3000);
 }
 
-// ====
-// SCREENS
-// ====
+
 let titleShowcaseInit = false;
 function initTitleShowcase() {
-    // Populate showcase cards with random cards from collection
     const showcase = document.getElementById('title-showcase');
     if (!showcase) return;
     if (titleShowcaseInit && showcase.children.length > 0) return;
@@ -5641,7 +5744,6 @@ function initTitleShowcase() {
         div.innerHTML = renderCard(card);
         showcase.appendChild(div);
     });
-    // Populate stats
     const statsEl = document.getElementById('title-stats');
     if (statsEl) {
         const totalOwned = Object.values(playerData.collection).reduce((a,b) => a + (b > 0 ? 1 : 0), 0);
@@ -5664,7 +5766,8 @@ function showScreen(id) {
     if (id === 'collection-screen') renderCollection();
     if (id === 'pack-screen') renderPackShop();
     if (id === 'deckbuilder-screen') renderDeckBuilder();
-    if (id === 'profile-screen') renderOwnProfile();
+    if (id === 'profile-screen') profTab(_profTab || 'profile');
+    if (id === 'mp-lobby' && !mp.room) renderMPLobby();
     if (id === 'gallery-screen') renderGallery();
     if (id === 'trade-screen') renderTradeHub();
     if (id === 'market-screen') renderMarketplace();
@@ -5679,9 +5782,7 @@ function updateCoinsDisplay() {
     if (mc) mc.textContent = '$DD ' + bal;
 }
 
-// ====
-// COLLECTION
-// ====
+
 let collFilter = 'all';
 const RARITY_ORDER = { C: 0, R: 1, SR: 2, UR: 3, ScR: 4, GhR: 5, UltR: 6, StR: 7 };
 
@@ -5720,13 +5821,11 @@ function renderCollection() {
     const sortBy = document.getElementById('coll-sort')?.value || 'number';
 
     let cards = [...CARDS];
-    // Type filter
     if (collFilter === 'monster') cards = cards.filter(c => c.type === 'monster');
     else if (collFilter === 'spell') cards = cards.filter(c => c.type === 'spell');
     else if (collFilter === 'trap') cards = cards.filter(c => c.type === 'trap');
     else if (collFilter === 'owned') cards = cards.filter(c => (playerData.collection[c.id] || 0) > 0);
 
-    // Search filter
     if (searchTerm) {
         cards = cards.filter(c =>
             c.name.toLowerCase().includes(searchTerm) ||
@@ -5737,7 +5836,6 @@ function renderCollection() {
         );
     }
 
-    // Sort
     if (sortBy === 'alpha') cards.sort((a, b) => a.name.localeCompare(b.name));
     else if (sortBy === 'rarity') cards.sort((a, b) => (RARITY_ORDER[b.rarity] || 0) - (RARITY_ORDER[a.rarity] || 0));
     else if (sortBy === 'type') cards.sort((a, b) => a.type.localeCompare(b.type) || a.id - b.id);
@@ -5765,12 +5863,10 @@ function setCollFilter(f) {
     renderCollection();
 }
 
-// ====
-// CARD DETAIL MODAL
-// ====
+
 let _detailNavList = [];
 let _detailNavIndex = 0;
-let _detailNavMode = null; // null, 'deck-main', 'deck-extra', 'deck-avail'
+let _detailNavMode = null;
 
 function showCardDetail(cardId, navList) {
     if (navList && navList.length > 1) {
@@ -5792,7 +5888,6 @@ function _renderDetailCard(cardId) {
     wrap.innerHTML = renderCard(card);
     document.getElementById('detail-rarity').textContent = RARITIES[card.rarity] || card.rarity;
 
-    // Nav buttons
     const prevBtn = document.getElementById('detail-prev');
     const nextBtn = document.getElementById('detail-next');
     if (_detailNavList.length > 1) {
@@ -5817,13 +5912,11 @@ function detailNav(dir) {
     _detailNavIndex = Math.max(0, Math.min(_detailNavList.length - 1, _detailNavIndex + dir));
     const cardId = _detailNavList[_detailNavIndex];
 
-    // Remove old deck action button if present
     const actionBtn = document.getElementById('deck-modal-action');
     if (actionBtn) actionBtn.remove();
 
     _renderDetailCard(cardId);
 
-    // Re-add deck action button if in deck builder context
     if (_detailNavMode) {
         let btnHtml = '';
         if (_detailNavMode === 'deck-main') {
@@ -5875,9 +5968,7 @@ function setupHoloTilt(el) {
     el.addEventListener('touchend', handleEnd);
 }
 
-// ====
-// PACK OPENING
-// ====
+
 const PACKS = [
     { id: 'starter', name: 'Free Pack', desc: '5 cards — Commons & Rares. Claimable every 24 hours!', cost: 0, count: 5, isFree: true,
       pool: () => CARDS.filter(c => c.rarity === 'C' || c.rarity === 'R'),
@@ -5959,14 +6050,12 @@ async function buyShopDeck(deckId) {
     deckBuys[deckId] = true;
     const now = Date.now();
 
-    // Give all cards in the deck (add to collection)
     const allIds = [...deck.main, ...deck.extra];
     allIds.forEach(cid => {
         playerData.collection[cid] = (playerData.collection[cid] || 0) + 1;
         if (!playerData.collectedDates[cid]) playerData.collectedDates[cid] = now;
     });
 
-    // Give 1 foil rare (SR) card as bonus - pick one SR from the deck's theme
     const themeAttr = deck.theme;
     const foilPool = CARDS.filter(c => c.rarity === 'SR' && (c.attribute === themeAttr || c.type !== 'monster'));
     if (foilPool.length > 0) {
@@ -5975,7 +6064,6 @@ async function buyShopDeck(deckId) {
         if (!playerData.collectedDates[bonus.id]) playerData.collectedDates[bonus.id] = now;
     }
 
-    // Create a new deck slot with these cards
     playerData.decks.push({ name: deck.name, cards: [...deck.main], extra: [...deck.extra] });
 
     saveData();
@@ -6060,7 +6148,6 @@ function closeNoCoinPopup() {
 async function buyPack(packId) {
     const pack = PACKS.find(p => p.id === packId);
     if (!pack) return;
-    // Free pack cooldown check
     if (pack.isFree) {
         if (playerData.freePackCooldown && (Date.now() - playerData.freePackCooldown < 86400000)) return;
     }
@@ -6073,13 +6160,10 @@ async function buyPack(packId) {
     packBuys[pack.id] = (packBuys[pack.id] || 0) + 1;
     if (pack.isFree) playerData.freePackCooldown = Date.now();
 
-    // Generate cards
     const pool = pack.pool();
     const pulled = [];
 
-    // Guarantee
     if (pack.guarantee === 'legendaryWeighted') {
-        // Weighted single rare pull: ScR 80%, GhR 15%, UltR 4%, StR 1%
         const roll = Math.random();
         let gRarity;
         if (roll < 0.80) gRarity = 'ScR';
@@ -6096,16 +6180,13 @@ async function buyPack(packId) {
         }
     }
 
-    // Fill rest
     while (pulled.length < pack.count) {
-        // Free pack: 0.000005% chance per card for a higher rarity (never StR/Cosmic)
         if (pack.isFree && Math.random() < 0.00000005) {
             const luckyRarities = ['SR','UR','ScR','GhR','UltR'];
             const lr = luckyRarities[Math.floor(Math.random() * luckyRarities.length)];
             const luckyPool = CARDS.filter(c => c.rarity === lr);
             if (luckyPool.length > 0) { pulled.push(luckyPool[Math.floor(Math.random() * luckyPool.length)]); continue; }
         }
-        // Weighted random
         const r = Math.random();
         let rarityFilter;
         if (r < 0.5) rarityFilter = 'C';
@@ -6121,7 +6202,6 @@ async function buyPack(packId) {
         }
     }
 
-    // Add to collection
     const newCards = [];
     pulled.forEach(c => {
         const wasNew = !playerData.collection[c.id];
@@ -6133,7 +6213,6 @@ async function buyPack(packId) {
     });
     saveData();
 
-    // Show reveal
     showReveal(pulled, newCards);
 }
 
@@ -6157,9 +6236,9 @@ function closeReveal() {
     renderPackShop();
 }
 
-// ====
+
 // $DD STORE
-// ====
+
 const DD_TIERS = [
     { id: 'dd100', amount: 100, bonus: null },
     { id: 'dd500', amount: 500, bonus: '+50 bonus', popular: true },
@@ -6194,7 +6273,6 @@ async function fetchTokenPrices() {
         if (ddPair) ddPrice = parseFloat(ddPair.priceUsd);
         priceLastFetch = now;
     } catch(e) {
-        console.log('[store] Price fetch failed, using fallback rate');
     }
 }
 
@@ -6204,7 +6282,6 @@ function getClawsCost(ddAmount) {
         const claws = ddValue / clawsPrice;
         return Math.max(0.01, Math.round(claws * 100) / 100);
     }
-    // Fallback fixed rate
     return Math.max(0.01, Math.round(ddAmount * FALLBACK_CLAWS_PER_DD * 100) / 100);
 }
 
@@ -6296,11 +6373,9 @@ async function buyDD(tierId) {
     if (!navigator.onLine) { alert('You are offline. Connect to the internet to purchase $DD.'); return; }
     if (!connectedWallet || offlineMode) { showWalletModal(); return; }
 
-    // Re-fetch prices to get freshest rate
     await fetchTokenPrices();
     const cost = getClawsCost(tier.amount);
 
-    // Use CLAWS SDK to pay CLAWS to creator — DD tokens sent to user's wallet
     if (window.CLAWS) {
         try {
             const recipient = window.CLAWS.creatorWallet || DD_CREATOR_WALLET;
@@ -6314,7 +6389,6 @@ async function buyDD(tierId) {
             if (e.code !== 4001) showStoreToast('Purchase failed');
         }
     } else {
-        // Local dev / no SDK — credit locally for testing
         creditDD(tier);
     }
 }
@@ -6336,10 +6410,7 @@ function showStoreToast(text) {
     setTimeout(() => toast.classList.remove('active'), 2000);
 }
 
-// ====
-// ====
-// SLEEVES & PLAYMATS
-// ====
+
 const SLEEVES = [
     { id:'s1', name:'Crimson Tide', art:'Thermidor the Blaze', border:'#a03030' },
     { id:'s2', name:'Deep Abyss', art:'Abyssal Lurker', border:'#2060a0' },
@@ -6449,8 +6520,7 @@ function getActivePlaymat() {
     return PLAYMATS.find(m => m.id === playerData.activePlaymat) || null;
 }
 
-// GALLERY BOARDS & GALLERY
-// ====
+
 const GALLERY_BOARDS = [
     { id:'gb_default', name:'Reef Display', desc:'Standard coral reef display board', cost:0,
       bg:'linear-gradient(180deg, #081020 0%, #0c1830 40%, #102040 70%, #081828 100%)', slotBorder:'rgba(40,120,200,0.15)' },
@@ -6538,19 +6608,15 @@ function renderGallerySettings() {
     const oB = playerData.ownedBorders || ['none'];
     const oLt = playerData.ownedLightings || ['none'];
     const oBd = playerData.ownedBoards || ['gb_default'];
-    // Layouts (only owned)
     document.getElementById('gallery-layout-opts').innerHTML = GALLERY_LAYOUTS.filter(l => oL.includes(l.id)).map(l =>
         `<button class="gallery-opt${g.layout===l.id?' active':''}" onclick="setGalleryOpt('layout','${l.id}')">${l.name}</button>`
     ).join('');
-    // Borders (only owned)
     document.getElementById('gallery-border-opts').innerHTML = GALLERY_BORDERS.filter(b => oB.includes(b.id)).map(b =>
         `<button class="gallery-opt${g.borderStyle===b.id?' active':''}" onclick="setGalleryOpt('borderStyle','${b.id}')">${b.name}</button>`
     ).join('');
-    // Lighting (only owned)
     document.getElementById('gallery-lighting-opts').innerHTML = GALLERY_LIGHTINGS.filter(l => oLt.includes(l.id)).map(l =>
         `<button class="gallery-opt${g.lighting===l.id?' active':''}" onclick="setGalleryOpt('lighting','${l.id}')">${l.name}</button>`
     ).join('');
-    // Boards (only owned)
     document.getElementById('gallery-board-opts').innerHTML = GALLERY_BOARDS.filter(b => oBd.includes(b.id)).map(b =>
         `<button class="gallery-opt${g.boardId===b.id?' active':''}" onclick="setGalleryOpt('boardId','${b.id}')">${b.name}</button>`
     ).join('');
@@ -6612,7 +6678,6 @@ function closeGalleryPicker() {
     document.getElementById('gallery-picker').classList.remove('open');
 }
 
-// Board store
 function renderBoards() {
     document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
     const grid = document.getElementById('boards-grid');
@@ -6653,7 +6718,6 @@ function equipBoard(id) {
     saveData(); renderBoards();
 }
 
-// Shop: Layouts
 function renderShopLayouts() {
     document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
     const owned = playerData.ownedLayouts || ['grid'];
@@ -6672,7 +6736,6 @@ function renderShopLayouts() {
     }).join('');
 }
 
-// Shop: Borders
 function renderShopBorders() {
     document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
     const owned = playerData.ownedBorders || ['none'];
@@ -6691,7 +6754,6 @@ function renderShopBorders() {
     }).join('');
 }
 
-// Shop: Lighting
 function renderShopLighting() {
     document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
     const owned = playerData.ownedLightings || ['none'];
@@ -6727,8 +6789,7 @@ function equipGalleryOpt(galleryKey, id, renderFn) {
     saveData(); window[renderFn]();
 }
 
-// DECK BUILDER
-// ====
+
 function getDeckTypeBadge(card) {
     if (card.type === 'monster') {
         if (card.subtype === 'fusion') return '<div class="deck-type-badge fusion">∞</div>';
@@ -6744,7 +6805,6 @@ function getDeckTypeBadge(card) {
 }
 
 function deckCardZoom(cardId, action, index, navList) {
-    // Set up navigation
     if (navList && navList.length > 1) {
         _detailNavList = navList;
         _detailNavIndex = navList.indexOf(cardId);
@@ -6757,7 +6817,6 @@ function deckCardZoom(cardId, action, index, navList) {
 
     _renderDetailCard(cardId);
 
-    // Add action button
     let btnHtml = '';
     if (action === 'remove-main') {
         btnHtml = `<button class="deck-modal-action-btn remove" onclick="removeFromDeck(${index},'main');closeModal();renderDeckBuilder()">Remove from Deck</button>`;
@@ -6842,19 +6901,16 @@ function setDbFilter(f) {
 }
 
 function renderDeckBuilder() {
-    // Deck slots
     const slotsBar = document.getElementById('deck-slots-bar');
     slotsBar.innerHTML = playerData.decks.map((d, i) =>
         `<button class="deck-slot-btn${i === playerData.activeDeck ? ' active' : ''}" onclick="switchDeck(${i})">${d.name}</button>`
     ).join('') + `<button class="deck-slot-btn add-slot" onclick="createDeck()">+</button>`;
 
-    // Top row: name + delete
     const nameRow = document.getElementById('deck-name-row');
     const dn = playerData.decks[playerData.activeDeck]?.name || '';
     nameRow.innerHTML = `<input class="deck-name-input" value="${dn}" onchange="renameDeck(this.value)" placeholder="Deck name">` +
         (playerData.decks.length > 1 ? `<button class="deck-del-btn" onclick="deleteDeck()">Delete</button>` : '');
 
-    // Update tab count
     document.getElementById('db-deck-count').textContent = `${playerData.deck.length}/60`;
 
     renderDeckArea();
@@ -6902,7 +6958,6 @@ function renderDeckArea() {
             </div>
         `;
     } else {
-        // Add Cards tab
         const owned = [];
         Object.entries(playerData.collection).forEach(([id, count]) => {
             const card = getCard(parseInt(id));
@@ -6945,7 +7000,6 @@ function renderDeckArea() {
             ` : `<div class="db-empty">No cards found</div>`}
         `;
 
-        // Restore cursor position in search
         const el = document.getElementById('db-add-search');
         if (el && query) { el.focus(); el.setSelectionRange(searchVal.length, searchVal.length); }
     }
@@ -6988,24 +7042,20 @@ function autoFillDeck() {
         owned[parseInt(id)] = count;
     });
 
-    // Separate owned cards by type, exclude extra deck monsters
     const ownedMonsters = CARDS.filter(c => c.type === 'monster' && !['fusion','surge'].includes(c.subtype) && (owned[c.id] || 0) > 0);
     const ownedSpells = CARDS.filter(c => c.type === 'spell' && (owned[c.id] || 0) > 0);
     const ownedTraps = CARDS.filter(c => c.type === 'trap' && (owned[c.id] || 0) > 0);
 
-    // Split monsters by level tiers
     const lowLvl = ownedMonsters.filter(c => (c.level || 0) <= 3).sort((a,b) => (b.atk||0) - (a.atk||0));
     const midLvl = ownedMonsters.filter(c => (c.level || 0) >= 4 && (c.level || 0) <= 5).sort((a,b) => (b.atk||0) - (a.atk||0));
     const highLvl = ownedMonsters.filter(c => (c.level || 0) >= 6).sort((a,b) => (b.atk||0) - (a.atk||0));
 
-    // Target: ~20 monsters (8 low, 7 mid, 5 high), ~10 spells, ~10 traps = 40
     const targets = [
         { pool: lowLvl, target: 8 },
         { pool: midLvl, target: 7 },
         { pool: highLvl, target: 5 },
     ];
 
-    // Fill monsters by tier
     for (const { pool, target } of targets) {
         let filled = 0;
         for (const card of pool) {
@@ -7016,7 +7066,6 @@ function autoFillDeck() {
         }
     }
 
-    // Fill spells (target ~10)
     const spellsSorted = ownedSpells.sort(() => Math.random() - 0.5);
     let spellCount = 0;
     for (const card of spellsSorted) {
@@ -7026,7 +7075,6 @@ function autoFillDeck() {
         for (let i = 0; i < copies; i++) { playerData.deck.push(card.id); spellCount++; }
     }
 
-    // Fill traps (target ~10)
     const trapsSorted = ownedTraps.sort(() => Math.random() - 0.5);
     let trapCount = 0;
     for (const card of trapsSorted) {
@@ -7036,7 +7084,6 @@ function autoFillDeck() {
         for (let i = 0; i < copies; i++) { playerData.deck.push(card.id); trapCount++; }
     }
 
-    // If still under 40, fill with whatever's left
     if (playerData.deck.length < 40) {
         const inDeck = new Set(playerData.deck);
         const remaining = CARDS.filter(c => (owned[c.id] || 0) > 0 && !['fusion','surge'].includes(c.subtype))
@@ -7050,7 +7097,6 @@ function autoFillDeck() {
         }
     }
 
-    // Extra deck
     CARDS.filter(c => ['fusion','surge'].includes(c.subtype)).forEach(c => {
         if ((owned[c.id] || 0) > 0 && playerData.extraDeck.length < 15) {
             playerData.extraDeck.push(c.id);
@@ -7062,14 +7108,11 @@ function autoFillDeck() {
     renderDeckBuilder();
 }
 
-// ====
-// DUEL ENGINE
-// ====
+
 let duel = null;
 
 function createPlayerState(deckIds, extraIds) {
     const deck = deckIds.map(id => ({ ...getCard(id), uid: Math.random().toString(36).slice(2) }));
-    // Shuffle
     for (let i = deck.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [deck[i], deck[j]] = [deck[j], deck[i]];
@@ -7108,9 +7151,7 @@ function createFieldCard(card, position, faceUp) {
     };
 }
 
-// ====
-// DUEL SETUP
-// ====
+
 let aiDifficulty = 'normal';
 let selectedDeckChoice = 'slot-0';
 
@@ -7121,7 +7162,6 @@ function showDuelSetup() {
     const deckEl = document.getElementById('setup-deck-opts');
     const diffEl = document.getElementById('setup-diff-opts');
 
-    // Build deck options from saved decks + starter + random
     const decks = [];
     playerData.decks.forEach((d, i) => {
         const count = (d.cards || []).length;
@@ -7136,7 +7176,6 @@ function showDuelSetup() {
         { id: 'hard', name: 'Commander', sub: 'Expert' }
     ];
 
-    // Default to first valid deck
     const validChoice = decks.some(d => d.id === selectedDeckChoice && !d.disabled);
     if (!validChoice) selectedDeckChoice = decks.find(d => !d.disabled)?.id || 'starter';
 
@@ -7170,17 +7209,13 @@ function buildRandomDeck() {
             }
         }
     });
-    // Shuffle
     for (let i = owned.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [owned[i], owned[j]] = [owned[j], owned[i]]; }
-    // Pick 40 cards, ensure some balance
     const monsters = owned.filter(id => { const c = getCard(id); return c && c.type === 'monster'; });
     const spells = owned.filter(id => { const c = getCard(id); return c && c.type === 'spell'; });
     const traps = owned.filter(id => { const c = getCard(id); return c && c.type === 'trap'; });
     const deck = [...monsters.slice(0, 20), ...spells.slice(0, 12), ...traps.slice(0, 8)];
-    // Pad if needed
     const remaining = owned.filter(id => !deck.includes(id) || deck.filter(x => x === id).length < 3);
     while (deck.length < 40 && remaining.length > 0) deck.push(remaining.shift());
-    // Extra deck
     const extra = [];
     Object.keys(playerData.collection).forEach(id => {
         const c = getCard(Number(id));
@@ -7249,21 +7284,18 @@ function startDuel(deckIds, extraIds) {
         tide: 0,
     };
 
-    // Draw opening hands
     for (let i = 0; i < 5; i++) {
         drawCard('player');
         drawCard('ai');
     }
 
     showScreen('duel-screen');
-    // Apply playmat
     const pm = getActivePlaymat();
     const ds = document.getElementById('duel-screen');
     if (pm) ds.style.background = pm.bg;
     else ds.style.background = '';
     duelLog('Duel Start! You go first.');
     duel.phase = 'draw';
-    // First turn: skip draw
     duelLog('Turn 1 - Skipping first draw.');
     duel.phase = 'main1';
     renderDuel();
@@ -7272,7 +7304,6 @@ function startDuel(deckIds, extraIds) {
 function drawCard(who) {
     const p = duel[who];
     if (p.deck.length === 0) {
-        // Deck out
         duelLog(`${who === 'player' ? 'You' : 'AI'} ran out of cards!`);
         endDuelResult(who === 'player' ? 'lose' : 'win');
         return false;
@@ -7291,7 +7322,6 @@ function duelLog(msg) {
         entry.className = 'log-entry';
         entry.textContent = msg;
         logEl.appendChild(entry);
-        // Remove old entries
         while (logEl.children.length > 5) logEl.removeChild(logEl.firstChild);
     }
 }
@@ -7307,7 +7337,6 @@ function showDamageFlash(amount, heal) {
 function getFieldATK(fc, owner) {
     if (!fc) return 0;
     let atk = fc.card.atk + fc.atkMod;
-    // Field spell buff
     const p = duel[owner];
     const opp = duel[owner === 'player' ? 'ai' : 'player'];
     [p, opp].forEach(side => {
@@ -7319,7 +7348,6 @@ function getFieldATK(fc, owner) {
             });
         }
     });
-    // Abyssal Sovereign debuff
     const oppSide = owner === 'player' ? 'ai' : 'player';
     duel[oppSide].monsters.forEach(m => {
         if (m && m.faceUp && m.card.effects) {
@@ -7330,7 +7358,6 @@ function getFieldATK(fc, owner) {
             });
         }
     });
-    // Tide bonus: +200 ATK at threshold
     if (duel.tide >= 3 && owner === 'player') atk += 200;
     if (duel.tide <= -3 && owner === 'ai') atk += 200;
     return Math.max(0, atk);
@@ -7377,11 +7404,9 @@ function destroyMonster(who, zoneIdx) {
     duel[who].monsters[zoneIdx] = null;
     sendToGraveyard(who, fc);
 
-    // Tide shift: losing a monster shifts tide against you
     if (who === 'player') duel.tide = Math.max(-5, duel.tide - 1);
     else duel.tide = Math.min(5, duel.tide + 1);
 
-    // On destroy effects
     if (fc.card.effects) {
         fc.card.effects.forEach(eff => {
             if (eff.trigger === 'onDestroy') {
@@ -7464,9 +7489,7 @@ function endDuelResult(result) {
     overlay.classList.add('active');
 }
 
-// ====
-// DUEL PHASES
-// ====
+
 function advanceToPhase(target) {
     if (duel.gameOver || duel.currentPlayer !== 'player') return;
     hideActionMenu();
@@ -7497,8 +7520,6 @@ function advanceToPhase(target) {
 }
 
 function endTurn() {
-    // End phase effects
-    // Remove turn-only buffs
     duel.player.monsters.forEach(m => {
         if (m) {
             m.atkMod = 0;
@@ -7508,7 +7529,6 @@ function endTurn() {
         }
     });
 
-    // Depth Charge timer tick (player's set depth charges)
     duel.player.spells.forEach((fc, i) => {
         if (fc && fc.depthTimer > 0) {
             fc.depthTimer--;
@@ -7521,14 +7541,12 @@ function endTurn() {
         }
     });
 
-    // Discard to 6 (simplified - auto discard oldest)
     while (duel.player.hand.length > 6) {
         const discarded = duel.player.hand.pop();
         duel.player.graveyard.push(discarded);
         duelLog(`Discarded ${discarded.name} (hand limit).`);
     }
 
-    // Switch to AI turn
     duel.currentPlayer = 'ai';
     duel.turn++;
     duel.isFirstTurn = false;
@@ -7538,13 +7556,10 @@ function endTurn() {
     duelLog(`--- AI's Turn ${duel.turn} ---`);
     renderDuel();
 
-    // AI plays after a delay
     setTimeout(() => aiTurn(), 800);
 }
 
-// ====
-// PLAYER ACTIONS
-// ====
+
 function handleHandCardClick(handIdx) {
     if (duel.currentPlayer !== 'player' || duel.gameOver) return;
     if (duel.phase !== 'main1') return;
@@ -7560,10 +7575,8 @@ function handleHandCardClick(handIdx) {
 
     if (card.type === 'monster') {
         if (card.subtype === 'fusion' || card.subtype === 'surge') {
-            // Can't normal summon these
             buttons.push({ label: 'Cannot Normal Summon', cls: 'cancel', disabled: true });
         } else {
-            // Check special summon from hand
             let canSpecial = false;
             if (card.effects) {
                 card.effects.forEach(eff => {
@@ -7577,7 +7590,6 @@ function handleHandCardClick(handIdx) {
                 buttons.push({ label: 'Special Summon', cls: 'summon', action: () => specialSummonFromHand(handIdx) });
             }
 
-            // Normal summon
             if (!duel.player.hasNormalSummoned && getEmptyMonsterZone('player') >= 0) {
                 if (card.level <= 4) {
                     buttons.push({ label: 'Normal Summon', cls: 'summon', action: () => normalSummon(handIdx) });
@@ -7587,7 +7599,6 @@ function handleHandCardClick(handIdx) {
                     buttons.push({ label: 'Sacrifice Summon (2)', cls: 'summon', action: () => startTributeSummon(handIdx, 2) });
                 }
             }
-            // Set
             if (!duel.player.hasNormalSummoned && getEmptyMonsterZone('player') >= 0 && card.level <= 4) {
                 buttons.push({ label: 'Set', cls: 'set', action: () => setMonster(handIdx) });
             }
@@ -7688,7 +7699,6 @@ function startTributeSummon(handIdx, count) {
 function handleFieldMonsterClick(who, zoneIdx) {
     if (duel.gameOver) return;
 
-    // Tribute selection
     if (duel.uiState === 'selectTribute' && who === 'player') {
         const fc = duel.player.monsters[zoneIdx];
         if (!fc) return;
@@ -7702,7 +7712,6 @@ function handleFieldMonsterClick(who, zoneIdx) {
         return;
     }
 
-    // Equip target selection
     if (duel.uiState === 'selectEquipTarget' && who === 'player') {
         const fc = duel.player.monsters[zoneIdx];
         if (!fc || !fc.faceUp) return;
@@ -7710,7 +7719,6 @@ function handleFieldMonsterClick(who, zoneIdx) {
         return;
     }
 
-    // Ritual tribute selection
     if (duel.uiState === 'selectRitualTribute' && who === 'player') {
         const fc = duel.player.monsters[zoneIdx];
         if (!fc) return;
@@ -7724,22 +7732,18 @@ function handleFieldMonsterClick(who, zoneIdx) {
         return;
     }
 
-    // Attack target selection
     if (duel.uiState === 'selectAttackTarget' && who === 'ai') {
         performAttack(duel.pendingAction.zoneIdx, zoneIdx);
         return;
     }
 
-    // Player's monster actions during main phase
     if (who === 'player' && duel.currentPlayer === 'player') {
         const fc = duel.player.monsters[zoneIdx];
         if (!fc) return;
 
         if (duel.phase === 'battle' && fc.canAttack && fc.faceUp && fc.position === 'atk' && !fc.frozen && fc.attacks < fc.maxAttacks) {
-            // Start attack
             const oppMonsters = duel.ai.monsters.filter(m => m !== null);
             if (oppMonsters.length === 0) {
-                // Direct attack
                 performDirectAttack(zoneIdx);
             } else {
                 duel.uiState = 'selectAttackTarget';
@@ -7753,18 +7757,15 @@ function handleFieldMonsterClick(who, zoneIdx) {
         if (duel.phase === 'main1') {
             const buttons = [];
 
-            // Flip summon
             if (!fc.faceUp && !fc.justSet && fc.turnSet < duel.turn) {
                 buttons.push({ label: 'Flip Summon', cls: 'summon', action: () => flipSummon('player', zoneIdx) });
             }
 
-            // Change position
             if (fc.faceUp && fc.canChangePos && !fc.card.effects?.some(e => e.action === 'cantChangePos')) {
                 const newPos = fc.position === 'atk' ? 'DEF' : 'ATK';
                 buttons.push({ label: `Change to ${newPos}`, cls: 'position', action: () => changePosition('player', zoneIdx) });
             }
 
-            // Activated effects
             if (fc.faceUp && !fc.effectUsed && fc.card.effects?.some(e => e.trigger === 'activated')) {
                 buttons.push({ label: 'Activate Effect', cls: 'activate', action: () => activateMonsterEffect('player', zoneIdx) });
             }
@@ -7775,7 +7776,6 @@ function handleFieldMonsterClick(who, zoneIdx) {
         }
     }
 
-    // Clicking AI face-up monsters: show view option
     if (who === 'ai') {
         const fc = duel.ai.monsters[zoneIdx];
         if (fc && fc.faceUp && duel.uiState !== 'selectAttackTarget') {
@@ -7786,7 +7786,6 @@ function handleFieldMonsterClick(who, zoneIdx) {
         }
     }
 
-    // Player clicking own monster outside main phase (e.g. during battle or AI turn) to view
     if (who === 'player' && (duel.currentPlayer !== 'player' || duel.phase !== 'main1') && duel.uiState === 'idle') {
         const fc = duel.player.monsters[zoneIdx];
         if (fc) {
@@ -7811,13 +7810,11 @@ function confirmTributes() {
 
     if (duel.pendingAction?.type === 'tributeSummon') {
         const handIdx = duel.pendingAction.handIdx;
-        // Remove tributes
         duel.tributeTargets.forEach(zi => {
             const fc = duel.player.monsters[zi];
             duelLog(`Tributed ${fc.card.name}.`);
             destroyMonster('player', zi);
         });
-        // Summon
         const card = duel.player.hand.splice(handIdx, 1)[0];
         const zi = getEmptyMonsterZone('player');
         const fc = createFieldCard(card, 'atk', true);
@@ -7846,7 +7843,6 @@ function flipSummon(who, zoneIdx) {
     fc.canChangePos = false;
     duelLog(`${who === 'player' ? 'You' : 'AI'} flip summoned ${fc.card.name}!`);
 
-    // Trigger flip effects
     if (fc.card.effects) {
         fc.card.effects.forEach(eff => {
             if (eff.trigger === 'onFlip') {
@@ -7878,9 +7874,7 @@ function specialSummonFromHand(handIdx) {
     renderDuel();
 }
 
-// ====
-// ATTACK RESOLUTION
-// ====
+
 function performAttack(atkZoneIdx, defZoneIdx) {
     duel.uiState = 'idle';
     duel.pendingAction = null;
@@ -7896,11 +7890,9 @@ function performAttack(atkZoneIdx, defZoneIdx) {
 
     duelLog(`${attacker.card.name} attacks ${defender.faceUp ? defender.card.name : 'a face-down monster'}!`);
 
-    // Flip face-down defender
     if (!defender.faceUp) {
         defender.faceUp = true;
         duelLog(`Revealed: ${defender.card.name}!`);
-        // Trigger flip effects
         if (defender.card.effects) {
             defender.card.effects.forEach(eff => {
                 if (eff.trigger === 'onFlip') resolveEffect(eff, 'ai', defZoneIdx);
@@ -7908,7 +7900,6 @@ function performAttack(atkZoneIdx, defZoneIdx) {
         }
     }
 
-    // Check for attack-negating traps
     if (checkAndActivateTraps('ai', 'onOpponentAttack', { atkZoneIdx, defZoneIdx })) {
         renderDuel();
         return;
@@ -7921,7 +7912,6 @@ function performAttack(atkZoneIdx, defZoneIdx) {
             takeDamage('ai', dmg);
             destroyMonster('ai', defZoneIdx);
             duelLog(`${defender.card.name} destroyed! AI takes ${dmg} damage.`);
-            // On battle destroy effect
             if (attacker.card.effects?.some(e => e.trigger === 'onBattleDestroy')) {
                 attacker.card.effects.filter(e => e.trigger === 'onBattleDestroy').forEach(eff => {
                     resolveEffect(eff, 'player', atkZoneIdx);
@@ -7938,11 +7928,9 @@ function performAttack(atkZoneIdx, defZoneIdx) {
             duelLog('Both monsters destroyed!');
         }
     } else {
-        // ATK vs DEF
         const defDEF = getFieldDEF(defender, 'ai');
         const indestructible = defender.card.effects?.some(e => e.action === 'battleIndestructibleDef');
         if (atkATK > defDEF) {
-            // Shell Armor absorbs excess damage
             if (defender.shell > 0) {
                 const excess = atkATK - defDEF;
                 defender.shell = Math.max(0, defender.shell - excess);
@@ -7977,7 +7965,6 @@ function performDirectAttack(atkZoneIdx) {
 
     const atkATK = getFieldATK(attacker, 'player');
 
-    // Check for traps
     if (checkAndActivateTraps('ai', 'onOpponentAttack', { atkZoneIdx })) {
         renderDuel();
         return;
@@ -7988,15 +7975,12 @@ function performDirectAttack(atkZoneIdx) {
     renderDuel();
 }
 
-// ====
-// SPELL / TRAP ACTIVATION
-// ====
+
 function activateSpell(handIdx) {
     hideActionMenu();
     const card = duel.player.hand.splice(handIdx, 1)[0];
     duelLog(`Activated ${card.name}!`);
 
-    // Check for Ink Cloud
     if (checkAndActivateTraps('ai', 'onSpellActivation', { card })) {
         duel.player.graveyard.push(card);
         renderDuel();
@@ -8046,7 +8030,6 @@ function completeEquipSpell(targetZone) {
     }
     duelLog(`Equipped ${card.name} to ${target.card.name}! (+${card.effects?.[0]?.value || 0} ATK)`);
 
-    // Place in S/T zone
     const zi = getEmptySpellZone('player');
     if (zi >= 0) {
         duel.player.spells[zi] = createFieldCard(card, 'atk', true);
@@ -8090,7 +8073,6 @@ function resolveSpellEffect(eff, who, card) {
             break;
         case 'atkBuff':
             if (eff.target === 'select') {
-                // Auto-select strongest
                 let best = -1, bestATK = 0;
                 duel[who].monsters.forEach((m, i) => {
                     if (m && m.faceUp) {
@@ -8181,7 +8163,6 @@ function resolveSpellEffect(eff, who, card) {
             break;
         }
         case 'shellOnSummonEarth':
-            // Passive — handled in triggerSummonEffects
             break;
     }
 }
@@ -8226,7 +8207,6 @@ function resolveEffect(eff, who, zoneIdx) {
             duelLog(`${who === 'player' ? 'You' : 'AI'} drew ${eff.value} card(s).`);
             break;
         case 'destroyST': {
-            // Destroy a random opp S/T
             const targets = [];
             duel[opp].spells.forEach((s, i) => { if (s) targets.push(i); });
             if (duel[opp].fieldSpell) targets.push('field');
@@ -8244,7 +8224,6 @@ function resolveEffect(eff, who, zoneIdx) {
             break;
         }
         case 'destroyAny': {
-            // Destroy any card - pick strongest opponent monster first
             let done = false;
             let bestIdx = -1, bestATK = -1;
             duel[opp].monsters.forEach((m, i) => {
@@ -8336,7 +8315,6 @@ function triggerSummonEffects(who, zoneIdx) {
         }
     });
 
-    // Check opponent for Barnacle Parasite
     const opp = who === 'player' ? 'ai' : 'player';
     duel[opp].hand.forEach((card, hi) => {
         if (card.id === 13 && getEmptyMonsterZone(opp) >= 0) { // Barnacle Parasite
@@ -8348,7 +8326,6 @@ function triggerSummonEffects(who, zoneIdx) {
         }
     });
 
-    // Armored Reef — continuous spell grants Shell 2 to EARTH monsters on summon
     duel[who].spells.forEach(s => {
         if (s && s.faceUp && s.card.effects?.some(e => e.action === 'shellOnSummonEarth')) {
             if (fc.card.attribute === 'EARTH') {
@@ -8370,9 +8347,7 @@ function activateMonsterEffect(who, zoneIdx) {
     renderDuel();
 }
 
-// ====
-// TRAPS
-// ====
+
 function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
     if (trapIdx >= traps.length) { callback(false); return; }
     const trap = traps[trapIdx];
@@ -8381,7 +8356,6 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
     const triggerCardArea = document.getElementById('trap-trigger-card');
     const descEl = document.getElementById('trap-prompt-desc');
 
-    // Show what triggered the prompt
     const triggerLabels = {
         onOpponentAttack: 'Opponent is attacking!',
         onSpellActivation: 'Spell activated!',
@@ -8394,7 +8368,6 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
     const remainingCount = traps.length - trapIdx;
     titleEl.textContent = `${triggerText} (${remainingCount} response${remainingCount > 1 ? 's' : ''} available)`;
 
-    // Show the card that triggered this response
     let triggerCard = null;
     if (context) {
         if (context.card) triggerCard = context.card;
@@ -8450,7 +8423,6 @@ function checkAndActivateTraps(who, trigger, context, callback) {
         return false;
     }
 
-    // AI auto-activates traps
     if (who === 'ai') {
         const trap = traps[0];
         trap.fc.faceUp = true;
@@ -8461,7 +8433,6 @@ function checkAndActivateTraps(who, trigger, context, callback) {
         return true;
     }
 
-    // Player — show trap activation prompt
     if (callback) {
         showTrapPrompt(traps, 0, trigger, context, callback);
         return true;
@@ -8493,7 +8464,6 @@ function resolveTrapEffect(who, zoneIdx, trigger, context) {
             duelLog(`Dealt ${eff.value} damage!`);
             break;
         case 'destroyThat':
-            // Destroy the monster that triggered this (summon or other)
             if (context?.summonedZoneIdx !== undefined) {
                 duelLog('Destroyed the summoned monster!');
                 destroyMonster(opp, context.summonedZoneIdx);
@@ -8543,9 +8513,7 @@ function resolveTrapEffect(who, zoneIdx, trigger, context) {
     }
 }
 
-// ====
-// FUSION / SURGE / RITUAL
-// ====
+
 function canFusionSummon(who) {
     return duel[who].extraDeck.some(c => c.subtype === 'fusion' && c.fusionMaterials);
 }
@@ -8554,14 +8522,12 @@ function doFusionSummon(who, polyHandIdx) {
     hideActionMenu();
     const p = duel[who];
 
-    // Find a fusionable monster
     for (const fusionCard of p.extraDeck) {
         if (fusionCard.subtype !== 'fusion' || !fusionCard.fusionMaterials) continue;
 
         const mats = fusionCard.fusionMaterials;
         const available = [...p.hand, ...p.monsters.filter(m => m).map(m => m.card)];
 
-        // Check if we have all materials
         const used = [];
         let allFound = true;
         for (const matId of mats) {
@@ -8577,13 +8543,11 @@ function doFusionSummon(who, polyHandIdx) {
         if (!allFound) continue;
         if (getEmptyMonsterZone(who) < 0) continue;
 
-        // Remove Shell Fusion spell
         if (polyHandIdx !== undefined) {
             const poly = p.hand.splice(polyHandIdx, 1)[0];
             p.graveyard.push(poly);
         }
 
-        // Remove materials
         for (const matId of mats) {
             const handIdx = p.hand.findIndex(c => c.id === matId);
             if (handIdx >= 0) {
@@ -8594,7 +8558,6 @@ function doFusionSummon(who, polyHandIdx) {
             }
         }
 
-        // Summon fusion
         const zi = getEmptyMonsterZone(who);
         const edIdx = p.extraDeck.indexOf(fusionCard);
         const card = p.extraDeck.splice(edIdx, 1)[0];
@@ -8620,7 +8583,6 @@ function canSurgeSummon(who) {
         if (surge.subtype !== 'surge') continue;
         const targetLevel = surge.level;
 
-        // Check all combinations
         for (const tuner of tuners) {
             const remaining = nonTuners.filter(m => m !== tuner);
             for (let mask = 1; mask < (1 << remaining.length); mask++) {
@@ -8645,10 +8607,8 @@ function doSurgeSummon(who, surgeResult) {
     const p = duel[who];
     const { surge, materials } = surgeResult;
 
-    // Check for Tide Caller draw effect
     const tideCallerUsed = materials.some(m => m.card.id === 14);
 
-    // Send materials to GY
     materials.forEach(m => {
         const idx = p.monsters.indexOf(m);
         if (idx >= 0) {
@@ -8657,7 +8617,6 @@ function doSurgeSummon(who, surgeResult) {
         }
     });
 
-    // Summon from extra deck
     const edIdx = p.extraDeck.indexOf(surge);
     const card = p.extraDeck.splice(edIdx, 1)[0];
     const zi = getEmptyMonsterZone(who);
@@ -8705,7 +8664,6 @@ function completeRitualSummon() {
     const p = duel.player;
     const ritualMonster = getCard(pa.monsterId);
 
-    // Check total levels
     let totalLevels = 0;
     duel.tributeTargets.forEach(zi => {
         if (p.monsters[zi]) totalLevels += p.monsters[zi].card.level;
@@ -8716,20 +8674,16 @@ function completeRitualSummon() {
         return;
     }
 
-    // Remove ritual spell from hand
     const spell = p.hand.splice(pa.handIdx, 1)[0];
     p.graveyard.push(spell);
 
-    // Remove tributes
     duel.tributeTargets.forEach(zi => {
         destroyMonster('player', zi);
     });
 
-    // Remove ritual monster from hand
     const monsterIdx = p.hand.findIndex(c => c.id === pa.monsterId);
     const card = p.hand.splice(monsterIdx, 1)[0];
 
-    // Summon
     const zi = getEmptyMonsterZone('player');
     const fc = createFieldCard(card, 'atk', true);
     p.monsters[zi] = fc;
@@ -8739,13 +8693,10 @@ function completeRitualSummon() {
     document.getElementById('tribute-prompt').classList.remove('active');
 }
 
-// ====
-// AI ENGINE
-// ====
+
 function aiTurn() {
     if (duel.gameOver) return;
 
-    // Draw Phase
     duel.phase = 'draw';
     const drawn = drawCard('ai');
     if (drawn) duelLog(`AI drew a card.`);
@@ -8758,7 +8709,6 @@ function aiTurn() {
         duel.phase = 'main1';
         duel.ai.hasNormalSummoned = false;
 
-        // Unfreeze monsters
         duel.ai.monsters.forEach(m => { if (m) { m.frozen = false; m.canChangePos = true; m.effectUsed = false; } });
 
         aiMainPhase();
@@ -8814,7 +8764,6 @@ function aiProcessSpellQueue(spells, idx, done) {
     const hi = duel.ai.hand.indexOf(spell);
     if (hi < 0) { aiProcessSpellQueue(spells, idx + 1, done); return; }
 
-    // Fusion spell
     if (spell.effects?.[0]?.action === 'fusionSummon') {
         if (canFusionSummon('ai')) {
             duelLog(`AI activated ${spell.name}!`);
@@ -8836,7 +8785,6 @@ function aiProcessSpellQueue(spells, idx, done) {
         return;
     }
 
-    // Equip spell
     if (spell.subtype === 'equip') {
         const target = duel.ai.monsters.findIndex(m => m && m.faceUp);
         if (target >= 0) {
@@ -8867,7 +8815,6 @@ function aiProcessSpellQueue(spells, idx, done) {
         return;
     }
 
-    // Don't use Tidal Wave if we have more monsters
     if (spell.effects?.[0]?.action === 'destroyAllMonsters') {
         if (getMonsterCount('ai') > getMonsterCount('player')) {
             aiProcessSpellQueue(spells, idx + 1, done);
@@ -8875,7 +8822,6 @@ function aiProcessSpellQueue(spells, idx, done) {
         }
     }
 
-    // Normal/quickplay/continuous spells
     if (['normal', 'quickplay', 'continuous'].includes(spell.subtype)) {
         duelLog(`AI activated ${spell.name}!`);
         renderDuel();
@@ -9012,7 +8958,6 @@ function aiMainPhaseFinish() {
         doSurgeSummon('ai', surgeOptions[0]);
         renderDuel();
 
-        // Find the surge monster's zone
         let syncZone = -1;
         duel.ai.monsters.forEach((m, i) => {
             if (m && m.card.id === surgeOptions[0].surge.id) syncZone = i;
@@ -9047,7 +8992,6 @@ function aiMainPhaseFinish2() {
 
     renderDuel();
 
-    // Battle Phase
     setTimeout(() => {
         if (duel.gameOver) return;
         aiBattlePhase();
@@ -9206,12 +9150,10 @@ function aiEndPhase() {
 
     duel.phase = 'end';
 
-    // Remove turn buffs
     duel.ai.monsters.forEach(m => {
         if (m) { m.atkMod = 0; m.defMod = 0; }
     });
 
-    // Depth Charge timer tick (AI's set depth charges)
     duel.ai.spells.forEach((fc, i) => {
         if (fc && fc.depthTimer > 0) {
             fc.depthTimer--;
@@ -9224,7 +9166,6 @@ function aiEndPhase() {
         }
     });
 
-    // Discard to 6
     while (duel.ai.hand.length > 6) {
         duel.ai.graveyard.push(duel.ai.hand.pop());
     }
@@ -9232,7 +9173,6 @@ function aiEndPhase() {
     duelLog('AI ends turn.');
     renderDuel();
 
-    // Player's turn
     setTimeout(() => {
         if (duel.gameOver) return;
         duel.currentPlayer = 'player';
@@ -9258,20 +9198,16 @@ function aiEndPhase() {
     }, 800);
 }
 
-// ====
-// DUEL RENDERING
-// ====
+
 function renderDuel() {
     if (!duel) return;
 
-    // LP
     document.getElementById('player-lp').textContent = duel.player.lp;
     document.getElementById('ai-lp').textContent = duel.ai.lp;
     document.getElementById('player-lp-bar').style.width = (duel.player.lp / 8000 * 100) + '%';
     document.getElementById('ai-lp-bar').style.width = (duel.ai.lp / 8000 * 100) + '%';
     document.getElementById('turn-info').textContent = `Turn ${duel.turn} - ${duel.currentPlayer === 'player' ? 'Your Turn' : (duel.isMultiplayer ? "Opponent's Turn" : 'AI Turn')}`;
 
-    // Tide gauge
     const tideMarker = document.getElementById('tide-marker');
     if (tideMarker) {
         const tidePct = ((duel.tide + 5) / 10) * 100;
@@ -9279,7 +9215,6 @@ function renderDuel() {
         tideMarker.className = 'tide-marker' + (duel.tide >= 3 ? ' player-favor' : duel.tide <= -3 ? ' ai-favor' : '');
     }
 
-    // Field
     const field = document.getElementById('duel-field');
     field.innerHTML = `
         ${renderFieldRow('ai', 'spells')}
@@ -9301,7 +9236,6 @@ function renderDuel() {
         ${renderFieldRow('player', 'spells')}
     `;
 
-    // Highlight tribute targets
     if (duel.uiState === 'selectTribute' || duel.uiState === 'selectRitualTribute') {
         duel.tributeTargets.forEach(zi => {
             const zones = field.querySelectorAll('.player-monster-zone');
@@ -9309,14 +9243,12 @@ function renderDuel() {
         });
     }
 
-    // Highlight attack targets
     if (duel.uiState === 'selectAttackTarget') {
         field.querySelectorAll('.ai-monster-zone').forEach(z => {
             if (z.querySelector('.card')) z.classList.add('attack-target');
         });
     }
 
-    // Phase bar
     const phaseBar = document.getElementById('phase-bar');
     const phases = [
         { key: 'draw', label: 'DRAW' },
@@ -9334,7 +9266,6 @@ function renderDuel() {
             ${canClick ? `onclick="advanceToPhase('${p.key}')"` : ''}>${p.label}</button>`;
     }).join('');
 
-    // Surge summon button
     if (isPlayerTurn && duel.phase === 'main1') {
         const surgeOpts = canSurgeSummon('player');
         if (surgeOpts.length > 0) {
@@ -9342,12 +9273,10 @@ function renderDuel() {
         }
     }
 
-    // Direct attack button
     if (duel.uiState === 'selectAttackTarget' && getMonsterCount('ai') === 0) {
         phaseBar.innerHTML += `<button class="phase-btn clickable" style="background:rgba(231,76,60,0.15);color:#e74c3c" onclick="handleDirectAttackClick()">DIRECT ATK</button>`;
     }
 
-    // Hand
     const hand = document.getElementById('player-hand');
     hand.innerHTML = duel.player.hand.map((card, i) =>
         `<div onclick="handleHandCardClick(${i})">${renderCard(card)}</div>`
@@ -9369,13 +9298,11 @@ function renderFieldRow(who, zone) {
                 if (fc.depthTimer > 0 && !fc.faceUp) {
                     cardHTML += `<div class="depth-timer">${fc.depthTimer}</div>`;
                 }
-                // Show ATK/DEF overlay on face-up monsters
                 if (fc.faceUp && zone === 'monsters') {
                     const atkVal = (fc.card.atk || 0) + (fc.atkMod || 0);
                     const defVal = (fc.card.def || 0) + (fc.defMod || 0);
                     statOverlay = `<div class="field-stat-overlay"><span class="fs-atk">${atkVal}</span><span class="fs-def">${defVal}</span></div>`;
                 }
-                // Show peek eye on player's own face-down cards
                 if (!fc.faceUp && who === 'player') {
                     peekEye = '<div class="peek-eye">👁</div>';
                 }
@@ -9398,7 +9325,6 @@ function renderFieldSpellZone(who) {
     </div>`;
 }
 
-// Desktop card preview on hover — click to open full detail
 (function initCardPreview() {
     const panel = document.getElementById('card-preview-panel');
     if (!panel) return;
@@ -9431,7 +9357,6 @@ function renderFieldSpellZone(who) {
         const cardEl = e.target.closest('[data-card-id]');
         if (cardEl && cardEl.closest('#duel-screen')) hidePreview();
     });
-    // Click the preview panel to open full card detail
     panel.addEventListener('click', () => {
         if (previewCardId) {
             hidePreview();
@@ -9444,23 +9369,19 @@ function handleFieldSpellClick(who, zoneIdx) {
     const fc = duel[who].spells[zoneIdx];
     if (!fc) return;
 
-    // Player's face-down spell/trap
     if (who === 'player' && !fc.faceUp) {
         const buttons = [];
-        // Can activate if it's player's turn and not set this turn
         if (duel.currentPlayer === 'player' && fc.turnSet < duel.turn) {
             if ((fc.card.type === 'trap' && fc.card.subtype !== 'depthcharge') || fc.card.subtype === 'quickplay') {
                 buttons.push({ label: 'Activate', cls: 'activate', action: () => activateSetCard(zoneIdx) });
             }
         }
-        // Always let player peek at their own face-down cards
         buttons.push({ label: 'View Card', cls: 'position', action: () => { hideActionMenu(); showCardDetail(fc.card.id); } });
         buttons.push({ label: 'Cancel', cls: 'cancel', action: hideActionMenu });
         showActionMenu(buttons);
         return;
     }
 
-    // View face-up spell/trap (either side)
     if (fc.faceUp) {
         showActionMenu([
             { label: 'View Card', cls: 'position', action: () => { hideActionMenu(); showCardDetail(fc.card.id); } },
@@ -9513,22 +9434,18 @@ function showGraveyard(who) {
     overlay.classList.add('active');
 }
 
-// ====
-// INIT
-// ====
+
 loadData();
 updateCoinsDisplay();
 initWalletConnect();
 initTitleShowcase();
 
-// Dismiss loading screen after 1.5s
 setTimeout(() => {
     const ls = document.getElementById('loading-screen');
     if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
 }, 1500);
 setTimeout(() => checkTradeClaims(), 2000);
 setInterval(() => syncDDBalance(), 30000);
-// Online counter via AppDB heartbeat
 const _onlineId = 'ccon_' + Math.random().toString(36).substr(2,8);
 let _appdbReady = false;
 async function _waitAppDB() {
@@ -9541,26 +9458,27 @@ async function _waitAppDB() {
 }
 async function _heartbeat() {
     if (!_appdbReady && !(await _waitAppDB())) return;
-    try { await AppDB.setGlobal(_onlineId, String(Date.now())); } catch(e) { console.warn('heartbeat fail', e); }
+    try { await AppDB.setGlobal(_onlineId, {t:Date.now(),w:(connectedWallet||'').toLowerCase(),n:playerData.profileName||''}); } catch(e) {}
 }
 async function _countOnline() {
     if (!_appdbReady && !(await _waitAppDB())) return;
     try {
         const all = await AppDB.listGlobal();
         const now = Date.now();
-        const count = all.filter(e => e.key.startsWith('ccon_') && (now - Number(e.value)) < 90000).length;
+        const _onlineUsers = all.filter(e => e.key.startsWith('ccon_') && (now - (e.value?.t || Number(e.value))) < 90000);
+        const count = _onlineUsers.length;
         const el = document.getElementById('online-count');
         if (el) el.textContent = count;
         const box = document.getElementById('online-counter');
         if (box) box.style.display = '';
-    } catch(e) { console.warn('count fail', e); }
+    } catch(e) {}
 }
 _heartbeat().then(() => _countOnline());
 setInterval(_heartbeat, 30000);
 setInterval(_countOnline, 15000);
+setInterval(mpCheckChallenges, 8000);
 window.addEventListener('beforeunload', () => { if (window.AppDB) AppDB.deleteGlobal(_onlineId).catch(()=>{}); });
 
-// Show dev tools for creator wallet only
 (function() {
     const w = getWalletFromCookie();
     if (w && w.toLowerCase() === DD_CREATOR_WALLET.toLowerCase()) {
@@ -9569,54 +9487,120 @@ window.addEventListener('beforeunload', () => { if (window.AppDB) AppDB.deleteGl
     }
 })();
 
-// Close modal on overlay click
 document.getElementById('card-modal').addEventListener('click', function(e) {
     if (e.target === this) closeModal();
 });
 
-// Close game over on return
 document.querySelector('.game-over-btn')?.addEventListener('click', function() {
     document.getElementById('game-over').classList.remove('active');
     duel = null;
 });
 
 
-// ====
-// MULTIPLAYER SYSTEM
-// ====
-
 let mp = { active: false, room: null, role: null, opponentId: null, session: 0 };
 
 function mpResetLobbyUI() {
     try {
         var e;
-        if (e = document.getElementById('mp-create-join')) e.style.display = 'flex';
+        if (e = document.getElementById('mp-main-lobby')) e.style.display = '';
         if (e = document.getElementById('mp-waiting')) e.style.display = 'none';
         if (e = document.getElementById('mp-no-sdk')) e.style.display = 'none';
         if (e = document.getElementById('mp-room-display')) e.textContent = '----';
         if (e = document.getElementById('mp-status-text')) e.textContent = 'Connecting...';
         if (e = document.getElementById('mp-start-btn')) e.style.display = 'none';
-        if (e = document.getElementById('mp-retry-btn')) e.style.display = 'none';
         if (e = document.getElementById('mp-players-list')) e.innerHTML = '';
         if (e = document.getElementById('mp-code-input')) e.value = '';
     } catch(ex) {}
+}
+
+let _mpLobbyTimer = null;
+async function renderMPLobby() {
+    const el = document.getElementById('mp-online-users');
+    if (!el) return;
+    if (!_appdbReady) { el.innerHTML = '<div class="mp-empty">Connecting...</div>'; return; }
+    try {
+        const all = await AppDB.listGlobal();
+        const now = Date.now();
+        const online = all.filter(e => e.key.startsWith('ccon_') && (now - (e.value?.t || Number(e.value))) < 90000 && e.value?.w && e.value.w !== (connectedWallet||'').toLowerCase())
+            .map(e => ({w:e.value.w, n:e.value.n}));
+        if (online.length === 0) {
+            el.innerHTML = '<div class="mp-empty">No other players online right now</div>';
+        } else {
+            el.innerHTML = online.map(u => `<div class="mp-user-row"><span class="mp-uname">${u.n || u.w.slice(0,6)+'...'+u.w.slice(-4)}</span><button class="mp-dbtn" onclick="mpChallengeUser('${u.w}')">DUEL</button></div>`).join('');
+        }
+    } catch(e) { el.innerHTML = '<div class="mp-empty">Could not load players</div>'; }
+    mpCheckChallenges();
+    if (!_mpLobbyTimer) {
+        _mpLobbyTimer = setInterval(() => {
+            const lobby = document.getElementById('mp-lobby');
+            if (!lobby || !lobby.classList.contains('active') || mp.room) { clearInterval(_mpLobbyTimer); _mpLobbyTimer = null; return; }
+            renderMPLobby();
+        }, 5000);
+    }
+}
+
+function mpChallengeUser(wallet) {
+    if (!connectedWallet || !_appdbReady) { alert('Connect wallet first'); return; }
+    const code = Math.random().toString(36).substr(2,6).toUpperCase();
+    AppDB.setGlobal('ccchall_' + wallet, {from:connectedWallet.toLowerCase(), n:playerData.profileName||connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4), room:code, ts:Date.now()}).catch(()=>{});
+    mpConnect(code);
+}
+
+async function mpCheckChallenges() {
+    if (!connectedWallet || !_appdbReady) return;
+    try {
+        const chall = await AppDB.getGlobal('ccchall_' + connectedWallet.toLowerCase());
+        if (!chall || Date.now() - chall.ts > 60000) return;
+        if (document.getElementById('mp-chall-popup')) return;
+        const div = document.createElement('div');
+        div.id = 'mp-chall-popup';
+        div.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:rgba(8,18,35,0.95);border:1px solid rgba(40,120,200,0.2);border-radius:12px;padding:16px 20px;z-index:500;text-align:center;backdrop-filter:blur(8px);max-width:300px;';
+        div.innerHTML = `<div style="font-family:'Chakra Petch',sans-serif;font-size:13px;color:rgba(140,200,255,0.9);margin-bottom:10px">${chall.n||'Someone'} challenges you!</div><div style="display:flex;gap:8px;justify-content:center"><button onclick="mpAcceptChall('${chall.room}')" style="padding:8px 20px;border-radius:6px;background:linear-gradient(135deg,#1050a0,#2090ff);color:#fff;font-weight:700;border:none;cursor:pointer;font-size:12px">ACCEPT</button><button onclick="mpDeclineChall()" style="padding:8px 20px;border-radius:6px;background:rgba(8,18,35,0.65);color:rgba(140,200,255,0.6);border:1px solid rgba(40,120,200,.1);cursor:pointer;font-size:12px">DECLINE</button></div>`;
+        document.body.appendChild(div);
+    } catch(e) {}
+}
+
+function mpAcceptChall(room) {
+    const el = document.getElementById('mp-chall-popup');
+    if (el) el.remove();
+    if (connectedWallet) AppDB.deleteGlobal('ccchall_' + connectedWallet.toLowerCase()).catch(()=>{});
+    showScreen('mp-lobby');
+    mpConnect(room);
+}
+
+function mpDeclineChall() {
+    const el = document.getElementById('mp-chall-popup');
+    if (el) el.remove();
+    if (connectedWallet) AppDB.deleteGlobal('ccchall_' + connectedWallet.toLowerCase()).catch(()=>{});
+}
+
+function mpTogglePrivate() {
+    const p = document.getElementById('mp-priv-panel');
+    p.style.display = p.style.display === 'none' ? '' : 'none';
+}
+
+function mpCreatePrivate() {
+    const code = document.getElementById('mp-code-input').value.trim().toUpperCase() || Math.random().toString(36).substr(2,6).toUpperCase();
+    mpConnect(code);
+}
+
+function mpJoinPrivate() {
+    const code = document.getElementById('mp-code-input').value.trim().toUpperCase();
+    if (!code || code.length < 3) return alert('Enter a valid room code');
+    mpConnect(code);
+}
+
+function mpCancelWait() {
+    if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null; }
+    mp.session++; mp.room = null; mp.active = false; mp.opponentId = null;
+    mpResetLobbyUI();
+    renderMPLobby();
 }
 
 function mpLeaveLobby() {
     if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null; }
     mp.session++;
     showScreen('title-screen');
-}
-
-function mpCreateRoom() {
-    const code = Math.random().toString(36).substr(2, 4).toUpperCase();
-    mpConnect(code);
-}
-
-function mpJoinRoom() {
-    const code = document.getElementById('mp-code-input').value.trim().toUpperCase();
-    if (!code || code.length < 3) return alert('Enter a valid room code');
-    mpConnect(code);
 }
 
 let _mpPollTimer = null;
@@ -9635,7 +9619,7 @@ function mpConnect(code) {
     mp.opponentId = null;
     mp.active = false;
     if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null; }
-    document.getElementById('mp-create-join').style.display = 'none';
+    document.getElementById('mp-main-lobby').style.display = 'none';
     document.getElementById('mp-waiting').style.display = 'flex';
     document.getElementById('mp-room-display').textContent = code;
     document.getElementById('mp-status-text').textContent = 'Connecting...';
@@ -9643,8 +9627,6 @@ function mpConnect(code) {
     document.getElementById('mp-retry-btn').style.display = 'none';
     document.getElementById('mp-players-list').innerHTML = '';
 
-    // Register handlers FIRST, then connect
-    // The SDK may fire events during or right after connect
     Realtime.on('mp', (data, sid) => {
         if (sess !== mp.session) return;
         if (!sid || sid === Realtime.me?.id) return;
@@ -9672,22 +9654,16 @@ function mpConnect(code) {
         }
     });
 
-    // Fire-and-forget connect — don't await, the SDK may not return a real promise
     try {
         const result = Realtime.connect('cc-' + code);
-        // If it returns a promise, handle it; if not, that's fine
         if (result && typeof result.then === 'function') {
             result.then(() => { mpAfterConnect(sess, code); }).catch(e => {
-                console.log('[MP] connect promise rejected:', e);
-                // Still try to proceed — the SDK might work anyway
                 mpAfterConnect(sess, code);
             });
         } else {
-            // connect() didn't return a promise — proceed after a delay
             setTimeout(() => mpAfterConnect(sess, code), 1500);
         }
     } catch(e) {
-        console.log('[MP] connect threw:', e);
         setTimeout(() => mpAfterConnect(sess, code), 1500);
     }
 }
@@ -9696,18 +9672,14 @@ function mpAfterConnect(sess, code) {
     if (sess !== mp.session) return;
     mp.active = true;
 
-    // Announce presence
     try { Realtime.setMyState({ role: 'waiting', ready: true }); } catch(e) {}
     try { Realtime.send('mp', { type: 'ping' }); } catch(e) {}
 
-    // Check for players already in room
     mpCheckPlayers(sess, code);
 
-    // Poll every 2s — most reliable way to detect other players
     _mpPollTimer = setInterval(() => {
         if (sess !== mp.session) { clearInterval(_mpPollTimer); _mpPollTimer = null; return; }
         if (mp.opponentId) { clearInterval(_mpPollTimer); _mpPollTimer = null; return; }
-        // Re-send ping each poll so late joiners see us
         try { Realtime.send('mp', { type: 'ping' }); } catch(e) {}
         mpCheckPlayers(sess, code);
     }, 2000);
@@ -9781,7 +9753,6 @@ function mpInitDuel(goFirst) {
 
     showScreen('duel-screen');
 
-    // Add surrender button
     const ds = document.getElementById('duel-screen');
     if (ds && !document.getElementById('mp-surrender')) {
         const btn = document.createElement('button');
@@ -9816,16 +9787,13 @@ function mpSurrender() {
     }
 }
 
-// ---- Message router ----
 
 function mpReceive(data, sid) {
     if (!data || !data.type) return;
 
-    // Presence ping — detect opponent even if onJoin didn't fire
     if (data.type === 'ping') {
         if (!mp.opponentId && sid) {
             mpFoundOpponent(sid, mp.room);
-            // Ping back so they see us too
             try { Realtime.send('mp', { type: 'pong' }); } catch(e) {}
         }
         return;
@@ -9869,7 +9837,6 @@ function mpReceive(data, sid) {
     }
 }
 
-// ---- Opponent action handlers ----
 
 function mpRxDraw() {
     duel.ai.handCount = (duel.ai.handCount || 0) + 1;
@@ -9923,7 +9890,6 @@ function mpRxSpell(d) {
     if (!c) return;
     duel.ai.handCount = Math.max(0, (duel.ai.handCount || 1) - 1);
     duelLog('Opponent activates ' + c.name + '!');
-    // Resolve spell effect from opponent's perspective
     if (c.effects) c.effects.forEach(eff => {
         switch (eff.action) {
             case 'damage': takeDamage('player', eff.value || 0); break;
@@ -9983,15 +9949,12 @@ function mpRxFieldSpell(d) {
     renderDuel();
 }
 
-// ---- Attack resolution (2-phase) ----
 
 function mpRxAtkDeclare(d) {
-    // Opponent attacks our monster. We resolve combat.
     const atkFC = duel.ai.monsters[d.from];
     const defFC = duel.player.monsters[d.to];
     if (!atkFC || !defFC) { mpSend({ type: 'atk-res', ok: false }); return; }
 
-    // Flip face-down
     if (!defFC.faceUp) defFC.faceUp = true;
 
     const atkATK = getFieldATK(atkFC, 'ai');
@@ -10020,10 +9983,8 @@ function mpRxAtkDeclare(d) {
 
     duelLog("Opponent's " + atkFC.card.name + ' attacks ' + defFC.card.name + '!');
 
-    // Send result BEFORE applying (in case game ends)
     mpSend(res);
 
-    // Apply locally (defender perspective: player=us, ai=opponent)
     if (res.dd) destroyMonster('player', d.to);
     if (res.ad) destroyMonster('ai', d.from);
     if (res.pDmg > 0) takeDamage('player', res.pDmg);
@@ -10034,7 +9995,6 @@ function mpRxAtkDeclare(d) {
 function mpRxAtkResult(d) {
     if (!d.ok) { duel.uiState = 'idle'; renderDuel(); return; }
 
-    // Reveal face-down card
     if (d.defCid > 0) {
         const defFC = duel.ai.monsters[d.to];
         if (defFC && !defFC.faceUp) {
@@ -10048,9 +10008,6 @@ function mpRxAtkResult(d) {
     const atkName = atkFC ? atkFC.card.name : 'Monster';
     const defName = defFC ? defFC.card.name : 'Monster';
 
-    // Apply from attacker perspective:
-    // d.dd=defender destroyed → duel.ai[d.to], d.ad=attacker destroyed → duel.player[d.from]
-    // d.pDmg=damage to defender → takeDamage('ai'), d.aDmg=damage to attacker → takeDamage('player')
     if (d.dd) destroyMonster('ai', d.to);
     if (d.ad) destroyMonster('player', d.from);
     if (d.pDmg > 0) takeDamage('ai', d.pDmg);
@@ -10062,7 +10019,6 @@ function mpRxAtkResult(d) {
     renderDuel();
 }
 
-// ---- Direct attack (2-phase) ----
 
 function mpRxDirDeclare(d) {
     const atkFC = duel.ai.monsters[d.from];
@@ -10086,7 +10042,6 @@ function mpRxDirResult(d) {
     renderDuel();
 }
 
-// ---- End turn ----
 
 function mpRxEndTurn() {
     duel.turn++;
@@ -10121,9 +10076,6 @@ function mpRxFlip(d) {
     if (m) { m.card = c; m.faceUp = true; m.position = 'atk'; duelLog('Opponent flip summons ' + c.name + '!'); renderDuel(); }
 }
 
-// ====
-// MONKEY-PATCH existing functions for MP broadcasting
-// ====
 
 const _mpOrigEndTurn = endTurn;
 endTurn = function() {
@@ -10174,7 +10126,6 @@ performDirectAttack = function(atkZone) {
 const _mpOrigDrawCard = drawCard;
 drawCard = function(who) {
     if (duel && duel.isMultiplayer && who === 'ai') {
-        // In MP, opponent's deck is virtual — don't call original
         duel.ai.handCount = (duel.ai.handCount || 0) + 1;
         duel.ai.deckCount = Math.max(0, (duel.ai.deckCount || 30) - 1);
         return null;
@@ -10296,7 +10247,6 @@ handleFieldMonsterClick = function(who, zoneIdx) {
     _mpOrigFieldMonsterClick(who, zoneIdx);
 };
 
-// Hide surrender button after non-MP duels + lobby cleanup
 const _mpOrigShowScreen = showScreen;
 showScreen = function(id) {
     _mpOrigShowScreen(id);
@@ -10305,9 +10255,9 @@ showScreen = function(id) {
         if (sb && id !== 'duel-screen') sb.style.display = 'none';
         if (id === 'mp-lobby' && !mp.room) {
             mpResetLobbyUI();
+            renderMPLobby();
         }
         if (id !== 'mp-lobby' && id !== 'duel-screen') {
-            // Leaving lobby or duel — clean up MP state
             mp.session++;
             mp.active = false;
             mp.room = null;
