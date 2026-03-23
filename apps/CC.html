@@ -9521,12 +9521,17 @@ async function renderMPLobby() {
     try {
         const all = await AppDB.listGlobal();
         const now = Date.now();
-        const online = all.filter(e => e.key.startsWith('ccon_') && (now - (e.value?.t || Number(e.value))) < 90000 && e.value?.w && e.value.w !== (connectedWallet||'').toLowerCase())
-            .map(e => ({w:e.value.w, n:e.value.n}));
+        const myW = (connectedWallet||'').toLowerCase();
+        const online = all.filter(e => e.key.startsWith('ccon_') && e.key !== _onlineId && (now - (e.value?.t || Number(e.value))) < 90000 && typeof e.value === 'object')
+            .map(e => ({w:e.value.w||'', n:e.value.n||''}))
+            .filter(u => !myW || u.w !== myW);
         if (online.length === 0) {
             el.innerHTML = '<div class="mp-empty">No other players online right now</div>';
         } else {
-            el.innerHTML = online.map(u => `<div class="mp-user-row"><span class="mp-uname">${u.n || u.w.slice(0,6)+'...'+u.w.slice(-4)}</span><button class="mp-dbtn" onclick="mpChallengeUser('${u.w}')">DUEL</button></div>`).join('');
+            el.innerHTML = online.map(u => {
+                const name = u.n || (u.w ? u.w.slice(0,6)+'...'+u.w.slice(-4) : 'Anonymous');
+                return `<div class="mp-user-row"><span class="mp-uname">${name}</span>${u.w && connectedWallet ? `<button class="mp-dbtn" onclick="mpChallengeUser('${u.w}')">DUEL</button>` : ''}</div>`;
+            }).join('');
         }
     } catch(e) { el.innerHTML = '<div class="mp-empty">Could not load players</div>'; }
     mpCheckChallenges();
