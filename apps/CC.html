@@ -9667,7 +9667,6 @@ function mpConnect(code) {
     document.getElementById('mp-room-display').textContent = code;
     document.getElementById('mp-status-text').textContent = 'Connecting...';
     document.getElementById('mp-start-btn').style.display = 'none';
-    document.getElementById('mp-retry-btn').style.display = 'none';
     document.getElementById('mp-players-list').innerHTML = '';
 
     Realtime.on('mp', (data, sid) => {
@@ -9697,34 +9696,39 @@ function mpConnect(code) {
         }
     });
 
+    let _didAfterConnect = false;
+    function _doAfterConnect() {
+        if (_didAfterConnect) return;
+        _didAfterConnect = true;
+        mpAfterConnect(sess, code);
+    }
     try {
         const result = Realtime.connect('cc-' + code);
         if (result && typeof result.then === 'function') {
-            result.then(() => { mpAfterConnect(sess, code); }).catch(e => {
-                mpAfterConnect(sess, code);
-            });
-        } else {
-            setTimeout(() => mpAfterConnect(sess, code), 1500);
+            result.then(_doAfterConnect).catch(_doAfterConnect);
         }
-    } catch(e) {
-        setTimeout(() => mpAfterConnect(sess, code), 1500);
-    }
+    } catch(e) {}
+    setTimeout(_doAfterConnect, 2000);
 }
 
 function mpAfterConnect(sess, code) {
     if (sess !== mp.session) return;
     mp.active = true;
+    document.getElementById('mp-status-text').textContent = 'Waiting for opponent...';
 
-    try { Realtime.setMyState({ role: 'waiting', ready: true }); } catch(e) {}
-    try { Realtime.send('mp', { type: 'ping' }); } catch(e) {}
-
-    mpCheckPlayers(sess, code);
+    function _ping() {
+        try { Realtime.setMyState({ role: 'waiting', ready: true }); } catch(e) {}
+        try { Realtime.send('mp', { type: 'ping' }); } catch(e) {}
+        mpCheckPlayers(sess, code);
+    }
+    _ping();
+    setTimeout(_ping, 500);
+    setTimeout(_ping, 1500);
 
     _mpPollTimer = setInterval(() => {
         if (sess !== mp.session) { clearInterval(_mpPollTimer); _mpPollTimer = null; return; }
         if (mp.opponentId) { clearInterval(_mpPollTimer); _mpPollTimer = null; return; }
-        try { Realtime.send('mp', { type: 'ping' }); } catch(e) {}
-        mpCheckPlayers(sess, code);
+        _ping();
     }, 2000);
 }
 
