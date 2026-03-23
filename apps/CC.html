@@ -3080,6 +3080,8 @@
 </head>
 <body>
 
+    <div id="online-counter" style="position:fixed;top:8px;right:8px;z-index:900;font-family:'Chakra Petch',sans-serif;font-size:11px;font-weight:700;color:rgba(140,200,255,0.6);background:rgba(8,18,35,0.7);border:1px solid rgba(40,120,200,0.15);border-radius:6px;padding:3px 8px;display:none"><span style="color:#4f8;font-size:8px;vertical-align:middle">&#9679;</span> <span id="online-count">0</span> online</div>
+
     <!-- ===== LOADING SCREEN ===== -->
     <div id="loading-screen">
         <div class="load-ocean"></div>
@@ -3634,19 +3636,10 @@ function truncateWallet(addr) {
 }
 
 async function initWalletConnect() {
-    // Step 1: Try cookie
     const cookieWallet = getWalletFromCookie();
-    if (cookieWallet && isValidWallet(cookieWallet)) {
-        setConnectedWallet(cookieWallet);
-        return;
-    }
-    // Step 2: Try localStorage
+    if (cookieWallet && isValidWallet(cookieWallet)) { setConnectedWallet(cookieWallet); return; }
     const savedWallet = localStorage.getItem('cc_wallet');
-    if (savedWallet && isValidWallet(savedWallet)) {
-        setConnectedWallet(savedWallet);
-        return;
-    }
-    // Step 3: Try MetaMask / injected provider (auto-detect)
+    if (savedWallet && isValidWallet(savedWallet)) { setConnectedWallet(savedWallet); return; }
     if (window.ethereum) {
         try {
             const accounts = await window.ethereum.request({ method: 'eth_accounts' });
@@ -3656,7 +3649,6 @@ async function initWalletConnect() {
             }
         } catch(e) {}
     }
-    // Step 4: Show modal with manual input
     showWalletModal();
 }
 
@@ -4489,11 +4481,9 @@ function getDisplayBalance() {
 
 function canPurchase() { return navigator.onLine && connectedWallet && !offlineMode; }
 
-// Transfer DD tokens on-chain from user wallet to creator wallet
 async function spendDD(amount) {
     if (!navigator.onLine) { alert('You are offline. Connect to the internet to make purchases.'); return false; }
     if (!connectedWallet || offlineMode) { alert('Connect your wallet to make purchases.'); showWalletModal(); return false; }
-    // Check on-chain balance
     const bal = await fetchDDBalance(connectedWallet);
     if (bal === null || bal < amount) { showNoCoinPopup(); return false; }
     if (!window.ethereum) { alert('Wallet provider not found'); return false; }
@@ -4552,7 +4542,6 @@ function loadData() {
         }
     } catch(e) {}
 
-    // Also try AppDB cloud restore (async — merges in if localStorage was empty)
     if (window.AppDB) {
         window.AppDB.get('cc_data').then(cloud => {
             if (!cloud) return;
@@ -4568,21 +4557,18 @@ function loadData() {
     _finishLoad();
 }
 function _finishLoad() {
-    // Give starter cards if new player
     if (Object.keys(playerData.collection).length === 0) {
         giveStarterCards();
     }
     if (playerData.deck.length === 0) {
         buildStarterDeck();
     }
-    // Ensure collectedDates exists for migration
     if (!playerData.collectedDates) playerData.collectedDates = {};
     if (!playerData.gallery) playerData.gallery = { slots: [], layout: 'grid', boardId: 'gb_default', borderStyle: 'none', lighting: 'none' };
     if (!playerData.ownedBoards) playerData.ownedBoards = ['gb_default'];
     if (!playerData.ownedLayouts) playerData.ownedLayouts = ['grid'];
     if (!playerData.ownedBorders) playerData.ownedBorders = ['none'];
     if (!playerData.ownedLightings) playerData.ownedLightings = ['none'];
-    // Grant new cards added since last load
     let grantedNew = false;
     const now = Date.now();
     CARDS.forEach(c => {
@@ -4594,7 +4580,6 @@ function _finishLoad() {
     });
     if (grantedNew) saveData();
 
-    // Migrate to multi-deck system
     if (!playerData.decks || playerData.decks.length === 0) {
         playerData.decks = [{ name: 'Deck 1', cards: [...playerData.deck], extra: [...playerData.extraDeck] }];
         playerData.activeDeck = 0;
@@ -4746,7 +4731,6 @@ function pickStarterDeck(deckId) {
 }
 
 function buildStarterDeck() {
-    // Fallback if no picker shown
     playerData.deck = [...STARTER_DECKS[0].main];
     playerData.extraDeck = [...STARTER_DECKS[0].extra];
     saveData();
@@ -4856,7 +4840,6 @@ async function saveProfile() {
     const isPublic = document.getElementById('profile-public-switch').classList.contains('on');
     const oldName = playerData.profileName || '';
 
-    // Check display name uniqueness if name changed and is non-empty
     if (name && name.toLowerCase() !== oldName.toLowerCase() && window.AppDB) {
         try {
             const existing = await window.AppDB.getGlobal('ccname_' + name.toLowerCase());
@@ -4867,7 +4850,6 @@ async function saveProfile() {
         } catch(e) {}
     }
 
-    // Release old name claim
     if (oldName && oldName.toLowerCase() !== name.toLowerCase() && connectedWallet && window.AppDB) {
         window.AppDB.deleteGlobal('ccname_' + oldName.toLowerCase()).catch(()=>{});
     }
@@ -5674,6 +5656,8 @@ function initTitleShowcase() {
 function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    const oc = document.getElementById('online-counter');
+    if (oc) oc.style.display = id === 'duel-screen' ? 'none' : '';
     updateCoinsDisplay();
     updateWalletDisplay();
     if (id === 'title-screen') initTitleShowcase();
@@ -6194,8 +6178,7 @@ let ddPrice = null;    // USD per DD
 let priceLastFetch = 0;
 const PRICE_CACHE_MS = 60000; // refresh every 60s
 
-// Fallback fixed rate: 1 CLAWS = 100 $DD (used when live prices unavailable)
-const FALLBACK_CLAWS_PER_DD = 0.01; // 0.01 CLAWS per 1 $DD
+const FALLBACK_CLAWS_PER_DD = 0.01;
 
 async function fetchTokenPrices() {
     const now = Date.now();
@@ -9544,8 +9527,38 @@ setTimeout(() => {
     if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
 }, 1500);
 setTimeout(() => checkTradeClaims(), 2000);
-// Refresh on-chain DD balance every 30s
 setInterval(() => syncDDBalance(), 30000);
+// Online counter via AppDB heartbeat
+const _onlineId = 'ccon_' + Math.random().toString(36).substr(2,8);
+let _appdbReady = false;
+async function _waitAppDB() {
+    if (window.AppDB) { _appdbReady = true; return true; }
+    for (let i = 0; i < 60; i++) {
+        await new Promise(r => setTimeout(r, 500));
+        if (window.AppDB) { _appdbReady = true; return true; }
+    }
+    return false;
+}
+async function _heartbeat() {
+    if (!_appdbReady && !(await _waitAppDB())) return;
+    try { await AppDB.setGlobal(_onlineId, String(Date.now())); } catch(e) { console.warn('heartbeat fail', e); }
+}
+async function _countOnline() {
+    if (!_appdbReady && !(await _waitAppDB())) return;
+    try {
+        const all = await AppDB.listGlobal();
+        const now = Date.now();
+        const count = all.filter(e => e.key.startsWith('ccon_') && (now - Number(e.value)) < 90000).length;
+        const el = document.getElementById('online-count');
+        if (el) el.textContent = count;
+        const box = document.getElementById('online-counter');
+        if (box) box.style.display = '';
+    } catch(e) { console.warn('count fail', e); }
+}
+_heartbeat().then(() => _countOnline());
+setInterval(_heartbeat, 30000);
+setInterval(_countOnline, 15000);
+window.addEventListener('beforeunload', () => { if (window.AppDB) AppDB.deleteGlobal(_onlineId).catch(()=>{}); });
 
 // Show dev tools for creator wallet only
 (function() {
@@ -9590,6 +9603,8 @@ function mpResetLobbyUI() {
 }
 
 function mpLeaveLobby() {
+    if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null; }
+    mp.session++;
     showScreen('title-screen');
 }
 
@@ -9604,8 +9619,9 @@ function mpJoinRoom() {
     mpConnect(code);
 }
 
-async function mpConnect(code) {
-    // Check SDK before transitioning UI
+let _mpPollTimer = null;
+
+function mpConnect(code) {
     if (!window.Realtime) {
         document.getElementById('mp-no-sdk').style.display = 'block';
         return;
@@ -9617,27 +9633,18 @@ async function mpConnect(code) {
     mp.room = code;
     mp.role = null;
     mp.opponentId = null;
+    mp.active = false;
+    if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null; }
     document.getElementById('mp-create-join').style.display = 'none';
-    const w = document.getElementById('mp-waiting');
-    w.style.display = 'flex';
+    document.getElementById('mp-waiting').style.display = 'flex';
     document.getElementById('mp-room-display').textContent = code;
     document.getElementById('mp-status-text').textContent = 'Connecting...';
     document.getElementById('mp-start-btn').style.display = 'none';
+    document.getElementById('mp-retry-btn').style.display = 'none';
     document.getElementById('mp-players-list').innerHTML = '';
 
-    try {
-        await Realtime.connect('cc-' + code);
-    } catch (e) {
-        if (sess !== mp.session) return;
-        mp.room = null;
-        document.getElementById('mp-status-text').textContent = 'Connection failed. Check your connection.';
-        document.getElementById('mp-retry-btn').style.display = 'inline-block';
-        document.getElementById('mp-retry-btn').onclick = () => { mpResetLobbyUI(); };
-        return;
-    }
-
-    if (sess !== mp.session) return;
-
+    // Register handlers FIRST, then connect
+    // The SDK may fire events during or right after connect
     Realtime.on('mp', (data, sid) => {
         if (sess !== mp.session) return;
         if (!sid || sid === Realtime.me?.id) return;
@@ -9647,10 +9654,7 @@ async function mpConnect(code) {
     Realtime.onJoin(p => {
         if (sess !== mp.session) return;
         if (p.id === Realtime.me?.id) return;
-        mp.opponentId = p.id;
-        document.getElementById('mp-status-text').textContent = 'Opponent joined!';
-        mpUpdatePlayers();
-        if (mp.role === 'host') document.getElementById('mp-start-btn').style.display = 'block';
+        mpFoundOpponent(p.id);
     });
 
     Realtime.onLeave(p => {
@@ -9668,19 +9672,70 @@ async function mpConnect(code) {
         }
     });
 
+    // Fire-and-forget connect — don't await, the SDK may not return a real promise
+    try {
+        const result = Realtime.connect('cc-' + code);
+        // If it returns a promise, handle it; if not, that's fine
+        if (result && typeof result.then === 'function') {
+            result.then(() => { mpAfterConnect(sess, code); }).catch(e => {
+                console.log('[MP] connect promise rejected:', e);
+                // Still try to proceed — the SDK might work anyway
+                mpAfterConnect(sess, code);
+            });
+        } else {
+            // connect() didn't return a promise — proceed after a delay
+            setTimeout(() => mpAfterConnect(sess, code), 1500);
+        }
+    } catch(e) {
+        console.log('[MP] connect threw:', e);
+        setTimeout(() => mpAfterConnect(sess, code), 1500);
+    }
+}
+
+function mpAfterConnect(sess, code) {
+    if (sess !== mp.session) return;
+    mp.active = true;
+
+    // Announce presence
+    try { Realtime.setMyState({ role: 'waiting', ready: true }); } catch(e) {}
+    try { Realtime.send('mp', { type: 'ping' }); } catch(e) {}
+
+    // Check for players already in room
+    mpCheckPlayers(sess, code);
+
+    // Poll every 2s — most reliable way to detect other players
+    _mpPollTimer = setInterval(() => {
+        if (sess !== mp.session) { clearInterval(_mpPollTimer); _mpPollTimer = null; return; }
+        if (mp.opponentId) { clearInterval(_mpPollTimer); _mpPollTimer = null; return; }
+        // Re-send ping each poll so late joiners see us
+        try { Realtime.send('mp', { type: 'ping' }); } catch(e) {}
+        mpCheckPlayers(sess, code);
+    }, 2000);
+}
+
+function mpCheckPlayers(sess, code) {
+    if (sess !== mp.session || mp.opponentId) return;
     let players = [];
     try { players = Realtime.getPlayers() || []; } catch(e) {}
     const others = players.filter(p => p.id !== Realtime.me?.id);
     if (others.length > 0) {
-        mp.role = 'guest';
-        mp.opponentId = others[0].id;
-        document.getElementById('mp-status-text').textContent = 'Opponent found!';
-        mpUpdatePlayers();
-    } else {
+        mp.role = mp.role || 'guest';
+        mpFoundOpponent(others[0].id);
+    } else if (!mp.role) {
         mp.role = 'host';
         document.getElementById('mp-status-text').textContent = 'Waiting for opponent...\nShare code: ' + code;
     }
+}
+
+function mpFoundOpponent(oppId) {
+    if (mp.opponentId) return;
+    mp.opponentId = oppId;
+    if (!mp.role) mp.role = 'host';
+    document.getElementById('mp-status-text').textContent = 'Opponent joined!';
+    mpUpdatePlayers();
+    if (mp.role === 'host') document.getElementById('mp-start-btn').style.display = 'block';
     try { Realtime.setMyState({ role: mp.role, ready: true }); } catch(e) {}
+    try { Realtime.send('mp', { type: 'pong' }); } catch(e) {}
 }
 
 function mpUpdatePlayers() {
@@ -9765,6 +9820,20 @@ function mpSurrender() {
 
 function mpReceive(data, sid) {
     if (!data || !data.type) return;
+
+    // Presence ping — detect opponent even if onJoin didn't fire
+    if (data.type === 'ping') {
+        if (!mp.opponentId && sid) {
+            mpFoundOpponent(sid, mp.room);
+            // Ping back so they see us too
+            try { Realtime.send('mp', { type: 'pong' }); } catch(e) {}
+        }
+        return;
+    }
+    if (data.type === 'pong') {
+        if (!mp.opponentId && sid) mpFoundOpponent(sid, mp.room);
+        return;
+    }
 
     if (data.type === 'start') {
         if (!duel || !duel.isMultiplayer) {
