@@ -6534,6 +6534,7 @@ function createFieldCard(card, position, faceUp) {
 	canChangePos: false,
 	atkMod: 0,
 	permAtkMod: 0,
+	permDefMod: 0,
 	defMod: 0,
 	attacks: 0,
 	maxAttacks: 1,
@@ -6723,27 +6724,35 @@ function showDamageFlash(amount, heal, who) {
 	document.body.appendChild(el);
 	setTimeout(() => el.remove(), 1000);
 }
-function getFieldATK(fc, owner) {
-	if (!fc) return 0;
-	let atk = fc.card.atk + fc.atkMod + (fc.permAtkMod || 0);
+function _getPassiveBuffs(fc, owner, stat) {
+	let val = 0;
 	const p = duel[owner];
 	const opp = duel[owner === 'player' ? 'ai' : 'player'];
 	[p, opp].forEach(side => {
-	if (side.fieldSpell && side.fieldSpell.card.effects) {
-		side.fieldSpell.card.effects.forEach(eff => {
-			if (eff.trigger === 'passive' && eff.action === 'fieldBuffType' && fc.card.attribute === eff.attrTarget) {
-				atk += eff.value;
-				}
+		if (side.fieldSpell && side.fieldSpell.card.effects) {
+			side.fieldSpell.card.effects.forEach(eff => {
+				if (eff.trigger === 'passive' && eff.action === 'fieldBuffType' && fc.card.attribute === eff.attrTarget) val += eff.value;
 			});
 		}
+		side.spells.forEach(s => {
+			if (s && s.faceUp && s.card.subtype === 'continuous' && s.card.effects) {
+				s.card.effects.forEach(eff => {
+					if (eff.trigger === 'passive' && eff.action === 'fieldBuffType' && fc.card.attribute === eff.attrTarget) val += eff.value;
+				});
+			}
+		});
 	});
+	return val;
+}
+function getFieldATK(fc, owner) {
+	if (!fc) return 0;
+	let atk = fc.card.atk + fc.atkMod + (fc.permAtkMod || 0);
+	atk += _getPassiveBuffs(fc, owner, 'atk');
 	const oppSide = owner === 'player' ? 'ai' : 'player';
 	duel[oppSide].monsters.forEach(m => {
 	if (m && m.faceUp && m.card.effects) {
 		m.card.effects.forEach(eff => {
-			if (eff.trigger === 'passive' && eff.action === 'atkDebuffAll') {
-				atk -= eff.value;
-				}
+			if (eff.trigger === 'passive' && eff.action === 'atkDebuffAll') atk -= eff.value;
 			});
 		}
 	});
@@ -6755,18 +6764,8 @@ function getFieldATK(fc, owner) {
 }
 function getFieldDEF(fc, owner) {
 	if (!fc) return 0;
-	let def = fc.card.def + fc.defMod;
-	const p = duel[owner];
-	const opp = duel[owner === 'player' ? 'ai' : 'player'];
-	[p, opp].forEach(side => {
-	if (side.fieldSpell && side.fieldSpell.card.effects) {
-		side.fieldSpell.card.effects.forEach(eff => {
-			if (eff.trigger === 'passive' && eff.action === 'fieldBuffType' && fc.card.attribute === eff.attrTarget) {
-				def += eff.value;
-				}
-			});
-		}
-	});
+	let def = fc.card.def + fc.defMod + (fc.permDefMod || 0);
+	def += _getPassiveBuffs(fc, owner, 'def');
 	return Math.max(0, def);
 }
 const ENERGY_COST = { summon: 2, spell: 1, attack: 1, extraDraw: 2, chooseDraw: 10 };
@@ -7559,8 +7558,8 @@ function completeEquipSpell(targetZone) {
 	if (card.effects) {
 	card.effects.forEach(eff => {
 		if (eff.action === 'equipBuff') {
-			if (eff.stat === 'atk') target.atkMod += eff.value;
-			if (eff.stat === 'def') target.defMod += eff.value;
+			if (eff.stat === 'atk') target.permAtkMod = (target.permAtkMod || 0) + eff.value;
+			if (eff.stat === 'def') target.permDefMod = (target.permDefMod || 0) + eff.value;
 			}
 		});
 	}
@@ -7719,7 +7718,7 @@ function resolveDepthCharge(fc, owner) {
 			destroyMonster(opp, bestIdx);
 			}
 		} else if (eff.action === 'atkDebuffAllPermanent') {
-		duel[opp].monsters.forEach(m => { if (m) m.atkMod -= eff.value; });
+		duel[opp].monsters.forEach(m => { if (m) m.permAtkMod = (m.permAtkMod || 0) - eff.value; });
 		duelLog(`${fc.card.name} weakens all opponent monsters by ${eff.value} ATK!`);
 		} else if (eff.action === 'destroyAllOpponentST') {
 		duel[opp].spells.forEach((s, i) => {
@@ -7850,7 +7849,7 @@ function triggerSummonEffects(who, zoneIdx) {
 		const c = duel[opp].hand.splice(hi, 1)[0];
 		const zi = getEmptyMonsterZone(opp);
 		duel[opp].monsters[zi] = createFieldCard(c, 'atk', true);
-		fc.atkMod -= 500;
+		fc.permAtkMod = (fc.permAtkMod || 0) - 500;
 		duelLog(`${opp === 'player' ? 'You' : 'AI'} Special Summoned Barnacle Parasite! ${fc.card.name} loses 500 ATK!`);
 		}
 	});
@@ -8033,7 +8032,7 @@ function resolveTrapEffect(who, zoneIdx, trigger, context) {
 		break;
 	}
 	case 'halfAtkAttacker':
-		if (context?.atkZoneIdx !== undefined && duel[opp].monsters[context.atkZoneIdx]) { const m = duel[opp].monsters[context.atkZoneIdx]; m.permAtkMod = (m.permAtkMod||0) - Math.floor(getFieldATK(m,opp)/2); duelLog(`${m.card.name}'s ATK halved!`); }
+		if (context?.atkZoneIdx !== undefined && duel[opp].monsters[context.atkZoneIdx]) { const m = duel[opp].monsters[context.atkZoneIdx]; const intrinsic = m.card.atk + m.atkMod + (m.permAtkMod||0); m.permAtkMod = (m.permAtkMod||0) - Math.floor(intrinsic/2); duelLog(`${m.card.name}'s ATK halved!`); }
 		break;
 	case 'destroyAttacker':
 		_negAtk(opp, context);
@@ -8329,8 +8328,8 @@ function aiProcessSpellQueue(spells, idx, done) {
 			if (!negated) {
 				spell.effects?.forEach(eff => {
 					if (eff.action === 'equipBuff') {
-						if (eff.stat === 'atk' && duel.ai.monsters[target]) duel.ai.monsters[target].atkMod += eff.value;
-						if (eff.stat === 'def' && duel.ai.monsters[target]) duel.ai.monsters[target].defMod += eff.value;
+						if (eff.stat === 'atk' && duel.ai.monsters[target]) duel.ai.monsters[target].permAtkMod = (duel.ai.monsters[target].permAtkMod || 0) + eff.value;
+						if (eff.stat === 'def' && duel.ai.monsters[target]) duel.ai.monsters[target].permDefMod = (duel.ai.monsters[target].permDefMod || 0) + eff.value;
 						}
 					});
 				const zi = getEmptySpellZone('ai');
@@ -8390,6 +8389,7 @@ function aiProcessSpecialSummons(done) {
 	const zi = getEmptyMonsterZone('ai');
 	duel.ai.monsters[zi] = createFieldCard(card, 'atk', true);
 	duelLog(`AI Special Summoned ${card.name}!`);
+	if (checkPredatorChain(card, 'player')) { duel.ai.monsters[zi].permAtkMod += 500; duel.ai.monsters[zi].canAttack = true; duelLog(`Predator Chain! ${card.name} gains +500 ATK!`); }
 	triggerSummonEffects('ai', zi);
 	renderDuel();
 	checkAndActivateTraps('player', 'onOpponentSpecialSummon', { summonedZoneIdx: zi }, (activated) => {
@@ -8839,7 +8839,7 @@ function renderFieldRow(who, zone) {
 			} else if (fc.burrowed) {
 				cardHTML = `<div class="card compact burrowed-card" style="opacity:0.3"><div style="text-align:center;padding:12px;font-size:8px;color:rgba(180,140,80,0.8)">BURROWED</div></div>`;
 			} else {
-				cardHTML = renderCard(fc.card, { faceDown: !fc.faceUp, defPos: isDefPos, shell: fc.shell, atkMod: fc.atkMod + (fc.permAtkMod || 0), defMod: fc.defMod, compact: true });
+				cardHTML = renderCard(fc.card, { faceDown: !fc.faceUp, defPos: isDefPos, shell: fc.shell, atkMod: getFieldATK(fc, who) - fc.card.atk, defMod: getFieldDEF(fc, who) - fc.card.def, compact: true });
 			}
 			if (fc.depthTimer > 0 && !fc.faceUp) {
 				cardHTML += `<div class="depth-timer">${fc.depthTimer}</div>`;
