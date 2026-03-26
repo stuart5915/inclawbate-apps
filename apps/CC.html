@@ -7178,6 +7178,12 @@ function showActionMenu(buttons) {
 	).join('');
 	menu._actions = buttons.map(b => b.action);
 	menu.classList.add('active');
+	if (window._actionMenuBackdrop) window._actionMenuBackdrop.remove();
+	const bd = document.createElement('div');
+	bd.style.cssText = 'position:fixed;inset:0;z-index:49;';
+	bd.onclick = () => hideActionMenu();
+	document.body.appendChild(bd);
+	window._actionMenuBackdrop = bd;
 }
 function actionMenuClick(idx) {
 	const menu = document.getElementById('action-menu');
@@ -7186,6 +7192,7 @@ function actionMenuClick(idx) {
 }
 function hideActionMenu() {
 	document.getElementById('action-menu').classList.remove('active');
+	if (window._actionMenuBackdrop) { window._actionMenuBackdrop.remove(); window._actionMenuBackdrop = null; }
 	duel.uiState = 'idle';
 	duel.selectedCard = null;
 	renderDuel();
@@ -7902,12 +7909,7 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
 	cardArea.innerHTML = renderCard(trap.fc.card);
 	descEl.textContent = `${trap.fc.card.name}: ${trap.fc.card.desc}`;
 	overlay.classList.add('active');
-	if (window._trapAutoTimer) clearTimeout(window._trapAutoTimer);
-	window._trapAutoTimer = setTimeout(() => {
-		if (overlay.classList.contains('active')) document.getElementById('trap-no-btn').click();
-	}, 5000);
 	document.getElementById('trap-yes-btn').onclick = () => {
-	clearTimeout(window._trapAutoTimer);
 	overlay.classList.remove('active');
 	trap.fc.faceUp = true;
 	duelLog(`Activated ${trap.fc.card.name}!`);
@@ -7917,7 +7919,6 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
 	setTimeout(() => callback(true), 400);
 	};
 	document.getElementById('trap-no-btn').onclick = () => {
-	clearTimeout(window._trapAutoTimer);
 	overlay.classList.remove('active');
 	if (trapIdx + 1 < traps.length) {
 		showTrapPrompt(traps, trapIdx + 1, trigger, context, callback);
@@ -7926,7 +7927,6 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
 		}
 	};
 	document.getElementById('trap-view-btn').onclick = () => {
-	clearTimeout(window._trapAutoTimer);
 	overlay.classList.remove('active');
 	const backBtn = document.createElement('button');
 	backBtn.className = 'phase-btn clickable';
