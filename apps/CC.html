@@ -2096,6 +2096,7 @@
 		}
 	.field-zone .field-stat-overlay .fs-atk { color: #ff6b6b; }
 	.field-zone .field-stat-overlay .fs-def { color: #6bc5ff; }
+	.field-zone .field-stat-overlay .fs-boosted { text-shadow: 0 0 6px currentColor; font-weight: 900; }
 	.field-zone .peek-eye {
 		position: absolute;
 		top: 2px; right: 2px;
@@ -3059,6 +3060,7 @@
 				<div class="trap-prompt-buttons">
 					<button class="trap-prompt-btn trap-yes" id="trap-yes-btn">Activate</button>
 					<button class="trap-prompt-btn trap-no" id="trap-no-btn">Skip</button>
+					<button class="trap-prompt-btn trap-view-board" id="trap-view-btn" style="background:rgba(40,120,200,0.15);color:rgba(140,200,255,0.8);border:1px solid rgba(40,120,200,0.25)">View Board</button>
 				</div>
 			</div>
 		</div>
@@ -6814,14 +6816,25 @@ function showBurrowPrompt(defIdx, onBurrow, onDecline) {
 	if (!fc) { onDecline(); return; }
 	window._burrowYes = () => { document.getElementById('burrow-prompt')?.remove(); onBurrow(); };
 	window._burrowNo = () => { document.getElementById('burrow-prompt')?.remove(); onDecline(); };
+	window._burrowView = () => {
+		document.getElementById('burrow-prompt')?.remove();
+		const backBtn = document.createElement('button');
+		backBtn.className = 'phase-btn clickable';
+		backBtn.id = 'view-board-back';
+		backBtn.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:200;background:rgba(40,120,200,0.3);color:#8cc8ff;border:1px solid rgba(40,120,200,0.4);padding:10px 24px;font-size:14px;font-weight:800;border-radius:8px;font-family:Chakra Petch,sans-serif;letter-spacing:2px;';
+		backBtn.textContent = 'BACK TO PROMPT';
+		backBtn.onclick = () => { backBtn.remove(); showBurrowPrompt(defIdx, onBurrow, onDecline); };
+		document.body.appendChild(backBtn);
+	};
 	const ov = document.createElement('div');
 	ov.id = 'burrow-prompt';
 	ov.className = 'choose-draw-overlay';
 	ov.innerHTML = `<div class="choose-draw-title">${fc.card.name} is under attack!</div>
 		<div style="font-size:14px;margin-bottom:16px;color:#94a3b8;">Burrow underground to save your monster?<br><small>+300 ATK on resurface, but damage hits your LP</small></div>
-		<div style="display:flex;gap:10px;justify-content:center;">
+		<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
 			<button onclick="window._burrowYes()" class="choose-draw-cancel" style="background:rgba(14,165,233,0.2);color:#0ea5e9;border-color:rgba(14,165,233,0.3)">Burrow</button>
 			<button onclick="window._burrowNo()" class="choose-draw-cancel">Take Hit</button>
+			<button onclick="window._burrowView()" class="choose-draw-cancel" style="background:rgba(40,120,200,0.15);color:rgba(140,200,255,0.8);border-color:rgba(40,120,200,0.25)">View Board</button>
 		</div>`;
 	document.body.appendChild(ov);
 }
@@ -7281,7 +7294,7 @@ function handleFieldMonsterClick(who, zoneIdx) {
 		buttons.push({ label: 'Activate Effect', cls: 'activate', action: () => activateMonsterEffect('player', zoneIdx) });
 		}
 	// Molt
-	if (fc.faceUp && !fc.burrowed && !fc.molted && fc.moltingTurn < 0 && fc.card.type === 'monster' && (fc.card.shell || 0) > 0) {
+	if (fc.faceUp && !fc.burrowed && !fc.molted && fc.moltingTurn < 0 && fc.card.type === 'monster' && isCrustacean(fc.card)) {
 		buttons.push({ label: 'Molt (+500 ATK)', cls: 'activate', action: () => moltMonster('player', zoneIdx) });
 		}
 	// Ink Cloud
@@ -7889,7 +7902,12 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
 	cardArea.innerHTML = renderCard(trap.fc.card);
 	descEl.textContent = `${trap.fc.card.name}: ${trap.fc.card.desc}`;
 	overlay.classList.add('active');
+	if (window._trapAutoTimer) clearTimeout(window._trapAutoTimer);
+	window._trapAutoTimer = setTimeout(() => {
+		if (overlay.classList.contains('active')) document.getElementById('trap-no-btn').click();
+	}, 5000);
 	document.getElementById('trap-yes-btn').onclick = () => {
+	clearTimeout(window._trapAutoTimer);
 	overlay.classList.remove('active');
 	trap.fc.faceUp = true;
 	duelLog(`Activated ${trap.fc.card.name}!`);
@@ -7899,12 +7917,24 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
 	setTimeout(() => callback(true), 400);
 	};
 	document.getElementById('trap-no-btn').onclick = () => {
+	clearTimeout(window._trapAutoTimer);
 	overlay.classList.remove('active');
 	if (trapIdx + 1 < traps.length) {
 		showTrapPrompt(traps, trapIdx + 1, trigger, context, callback);
 		} else {
 		callback(false);
 		}
+	};
+	document.getElementById('trap-view-btn').onclick = () => {
+	clearTimeout(window._trapAutoTimer);
+	overlay.classList.remove('active');
+	const backBtn = document.createElement('button');
+	backBtn.className = 'phase-btn clickable';
+	backBtn.id = 'view-board-back';
+	backBtn.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:200;background:rgba(40,120,200,0.3);color:#8cc8ff;border:1px solid rgba(40,120,200,0.4);padding:10px 24px;font-size:14px;font-weight:800;border-radius:8px;font-family:Chakra Petch,sans-serif;letter-spacing:2px;';
+	backBtn.textContent = 'BACK TO PROMPT';
+	backBtn.onclick = () => { backBtn.remove(); showTrapPrompt(traps, trapIdx, trigger, context, callback); };
+	document.body.appendChild(backBtn);
 	};
 }
 function checkAndActivateTraps(who, trigger, context, callback) {
@@ -8484,7 +8514,7 @@ function aiMainPhaseFinish2() {
 	// AI Molt: molt crustaceans strategically — weaker monsters or when behind on LP
 	const aiLPBehind = duel.ai.lp < duel.player.lp;
 	duel.ai.monsters.forEach((m, i) => {
-		if (m && m.faceUp && !m.molted && m.moltingTurn < 0 && (m.card.shell || 0) > 0) {
+		if (m && m.faceUp && !m.molted && m.moltingTurn < 0 && isCrustacean(m.card)) {
 			const shouldMolt = m.card.atk <= 1800 || (aiLPBehind && m.card.atk <= 2200);
 			if (aiDifficulty === 'hard' ? shouldMolt : m.card.atk <= 1500) moltMonster('ai', i);
 		}
@@ -8813,9 +8843,11 @@ function renderFieldRow(who, zone) {
 				cardHTML += `<div class="depth-timer">${fc.depthTimer}</div>`;
 				}
 			if (fc.faceUp && zone === 'monsters' && !hideCard && !fc.burrowed) {
-				const atkVal = (fc.card.atk || 0) + (fc.atkMod || 0);
-				const defVal = (fc.card.def || 0) + (fc.defMod || 0);
-				statOverlay = `<div class="field-stat-overlay"><span class="fs-atk">${atkVal}</span><span class="fs-def">${defVal}</span></div>`;
+				const atkVal = getFieldATK(fc, who);
+				const defVal = getFieldDEF(fc, who);
+				const atkBoosted = atkVal !== fc.card.atk;
+				const defBoosted = defVal !== fc.card.def;
+				statOverlay = `<div class="field-stat-overlay"><span class="fs-atk${atkBoosted ? ' fs-boosted' : ''}">${atkVal}</span><span class="fs-def${defBoosted ? ' fs-boosted' : ''}">${defVal}</span></div>`;
 				}
 			if (fc.moltingTurn >= 0) mechBadge = '<div class="mech-badge molt-badge">MOLTING</div>';
 			else if (fc.molted) mechBadge = '<div class="mech-badge molted-badge">+500</div>';
