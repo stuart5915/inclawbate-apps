@@ -7188,6 +7188,8 @@ function showActionMenu(buttons) {
 function actionMenuClick(idx) {
 	const menu = document.getElementById('action-menu');
 	const action = menu._actions?.[idx];
+	menu.classList.remove('active');
+	if (window._actionMenuBackdrop) { window._actionMenuBackdrop.remove(); window._actionMenuBackdrop = null; }
 	if (action) action();
 }
 function hideActionMenu() {
