@@ -237,6 +237,32 @@
         .pricing-card{background:var(--s1);border:1px solid var(--b2);border-radius:16px;max-width:680px;width:100%;max-height:90vh;overflow-y:auto;padding:2rem;position:relative}
         .pricing-close{position:absolute;top:12px;right:14px;background:none;border:none;color:var(--t4);font-size:1.1rem;cursor:pointer;padding:4px 8px;border-radius:4px}
         .pricing-close:hover{color:var(--t1);background:var(--b1)}
+        /* ADMIN PANEL */
+        .admin-btn{background:none;border:1px solid var(--b2);color:var(--t4);font-size:0.44rem;padding:2px 8px;border-radius:4px;cursor:pointer;font-family:var(--mono);display:none}
+        .admin-btn:hover{color:var(--gold);border-color:var(--gold-d)}
+        .admin-card{background:var(--s1);border:1px solid var(--b2);border-radius:16px;max-width:760px;width:100%;max-height:90vh;overflow-y:auto;padding:2rem;position:relative}
+        .admin-title{font-size:0.85rem;font-weight:800;color:var(--t1);margin-bottom:0.3rem}
+        .admin-sub{font-size:0.5rem;color:var(--t4);margin-bottom:1.2rem}
+        .admin-tabs{display:flex;gap:0;border-bottom:1px solid var(--b2);margin-bottom:1rem}
+        .admin-tab{padding:0.5rem 1rem;font-size:0.5rem;font-weight:700;color:var(--t4);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;font-family:'Nunito',sans-serif}
+        .admin-tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+        .admin-tab:hover{color:var(--t2)}
+        .admin-section{display:none}.admin-section.on{display:block}
+        .adm-tbl{width:100%;border-collapse:collapse;font-size:0.46rem}
+        .adm-tbl th{text-align:left;padding:0.4rem 0.5rem;color:var(--t4);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;border-bottom:1px solid var(--b2);font-size:0.4rem}
+        .adm-tbl td{padding:0.4rem 0.5rem;border-bottom:1px solid var(--b1);color:var(--t2);font-family:var(--mono);font-size:0.44rem}
+        .adm-tbl tr:hover td{background:rgba(255,255,255,0.02)}
+        .adm-code{color:var(--gold);font-weight:700}
+        .adm-wallet{color:var(--t3);font-size:0.38rem;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .adm-tier{padding:1px 6px;border-radius:3px;font-size:0.38rem;font-weight:800;text-transform:uppercase}
+        .adm-tier.pro{background:var(--gold-d);color:var(--gold)}
+        .adm-tier.team{background:rgba(139,92,246,0.15);color:#a78bfa}
+        .adm-tier.free{background:var(--b1);color:var(--t4)}
+        .adm-stat{display:inline-flex;flex-direction:column;align-items:center;padding:0.8rem 1.2rem;background:var(--s2);border:1px solid var(--b1);border-radius:8px}
+        .adm-stat-val{font-size:0.9rem;font-weight:800;color:var(--t1);font-family:var(--mono)}
+        .adm-stat-lbl{font-size:0.4rem;color:var(--t4);text-transform:uppercase;letter-spacing:0.05em;margin-top:0.15rem}
+        .adm-stats-row{display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1.2rem}
+        .adm-empty{text-align:center;color:var(--t4);font-size:0.5rem;padding:2rem}
         .pricing-title{text-align:center;font-size:1.1rem;font-weight:800;margin-bottom:0.2rem}
         .pricing-sub{text-align:center;font-size:0.65rem;color:var(--t3);margin-bottom:1.5rem;line-height:1.5}
         .tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin-bottom:1.2rem}
@@ -459,6 +485,7 @@
             <div class="badge badge-dry" id="modeBadge">Paper</div>
             <div class="dot-w"><div class="dot"></div><span class="dot-lbl" id="statusTxt">--</span></div>
             <span class="sub-badge free" id="subBadge" onclick="showPricing()">FREE</span>
+            <button class="admin-btn" id="adminBtn" onclick="showAdmin()">ADMIN</button>
             <button class="disc-btn" onclick="disconnect()">Disconnect</button>
         </div>
     </div></div>
@@ -530,6 +557,23 @@
             <div class="ref-progress" id="refProgress">0 / 5 referrals</div>
             <div class="ref-bar"><div class="ref-bar-fill" id="refBar" style="width:0%"></div></div>
         </div>
+    </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="overlay" id="adminModal">
+    <div class="admin-card">
+        <button class="pricing-close" onclick="hideAdmin()">&times;</button>
+        <div class="admin-title">Admin Panel</div>
+        <div class="admin-sub">Promo codes, subscriptions, and revenue tracking</div>
+        <div class="admin-tabs" id="adminTabs">
+            <button class="admin-tab on" data-atab="promo-log">Promo Log</button>
+            <button class="admin-tab" data-atab="promo-codes">Promo Codes</button>
+            <button class="admin-tab" data-atab="subs">Subscriptions</button>
+        </div>
+        <div class="admin-section on" id="atab-promo-log"></div>
+        <div class="admin-section" id="atab-promo-codes"></div>
+        <div class="admin-section" id="atab-subs"></div>
     </div>
 </div>
 
@@ -992,11 +1036,26 @@ async function finalizeSub(tier,usdPrice,txHash){
             await window.AppDB.setGlobal('bw_used_txhashes',used);
         }catch(e){}
     }
-    // Increment promo usage
+    // Increment promo usage + log it
     if(promoCode&&window.AppDB){
         try{
             const gp=await window.AppDB.getGlobal('bw_promo_codes')||{};
             if(gp[promoCode]){gp[promoCode].usedCount=(gp[promoCode].usedCount||0)+1;await window.AppDB.setGlobal('bw_promo_codes',gp)}
+        }catch(e){}
+        try{
+            const log=await window.AppDB.getGlobal('bw_promo_log')||[];
+            log.unshift({code:promoCode,wallet:userWallet||'unknown',tier,paidUSD:usdPrice,txHash,token:selectedToken,discountPct:promoDiscount,ts:new Date().toISOString()});
+            if(log.length>500)log.length=500;
+            await window.AppDB.setGlobal('bw_promo_log',log);
+        }catch(e){}
+    }
+    // Log all subscriptions (even without promo)
+    if(window.AppDB){
+        try{
+            const slog=await window.AppDB.getGlobal('bw_sub_log')||[];
+            slog.unshift({wallet:userWallet||'unknown',tier,paidUSD:usdPrice,txHash,token:selectedToken,promo:promoCode||null,ts:new Date().toISOString()});
+            if(slog.length>500)slog.length=500;
+            await window.AppDB.setGlobal('bw_sub_log',slog);
         }catch(e){}
     }
     await saveSub(tier,selectedToken,txHash,usdPrice);
@@ -1005,7 +1064,120 @@ async function finalizeSub(tier,usdPrice,txHash){
 }
 
 // Init subscription on load
-loadSub();
+loadSub().then(()=>{
+    // Show admin button if creator wallet
+    if(userWallet&&userWallet.toLowerCase()===CREATOR_WALLET.toLowerCase()){
+        const ab=document.getElementById('adminBtn');if(ab)ab.style.display='inline-block';
+    }
+});
+
+// ===== ADMIN PANEL =====
+const ADMIN_WALLET=CREATOR_WALLET.toLowerCase();
+function isAdmin(){return userWallet&&userWallet.toLowerCase()===ADMIN_WALLET}
+
+function showAdmin(){
+    if(!isAdmin())return;
+    document.getElementById('adminModal').classList.add('show');
+    loadAdminData();
+}
+function hideAdmin(){document.getElementById('adminModal').classList.remove('show')}
+
+// Admin tabs
+document.getElementById('adminTabs').addEventListener('click',e=>{
+    const b=e.target.closest('.admin-tab');if(!b)return;
+    document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('on'));
+    document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('atab-'+b.dataset.atab).classList.add('on');
+});
+
+async function loadAdminData(){
+    if(!window.AppDB){
+        document.getElementById('atab-promo-log').innerHTML='<div class="adm-empty">AppDB not available — admin data requires inclawbate.com</div>';
+        return;
+    }
+    try{
+        const [promoLog,subLog,promoCodes]=await Promise.all([
+            window.AppDB.getGlobal('bw_promo_log').then(r=>r||[]),
+            window.AppDB.getGlobal('bw_sub_log').then(r=>r||[]),
+            window.AppDB.getGlobal('bw_promo_codes').then(r=>r||{})
+        ]);
+        renderPromoLog(promoLog);
+        renderPromoCodes(promoCodes);
+        renderSubLog(subLog);
+    }catch(e){
+        document.getElementById('atab-promo-log').innerHTML='<div class="adm-empty">Error loading data: '+E(e.message)+'</div>';
+    }
+}
+
+function renderPromoLog(log){
+    const el=document.getElementById('atab-promo-log');
+    if(!log.length){el.innerHTML='<div class="adm-empty">No promo codes used yet</div>';return}
+    // Stats
+    const codes={};let totalDisc=0;
+    log.forEach(l=>{codes[l.code]=(codes[l.code]||0)+1;totalDisc+=(l.discountPct||0)});
+    const topCode=Object.entries(codes).sort((a,b)=>b[1]-a[1])[0];
+    let html='<div class="adm-stats-row">';
+    html+='<div class="adm-stat"><div class="adm-stat-val">'+log.length+'</div><div class="adm-stat-lbl">Total Uses</div></div>';
+    html+='<div class="adm-stat"><div class="adm-stat-val">'+Object.keys(codes).length+'</div><div class="adm-stat-lbl">Unique Codes</div></div>';
+    if(topCode)html+='<div class="adm-stat"><div class="adm-stat-val">'+E(topCode[0])+'</div><div class="adm-stat-lbl">Most Used ('+topCode[1]+'x)</div></div>';
+    html+='</div>';
+    // Table
+    html+='<table class="adm-tbl"><tr><th>Date</th><th>Code</th><th>Discount</th><th>Tier</th><th>Paid</th><th>Token</th><th>Wallet</th><th>Tx Hash</th></tr>';
+    log.forEach(l=>{
+        const dt=new Date(l.ts);
+        const dateStr=dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'})+' '+dt.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        const wallet=l.wallet&&l.wallet!=='unknown'?l.wallet.slice(0,6)+'...'+l.wallet.slice(-4):'—';
+        const tx=l.txHash?l.txHash.slice(0,10)+'...':'—';
+        html+='<tr><td>'+dateStr+'</td><td class="adm-code">'+E(l.code)+'</td><td>'+l.discountPct+'%</td><td><span class="adm-tier '+(l.tier||'')+'">'+E(l.tier||'—')+'</span></td><td>$'+(l.paidUSD||0).toFixed(2)+'</td><td>'+E(l.token||'—')+'</td><td class="adm-wallet" title="'+(l.wallet||'')+'">'+wallet+'</td><td style="font-size:0.36rem" title="'+(l.txHash||'')+'">'+tx+'</td></tr>';
+    });
+    html+='</table>';
+    el.innerHTML=html;
+}
+
+function renderPromoCodes(codes){
+    const el=document.getElementById('atab-promo-codes');
+    const all={...DEFAULT_PROMOS,...codes};
+    const entries=Object.entries(all);
+    if(!entries.length){el.innerHTML='<div class="adm-empty">No promo codes configured</div>';return}
+    let html='<table class="adm-tbl"><tr><th>Code</th><th>Discount</th><th>Used</th><th>Max Uses</th><th>Status</th></tr>';
+    entries.forEach(([code,p])=>{
+        const used=p.usedCount||0;
+        const max=p.maxUses||'&infin;';
+        const exhausted=p.maxUses&&used>=p.maxUses;
+        const status=exhausted?'<span style="color:var(--red)">Exhausted</span>':'<span style="color:var(--grn)">Active</span>';
+        html+='<tr><td class="adm-code">'+E(code)+'</td><td>'+p.discountPct+'%</td><td>'+used+'</td><td>'+max+'</td><td>'+status+'</td></tr>';
+    });
+    html+='</table>';
+    el.innerHTML=html;
+}
+
+function renderSubLog(log){
+    const el=document.getElementById('atab-subs');
+    if(!log.length){el.innerHTML='<div class="adm-empty">No subscriptions recorded yet</div>';return}
+    // Stats
+    let totalRev=0;const tiers={};
+    log.forEach(l=>{totalRev+=(l.paidUSD||0);tiers[l.tier]=(tiers[l.tier]||0)+1});
+    let html='<div class="adm-stats-row">';
+    html+='<div class="adm-stat"><div class="adm-stat-val">'+log.length+'</div><div class="adm-stat-lbl">Total Subs</div></div>';
+    html+='<div class="adm-stat"><div class="adm-stat-val">$'+totalRev.toFixed(2)+'</div><div class="adm-stat-lbl">Revenue</div></div>';
+    Object.entries(tiers).forEach(([t,c])=>{html+='<div class="adm-stat"><div class="adm-stat-val">'+c+'</div><div class="adm-stat-lbl">'+t.toUpperCase()+'</div></div>'});
+    html+='</div>';
+    // Table
+    html+='<table class="adm-tbl"><tr><th>Date</th><th>Tier</th><th>Paid</th><th>Token</th><th>Promo</th><th>Wallet</th><th>Tx Hash</th></tr>';
+    log.forEach(l=>{
+        const dt=new Date(l.ts);
+        const dateStr=dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'})+' '+dt.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
+        const wallet=l.wallet&&l.wallet!=='unknown'?l.wallet.slice(0,6)+'...'+l.wallet.slice(-4):'—';
+        const tx=l.txHash?l.txHash.slice(0,10)+'...':'—';
+        html+='<tr><td>'+dateStr+'</td><td><span class="adm-tier '+(l.tier||'')+'">'+E(l.tier||'—')+'</span></td><td>$'+(l.paidUSD||0).toFixed(2)+'</td><td>'+E(l.token||'—')+'</td><td>'+(l.promo?'<span class="adm-code">'+E(l.promo)+'</span>':'—')+'</td><td class="adm-wallet" title="'+(l.wallet||'')+'">'+wallet+'</td><td style="font-size:0.36rem" title="'+(l.txHash||'')+'">'+tx+'</td></tr>';
+    });
+    html+='</table>';
+    el.innerHTML=html;
+}
+
+// Close admin on overlay click
+document.getElementById('adminModal').addEventListener('click',e=>{if(e.target.id==='adminModal')hideAdmin()});
 
 // Copy commands map
 const CMD={
