@@ -166,7 +166,14 @@
         .rg-fill{height:100%;border-radius:2px;transition:width .6s}
 
         /* PANELS */
-        .pn{background:var(--s1);border:1px solid var(--b1);border-radius:8px;overflow:hidden}
+        .pn{background:var(--s1);border:1px solid var(--b1);border-radius:8px;overflow:hidden;position:relative}
+        .pn-lock{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(6,6,11,0.88);backdrop-filter:blur(6px);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;z-index:5;border-radius:inherit;transition:background 0.2s}
+        .pn-lock:hover{background:rgba(6,6,11,0.78)}
+        .pn-lock-icon{font-size:1.4rem;margin-bottom:0.4rem;opacity:0.5}
+        .pn-lock-txt{font-size:0.55rem;color:var(--gold);font-weight:700;letter-spacing:0.03em}
+        .pn-lock-sub{font-size:0.44rem;color:var(--t4);margin-top:0.15rem}
+        .tab-lock{opacity:0.45;cursor:pointer}
+        .tab-lock::after{content:'PRO';font-size:0.32rem;background:var(--gold);color:#000;padding:0 3px;border-radius:2px;margin-left:4px;font-weight:800;vertical-align:middle}
         .pn-h{display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.8rem;background:var(--s2);border-bottom:1px solid var(--b2)}
         .pn-t{font-size:0.6rem;font-weight:700;color:var(--t2);text-transform:uppercase;letter-spacing:0.05em}
         .pn-badge{font-family:var(--mono);font-size:0.48rem;color:var(--t4);background:var(--gold-d);padding:1px 6px;border-radius:3px}
@@ -460,17 +467,17 @@
         <div class="hero" id="heroGrid"></div>
         <div class="risk-bar" id="riskBar"></div>
         <div class="row r-main">
-            <div class="pn"><div class="pn-h"><span class="pn-t">Strategy Breakdown</span></div><div id="stratBox" style="display:flex;flex-direction:column;gap:1px;background:var(--b1)"></div></div>
-            <div class="pn"><div class="pn-h"><span class="pn-t">Equity Curve</span><span class="pn-badge" id="perfCt">--</span></div><div class="pn-b"><div class="ch"><canvas id="eqChart"></canvas></div></div></div>
+            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Strategy Breakdown</span></div><div id="stratBox" style="display:flex;flex-direction:column;gap:1px;background:var(--b1)"></div></div>
+            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Equity Curve</span><span class="pn-badge" id="perfCt">--</span></div><div class="pn-b"><div class="ch"><canvas id="eqChart"></canvas></div></div></div>
         </div>
         <div class="row r-3">
-            <div class="pn"><div class="pn-h"><span class="pn-t">Position Map</span></div><div class="pn-b" id="tmBox"><div class="empty">No open positions</div></div></div>
-            <div class="pn"><div class="pn-h"><span class="pn-t">Outcomes</span></div><div class="pn-b"><div class="ch ch-sm"><canvas id="outChart"></canvas></div></div></div>
-            <div class="pn"><div class="pn-h"><span class="pn-t">Last Cycle</span></div><div class="pn-b" id="cycleBox"><div class="empty">Awaiting cycle</div></div></div>
+            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Position Map</span></div><div class="pn-b" id="tmBox"><div class="empty">No open positions</div></div></div>
+            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Outcomes</span></div><div class="pn-b"><div class="ch ch-sm"><canvas id="outChart"></canvas></div></div></div>
+            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Last Cycle</span></div><div class="pn-b" id="cycleBox"><div class="empty">Awaiting cycle</div></div></div>
         </div>
         <div class="row r-half">
-            <div class="pn"><div class="pn-h"><span class="pn-t">City Breakdown</span></div><div class="pn-b" id="cityBox"><div class="empty">No city data</div></div></div>
-            <div class="pn"><div class="pn-h"><span class="pn-t">Daily P&L</span></div><div class="pn-b"><div class="ch ch-sm"><canvas id="pnlChart"></canvas></div></div></div>
+            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">City Breakdown</span></div><div class="pn-b" id="cityBox"><div class="empty">No city data</div></div></div>
+            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Daily P&L</span></div><div class="pn-b"><div class="ch ch-sm"><canvas id="pnlChart"></canvas></div></div></div>
         </div>
         <div class="pn">
             <div style="display:flex;align-items:center;justify-content:space-between;background:var(--s2);border-bottom:1px solid var(--b2);padding-right:0.8rem">
@@ -558,15 +565,18 @@ async function waitForSDK(name,ms){
 }
 
 // Subscription persistence
+function loadSubLocal(){
+    try{const ls=JSON.parse(localStorage.getItem('bw_sub_local'));
+        if(ls&&ls.tier&&ls.expiresAt&&new Date(ls.expiresAt)>new Date()){currentTier=ls.tier;subData=ls;return true}
+    }catch(e){}
+    return false;
+}
 async function loadSub(){
     userWallet=getWallet();
     const hasDB=await waitForSDK('AppDB',3000);
-    if(!hasDB||!userWallet){
-        try{const ls=JSON.parse(localStorage.getItem('bw_sub_local'));
-            if(ls&&ls.tier&&ls.expiresAt&&new Date(ls.expiresAt)>new Date()){currentTier=ls.tier;subData=ls}
-            else{currentTier='free'}
-        }catch(e){currentTier='free'}
-        updateSubBadge();return;
+    if(!hasDB){
+        if(!loadSubLocal())currentTier='free';
+        updateSubBadge();applyTierGating();return;
     }
     try{
         subData=await window.AppDB.get('bw_sub');
@@ -574,7 +584,7 @@ async function loadSub(){
             if(new Date(subData.expiresAt)>new Date()){currentTier=subData.tier}
             else{
                 // Check referral credits before downgrading
-                const cred=await loadRefCredits();
+                const cred=userWallet?await loadRefCredits():null;
                 if(cred&&cred.earnedMonths>cred.usedMonths){
                     subData.expiresAt=new Date(Date.now()+30*86400000).toISOString();
                     cred.usedMonths++;
@@ -583,17 +593,49 @@ async function loadSub(){
                     currentTier=subData.tier;
                 }else{currentTier='free'}
             }
-        }else{currentTier='free'}
-    }catch(e){currentTier='free'}
-    updateSubBadge();
+        }else{
+            // AppDB empty — check localStorage fallback
+            if(!loadSubLocal())currentTier='free';
+        }
+    }catch(e){
+        if(!loadSubLocal())currentTier='free';
+    }
+    updateSubBadge();applyTierGating();
     // Check URL for referral code
     const urlRef=new URLSearchParams(window.location.search).get('ref');
     if(urlRef)localStorage.setItem('bw_pending_ref',urlRef);
 }
+
+// Tier gating — lock panels that require a higher tier
+function applyTierGating(){
+    document.querySelectorAll('.pn-lock').forEach(l=>l.remove());
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('tab-lock'));
+    const tierRank={free:0,pro:1,team:2};
+    const myRank=tierRank[currentTier]||0;
+    // Lock panels with data-gate
+    document.querySelectorAll('.pn[data-gate]').forEach(pn=>{
+        const req=pn.dataset.gate;
+        const reqRank=tierRank[req]||0;
+        if(myRank>=reqRank)return;
+        const lock=document.createElement('div');lock.className='pn-lock';
+        lock.innerHTML='<div class="pn-lock-icon">&#128274;</div><div class="pn-lock-txt">Upgrade to '+req.charAt(0).toUpperCase()+req.slice(1)+'</div><div class="pn-lock-sub">Click to view plans</div>';
+        lock.onclick=function(e){e.stopPropagation();showPricing()};
+        pn.appendChild(lock);
+    });
+    // Lock Trade History + Scan Cycles tabs for free tier
+    if(currentTier==='free'){
+        document.querySelectorAll('.tab[data-tab="hist"],.tab[data-tab="cyc"]').forEach(t=>{
+            t.classList.add('tab-lock');
+        });
+    }
+    // Lock CSV button for free
+    const csvBtn=document.querySelector('.exp-btn');
+    if(csvBtn){csvBtn.style.opacity=currentTier==='free'?'0.3':'1';csvBtn.style.pointerEvents=currentTier==='free'?'none':'auto'}
+}
 async function saveSub(tier,token,txHash,paidUSD){
     const refCode=userWallet?'REF_'+userWallet.slice(2,10).toLowerCase():'';
     subData={tier,expiresAt:new Date(Date.now()+30*86400000).toISOString(),paymentToken:token,txHash,paidAmountUSD:paidUSD,subscribedAt:new Date().toISOString(),renewCount:(subData?.renewCount||0)+1,promoApplied:promoCode||null,referralCode:refCode};
-    currentTier=tier;updateSubBadge();
+    currentTier=tier;updateSubBadge();applyTierGating();
     // Also persist to localStorage as fallback
     localStorage.setItem('bw_sub_local',JSON.stringify(subData));
     if(window.AppDB){try{await window.AppDB.set('bw_sub',subData)}catch(e){}}
@@ -1272,7 +1314,7 @@ function startDashboard(){
     tick();setInterval(tick,1000);
 
     // Tabs
-    document.getElementById('tabBar').addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return;document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));document.querySelectorAll('.tc').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('tab-'+b.dataset.tab).classList.add('on')});
+    document.getElementById('tabBar').addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return;if(b.classList.contains('tab-lock')){showPricing();return}document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on','tab-lock-on'));document.querySelectorAll('.tc').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('tab-'+b.dataset.tab).classList.add('on')});
 
     refresh();
     refreshTimer=setInterval(refresh,12000);
