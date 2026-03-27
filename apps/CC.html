@@ -3857,29 +3857,29 @@ function _cardArtUrl(name) {
 	return _CARD_ART_BASE + encodeURIComponent(name) + '.png';
 }
 const _CARD_ART_NAMES = [
-	'Abyssal Angler','Abyssal Feast','Abyssal Hydra','Abyssal Lurker','Abyssal Monarch','Abyssal Pincer','Abyssal Plate','Abyssal Remora','Abyssal Sovereign',
-	'Antenna Oracle','Barnacle Armor','Barnacle Parasite','Barnacle Scout','Bedrock Formation',
-	'Biolume Lance','Biolume Minnow','Bioluminescent Dragon Eel','Brine Bomb','Brine Wasp','Brood Mother',
+	'Abyssal Angler','Abyssal Feast','Abyssal Hydra','Abyssal Lurker','Abyssal Monarch','Abyssal Pincer','Abyssal Plate','Abyssal Remora','Abyssal Sovereign','Abyssal Summons',
+	'Antenna Oracle','Barnacle Armor','Barnacle Bind','Barnacle Parasite','Barnacle Scout','Bedrock Formation',
+	'Biolume Flare','Biolume Lance','Biolume Minnow','Bioluminescent Dragon Eel','Brine Bomb','Brine Wasp','Brood Mother',
 	'Celestial Nautilus','Chain Urchin','Charybdis the Devourer','Chitin Gauntlet',
 	'Claw Recruit','Claw Sharpening','Claw of Dominion','Coconut Crab King',
-	'Coral Bastion','Coral Blade','Coral Bloom','Coral Colossus','Coral Growth','Coral Reef Kingdom','Coral Witch',
-	'Crustacean Fury','Current Draw','Current Sprite','Cuttlebone Spy',
-	'Deep Sea Berserker','Deepwater Titan','Depth Charge','Drift Anemone','Driftwood Shield',
+	'Coral Bastion','Coral Blade','Coral Bloom','Coral Colossus','Coral Growth','Coral Reef Kingdom','Coral Snare','Coral Witch',
+	'Countercurrent','Crustacean Fury','Current Draw','Current Sprite','Cuttlebone Spy',
+	'Deep Sea Berserker','Deepwater Titan','Depth Charge','Depth Mine','Drift Anemone','Driftwood Shield',
 	'Ember Urchin','Emergency Molt','Emperor Crustacean','Flashtide','Gale Currents','Gale Fin',
-	'Gilded Cephalopod','Glacial Lobster','Gloom Squid','Hermit Lobster','Hydra Polyp','Hydro Burst','Hydrothermal Drake',
-	'Infernal Tidecaller','Inferno Crustacean','Ironclad Nautilus','Ironshell Crab','Kelp Runner','Kelp Wrap',
-	'Kraken Hatchling','Kraken Overlord','Lantern Angler','Larval Drifter','Leviathan Lobster','Leviathan Prime',
-	"Lobster's Feast",'Maelstrom Dragon','Maelstrom Wrath','Magma Hermit','Magma Wisp',
-	'Mantis Shrimp','Mantis Shrimp Striker','Molt Striker','Molting Season','Nautilus Warden',
+	'Gilded Cephalopod','Glacial Lobster','Gloom Squid','Hermit Lobster','Howling Abyss','Hydra Polyp','Hydro Burst','Hydrothermal Charge','Hydrothermal Drake',
+	'Infernal Tidecaller','Inferno Crustacean','Ink Cloud','Ink Eruption','Ironclad Nautilus','Ironshell Crab','Kelp Runner','Kelp Wrap',
+	'Jet Current','Kraken Hatchling','Kraken Overlord','Lantern Angler','Larval Drifter','Leviathan Lobster','Leviathan Prime',
+	'Lobster Pot',"Lobster's Feast",'Luminous Atoll','Maelstrom Dragon','Maelstrom Ritual','Maelstrom Wrath','Magma Hermit','Magma Rite','Magma Wisp',
+	'Mantis Shrimp','Mantis Shrimp Striker','Mariana Plunge','Mirror Tide','Molt Striker','Molting Season','Nautilus Warden',
 	'Oblivion Crawler','Obsidian Shellbreaker',"Ocean's Bounty","Ocean's Wrath",
 	'Pearl Diver','Phantom Jellyfish','Phantom Maw','Phosphor Flash','Phosphor Shrimp',
-	'Pincer Duelist','Pistol Shrimp','Plankton Surge',"Poseidon's Chosen",'Prism Jellyfish','Pyroclasm Leviathan',
+	'Pincer Duelist','Pincer Trap','Pistol Shrimp','Plankton Surge',"Poseidon's Chosen",'Predator Instinct','Pressure Blast','Prism Jellyfish','Pyroclasm Leviathan',
 	'Radiant Depths','Reef Chanter','Reef Reclamation','Reef Sentinel','Reef Stalker',
-	'Riptide Crab','Riptide Purge','Ritual of the Deep','Sand Burrower','Seabed Scour','Shadow Current',
-	'Shell Fusion','Shell Knight','Siphon Worm',"Siren's Call",'Spore Polyp','Stormfin Serpent','Sunken Treasure',
-	'Tempest Wyrm','Thermidor the Blaze','Tidal Crawler','Tidal Renewal','Tidal Wave','Tide Caller','Tide Pool Lurker',
+	'Refraction Pulse','Riptide Crab','Riptide Purge','Ritual of the Deep','Sand Burrower','Scaldstream','Seabed Scour','Seafloor Spikes','Shadow Current',
+	'Shell Fusion','Shell Knight','Shell Reinforce','Shell Shield','Siphon Worm',"Siren's Call",'Snapping Ambush','Spore Polyp','Stormfin Serpent','Sunken Treasure',
+	'Tempest Wyrm','Thermidor the Blaze','Tidal Ambush','Tidal Bounty','Tidal Crawler','Tidal Renewal','Tidal Wave','Tide Caller','Tide Pool Lurker',
 	'Trench Collapse','Trench Stalker','Trident of Tides','Tsunami Wipe','Twin Claw Dragon',
-	'Undertow','Undertow Surge','Volcanic Krill','Volcanic Spine','Volcanic Vent Crab','Volcanic Vents','Whirlpool Eel'
+	'Undertow','Undertow Surge','Verdant Shallows','Volcanic Krill','Volcanic Seabed','Volcanic Spine','Volcanic Vent Crab','Volcanic Vents','Vortex Sacrament','Whirlpool Eel','Whirlpool Trap'
 ];
 _CARD_ART_NAMES.forEach(name => { _cardArtImages[name] = _cardArtUrl(name); });
 function getFrameClass(card) {
