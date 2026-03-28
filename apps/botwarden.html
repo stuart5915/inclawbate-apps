@@ -485,7 +485,7 @@
                 <div class="bot-menu" id="botMenu"></div>
             </div>
             <div class="cd" id="cdBox"><span class="cd-l">Next Cycle</span><span class="cd-t" id="cdTime">--:--:--</span></div>
-            <div class="clk" id="clk">--:--:-- UTC</div>
+            <div class="clk" id="clk">--:--:--</div>
             <div class="badge badge-dry" id="modeBadge">Paper</div>
             <div class="dot-w"><div class="dot"></div><span class="dot-lbl" id="statusTxt">--</span></div>
             <span class="sub-badge free" id="subBadge" onclick="showPricing()">FREE</span>
@@ -1533,7 +1533,8 @@ if(autoS.length===1){document.getElementById('serverIp').value=autoS[0].url;if(a
 // --- DASHBOARD ---
 function startDashboard(){
     // Clock
-    function tick(){const d=new Date();document.getElementById('clk').textContent=String(d.getUTCHours()).padStart(2,'0')+':'+String(d.getUTCMinutes()).padStart(2,'0')+':'+String(d.getUTCSeconds()).padStart(2,'0')+' UTC';
+    const tzAbbr=(()=>{try{return new Intl.DateTimeFormat('en-US',{timeZoneName:'short'}).formatToParts(new Date()).find(p=>p.type==='timeZoneName').value}catch(e){return''}})();
+    function tick(){const d=new Date();document.getElementById('clk').textContent=String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')+' '+tzAbbr;
     if(nextMs){const df=nextMs-Date.now();const cb=document.getElementById('cdBox');if(df<=0){const overdue=Math.abs(df);if(overdue<120000){document.getElementById('cdTime').textContent='NOW';cb.className='cd cd-now';wakeBiz()}else{nextMs=nextMs+Math.ceil(overdue/(stats_ci||21600000))*(stats_ci||21600000);sleepBiz()}}else{const h=Math.floor(df/36e5),m=Math.floor(df%36e5/6e4),s=Math.floor(df%6e4/1e3);document.getElementById('cdTime').textContent=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');cb.className=df<6e5?'cd cd-now':df<18e5?'cd cd-warn':'cd';if(df>6e4)sleepBiz()}}}
     tick();setInterval(tick,1000);
 
