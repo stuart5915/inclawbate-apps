@@ -451,6 +451,14 @@
 	.mp-player { font-family:'Chakra Petch',sans-serif; font-size:12px; color:rgba(180,165,130,.4); padding:6px 14px; background:rgba(20,18,14,.4); border:1px solid rgba(120,105,75,.08); border-radius:4px; }
 	#mp-start-btn { display:none; padding:14px 36px; border-radius:8px; font-family:'Orbitron',sans-serif; font-size:14px; font-weight:900; letter-spacing:4px; background:linear-gradient(135deg,#b22222,#e63c3c 40%,#ff5252 70%); color:#fff; border:1px solid rgba(255,150,100,.2); cursor:pointer; text-shadow:0 2px 4px rgba(0,0,0,.3); box-shadow:0 0 15px rgba(230,60,60,.25); }
 	.mp-surrender-btn { position:absolute; top:8px; right:8px; padding:4px 10px; border-radius:4px; background:rgba(180,30,30,.3); color:rgba(255,120,120,.6); border:1px solid rgba(180,30,30,.2); font-size:9px; font-weight:700; letter-spacing:1px; cursor:pointer; z-index:20; }
+	.ffa-bar { display:flex; flex-wrap:wrap; gap:4px; justify-content:center; padding:3px 6px; background:rgba(8,12,20,0.5); border-bottom:1px solid rgba(120,105,75,.08); }
+	.ffa-tab { padding:3px 10px; font-family:'Chakra Petch',sans-serif; font-size:9px; font-weight:700; letter-spacing:1px; border-radius:4px; background:rgba(8,18,35,.4); color:rgba(140,125,95,.4); border:1px solid rgba(40,120,200,.06); cursor:pointer; transition:all .2s; }
+	.ffa-tab.active { color:rgba(231,76,60,.9); background:rgba(231,76,60,.08); border-color:rgba(231,76,60,.2); }
+	.ffa-tab.eliminated { text-decoration:line-through; opacity:.3; pointer-events:none; }
+	.ffa-tab .ffa-lp { font-size:8px; color:rgba(160,145,115,.5); display:block; }
+	.ffa-tab.active .ffa-lp { color:rgba(231,76,60,.6); }
+	.ffa-npc-turn { text-align:center; padding:2px; font-family:'Chakra Petch',sans-serif; font-size:10px; font-weight:700; color:rgba(255,180,80,.7); letter-spacing:2px; animation:ffaPulse 1s ease infinite; }
+	@keyframes ffaPulse { 0%,100%{opacity:.5}50%{opacity:1} }
 	.duel-setup-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); backdrop-filter:blur(16px); z-index:100; align-items:center; justify-content:center; }
 	.duel-setup-overlay.active { display:flex; }
 	.duel-setup { width:90%; max-width:380px; padding:28px 24px; background:linear-gradient(145deg,#14120e,#1a1710); border:1px solid rgba(120,105,75,.15); border-radius:14px; text-align:center; }
@@ -2840,6 +2848,7 @@
 					<input id="mp-code-input" maxlength="8" placeholder="Room code...">
 					<div style="display:flex;gap:8px"><button onclick="mpCreatePrivate()">CREATE</button><button onclick="mpJoinPrivate()">JOIN</button></div>
 				</div>
+				<button class="mp-priv-toggle" style="margin-top:8px;background:rgba(231,76,60,.08);border-color:rgba(231,76,60,.15);color:rgba(255,150,130,.6)" onclick="mpStartFFA()">FFA BATTLE (4 Players)</button>
 			</div>
 			<div id="mp-no-sdk" style="display:none;text-align:center;padding:20px;">
 				<div style="font-family:'Chakra Petch',sans-serif;font-size:14px;color:rgba(140,200,255,0.9);margin-bottom:12px;">Multiplayer Unavailable</div>
@@ -3037,6 +3046,7 @@
 				<div class="lp-fill"><div class="lp-fill-inner player" id="player-lp-bar" style="width:100%"></div></div>
 			</div>
 		</div>
+		<div id="ffa-bar" class="ffa-bar" style="display:none"></div>
 		<div class="duel-log" id="duel-log"></div>
 		<div class="duel-field" id="duel-field"></div>
 		<div class="phase-bar" id="phase-bar"></div>
@@ -3089,6 +3099,10 @@
 			<div class="setup-section">
 				<div class="setup-label">AI Difficulty</div>
 				<div class="setup-options" id="setup-diff-opts"></div>
+			</div>
+			<div class="setup-section">
+				<div class="setup-label">Mode</div>
+				<div class="setup-options" id="setup-mode-opts"></div>
 			</div>
 			<button class="setup-start" onclick="launchDuel()">BATTLE</button>
 			<button class="setup-cancel" onclick="hideDuelSetup()">Cancel</button>
@@ -6508,6 +6522,89 @@ function autoFillDeck() {
 	renderDeckBuilder();
 }
 let duel = null;
+let ffa = null;
+let ffaMode = '1v1';
+const FFA_NAMES = ['You','Barnacle Bill','Captain Claw','The Kraken'];
+const FFA_DECKS = [
+	[44,44,45,45,3,3,2,2,49,54,9,9,62,62,13,8,78,80,67,72,26,26,119,94,100,93,125,91,99,141,142,143,144,176,146,58,51,65,50,43],
+	[1,1,4,4,5,5,6,6,8,12,12,15,15,14,27,27,29,29,32,34,35,35,36,36,39,7,10,11,3,2,26,28,119,91,93,125,141,142,143,176],
+	[44,49,54,62,9,3,2,45,80,78,67,72,94,100,141,142,143,144,176,146,58,51,65,50,43,26,119,125,91,93,99,13,8,35,36,39,27,29,14,15]
+];
+const FFA_EXTRA = [[22,24,25,81,87],[25,81,87],[22,24,25,87]];
+function ffaMakeSeat(name, isNPC, state, diff) {
+	return { state, name, isNPC, eliminated: false, energy: 5, reef: 0, reef5Used: false, inkUsed: false, inkActive: false, inkCloudTurn: -1, difficulty: diff || aiDifficulty };
+}
+function ffaSwap(active, target) {
+	if (!ffa) return;
+	const a = ffa.seats[active], t = ffa.seats[target];
+	duel.player = a.state; duel.ai = t.state;
+	duel.playerEnergy = a.energy; duel.aiEnergy = t.energy;
+	duel.playerReef = a.reef; duel.aiReef = t.reef;
+	duel.playerReef5Used = a.reef5Used; duel.aiReef5Used = t.reef5Used;
+	duel.playerInkUsed = a.inkUsed; duel.aiInkUsed = t.inkUsed;
+	duel.playerInkActive = a.inkActive; duel.aiInkActive = t.inkActive;
+	duel.inkCloudTurn = t.inkCloudTurn;
+	ffa.currentSeat = active; ffa.viewTarget = target;
+}
+function ffaFlush() {
+	if (!ffa) return;
+	const a = ffa.seats[ffa.currentSeat], t = ffa.seats[ffa.viewTarget];
+	a.state = duel.player; a.energy = duel.playerEnergy; a.reef = duel.playerReef;
+	a.reef5Used = duel.playerReef5Used; a.inkUsed = duel.playerInkUsed; a.inkActive = duel.playerInkActive;
+	t.state = duel.ai; t.energy = duel.aiEnergy; t.reef = duel.aiReef;
+	t.reef5Used = duel.aiReef5Used; t.inkUsed = duel.aiInkUsed; t.inkActive = duel.aiInkActive;
+	t.inkCloudTurn = duel.inkCloudTurn;
+}
+function ffaAliveNPCs() { return ffa ? ffa.seats.filter((s,i) => i > 0 && !s.eliminated) : []; }
+function ffaFirstAliveNPC() {
+	for (let i = 1; i < 4; i++) if (!ffa.seats[i].eliminated) return i;
+	return 1;
+}
+function ffaSwitchView(targetIdx) {
+	if (!ffa || ffa.seats[targetIdx].eliminated || targetIdx === 0) return;
+	if (duel.currentPlayer !== 'player') return; // can't switch during NPC turn
+	ffaFlush();
+	ffa.viewTarget = targetIdx;
+	ffaSwap(0, targetIdx);
+	renderDuel();
+}
+function ffaNextTurn() {
+	if (!ffa || duel.gameOver) return;
+	let next = (ffa.turnIdx + 1) % 4;
+	let safety = 0;
+	while (ffa.seats[next].eliminated && safety < 4) { next = (next + 1) % 4; safety++; }
+	if (safety >= 4) return;
+	ffa.turnIdx = next;
+	duel.turn++;
+	if (next === 0) {
+		// Human's turn
+		const vt = ffa.seats[ffa.viewTarget].eliminated ? ffaFirstAliveNPC() : ffa.viewTarget;
+		ffa.viewTarget = vt;
+		ffaSwap(0, vt);
+		duel.currentPlayer = 'player';
+		duel.playerEnergy += 3;
+		duel.phase = 'main1';
+		duel.isFirstTurn = false;
+		processTurnStartMechanics('player');
+		duel.player.monsters.forEach(m => {
+			if (m) { m.canAttack = true; m.attacks = 0; m.canChangePos = true; m.frozen = false; m.justSet = false; m.effectUsed = false; if (m.card.effects?.some(e => e.action === 'doubleAttack')) m.maxAttacks = 2; }
+		});
+		duel.uiState = 'idle'; duel.selectedCard = null;
+		duelLog(`--- Your Turn ${duel.turn} --- Energy: ${duel.playerEnergy}⚡`);
+		renderDuel();
+		showDiveDraw('player', () => { const drawn = drawCard('player'); if (drawn) duelLog(`Drew ${drawn.name}.`); renderDuel(); });
+	} else {
+		// NPC's turn
+		const npc = ffa.seats[next];
+		ffaSwap(0, next);
+		duel.currentPlayer = 'ai';
+		duel.phase = 'draw';
+		duel.uiState = 'idle'; duel.selectedCard = null;
+		duelLog(`--- ${npc.name}'s Turn ---`);
+		renderDuel();
+		setTimeout(() => aiTurn(), 800);
+	}
+}
 function createPlayerState(deckIds, extraIds) {
 	const deck = deckIds.map(id => ({ ...getCard(id), uid: Math.random().toString(36).slice(2) }));
 	for (let i = deck.length - 1; i > 0; i--) {
@@ -6579,6 +6676,13 @@ function showDuelSetup() {
 	diffEl.innerHTML = diffs.map(d =>
 		`<button class="setup-opt${d.id === aiDifficulty ? ' active' : ''}" onclick="selectSetup('diff','${d.id}')">${d.name}<span class="opt-sub">${d.sub}</span></button>`
 	).join('');
+	const modeEl = document.getElementById('setup-mode-opts');
+	if (modeEl) {
+		const modes = [{ id:'1v1', name:'1v1', sub:'Single' },{ id:'ffa', name:'FFA', sub:'4 Player' }];
+		modeEl.innerHTML = modes.map(m =>
+			`<button class="setup-opt${m.id === ffaMode ? ' active' : ''}" onclick="selectSetup('mode','${m.id}')">${m.name}<span class="opt-sub">${m.sub}</span></button>`
+		).join('');
+	}
 	document.getElementById('duel-setup').classList.add('active');
 }
 function hideDuelSetup() {
@@ -6586,6 +6690,7 @@ function hideDuelSetup() {
 }
 function selectSetup(type, val) {
 	if (type === 'deck') selectedDeckChoice = val;
+	else if (type === 'mode') ffaMode = val;
 	else aiDifficulty = val;
 	showDuelSetup(); // re-render options
 }
@@ -6631,6 +6736,7 @@ function launchDuel() {
 	}
 	if (deckIds.length < 20) { alert('Deck needs at least 20 cards!'); return; }
 	hideDuelSetup();
+	if (ffaMode === 'ffa') { startFFADuel(deckIds, extraIds); return; }
 	startDuel(deckIds, extraIds);
 }
 const AI_DECK = [
@@ -6644,7 +6750,48 @@ const AI_DECK = [
 	146, 58, 51, 65, 50, 43
 ];
 const AI_EXTRA = [22, 24, 25, 81, 87];
+function startFFADuel(deckIds, extraIds) {
+	const playerState = createPlayerState(deckIds, extraIds || []);
+	const npcStates = FFA_DECKS.map((d, i) => createPlayerState([...d], [...FFA_EXTRA[i]]));
+	ffa = {
+		seats: [
+			ffaMakeSeat(FFA_NAMES[0], false, playerState, aiDifficulty),
+			ffaMakeSeat(FFA_NAMES[1], true, npcStates[0], aiDifficulty),
+			ffaMakeSeat(FFA_NAMES[2], true, npcStates[1], aiDifficulty),
+			ffaMakeSeat(FFA_NAMES[3], true, npcStates[2], aiDifficulty),
+		],
+		turnIdx: 0, currentSeat: 0, viewTarget: 1
+	};
+	duel = {
+		turn: 1, currentPlayer: 'player', phase: 'main1',
+		player: ffa.seats[0].state, ai: ffa.seats[1].state,
+		log: [], gameOver: false, selectedCard: null, selectedZone: null,
+		uiState: 'idle', tributeTargets: [], tributeNeeded: 0,
+		pendingAction: null, chainResolving: false,
+		isFirstTurn: true, difficulty: aiDifficulty,
+		tide: 0, playerEnergy: 5, aiEnergy: 5,
+		playerReef: 0, aiReef: 0, playerReef5Used: false, aiReef5Used: false,
+		playerInkUsed: false, aiInkUsed: false,
+		playerInkActive: false, aiInkActive: false, inkCloudTurn: -1,
+		isFFA: true,
+	};
+	for (let s = 0; s < 4; s++) {
+		const st = ffa.seats[s].state;
+		for (let i = 0; i < 5; i++) {
+			if (st.deck.length > 0) st.hand.push(st.deck.shift());
+		}
+	}
+	showScreen('duel-screen');
+	const pm = getActivePlaymat();
+	const ds = document.getElementById('duel-screen');
+	if (pm) ds.style.background = pm.bg; else ds.style.background = '';
+	document.getElementById('ffa-bar').style.display = '';
+	duelLog('FFA Duel Start! 4 Players. You go first. Energy: 5');
+	duelLog('Turn 1 - Skipping first draw.');
+	renderDuel();
+}
 function startDuel(deckIds, extraIds) {
+	ffa = null;
 	if (!deckIds) { deckIds = [...playerData.deck]; extraIds = [...playerData.extraDeck]; }
 	if (deckIds.length < 20) {
 	alert('You need at least 20 cards in your deck! Go to Deck Builder.');
@@ -6689,6 +6836,8 @@ function startDuel(deckIds, extraIds) {
 	const ds = document.getElementById('duel-screen');
 	if (pm) ds.style.background = pm.bg;
 	else ds.style.background = '';
+	const ffaBar = document.getElementById('ffa-bar');
+	if (ffaBar) ffaBar.style.display = 'none';
 	duelLog('Duel Start! You go first. Energy: 5');
 	duelLog('Turn 1 - Skipping first draw.');
 	renderDuel();
@@ -6696,6 +6845,12 @@ function startDuel(deckIds, extraIds) {
 function drawCard(who) {
 	const p = duel[who];
 	if (p.deck.length === 0) {
+	if (ffa) {
+		const name = who === 'player' ? 'You' : ffa.seats[ffa.viewTarget].name;
+		duelLog(`${name} ran out of cards!`);
+		ffaEliminate(who);
+		return false;
+	}
 	duelLog(`${who === 'player' ? 'You' : 'AI'} ran out of cards!`);
 	endDuelResult(who === 'player' ? 'lose' : 'win');
 	return false;
@@ -7028,7 +7183,39 @@ function takeDamage(who, amount) {
 	duel[who].lp = Math.max(0, duel[who].lp - amount);
 	showDamageFlash(amount, false, who);
 	if (duel[who].lp <= 0) {
-	endDuelResult(who === 'player' ? 'lose' : 'win');
+		if (ffa) { ffaEliminate(who); return; }
+		endDuelResult(who === 'player' ? 'lose' : 'win');
+	}
+}
+function ffaEliminate(who) {
+	if (!ffa) return;
+	if (who === 'player') {
+		// Human eliminated = lose
+		duelLog('You have been eliminated!');
+		endDuelResult('lose');
+	} else {
+		// NPC eliminated
+		const seatIdx = ffa.viewTarget;
+		ffa.seats[seatIdx].eliminated = true;
+		duelLog(`${ffa.seats[seatIdx].name} has been eliminated!`);
+		// Clear their field
+		duel.ai.monsters = [null,null,null,null,null];
+		duel.ai.spells = [null,null,null,null,null];
+		duel.ai.fieldSpell = null;
+		ffaFlush();
+		const alive = ffaAliveNPCs();
+		if (alive.length === 0) {
+			duelLog('All opponents eliminated!');
+			endDuelResult('win');
+		} else {
+			// Auto-switch view to next alive NPC
+			if (duel.currentPlayer === 'player') {
+				const nextAlive = ffaFirstAliveNPC();
+				ffa.viewTarget = nextAlive;
+				ffaSwap(0, nextAlive);
+			}
+			renderDuel();
+		}
 	}
 }
 function gainLP(who, amount) {
@@ -7097,6 +7284,7 @@ function endTurn() {
 	duelLog(`Discarded ${discarded.name} (hand limit).`);
 	}
 	updateReef('player');
+	if (ffa) { ffaFlush(); ffaNextTurn(); return; }
 	duel.currentPlayer = 'ai';
 	duel.turn++;
 	duel.isFirstTurn = false;
@@ -8692,8 +8880,9 @@ function aiEndPhase() {
 			duelLog(`AI set a monster in DEF.`);
 		}
 	}
-	duelLog('AI ends turn.');
+	duelLog(ffa ? `${ffa.seats[ffa.viewTarget].name} ends turn.` : 'AI ends turn.');
 	renderDuel();
+	if (ffa) { setTimeout(() => { if (duel.gameOver) return; ffaFlush(); ffaNextTurn(); }, 800); return; }
 	setTimeout(() => {
 	if (duel.gameOver) return;
 	duel.currentPlayer = 'player';
@@ -8726,7 +8915,26 @@ function renderDuel() {
 	document.getElementById('ai-lp').textContent = duel.ai.lp;
 	document.getElementById('player-lp-bar').style.width = (duel.player.lp / 8000 * 100) + '%';
 	document.getElementById('ai-lp-bar').style.width = (duel.ai.lp / 8000 * 100) + '%';
-	document.getElementById('turn-info').textContent = `Turn ${duel.turn} - ${duel.currentPlayer === 'player' ? 'Your Turn' : (duel.isMultiplayer ? "Opponent's Turn" : 'AI Turn')}`;
+	if (ffa) {
+		const turnSeat = ffa.seats[ffa.turnIdx];
+		const turnName = ffa.turnIdx === 0 ? 'Your Turn' : turnSeat.name + "'s Turn";
+		document.getElementById('turn-info').textContent = `Turn ${duel.turn} - ${turnName}`;
+		document.getElementById('ai-lp').parentElement.querySelector('.lp-label').textContent = ffa.seats[ffa.viewTarget].name;
+		const ffaBar = document.getElementById('ffa-bar');
+		if (ffaBar) {
+			ffaBar.style.display = '';
+			ffaBar.innerHTML = ffa.seats.filter((s,i) => i > 0).map((s,i) => {
+				const idx = i + 1;
+				const cls = 'ffa-tab' + (idx === ffa.viewTarget ? ' active' : '') + (s.eliminated ? ' eliminated' : '');
+				return `<div class="${cls}" onclick="ffaSwitchView(${idx})">${s.name}<span class="ffa-lp">${s.eliminated ? 'OUT' : s.state.lp + ' LP'}</span></div>`;
+			}).join('');
+		}
+	} else {
+		document.getElementById('ai-lp').parentElement.querySelector('.lp-label').textContent = 'AI';
+		const ffaBar = document.getElementById('ffa-bar');
+		if (ffaBar) ffaBar.style.display = 'none';
+		document.getElementById('turn-info').textContent = `Turn ${duel.turn} - ${duel.currentPlayer === 'player' ? 'Your Turn' : (duel.isMultiplayer ? "Opponent's Turn" : 'AI Turn')}`;
+	}
 	const tideMarker = document.getElementById('tide-marker');
 	if (tideMarker) {
 	const tidePct = ((duel.tide + 5) / 10) * 100;
@@ -9051,7 +9259,17 @@ document.getElementById('card-modal').addEventListener('click', function(e) {
 document.querySelector('.game-over-btn')?.addEventListener('click', function() {
 	document.getElementById('game-over').classList.remove('active');
 	duel = null;
+	ffa = null;
+	const ffaBar = document.getElementById('ffa-bar');
+	if (ffaBar) ffaBar.style.display = 'none';
 });
+function mpStartFFA() {
+	// Launch local FFA from MP lobby - NPCs fill empty seats
+	const deckIds = playerData.deck.length >= 20 ? [...playerData.deck] : [...STARTER_DECK_IDS];
+	const extraIds = playerData.deck.length >= 20 ? [...playerData.extraDeck] : [...STARTER_EXTRA_IDS];
+	ffaMode = 'ffa';
+	startFFADuel(deckIds, extraIds);
+}
 let mp = { active: false, room: null, role: null, opponentId: null, session: 0 };
 function mpResetLobbyUI() {
 	try {
