@@ -1386,9 +1386,21 @@ function togglePanel(key){
 function applyPanelVisibility(){
     const hidden=JSON.parse(localStorage.getItem('bw_hidden_panels')||'[]');
     const canHide=currentTier==='pro'||currentTier==='team';
+    // Reset all panels and rows
     document.querySelectorAll('[data-panel]').forEach(el=>{
         if(canHide&&hidden.includes(el.dataset.panel)){el.style.display='none'}
         else{el.style.display=''}
+    });
+    // Adjust grid rows: reflow columns for visible children, hide empty rows
+    document.querySelectorAll('.row').forEach(row=>{
+        const children=[...row.children].filter(c=>c.dataset.panel);
+        const visible=children.filter(c=>c.style.display!=='none');
+        if(children.length===0)return;
+        if(visible.length===0){row.style.display='none';return}
+        row.style.display='';
+        if(visible.length===children.length){row.style.gridTemplateColumns='';return}
+        // Reflow: all visible children get equal width
+        row.style.gridTemplateColumns='repeat('+visible.length+',1fr)';
     });
 }
 
