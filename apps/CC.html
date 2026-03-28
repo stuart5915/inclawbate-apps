@@ -459,6 +459,17 @@
 	.ffa-tab.active .ffa-lp { color:rgba(231,76,60,.6); }
 	.ffa-npc-turn { text-align:center; padding:2px; font-family:'Chakra Petch',sans-serif; font-size:10px; font-weight:700; color:rgba(255,180,80,.7); letter-spacing:2px; animation:ffaPulse 1s ease infinite; }
 	@keyframes ffaPulse { 0%,100%{opacity:.5}50%{opacity:1} }
+	.ffa-chat { position:fixed; bottom:0; left:0; right:0; z-index:30; pointer-events:none; }
+	.ffa-chat > * { pointer-events:auto; }
+	.ffa-chat-toggle { text-align:center; padding:4px 12px; font-family:'Chakra Petch',sans-serif; font-size:9px; font-weight:700; letter-spacing:2px; color:rgba(140,200,255,.5); background:rgba(8,12,20,.75); border-top:1px solid rgba(40,120,200,.1); cursor:pointer; backdrop-filter:blur(6px); }
+	.ffa-chat-body { background:rgba(4,8,16,.92); border-top:1px solid rgba(40,120,200,.1); max-height:180px; display:flex; flex-direction:column; backdrop-filter:blur(8px); }
+	.ffa-chat-msgs { flex:1; overflow-y:auto; padding:6px 8px; max-height:130px; }
+	.ffa-chat-msg { font-size:11px; margin-bottom:3px; line-height:1.3; }
+	.ffa-chat-msg .chat-name { font-weight:700; margin-right:4px; }
+	.ffa-chat-msg.sys { color:rgba(255,180,80,.5); font-style:italic; font-size:10px; }
+	.ffa-chat-input-row { display:flex; gap:4px; padding:4px 6px; border-top:1px solid rgba(40,120,200,.06); }
+	.ffa-chat-input-row input { flex:1; background:rgba(8,18,35,.6); border:1px solid rgba(40,120,200,.1); border-radius:4px; color:#e2e8f0; font-family:'Nunito',sans-serif; font-size:11px; padding:5px 8px; outline:none; }
+	.ffa-chat-input-row button { padding:5px 12px; border-radius:4px; background:rgba(40,120,200,.15); color:rgba(140,200,255,.7); border:1px solid rgba(40,120,200,.15); font-family:'Chakra Petch',sans-serif; font-size:10px; font-weight:700; cursor:pointer; letter-spacing:1px; }
 	.duel-setup-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); backdrop-filter:blur(16px); z-index:100; align-items:center; justify-content:center; }
 	.duel-setup-overlay.active { display:flex; }
 	.duel-setup { width:90%; max-width:380px; padding:28px 24px; background:linear-gradient(145deg,#14120e,#1a1710); border:1px solid rgba(120,105,75,.15); border-radius:14px; text-align:center; }
@@ -3052,6 +3063,16 @@
 		<div class="phase-bar" id="phase-bar"></div>
 		<div class="hand-area" id="player-hand"></div>
 		<div class="card-preview-panel" id="card-preview-panel"></div>
+		<div id="ffa-chat" class="ffa-chat" style="display:none">
+			<div class="ffa-chat-toggle" onclick="toggleFFAChat()">CHAT ▲</div>
+			<div class="ffa-chat-body" id="ffa-chat-body" style="display:none">
+				<div class="ffa-chat-msgs" id="ffa-chat-msgs"></div>
+				<div class="ffa-chat-input-row">
+					<input id="ffa-chat-input" maxlength="120" placeholder="Say something..." onkeydown="if(event.key==='Enter')sendFFAChat()">
+					<button onclick="sendFFAChat()">SEND</button>
+				</div>
+			</div>
+		</div>
 		<div class="action-menu" id="action-menu"></div>
 		<div class="trap-prompt-overlay" id="trap-prompt">
 			<div class="trap-prompt-box">
@@ -6594,13 +6615,17 @@ function ffaNextTurn() {
 		renderDuel();
 		showDiveDraw('player', () => { const drawn = drawCard('player'); if (drawn) duelLog(`Drew ${drawn.name}.`); renderDuel(); });
 	} else {
-		// NPC's turn
+		// NPC's turn — pick a random target from alive opponents
 		const npc = ffa.seats[next];
+		const targets = ffa.seats.map((s,i) => i).filter(i => i !== next && !ffa.seats[i].eliminated);
+		ffa.npcTarget = targets[Math.floor(Math.random() * targets.length)];
 		ffaSwap(0, next);
 		duel.currentPlayer = 'ai';
 		duel.phase = 'draw';
 		duel.uiState = 'idle'; duel.selectedCard = null;
-		duelLog(`--- ${npc.name}'s Turn ---`);
+		const tName = ffa.seats[ffa.npcTarget].name === 'You' ? 'you' : ffa.seats[ffa.npcTarget].name;
+		duelLog(`--- ${npc.name}'s Turn (targeting ${tName}) ---`);
+		npcAutoChat(npc.name, 'attack');
 		renderDuel();
 		setTimeout(() => aiTurn(), 800);
 	}
@@ -6786,6 +6811,9 @@ function startFFADuel(deckIds, extraIds) {
 	const ds = document.getElementById('duel-screen');
 	if (pm) ds.style.background = pm.bg; else ds.style.background = '';
 	document.getElementById('ffa-bar').style.display = '';
+	const chatEl = document.getElementById('ffa-chat');
+	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''; }
+	addFFAChat(null, 'FFA Duel started! 4 players.', null, true);
 	duelLog('FFA Duel Start! 4 Players. You go first. Energy: 5');
 	duelLog('Turn 1 - Skipping first draw.');
 	renderDuel();
@@ -6838,6 +6866,8 @@ function startDuel(deckIds, extraIds) {
 	else ds.style.background = '';
 	const ffaBar = document.getElementById('ffa-bar');
 	if (ffaBar) ffaBar.style.display = 'none';
+	const chatEl = document.getElementById('ffa-chat');
+	if (chatEl) chatEl.style.display = 'none';
 	duelLog('Duel Start! You go first. Energy: 5');
 	duelLog('Turn 1 - Skipping first draw.');
 	renderDuel();
@@ -7198,6 +7228,9 @@ function ffaEliminate(who) {
 		const seatIdx = ffa.viewTarget;
 		ffa.seats[seatIdx].eliminated = true;
 		duelLog(`${ffa.seats[seatIdx].name} has been eliminated!`);
+		npcAutoChat(ffa.seats[seatIdx].name, 'eliminated');
+		const killerAlive = ffaAliveNPCs().filter(s => s.name !== ffa.seats[seatIdx].name);
+		if (killerAlive.length > 0) npcAutoChat(killerAlive[Math.floor(Math.random() * killerAlive.length)].name, 'kill');
 		// Clear their field
 		duel.ai.monsters = [null,null,null,null,null];
 		duel.ai.spells = [null,null,null,null,null];
@@ -8717,8 +8750,71 @@ function aiMainPhaseFinish2() {
 	renderDuel();
 	setTimeout(() => {
 	if (duel.gameOver) return;
+	if (ffa && ffa.npcTarget !== undefined && ffa.npcTarget !== 0) {
+		ffaNPCvsNPC(ffa.turnIdx, ffa.npcTarget);
+		return;
+	}
 	aiBattlePhase();
 	}, 800);
+}
+function ffaNPCvsNPC(atkSeatIdx, defSeatIdx) {
+	if (duel.gameOver) return;
+	const atk = ffa.seats[atkSeatIdx], def = ffa.seats[defSeatIdx];
+	const atkName = atk.name, defName = def.name === 'You' ? 'you' : def.name;
+	duelLog(`${atkName} attacks ${defName}!`);
+	atk.state.monsters.forEach((m, mi) => {
+		if (!m || !m.faceUp || m.position !== 'atk' || m.frozen || m.burrowed) return;
+		if (!hasEnergy('ai', ENERGY_COST.attack)) return;
+		spendEnergy('ai', ENERGY_COST.attack);
+		const mATK = m.card.atk + m.permAtkMod + m.atkMod;
+		const defMons = def.state.monsters.filter(d => d && !d.burrowed);
+		if (defMons.length === 0) {
+			def.state.lp = Math.max(0, def.state.lp - mATK);
+			duelLog(`${m.card.name} → direct ${mATK} dmg! (${def.name} ${def.state.lp} LP)`);
+		} else {
+			const t = defMons[Math.floor(Math.random() * defMons.length)];
+			const ti = def.state.monsters.indexOf(t);
+			if (t.position === 'atk') {
+				const tATK = t.card.atk + t.permAtkMod + t.atkMod;
+				if (mATK > tATK) {
+					def.state.lp = Math.max(0, def.state.lp - (mATK - tATK));
+					def.state.graveyard.push(t.card);
+					def.state.monsters[ti] = null;
+					duelLog(`${m.card.name} destroys ${t.card.name}! ${def.name} -${mATK - tATK} LP`);
+				} else if (mATK === tATK) {
+					def.state.graveyard.push(t.card);
+					def.state.monsters[ti] = null;
+					atk.state.graveyard.push(m.card);
+					atk.state.monsters[mi] = null;
+					duelLog(`${m.card.name} and ${t.card.name} destroy each other!`);
+				} else {
+					duelLog(`${m.card.name} bounced off ${t.card.name}.`);
+				}
+			} else {
+				const tDEF = t.card.def + (t.permDefMod || 0) + (t.defMod || 0);
+				if (mATK > tDEF) {
+					def.state.graveyard.push(t.card);
+					def.state.monsters[ti] = null;
+					duelLog(`${m.card.name} breaks through ${t.card.name}'s DEF!`);
+				} else {
+					duelLog(`${m.card.name} couldn't break ${t.card.name}'s DEF.`);
+				}
+			}
+		}
+	});
+	if (def.state.lp <= 0) {
+		def.eliminated = true;
+		def.state.monsters = [null,null,null,null,null];
+		def.state.spells = [null,null,null,null,null];
+		def.state.fieldSpell = null;
+		duelLog(`${def.name} has been eliminated!`);
+		npcAutoChat(def.name, 'eliminated');
+		npcAutoChat(atk.name, 'kill');
+		if (defSeatIdx === 0) { endDuelResult('lose'); return; }
+		if (ffaAliveNPCs().length === 0) { endDuelResult('win'); return; }
+	}
+	renderDuel();
+	setTimeout(() => aiEndPhase(), 400);
 }
 function aiBattlePhase() {
 	if (duel.gameOver) return;
@@ -9262,13 +9358,67 @@ document.querySelector('.game-over-btn')?.addEventListener('click', function() {
 	ffa = null;
 	const ffaBar = document.getElementById('ffa-bar');
 	if (ffaBar) ffaBar.style.display = 'none';
+	const chatEl = document.getElementById('ffa-chat');
+	if (chatEl) chatEl.style.display = 'none';
 });
 function mpStartFFA() {
-	// Launch local FFA from MP lobby - NPCs fill empty seats
 	const deckIds = playerData.deck.length >= 20 ? [...playerData.deck] : [...STARTER_DECK_IDS];
 	const extraIds = playerData.deck.length >= 20 ? [...playerData.extraDeck] : [...STARTER_EXTRA_IDS];
 	ffaMode = 'ffa';
 	startFFADuel(deckIds, extraIds);
+}
+let ffaChatLog = [];
+const NPC_CHAT_LINES = {
+	attack: ['Prepare yourself!','Here I come!','Take this!','No mercy!','Face me!'],
+	eliminated: ['How... impossible!','I\'ll get you next time...','Noooo!','This isn\'t over...'],
+	kill: ['One down!','Too easy.','Who\'s next?','Hah!','Farewell!'],
+	idle: ['Hmm...','Interesting move.','Not bad.','I see what you did there.','This is getting intense!','Let\'s go!'],
+	taunt: ['You call that a deck?','Is that all you\'ve got?','My grandma hits harder!','Scared yet?']
+};
+function toggleFFAChat() {
+	const body = document.getElementById('ffa-chat-body');
+	const toggle = document.querySelector('.ffa-chat-toggle');
+	if (body.style.display === 'none') {
+		body.style.display = 'flex'; toggle.textContent = 'CHAT ▼';
+	} else {
+		body.style.display = 'none'; toggle.textContent = 'CHAT ▲';
+	}
+}
+function addFFAChat(name, msg, color, sys) {
+	ffaChatLog.push({ name, msg, color, sys });
+	if (ffaChatLog.length > 50) ffaChatLog.shift();
+	const el = document.getElementById('ffa-chat-msgs');
+	if (!el) return;
+	const div = document.createElement('div');
+	div.className = 'ffa-chat-msg' + (sys ? ' sys' : '');
+	if (sys) { div.textContent = msg; }
+	else { div.innerHTML = `<span class="chat-name" style="color:${color||'#8cc8ff'}">${name}:</span>${msg.replace(/</g,'&lt;')}`; }
+	el.appendChild(div);
+	el.scrollTop = el.scrollHeight;
+}
+function sendFFAChat() {
+	const inp = document.getElementById('ffa-chat-input');
+	if (!inp) return;
+	const msg = inp.value.trim();
+	if (!msg) return;
+	inp.value = '';
+	const pName = playerData.profileName || 'You';
+	addFFAChat(pName, msg, 'rgba(100,200,255,.9)');
+	// NPCs may react
+	if (ffa && Math.random() < 0.35) {
+		const alive = ffaAliveNPCs();
+		if (alive.length > 0) {
+			const npc = alive[Math.floor(Math.random() * alive.length)];
+			const lines = NPC_CHAT_LINES[Math.random() < 0.4 ? 'taunt' : 'idle'];
+			setTimeout(() => addFFAChat(npc.name, lines[Math.floor(Math.random() * lines.length)], 'rgba(255,180,80,.8)'), 800 + Math.random() * 1500);
+		}
+	}
+}
+function npcAutoChat(npcName, event) {
+	if (!ffa) return;
+	const lines = NPC_CHAT_LINES[event];
+	if (!lines || Math.random() > 0.4) return;
+	setTimeout(() => addFFAChat(npcName, lines[Math.floor(Math.random() * lines.length)], 'rgba(255,180,80,.8)'), 300 + Math.random() * 800);
 }
 let mp = { active: false, room: null, role: null, opponentId: null, session: 0 };
 function mpResetLobbyUI() {
