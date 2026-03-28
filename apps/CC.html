@@ -6577,6 +6577,32 @@ function ffaFlush() {
 	t.inkCloudTurn = duel.inkCloudTurn;
 }
 function ffaAliveNPCs() { return ffa ? ffa.seats.filter((s,i) => i > 0 && !s.eliminated) : []; }
+function ffaPickTarget(mySeat, targets) {
+	if (targets.length <= 1) return targets[0];
+	const me = ffa.seats[mySeat];
+	const myATK = me.state.monsters.reduce((s, m) => s + (m && m.faceUp && m.position === 'atk' ? m.card.atk + m.permAtkMod : 0), 0);
+	let best = targets[0], bestScore = -Infinity;
+	for (const ti of targets) {
+		const t = ffa.seats[ti];
+		let score = 0;
+		// Prefer low LP targets — go for the kill
+		score += (8000 - t.state.lp) * 2;
+		// Prefer targets with fewer monsters (easier to hit directly)
+		const tMonCount = t.state.monsters.filter(m => m !== null).length;
+		score += (5 - tMonCount) * 500;
+		// Prefer targets with weaker board presence
+		const tATK = t.state.monsters.reduce((s, m) => s + (m && m.faceUp && m.position === 'atk' ? m.card.atk + m.permAtkMod : 0), 0);
+		if (myATK > tATK) score += 800;
+		// Slight preference to attack the leading player (highest LP among others)
+		const isLeader = targets.every(oi => ffa.seats[oi].state.lp <= t.state.lp);
+		if (isLeader && t.state.lp > 4000) score += 600;
+		// Avoid targets that just attacked us (revenge is tempting but not always smart)
+		// Small random factor so NPCs aren't completely predictable
+		score += Math.random() * 400;
+		if (score > bestScore) { bestScore = score; best = ti; }
+	}
+	return best;
+}
 function ffaFirstAliveNPC() {
 	for (let i = 1; i < 4; i++) if (!ffa.seats[i].eliminated) return i;
 	return 1;
@@ -6615,10 +6641,10 @@ function ffaNextTurn() {
 		renderDuel();
 		showDiveDraw('player', () => { const drawn = drawCard('player'); if (drawn) duelLog(`Drew ${drawn.name}.`); renderDuel(); });
 	} else {
-		// NPC's turn — pick a random target from alive opponents
+		// NPC's turn — pick target strategically
 		const npc = ffa.seats[next];
 		const targets = ffa.seats.map((s,i) => i).filter(i => i !== next && !ffa.seats[i].eliminated);
-		ffa.npcTarget = targets[Math.floor(Math.random() * targets.length)];
+		ffa.npcTarget = ffaPickTarget(next, targets);
 		ffaSwap(0, next);
 		duel.currentPlayer = 'ai';
 		duel.phase = 'draw';
