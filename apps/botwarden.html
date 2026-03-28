@@ -229,7 +229,7 @@
         .city-bar{flex:1;height:4px;background:var(--b1);border-radius:2px;overflow:hidden}
         .city-fill{height:100%;border-radius:2px}
         .city-val{font-family:var(--mono);font-size:0.5rem;min-width:60px;text-align:right}
-        .term{background:#030407;border:1px solid var(--b1);border-radius:6px;padding:0.5rem 0.7rem;max-height:280px;overflow-y:auto;font-family:var(--mono);font-size:0.48rem;line-height:1.65}
+        .term{background:#030407;border:1px solid var(--b1);border-radius:6px;padding:0.5rem 0.7rem;max-height:280px;overflow-y:scroll;font-family:var(--mono);font-size:0.48rem;line-height:1.65}
         .ll{white-space:pre-wrap;word-break:break-all;color:rgba(34,197,94,0.38);max-width:100%;overflow:hidden;text-overflow:ellipsis}
         .ll.e{color:var(--red)}.ll.w{color:var(--amb)}
         .empty{text-align:center;padding:1.5rem 1rem;color:var(--t4);font-size:0.7rem;font-weight:500}
@@ -1779,7 +1779,15 @@ function localizeLogTime(line){
 }
 function renderLog(log){
 const el=document.getElementById('logBox');
-el.innerHTML=log.map(l=>{const c=l.includes('ERROR')?'e':l.includes('WARN')?'w':'';return '<div class="ll'+c+'">'+E(localizeLogTime(l))+'</div>'}).join('')}
+el.innerHTML=log.map(l=>{const c=l.includes('ERROR')?'e':l.includes('WARN')?'w':'';return '<div class="ll'+c+'">'+E(localizeLogTime(l))+'</div>'}).join('');
+el.scrollTop=el.scrollHeight}
+
+// Block wheel/touch scroll on log — scrollbar and text selection only
+(function(){
+const lb=document.getElementById('logBox');
+lb.addEventListener('wheel',e=>e.preventDefault(),{passive:false});
+lb.addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
+})();
 
 // Tooltips
 (function(){
