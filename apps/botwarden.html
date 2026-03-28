@@ -272,6 +272,41 @@
         .adm-stat-lbl{font-size:0.4rem;color:var(--t4);text-transform:uppercase;letter-spacing:0.05em;margin-top:0.15rem}
         .adm-stats-row{display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1.2rem}
         .adm-empty{text-align:center;color:var(--t4);font-size:0.5rem;padding:2rem}
+        /* UPGRADE POPUP */
+        .upgrade-pop{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--s1);border:1px solid rgba(201,169,110,0.15);border-radius:12px;padding:1.2rem 1.5rem;max-width:340px;z-index:8000;box-shadow:0 8px 40px rgba(0,0,0,0.5);animation:slideUp 0.4s ease}
+        @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .upgrade-pop-close{position:absolute;top:8px;right:10px;background:none;border:none;color:var(--t4);font-size:0.9rem;cursor:pointer}
+        .upgrade-pop-title{font-size:0.7rem;font-weight:800;color:var(--gold);margin-bottom:0.4rem}
+        .upgrade-pop-desc{font-size:0.46rem;color:var(--t3);line-height:1.6;margin-bottom:0.7rem}
+        .upgrade-pop-feats{list-style:none;margin-bottom:0.8rem}
+        .upgrade-pop-feats li{font-size:0.44rem;color:var(--t2);padding:0.15rem 0}
+        .upgrade-pop-feats li::before{content:'+ ';color:var(--gold);font-weight:700}
+        .upgrade-pop-btn{width:100%;background:linear-gradient(135deg,var(--gold),#a08040);color:#000;border:none;padding:0.5rem;border-radius:6px;font-weight:800;font-size:0.5rem;cursor:pointer}
+        .upgrade-pop-btn:hover{filter:brightness(1.1)}
+        .upgrade-pop-skip{display:block;text-align:center;font-size:0.38rem;color:var(--t4);margin-top:0.4rem;cursor:pointer;border:none;background:none}
+        /* USER DASHBOARD */
+        .usr-btn{background:none;border:1px solid var(--b2);color:var(--t4);font-size:0.44rem;padding:2px 8px;border-radius:4px;cursor:pointer;font-family:var(--mono)}
+        .usr-btn:hover{color:var(--t2);border-color:var(--t4)}
+        .usr-card{background:var(--s1);border:1px solid var(--b2);border-radius:16px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:2rem;position:relative}
+        .usr-title{font-size:0.85rem;font-weight:800;color:var(--t1);margin-bottom:1.2rem}
+        .usr-section{margin-bottom:1.2rem}
+        .usr-section-title{font-size:0.52rem;font-weight:700;color:var(--gold);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.6rem;padding-bottom:0.3rem;border-bottom:1px solid var(--b1)}
+        .usr-row{display:flex;align-items:center;justify-content:space-between;padding:0.45rem 0;border-bottom:1px solid var(--b1)}
+        .usr-row:last-child{border-bottom:none}
+        .usr-row-lbl{font-size:0.48rem;color:var(--t2)}
+        .usr-row-val{font-size:0.48rem;color:var(--t1);font-family:var(--mono);font-weight:600}
+        .usr-toggle{position:relative;width:32px;height:18px;background:var(--b2);border-radius:9px;cursor:pointer;transition:background 0.2s;border:none}
+        .usr-toggle.on{background:var(--gold)}
+        .usr-toggle::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;background:#fff;border-radius:50%;transition:transform 0.2s}
+        .usr-toggle.on::after{transform:translateX(14px)}
+        .usr-check{display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0}
+        .usr-check input{accent-color:var(--gold);width:14px;height:14px;cursor:pointer}
+        .usr-check label{font-size:0.46rem;color:var(--t2);cursor:pointer}
+        .usr-check.disabled label{color:var(--t4)}
+        .usr-cancel-btn{background:none;border:1px solid var(--red);color:var(--red);padding:0.4rem 1rem;border-radius:6px;font-size:0.46rem;font-weight:700;cursor:pointer;margin-top:0.3rem}
+        .usr-cancel-btn:hover{background:rgba(239,68,68,0.1)}
+        .usr-renew-btn{background:var(--gold);color:#000;border:none;padding:0.4rem 1rem;border-radius:6px;font-size:0.46rem;font-weight:700;cursor:pointer;margin-top:0.3rem}
+        .usr-renew-btn:hover{filter:brightness(1.1)}
         .pricing-title{text-align:center;font-size:1.1rem;font-weight:800;margin-bottom:0.2rem}
         .pricing-sub{text-align:center;font-size:0.65rem;color:var(--t3);margin-bottom:1.5rem;line-height:1.5}
         .tier-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.8rem;margin-bottom:1.2rem}
@@ -497,28 +532,29 @@
             <div class="dot-w"><div class="dot"></div><span class="dot-lbl" id="statusTxt">--</span></div>
             <span class="sub-badge free" id="subBadge" onclick="showPricing()">FREE</span>
             <button class="sync-btn" id="syncBtn" onclick="refreshSub()" title="Refresh subscription status">&#8635;</button>
+            <button class="usr-btn" onclick="showUserDash()">Settings</button>
             <button class="admin-btn" id="adminBtn" onclick="showAdmin()">ADMIN</button>
             <button class="disc-btn" onclick="disconnect()">Disconnect</button>
         </div>
     </div></div>
     <div class="scanl"></div>
     <div class="ct">
-        <div class="hero" id="heroGrid"></div>
-        <div class="risk-bar" id="riskBar"></div>
+        <div class="hero" id="heroGrid" data-panel="hero"></div>
+        <div class="risk-bar" id="riskBar" data-panel="risk"></div>
         <div class="row r-main">
-            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Strategy Breakdown</span></div><div id="stratBox" style="display:flex;flex-direction:column;gap:1px;background:var(--b1)"></div></div>
-            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Equity Curve</span><span class="pn-badge" id="perfCt">--</span></div><div class="pn-b"><div class="ch"><canvas id="eqChart"></canvas></div></div></div>
+            <div class="pn" data-gate="pro" data-panel="strategy"><div class="pn-h"><span class="pn-t">Strategy Breakdown</span></div><div id="stratBox" style="display:flex;flex-direction:column;gap:1px;background:var(--b1)"></div></div>
+            <div class="pn" data-gate="pro" data-panel="equity"><div class="pn-h"><span class="pn-t">Equity Curve</span><span class="pn-badge" id="perfCt">--</span></div><div class="pn-b"><div class="ch"><canvas id="eqChart"></canvas></div></div></div>
         </div>
         <div class="row r-3">
-            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Position Map</span></div><div class="pn-b" id="tmBox"><div class="empty">No open positions</div></div></div>
-            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Outcomes</span></div><div class="pn-b"><div class="ch ch-sm"><canvas id="outChart"></canvas></div></div></div>
-            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Last Cycle</span></div><div class="pn-b" id="cycleBox"><div class="empty">Awaiting cycle</div></div></div>
+            <div class="pn" data-gate="pro" data-panel="posmap"><div class="pn-h"><span class="pn-t">Position Map</span></div><div class="pn-b" id="tmBox"><div class="empty">No open positions</div></div></div>
+            <div class="pn" data-gate="pro" data-panel="outcomes"><div class="pn-h"><span class="pn-t">Outcomes</span></div><div class="pn-b"><div class="ch ch-sm"><canvas id="outChart"></canvas></div></div></div>
+            <div class="pn" data-gate="pro" data-panel="lastcycle"><div class="pn-h"><span class="pn-t">Last Cycle</span></div><div class="pn-b" id="cycleBox"><div class="empty">Awaiting cycle</div></div></div>
         </div>
         <div class="row r-half">
-            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">City Breakdown</span></div><div class="pn-b" id="cityBox"><div class="empty">No city data</div></div></div>
-            <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Daily P&L</span></div><div class="pn-b"><div class="ch ch-sm"><canvas id="pnlChart"></canvas></div></div></div>
+            <div class="pn" data-gate="pro" data-panel="cities"><div class="pn-h"><span class="pn-t">City Breakdown</span></div><div class="pn-b" id="cityBox"><div class="empty">No city data</div></div></div>
+            <div class="pn" data-gate="pro" data-panel="pnl"><div class="pn-h"><span class="pn-t">Daily P&L</span></div><div class="pn-b"><div class="ch ch-sm"><canvas id="pnlChart"></canvas></div></div></div>
         </div>
-        <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Sports Tracker</span><span class="pn-badge" id="sportsCt">--</span></div><div class="pn-b" id="sportsBox"><div class="empty">No sports data yet</div></div></div>
+        <div class="pn" data-gate="pro" data-panel="sports"><div class="pn-h"><span class="pn-t">Sports Tracker</span><span class="pn-badge" id="sportsCt">--</span></div><div class="pn-b" id="sportsBox"><div class="empty">No sports data yet</div></div></div>
         <div class="pn">
             <div style="display:flex;align-items:center;justify-content:space-between;background:var(--s2);border-bottom:1px solid var(--b2);padding-right:0.8rem">
                 <div class="tabs" id="tabBar">
@@ -534,7 +570,7 @@
             <div class="tc" id="tab-sports"><div class="scr" id="sportsTradesArea"></div></div>
             <div class="tc" id="tab-cyc"><div class="scr" id="cycArea"></div></div>
         </div>
-        <div class="pn" style="margin-top:1rem"><div class="pn-h"><span class="pn-t">System Log</span><span class="pn-badge" id="logCt">--</span></div><div class="pn-b"><div class="term" id="logBox"></div></div></div>
+        <div class="pn" data-panel="syslog" style="margin-top:1rem"><div class="pn-h"><span class="pn-t">System Log</span><span class="pn-badge" id="logCt">--</span></div><div class="pn-b"><div class="term" id="logBox"></div></div></div>
     </div>
 </div>
 
@@ -589,6 +625,29 @@
         <div class="admin-section on" id="atab-promo-log"></div>
         <div class="admin-section" id="atab-promo-codes"></div>
         <div class="admin-section" id="atab-subs"></div>
+    </div>
+</div>
+
+<!-- USER DASHBOARD -->
+<div class="overlay" id="userDashModal">
+    <div class="usr-card">
+        <button class="pricing-close" onclick="hideUserDash()">&times;</button>
+        <div class="usr-title">Settings</div>
+        <div class="usr-section">
+            <div class="usr-section-title">Subscription</div>
+            <div class="usr-row"><span class="usr-row-lbl">Current Plan</span><span class="usr-row-val" id="udTier">FREE</span></div>
+            <div class="usr-row"><span class="usr-row-lbl">Expires</span><span class="usr-row-val" id="udExpiry">—</span></div>
+            <div class="usr-row"><span class="usr-row-lbl">Payment Token</span><span class="usr-row-val" id="udToken">—</span></div>
+            <div class="usr-row">
+                <span class="usr-row-lbl">Auto-Renew Monthly</span>
+                <button class="usr-toggle" id="udAutoRenew" onclick="toggleAutoRenew()"></button>
+            </div>
+            <div style="margin-top:0.6rem;display:flex;gap:0.5rem" id="udSubActions"></div>
+        </div>
+        <div class="usr-section">
+            <div class="usr-section-title">Dashboard Layout <span style="font-size:0.38rem;color:var(--t4);font-weight:400;text-transform:none;letter-spacing:0">(Pro & Team only)</span></div>
+            <div id="udPanelToggles"></div>
+        </div>
     </div>
 </div>
 
@@ -691,10 +750,12 @@ function applyTierGating(){
     // Lock CSV button for free
     const csvBtn=document.querySelector('.exp-btn');
     if(csvBtn){csvBtn.style.opacity=currentTier==='free'?'0.3':'1';csvBtn.style.pointerEvents=currentTier==='free'?'none':'auto'}
+    applyPanelVisibility();
 }
 async function saveSub(tier,token,txHash,paidUSD){
     const refCode=userWallet?'REF_'+userWallet.slice(2,10).toLowerCase():'';
-    subData={tier,expiresAt:new Date(Date.now()+30*86400000).toISOString(),paymentToken:token,txHash,paidAmountUSD:paidUSD,subscribedAt:new Date().toISOString(),renewCount:(subData?.renewCount||0)+1,promoApplied:promoCode||null,referralCode:refCode};
+    const arOn=localStorage.getItem('bw_auto_renew')==='true';
+    subData={tier,expiresAt:new Date(Date.now()+30*86400000).toISOString(),paymentToken:token,txHash,paidAmountUSD:paidUSD,subscribedAt:new Date().toISOString(),renewCount:(subData?.renewCount||0)+1,promoApplied:promoCode||null,referralCode:refCode,autoRenew:arOn,cancelled:false};
     currentTier=tier;updateSubBadge();applyTierGating();
     // Also persist to localStorage as fallback
     localStorage.setItem('bw_sub_local',JSON.stringify(subData));
@@ -1087,6 +1148,12 @@ loadSub().then(()=>{
     if(userWallet&&userWallet.toLowerCase()===CREATOR_WALLET.toLowerCase()){
         const ab=document.getElementById('adminBtn');if(ab)ab.style.display='inline-block';
     }
+    // Apply panel visibility prefs
+    applyPanelVisibility();
+    // Show upgrade popup for free users (delay so page settles)
+    setTimeout(showUpgradePopup,2000);
+    // Check auto-renew for expired subs
+    checkAutoRenew();
 });
 
 // Refresh / restore subscription
@@ -1240,6 +1307,136 @@ function renderSubLog(log){
 
 // Close admin on overlay click
 document.getElementById('adminModal').addEventListener('click',e=>{if(e.target.id==='adminModal')hideAdmin()});
+
+// ===== USER DASHBOARD =====
+const PANEL_LABELS={hero:'Hero Stats',risk:'Risk Gauges',strategy:'Strategy Breakdown',equity:'Equity Curve',posmap:'Position Map',outcomes:'Outcomes',lastcycle:'Last Cycle',cities:'City Breakdown',pnl:'Daily P&L',sports:'Sports Tracker',syslog:'System Log'};
+
+function showUserDash(){
+    document.getElementById('userDashModal').classList.add('show');
+    renderUserDash();
+}
+function hideUserDash(){document.getElementById('userDashModal').classList.remove('show')}
+document.getElementById('userDashModal').addEventListener('click',e=>{if(e.target.id==='userDashModal')hideUserDash()});
+
+function renderUserDash(){
+    // Sub info
+    document.getElementById('udTier').textContent=currentTier.toUpperCase();
+    document.getElementById('udTier').className='usr-row-val adm-tier '+currentTier;
+    const exp=subData&&subData.expiresAt?new Date(subData.expiresAt):null;
+    document.getElementById('udExpiry').textContent=exp?exp.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'—';
+    document.getElementById('udToken').textContent=subData&&subData.paymentToken?subData.paymentToken:'—';
+
+    // Auto-renew toggle
+    const arBtn=document.getElementById('udAutoRenew');
+    const arOn=localStorage.getItem('bw_auto_renew')==='true';
+    arBtn.classList.toggle('on',arOn);
+
+    // Sub actions
+    const actions=document.getElementById('udSubActions');
+    if(currentTier==='free'){
+        actions.innerHTML='<button class="usr-renew-btn" onclick="hideUserDash();showPricing()">Upgrade Now</button>';
+    }else{
+        let html='';
+        if(exp&&exp<new Date())html+='<button class="usr-renew-btn" onclick="hideUserDash();showPricing()">Renew Now</button>';
+        html+='<button class="usr-cancel-btn" onclick="cancelSub()">Cancel Subscription</button>';
+        actions.innerHTML=html;
+    }
+
+    // Panel toggles
+    const toggles=document.getElementById('udPanelToggles');
+    const canToggle=currentTier==='pro'||currentTier==='team';
+    const hidden=JSON.parse(localStorage.getItem('bw_hidden_panels')||'[]');
+    let html='';
+    Object.entries(PANEL_LABELS).forEach(([key,label])=>{
+        const checked=!hidden.includes(key);
+        html+='<div class="usr-check'+(canToggle?'':' disabled')+'"><input type="checkbox" id="pt_'+key+'" '+(checked?'checked':'')+' '+(canToggle?'onchange="togglePanel(\''+key+'\')"':'disabled')+' /><label for="pt_'+key+'">'+label+'</label></div>';
+    });
+    toggles.innerHTML=html;
+}
+
+function toggleAutoRenew(){
+    const arBtn=document.getElementById('udAutoRenew');
+    const on=!arBtn.classList.contains('on');
+    arBtn.classList.toggle('on',on);
+    localStorage.setItem('bw_auto_renew',on?'true':'false');
+    if(on&&subData){
+        subData.autoRenew=true;
+        localStorage.setItem('bw_sub_local',JSON.stringify(subData));
+        if(window.AppDB)try{window.AppDB.set('bw_sub',subData)}catch(e){}
+    }
+}
+
+function cancelSub(){
+    if(!confirm('Cancel your '+currentTier.toUpperCase()+' subscription? You will revert to Free at the end of the billing period.'))return;
+    localStorage.removeItem('bw_auto_renew');
+    if(subData){subData.autoRenew=false;subData.cancelled=true;localStorage.setItem('bw_sub_local',JSON.stringify(subData));
+        if(window.AppDB)try{window.AppDB.set('bw_sub',subData)}catch(e){}}
+    notify('Subscription will not renew. Active until '+new Date(subData.expiresAt).toLocaleDateString());
+    renderUserDash();
+}
+
+function togglePanel(key){
+    const hidden=JSON.parse(localStorage.getItem('bw_hidden_panels')||'[]');
+    const idx=hidden.indexOf(key);
+    if(idx>=0)hidden.splice(idx,1);else hidden.push(key);
+    localStorage.setItem('bw_hidden_panels',JSON.stringify(hidden));
+    applyPanelVisibility();
+}
+
+function applyPanelVisibility(){
+    const hidden=JSON.parse(localStorage.getItem('bw_hidden_panels')||'[]');
+    const canHide=currentTier==='pro'||currentTier==='team';
+    document.querySelectorAll('[data-panel]').forEach(el=>{
+        if(canHide&&hidden.includes(el.dataset.panel)){el.style.display='none'}
+        else{el.style.display=''}
+    });
+}
+
+// ===== UPGRADE POPUP (free tier on load) =====
+function showUpgradePopup(){
+    if(currentTier!=='free')return;
+    if(sessionStorage.getItem('bw_upgrade_dismissed'))return;
+    const pop=document.createElement('div');pop.className='upgrade-pop';pop.id='upgradePop';
+    pop.innerHTML='<button class="upgrade-pop-close" onclick="dismissUpgrade()">&times;</button>'
+        +'<div class="upgrade-pop-title">Unlock Full Dashboard</div>'
+        +'<div class="upgrade-pop-desc">You\'re on the Free plan. Upgrade to see every panel, chart, and strategy insight.</div>'
+        +'<ul class="upgrade-pop-feats">'
+        +'<li>All charts & strategy panels</li>'
+        +'<li>Full trade history & CSV export</li>'
+        +'<li>Sports tracker & scan cycles</li>'
+        +'<li>Unlimited bot connections</li>'
+        +'<li>Custom dashboard layout</li>'
+        +'</ul>'
+        +'<button class="upgrade-pop-btn" onclick="dismissUpgrade();showPricing()">View Plans</button>'
+        +'<button class="upgrade-pop-skip" onclick="dismissUpgrade()">Maybe later</button>';
+    document.body.appendChild(pop);
+}
+function dismissUpgrade(){
+    const pop=document.getElementById('upgradePop');if(pop)pop.remove();
+    sessionStorage.setItem('bw_upgrade_dismissed','1');
+}
+
+// ===== AUTO-RENEW CHECK ON LOAD =====
+function checkAutoRenew(){
+    if(!subData||!subData.expiresAt)return;
+    if(subData.cancelled)return;
+    const exp=new Date(subData.expiresAt);
+    if(exp>new Date())return; // still active
+    const arOn=localStorage.getItem('bw_auto_renew')==='true';
+    if(!arOn)return;
+    // Sub expired with auto-renew on — prompt one-click renewal
+    const tier=subData.tier||'pro';
+    const token=subData.paymentToken||selectedToken;
+    setTimeout(()=>{
+        const pop=document.createElement('div');pop.className='upgrade-pop';pop.id='renewPop';
+        pop.innerHTML='<button class="upgrade-pop-close" onclick="document.getElementById(\'renewPop\').remove()">&times;</button>'
+            +'<div class="upgrade-pop-title">Subscription Expired</div>'
+            +'<div class="upgrade-pop-desc">Your '+tier.toUpperCase()+' plan has expired. Auto-renew is enabled — click below to renew for another month.</div>'
+            +'<button class="upgrade-pop-btn" onclick="document.getElementById(\'renewPop\').remove();selectedToken=\''+token+'\';subscribeTier(\''+tier+'\')">Renew '+tier.toUpperCase()+' — '+token+'</button>'
+            +'<button class="upgrade-pop-skip" onclick="document.getElementById(\'renewPop\').remove()">Not now</button>';
+        document.body.appendChild(pop);
+    },1500);
+}
 
 // Copy commands map
 const CMD={
