@@ -799,7 +799,9 @@ async function applyPromo(){
     try{
         if(window.AppDB){const gp=await window.AppDB.getGlobal('bw_promo_codes');if(gp)promos={...DEFAULT_PROMOS,...gp}}
     }catch(e){}
-    const p=promos[code];
+    let p=promos[code];
+    if(!p)p=promos['$'+code];
+    if(!p){const match=Object.keys(promos).find(k=>k.toUpperCase()===code||k.toUpperCase()==='$'+code);if(match)p=promos[match]}
     if(!p){msg.className='promo-msg err';msg.textContent='Invalid code';return}
     if(p.maxUses&&p.usedCount>=p.maxUses){msg.className='promo-msg err';msg.textContent='Code expired';return}
     if(p.expiresAt&&new Date(p.expiresAt)<new Date()){msg.className='promo-msg err';msg.textContent='Code expired';return}
