@@ -511,17 +511,20 @@
             <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">City Breakdown</span></div><div class="pn-b" id="cityBox"><div class="empty">No city data</div></div></div>
             <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Daily P&L</span></div><div class="pn-b"><div class="ch ch-sm"><canvas id="pnlChart"></canvas></div></div></div>
         </div>
+        <div class="pn" data-gate="pro"><div class="pn-h"><span class="pn-t">Sports Tracker</span><span class="pn-badge" id="sportsCt">--</span></div><div class="pn-b" id="sportsBox"><div class="empty">No sports data yet</div></div></div>
         <div class="pn">
             <div style="display:flex;align-items:center;justify-content:space-between;background:var(--s2);border-bottom:1px solid var(--b2);padding-right:0.8rem">
                 <div class="tabs" id="tabBar">
                     <button class="tab on" data-tab="pos">Open Positions</button>
                     <button class="tab" data-tab="hist">Trade History</button>
+                    <button class="tab" data-tab="sports">Sports</button>
                     <button class="tab" data-tab="cyc">Scan Cycles</button>
                 </div>
                 <button class="exp-btn" onclick="exportCSV()">Export CSV</button>
             </div>
             <div class="tc on" id="tab-pos"><div class="scr" id="posArea"></div></div>
             <div class="tc" id="tab-hist"><div class="scr" id="histArea"></div></div>
+            <div class="tc" id="tab-sports"><div class="scr" id="sportsTradesArea"></div></div>
             <div class="tc" id="tab-cyc"><div class="scr" id="cycArea"></div></div>
         </div>
         <div class="pn" style="margin-top:1rem"><div class="pn-h"><span class="pn-t">System Log</span><span class="pn-badge" id="logCt">--</span></div><div class="pn-b"><div class="term" id="logBox"></div></div></div>
@@ -673,7 +676,7 @@ function applyTierGating(){
     });
     // Lock Trade History + Scan Cycles tabs for free tier
     if(currentTier==='free'){
-        document.querySelectorAll('.tab[data-tab="hist"],.tab[data-tab="cyc"]').forEach(t=>{
+        document.querySelectorAll('.tab[data-tab="hist"],.tab[data-tab="sports"],.tab[data-tab="cyc"]').forEach(t=>{
             t.classList.add('tab-lock');
         });
     }
@@ -1560,16 +1563,17 @@ const tkF={family:'JetBrains Mono',size:9,weight:'500'};
 
 async function refresh(){
 try{
-const[stats,trades,open,perf,cycles,cities,log,strats,spk]=await Promise.all([
+const[stats,trades,open,perf,cycles,cities,log,strats,spk,sports]=await Promise.all([
 api('/api/stats').then(r=>r.json()),api('/api/trades?limit=60').then(r=>r.json()),
 api('/api/open').then(r=>r.json()),api('/api/performance?limit=300').then(r=>r.json()),
 api('/api/cycles?limit=30').then(r=>r.json()),api('/api/cities').then(r=>r.json()),
 api('/api/log?lines=100').then(r=>r.json()),api('/api/strategies').then(r=>r.json()),
-api('/api/sparkline').then(r=>r.json())]);
+api('/api/sparkline').then(r=>r.json()),api('/api/sports').then(r=>r.json()).catch(()=>null)]);
 renderHero(stats,spk);renderRisk(stats.risk);renderStrats(strats);
 renderEquity(perf);renderOutcome(stats);renderPnl(perf);
 renderTreemap(open);renderCities(cities);
 renderPos(open);renderHist(trades);renderCyc(cycles);renderLastCyc(cycles[0]);renderLog(log);
+if(sports)renderSports(sports);
 if(stats.cycle_interval)stats_ci=stats.cycle_interval*1000;
 if(stats.last_cycle_ts){const newNext=new Date(stats.last_cycle_ts).getTime()+stats_ci;if(newNext!==nextMs){nextMs=newNext;if(newNext>Date.now())sleepBiz()}}
 const b=document.getElementById('modeBadge');
@@ -1615,7 +1619,7 @@ return '<div class="rg"'+(tip?' data-tip="'+tip+'"':'')+' style="cursor:help"><d
 // Strategies
 function renderStrats(d){
 const el=document.getElementById('stratBox');
-el.innerHTML=stratCard('Weather Consensus','var(--blue)',d.weather)+stratCard('Mean Reversion','var(--gold)',d.mean_reversion)}
+el.innerHTML=stratCard('Weather Consensus','var(--blue)',d.weather)+stratCard('Mean Reversion','var(--gold)',d.mean_reversion)+(d.sports?stratCard('Sports MR','var(--grn)',d.sports):'')}
 function stratCard(name,color,d){
 const wr=(d.wins+d.losses)>0?(d.wins/(d.wins+d.losses)*100).toFixed(1)+'%':'N/A';
 const unr=d.unrealized!==undefined?'<div><div class="sk">Unrealized</div><div class="sv '+(d.unrealized>=0?'up':'dn')+'">'+sg(d.unrealized)+$(d.unrealized,4)+'</div></div>':'';
@@ -1685,6 +1689,53 @@ function renderLastCyc(c){
 const el=document.getElementById('cycleBox');
 if(!c){el.innerHTML='<div class="empty">Awaiting cycle</div>';return}
 el.innerHTML='<div style="padding:0.6rem 0.8rem"><div class="cy-row"><span class="cy-ts">'+T(c.timestamp)+'</span></div><div class="cy-row"><span class="sk">Cities</span><span class="sv">'+c.cities_scanned+'</span></div><div class="cy-row"><span class="sk">Markets</span><span class="sv">'+c.markets_found+'</span></div><div class="cy-row"><span class="sk">Trades</span><span class="sv">'+c.trades_placed+'</span></div><div class="cy-row"><span class="sk">Deployed</span><span class="sv">'+$(c.total_deployed,4)+'</span></div><div class="cy-row"><span class="sk">Duration</span><span class="sv">'+(c.cycle_duration_sec||0).toFixed(1)+'s</span></div></div>'}
+
+function renderSports(sp){
+// Sports tracker panel
+const el=document.getElementById('sportsBox');
+const ct=document.getElementById('sportsCt');
+if(!sp||sp.error){el.innerHTML='<div class="empty">Sports data unavailable</div>';return}
+ct.textContent=sp.markets_tracked+' markets';
+const prices=sp.latest_prices||[];
+if(!prices.length){el.innerHTML='<div class="empty">No sports markets tracked yet — building price history</div>';return}
+// Summary bar
+let html='<div style="display:flex;gap:1rem;padding:0.6rem 0.8rem;border-bottom:1px solid var(--b1);flex-wrap:wrap">';
+html+='<div><span class="sk">Markets</span> <span class="sv">'+sp.markets_tracked+'</span></div>';
+html+='<div><span class="sk">Snapshots</span> <span class="sv">'+sp.price_snapshots+'</span></div>';
+html+='<div><span class="sk">Open</span> <span class="sv">'+sp.open_positions+'</span></div>';
+html+='<div><span class="sk">Deployed</span> <span class="sv">'+$(sp.total_deployed,2)+'</span></div>';
+if(sp.clv&&sp.clv.total>0)html+='<div><span class="sk">CLV</span> <span class="sv '+(sp.clv.avg_clv>=0?'up':'dn')+'">'+(sp.clv.avg_clv*100).toFixed(1)+'%</span></div>';
+html+='</div>';
+// Market list
+html+='<div style="padding:0.4rem 0">';
+prices.forEach(p=>{
+    const sport=p.market_slug.includes('-nba-')?'NBA':p.market_slug.includes('-nhl-')?'NHL':p.market_slug.includes('-mlb-')?'MLB':p.market_slug.includes('-nfl-')?'NFL':'';
+    const sportColor=sport==='NBA'?'var(--gold)':sport==='NHL'?'var(--blue)':sport==='MLB'?'var(--grn)':'var(--t3)';
+    const startDt=p.start_date?new Date(p.start_date):null;
+    const daysOut=startDt?Math.ceil((startDt-Date.now())/86400000):null;
+    const daysStr=daysOut!==null?(daysOut>0?daysOut+'d out':'Live'):'';
+    html+='<div style="display:flex;align-items:center;justify-content:space-between;padding:0.35rem 0.8rem;border-bottom:1px solid var(--b1);font-size:0.46rem">';
+    html+='<div style="display:flex;align-items:center;gap:0.5rem;flex:1;min-width:0">';
+    if(sport)html+='<span style="font-size:0.38rem;font-weight:800;color:'+sportColor+';min-width:28px">'+sport+'</span>';
+    html+='<span style="color:var(--t2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+E(p.title||p.market_slug)+'</span>';
+    html+='</div>';
+    html+='<div style="display:flex;align-items:center;gap:0.8rem;flex-shrink:0">';
+    html+='<span style="font-family:var(--mono);color:var(--t3)">Bid '+p.best_bid.toFixed(2)+'</span>';
+    html+='<span style="font-family:var(--mono);color:var(--t1);font-weight:600">Mid '+p.mid_price.toFixed(2)+'</span>';
+    html+='<span style="font-family:var(--mono);color:var(--t3)">Ask '+p.best_ask.toFixed(2)+'</span>';
+    if(daysStr)html+='<span style="font-size:0.38rem;color:var(--t4)">'+daysStr+'</span>';
+    html+='</div></div>';
+});
+html+='</div>';
+el.innerHTML=html;
+// Sports trades tab
+const tEl=document.getElementById('sportsTradesArea');
+const trades=sp.trades||[];
+if(!trades.length){tEl.innerHTML='<div class="empty">No sports trades yet — need 8+ price snapshots per market</div>';return}
+tEl.innerHTML='<table><tr><th>Type</th><th>Market</th><th>Side</th><th>Price</th><th>Size</th><th>Sigma</th><th>Mean</th><th>Status</th><th>Date</th></tr>'+trades.map(t=>{
+const sigType=t.signal_type==='momentum_fade'?'<span class="pill" style="background:rgba(139,92,246,0.15);color:#a78bfa">FADE</span>':'<span class="pill p-mr">MR</span>';
+return '<tr><td>'+sigType+'</td><td style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+E(t.title||t.market_slug)+'</td><td>'+E(t.side||'')+'</td><td>'+$(t.price,3)+'</td><td>'+$(t.size_usd,2)+'</td><td>'+(t.sigma||0).toFixed(1)+'&sigma;</td><td>'+$(t.mean_price,3)+'</td><td>'+E(t.status||'')+'</td><td>'+T(t.timestamp)+'</td></tr>'}).join('')+'</table>';
+}
 
 function renderLog(log){
 const el=document.getElementById('logBox');
