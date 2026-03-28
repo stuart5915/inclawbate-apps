@@ -1779,7 +1779,7 @@ function localizeLogTime(line){
 }
 function renderLog(log){
 const el=document.getElementById('logBox');
-el.innerHTML=[...log].reverse().map(l=>{const c=l.includes('ERROR')?'e':l.includes('WARN')?'w':'';return '<div class="ll'+c+'">'+E(localizeLogTime(l))+'</div>'}).join('')}
+el.innerHTML=log.map(l=>{const c=l.includes('ERROR')?'e':l.includes('WARN')?'w':'';return '<div class="ll'+c+'">'+E(localizeLogTime(l))+'</div>'}).join('')}
 
 // Tooltips
 (function(){
