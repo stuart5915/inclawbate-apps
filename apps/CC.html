@@ -1841,7 +1841,6 @@
 	.htp-p{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:center;justify-content:center}
 	.htp-x{width:90%;max-width:300px;max-height:80vh;overflow-y:auto;padding:14px;background:#0a1828;border:1px solid rgba(0,212,255,.15);border-radius:8px;color:#a0b8d0;font-size:10px;line-height:1.5}
 	.htp-x h3{color:#8cc8ff;font-size:12px;margin:8px 0 3px;font-family:'Chakra Petch',sans-serif}
-		}
 	.trap-prompt-overlay {
 		display: none !important;
 		position: fixed;
@@ -2138,8 +2137,7 @@
 		::-webkit-scrollbar { width: 4px; height: 4px; }
 		::-webkit-scrollbar-track { background: transparent; }
 		::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
-	#gallery-screen { flex-direction: column; }
-	#gallery-screen { background: #040810; }
+	#gallery-screen { flex-direction: column; background: #040810; }
 	.gallery-settings-btn {
 		background: rgba(8,18,35,0.65); color: rgba(140,190,240,0.6); border: 1px solid rgba(40,120,200,0.1);
 		padding: 6px 14px; border-radius: 16px; font-size: 11px; font-weight: 700;
@@ -3158,6 +3156,7 @@ function truncateWallet(addr) {
 	if (!addr || addr.length < 10) return addr || '';
 	return addr.slice(0, 6) + '...' + addr.slice(-4);
 }
+function _esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
 async function initWalletConnect() {
 	const cookieWallet = getWalletFromCookie();
 	if (cookieWallet && isValidWallet(cookieWallet)) { setConnectedWallet(cookieWallet); return; }
@@ -3171,6 +3170,11 @@ async function initWalletConnect() {
 			return;
 			}
 		} catch(e) {}
+	}
+	if (window.ethereum && window.ethereum.on) {
+	window.ethereum.on('accountsChanged', accs => {
+		if (accs && accs.length > 0 && isValidWallet(accs[0])) setConnectedWallet(accs[0]);
+	});
 	}
 	showWalletModal();
 }
@@ -3964,6 +3968,9 @@ function _showPayPicker(ca) {
 	document.body.appendChild(m);
 }
 async function payItem(clawsAmt) {
+	if (payItem._busy) return null;
+	payItem._busy = true;
+	try {
 	if (!connectedWallet || offlineMode) { showWalletModal(); return null; }
 	if (!window.ethereum) { showStoreToast('MetaMask required', 'Install MetaMask'); return null; }
 	try { await fetchTokenPrices(); } catch(e) {}
@@ -3998,6 +4005,7 @@ async function payItem(clawsAmt) {
 		if (e.code !== 4001) showStoreToast('Failed', e.message || 'Error');
 		return null;
 	}
+	} finally { payItem._busy = false; }
 }
 const CC_DATA_VERSION = 2;
 function defaultPlayerData() {
@@ -4495,7 +4503,7 @@ function renderViewedProfile(data) {
 		<div class="profile-header profile-viewed-header">
 			<div class="profile-avatar">${(data.name||'?').charAt(0).toUpperCase()}</div>
 			<div class="profile-info">
-				<div class="profile-name">${data.name}</div>
+				<div class="profile-name">${_esc(data.name||'')}</div>
 				<div class="profile-wallet-addr">${data.wallet||''}</div>
 				<div class="profile-viewed-badge">PUBLIC PROFILE</div>
 				${(data.gallery && data.gallery.some(Boolean)) ? `<button class="profile-gallery-btn" onclick="viewPlayerGallery(${JSON.stringify(data.gallery).replace(/"/g,'&quot;')}, '${(data.name||'Player').replace(/'/g,"\\'")}')">View Gallery</button>` : ''}
@@ -4620,7 +4628,7 @@ function renderTradeListing(trade, myWallet) {
 	}
 	return `<div class="trade-listing">
 		<div class="trade-listing-header">
-			<div class="trade-listing-user">${trade.seller.name}</div>
+			<div class="trade-listing-user">${_esc(trade.seller.name)}</div>
 			<div class="trade-listing-time">${timeAgo}</div>
 		</div>
 		<div class="trade-listing-body">
@@ -4653,7 +4661,7 @@ function renderMarketListing(listing, myWallet) {
 	}
 	return `<div class="market-listing">
 		<div class="market-listing-header">
-			<div class="trade-listing-user">${listing.seller.name}</div>
+			<div class="trade-listing-user">${_esc(listing.seller.name)}</div>
 			<div class="trade-listing-time">${timeAgo}</div>
 		</div>
 		<div class="market-listing-body">
@@ -4921,9 +4929,11 @@ async function postMarketListing() {
 	}
 }
 async function buyMarketListing(listingId) {
+	if (buyMarketListing._busy) return;
+	buyMarketListing._busy = true;
+	try {
 	if (!connectedWallet) { alert('Connect wallet first.'); return; }
 	if (!window.AppDB) return;
-	try {
 	const listing = await window.AppDB.getGlobal(listingId);
 	if (!listing || listing.status !== 'open') {
 		alert('This listing is no longer available.');
@@ -4932,6 +4942,12 @@ async function buyMarketListing(listingId) {
 		}
 	const paid = await payItem(listing.price);
 	if (!paid) return;
+	const recheck = await window.AppDB.getGlobal(listingId);
+	if (!recheck || recheck.status !== 'open') {
+		alert('Listing was claimed by another buyer.');
+		loadMarketListings();
+		return;
+		}
 	for (const cid of listing.cards) {
 		playerData.collection[cid] = (playerData.collection[cid] || 0) + 1;
 		if (!playerData.collectedDates[cid]) playerData.collectedDates[cid] = Date.now();
@@ -4956,7 +4972,7 @@ async function buyMarketListing(listingId) {
 	updateCoinsDisplay();
 	} catch(e) {
 	alert('Purchase failed. Please try again.');
-	}
+	} finally { buyMarketListing._busy = false; }
 }
 function refreshActiveListings() {
 	if (document.getElementById('market-screen').classList.contains('active')) loadMarketListings();
@@ -6386,7 +6402,7 @@ function ffaSwitchView(targetIdx) {
 	if (duel.currentPlayer !== 'player') return; // can't switch during NPC turn
 	ffaFlush();
 	ffa.viewTarget = targetIdx;
-	ffaSwap(0, targetIdx);
+	ffaSwap(mySeat, targetIdx);
 	renderDuel();
 }
 function ffaNextTurn() {
@@ -6774,8 +6790,8 @@ const PREDATOR_CHAIN = {
 };
 function getEnergy(who) { return who === 'player' ? duel.playerEnergy : duel.aiEnergy; }
 function spendEnergy(who, amt) {
-	if (who === 'player') duel.playerEnergy -= amt;
-	else duel.aiEnergy -= amt;
+	if (who === 'player') duel.playerEnergy = Math.max(0, duel.playerEnergy - amt);
+	else duel.aiEnergy = Math.max(0, duel.aiEnergy - amt);
 }
 function hasEnergy(who, amt) { return getEnergy(who) >= amt; }
 function checkPredatorChain(card, opponentWho) {
@@ -7264,6 +7280,7 @@ function hideActionMenu() {
 }
 function normalSummon(handIdx) {
 	hideActionMenu();
+	if (getEmptyMonsterZone('player') === -1) { renderDuel(); return; }
 	spendEnergy('player', ENERGY_COST.summon);
 	const card = duel.player.hand.splice(handIdx, 1)[0];
 	const zi = getEmptyMonsterZone('player');
@@ -7280,6 +7297,7 @@ function normalSummon(handIdx) {
 }
 function setMonster(handIdx) {
 	hideActionMenu();
+	if (getEmptyMonsterZone('player') === -1) { renderDuel(); return; }
 	spendEnergy('player', ENERGY_COST.summon);
 	const card = duel.player.hand.splice(handIdx, 1)[0];
 	const zi = getEmptyMonsterZone('player');
@@ -7877,7 +7895,7 @@ function resolveEffect(eff, who, zoneIdx) {
 		break;
 		}
 	case 'atkBuff':
-		if (eff.target === 'self') {
+		if (eff.target === 'self' && duel[who].monsters[zoneIdx]) {
 			duel[who].monsters[zoneIdx].atkMod += eff.value;
 			duelLog(`${duel[who].monsters[zoneIdx].card.name} gained ${eff.value} ATK!`);
 			}
@@ -7894,6 +7912,7 @@ function resolveEffect(eff, who, zoneIdx) {
 		effectDamageAllFoes(who, eff.value);
 		duelLog(`Dealt ${eff.value} damage!`);
 		break;
+	default: break;
 	}
 }
 function triggerSummonEffects(who, zoneIdx) {
