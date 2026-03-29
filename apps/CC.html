@@ -451,25 +451,58 @@
 	.mp-player { font-family:'Chakra Petch',sans-serif; font-size:12px; color:rgba(180,165,130,.4); padding:6px 14px; background:rgba(20,18,14,.4); border:1px solid rgba(120,105,75,.08); border-radius:4px; }
 	#mp-start-btn { display:none; padding:14px 36px; border-radius:8px; font-family:'Orbitron',sans-serif; font-size:14px; font-weight:900; letter-spacing:4px; background:linear-gradient(135deg,#b22222,#e63c3c 40%,#ff5252 70%); color:#fff; border:1px solid rgba(255,150,100,.2); cursor:pointer; text-shadow:0 2px 4px rgba(0,0,0,.3); box-shadow:0 0 15px rgba(230,60,60,.25); }
 	.mp-surrender-btn { position:absolute; top:8px; right:8px; padding:4px 10px; border-radius:4px; background:rgba(180,30,30,.3); color:rgba(255,120,120,.6); border:1px solid rgba(180,30,30,.2); font-size:9px; font-weight:700; letter-spacing:1px; cursor:pointer; z-index:20; }
-	.ffa-bar { display:flex; flex-wrap:wrap; gap:4px; justify-content:center; padding:3px 6px; background:rgba(8,12,20,0.5); border-bottom:1px solid rgba(120,105,75,.08); }
-	.ffa-tab { padding:3px 10px; font-family:'Chakra Petch',sans-serif; font-size:9px; font-weight:700; letter-spacing:1px; border-radius:4px; background:rgba(8,18,35,.4); color:rgba(140,125,95,.4); border:1px solid rgba(40,120,200,.06); cursor:pointer; transition:all .2s; }
-	.ffa-tab.active { color:rgba(231,76,60,.9); background:rgba(231,76,60,.08); border-color:rgba(231,76,60,.2); }
-	.ffa-tab.eliminated { text-decoration:line-through; opacity:.3; pointer-events:none; }
-	.ffa-tab .ffa-lp { font-size:8px; color:rgba(160,145,115,.5); display:block; }
-	.ffa-tab.active .ffa-lp { color:rgba(231,76,60,.6); }
-	.ffa-npc-turn { text-align:center; padding:2px; font-family:'Chakra Petch',sans-serif; font-size:10px; font-weight:700; color:rgba(255,180,80,.7); letter-spacing:2px; animation:ffaPulse 1s ease infinite; }
-	@keyframes ffaPulse { 0%,100%{opacity:.5}50%{opacity:1} }
-	.ffa-chat { position:fixed; bottom:0; left:0; right:0; z-index:30; pointer-events:none; }
+	.ffa-bar { display:none; gap:4px; padding:4px 8px; background:rgba(0,6,12,.6); border-bottom:1px solid rgba(255,255,255,.04); }
+	.ffa-chat { position:fixed; bottom:8px; left:8px; width:180px; z-index:90; pointer-events:none; }
 	.ffa-chat > * { pointer-events:auto; }
-	.ffa-chat-toggle { text-align:center; padding:4px 12px; font-family:'Chakra Petch',sans-serif; font-size:9px; font-weight:700; letter-spacing:2px; color:rgba(140,200,255,.5); background:rgba(8,12,20,.75); border-top:1px solid rgba(40,120,200,.1); cursor:pointer; backdrop-filter:blur(6px); }
-	.ffa-chat-body { background:rgba(4,8,16,.92); border-top:1px solid rgba(40,120,200,.1); max-height:180px; display:flex; flex-direction:column; backdrop-filter:blur(8px); }
-	.ffa-chat-msgs { flex:1; overflow-y:auto; padding:6px 8px; max-height:130px; }
+	.ffa-chat-toggle { text-align:center; padding:4px 8px; font-family:'Chakra Petch',sans-serif; font-size:9px; font-weight:700; letter-spacing:2px; color:rgba(140,200,255,.5); background:rgba(8,12,20,.85); border:1px solid rgba(40,120,200,.1); border-radius:4px 4px 0 0; cursor:pointer; backdrop-filter:blur(6px); }
+	.ffa-chat-body { background:rgba(4,8,16,.92); border:1px solid rgba(40,120,200,.1); border-top:none; max-height:120px; display:flex; flex-direction:column; backdrop-filter:blur(8px); border-radius:0 0 4px 4px; }
+	.ffa-chat-msgs { flex:1; overflow-y:auto; padding:6px 8px; max-height:90px; }
 	.ffa-chat-msg { font-size:11px; margin-bottom:3px; line-height:1.3; }
 	.ffa-chat-msg .chat-name { font-weight:700; margin-right:4px; }
 	.ffa-chat-msg.sys { color:rgba(255,180,80,.5); font-style:italic; font-size:10px; }
 	.ffa-chat-input-row { display:flex; gap:4px; padding:4px 6px; border-top:1px solid rgba(40,120,200,.06); }
 	.ffa-chat-input-row input { flex:1; background:rgba(8,18,35,.6); border:1px solid rgba(40,120,200,.1); border-radius:4px; color:#e2e8f0; font-family:'Nunito',sans-serif; font-size:11px; padding:5px 8px; outline:none; }
 	.ffa-chat-input-row button { padding:5px 12px; border-radius:4px; background:rgba(40,120,200,.15); color:rgba(140,200,255,.7); border:1px solid rgba(40,120,200,.15); font-family:'Chakra Petch',sans-serif; font-size:10px; font-weight:700; cursor:pointer; letter-spacing:1px; }
+	/* FFA Square Table */
+	.ffa-table{position:relative;width:100%;max-width:440px;aspect-ratio:1;margin:0 auto;background:rgba(0,10,20,.4);border:1px solid rgba(255,255,255,.04);border-radius:6px;overflow:hidden}
+	.ffa-sd{position:absolute;display:flex;align-items:center;gap:2px}
+	.ffa-sd.pos-t{top:2px;left:50%;transform:translateX(-50%);flex-direction:column}
+	.ffa-sd.pos-b{bottom:2px;left:50%;transform:translateX(-50%);flex-direction:column-reverse}
+	.ffa-sd.pos-l{left:2px;top:50%;transform:translateY(-50%);flex-direction:row}
+	.ffa-sd.pos-r{right:2px;top:50%;transform:translateY(-50%);flex-direction:row-reverse}
+	.ffa-sd.pos-l .ffa-zr,.ffa-sd.pos-r .ffa-zr{flex-direction:column}
+	.ffa-sd.pos-l .ffa-nm,.ffa-sd.pos-r .ffa-nm{writing-mode:vertical-lr;transform:rotate(180deg)}
+	.ffa-nm{font-family:'Chakra Petch',sans-serif;font-size:7px;font-weight:700;white-space:nowrap;padding:1px 2px;text-shadow:0 0 4px rgba(0,0,0,.8)}
+	.ffa-info{font-size:6px;font-weight:700;font-family:'Chakra Petch',sans-serif;color:rgba(140,190,240,.5);padding:1px 2px;white-space:nowrap;cursor:pointer}
+	.ffa-gy-btn{color:rgba(140,190,240,.7);text-decoration:underline;text-decoration-color:rgba(140,190,240,.2)}
+	.ffa-gy-btn:hover{color:rgba(140,200,255,.9)}
+	.ffa-sd.pos-l .ffa-info,.ffa-sd.pos-r .ffa-info{writing-mode:vertical-lr;transform:rotate(180deg)}
+	.ffa-sd.tgt{z-index:1}
+	.ffa-sd.elim{opacity:.25;pointer-events:none}
+	.ffa-sd.elim::after{content:'OUT';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Chakra Petch',sans-serif;font-size:9px;font-weight:900;letter-spacing:2px;color:rgba(255,60,60,.7);background:rgba(0,0,0,.4);z-index:2}
+	.ffa-zr{display:flex;gap:2px;justify-content:center}
+	.ffa-z{width:44px;height:54px;border-radius:2px;border:1px solid rgba(255,255,255,.06);background:rgba(5,15,25,.4);position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden}
+	.ffa-z.atk-tgt{border-color:rgba(255,60,60,.4);box-shadow:0 0 3px rgba(255,60,60,.15)}
+	.ffa-z .zl{font-size:6px;color:rgba(255,255,255,.08)}
+	.ffa-z .fc{position:absolute;inset:1px;border-radius:1px}
+	.ffa-z .fc.fd{background:linear-gradient(135deg,#1a2a4a,#0a1428)}
+	.ffa-z .fc.df{transform:rotate(90deg) scale(.8)}
+	.ffa-z .st-i{position:absolute;inset:0;background:rgba(30,138,94,.2);border-radius:1px}
+	.ffa-z .st-i.fu{background:rgba(50,158,114,.4)}
+	.ffa-z .zo{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:0 1px;font-size:6px;font-weight:900;line-height:1;pointer-events:none}
+	.ffa-z .zo .a{color:rgba(255,120,80,.9)}.ffa-z .zo .d{color:rgba(80,160,255,.9)}
+	.sc0 .ffa-nm{color:#64d2ff}.sc1 .ffa-nm{color:#ff8c8c}.sc2 .ffa-nm{color:#ffc878}.sc3 .ffa-nm{color:#c8a0ff}
+	.sc0.tgt{background:rgba(0,212,255,.03)}.sc1.tgt{background:rgba(255,107,107,.03)}.sc2.tgt{background:rgba(255,167,38,.03)}.sc3.tgt{background:rgba(179,107,255,.03)}
+	.ffa-corn{position:absolute;width:10px;height:10px}.ffa-corn::after{content:'';position:absolute;width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.04)}
+	.ffa-corn.tl{top:0;left:0}.ffa-corn.tr{top:0;right:0}.ffa-corn.bl{bottom:0;left:0}.ffa-corn.br{bottom:0;right:0}
+	.ffa-bu{display:flex;justify-content:center;align-items:center;gap:4px;padding:1px 0}
+	.ffa-bu .gy-zone{width:24px;height:30px;min-height:24px;font-size:5px}
+	.ffa-bu .zone-count{font-size:7px}
+	.ffa-bu .field-zone.field-spell-zone{width:24px;height:32px}
+	.ffa-table .field-row{gap:2px}
+	.ffa-table .field-zone{width:44px;height:54px;min-height:42px}
+	.ffa-room-row { display:flex; align-items:center; justify-content:space-between; padding:4px 8px; background:rgba(231,76,60,.04); border:1px solid rgba(231,76,60,.08); border-radius:4px; margin-bottom:4px; font-size:10px; color:rgba(255,150,130,.6); }
+	.ffa-room-row button { padding:3px 10px; font-size:9px; border-radius:4px; background:rgba(231,76,60,.12); color:rgba(255,150,130,.8); border:1px solid rgba(231,76,60,.2); cursor:pointer; }
 	.duel-setup-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.88); backdrop-filter:blur(16px); z-index:100; align-items:center; justify-content:center; }
 	.duel-setup-overlay.active { display:flex; }
 	.duel-setup { width:90%; max-width:380px; padding:28px 24px; background:linear-gradient(145deg,#14120e,#1a1710); border:1px solid rgba(120,105,75,.15); border-radius:14px; text-align:center; }
@@ -1232,141 +1265,6 @@
 			-webkit-overflow-scrolling: touch;
 		}
 	.store-section.active { display: flex; }
-	.store-banner {
-		display: flex;
-		align-items: center;
-		gap: 14px;
-		padding: 16px 18px;
-		background: rgba(8,18,35,0.6);
-		border: 1px solid rgba(40,120,200,0.1);
-		border-radius: 12px;
-		position: relative;
-		overflow: hidden;
-		}
-	.store-banner::before {
-		content: '';
-		position: absolute;
-		top: 0; left: -100%; width: 60%; height: 100%;
-		background: linear-gradient(90deg, transparent, rgba(40,140,220,0.04), transparent);
-		animation: shimmer-bg 4s ease-in-out infinite;
-		}
-	.store-banner-icon { flex-shrink: 0; }
-	.store-banner-title {
-		font-size: 16px;
-		font-weight: 900;
-		background: linear-gradient(135deg, #7ab8e0, #a0d0f0);
-		background-clip: text;
-		color: transparent;
-		}
-	.store-banner-sub {
-		font-size: 11px;
-		color: rgba(140,190,240,0.4);
-		margin-top: 2px;
-		}
-	.store-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-		gap: 10px;
-		}
-	.store-tier {
-		background: rgba(8,18,35,0.65);
-		border: 1px solid rgba(40,120,200,0.1);
-		border-radius: 12px;
-		padding: 18px 14px;
-		text-align: center;
-		position: relative;
-		overflow: hidden;
-		transition: border-color 0.2s, transform 0.15s;
-		cursor: pointer;
-		}
-	.store-tier:active { transform: scale(0.97); }
-	.store-tier:hover { border-color: rgba(40,140,220,0.25); }
-	.store-tier.popular {
-		border-color: rgba(40,140,220,0.25);
-		background: rgba(10,30,60,0.7);
-		}
-	.store-tier-badge {
-		position: absolute;
-		top: 8px; right: 8px;
-		background: linear-gradient(135deg, #2090ff, #1060c0);
-		color: #fff;
-		font-size: 8px;
-		font-weight: 900;
-		padding: 2px 8px;
-		border-radius: 10px;
-		letter-spacing: 0.5px;
-		text-transform: uppercase;
-		}
-	.store-tier-amount {
-		font-size: 30px;
-		font-weight: 900;
-		background: linear-gradient(180deg, #e8f4ff 0%, #7ab8e0 100%);
-		background-clip: text;
-		color: transparent;
-		line-height: 1.1;
-		}
-	.store-tier-label {
-		font-size: 10px;
-		color: rgba(140,190,240,0.45);
-		font-weight: 700;
-		margin-top: 2px;
-		letter-spacing: 0.5px;
-		}
-	.store-tier-bonus {
-		font-size: 10px;
-		color: #40c0a0;
-		font-weight: 700;
-		margin-top: 6px;
-		min-height: 15px;
-		}
-	.store-tier-price {
-		margin-top: 10px;
-		padding: 10px 14px;
-		border-radius: 10px;
-		font-size: 12px;
-		font-weight: 800;
-		background: linear-gradient(135deg, #1050a0 0%, #1878d0 40%, #2090ff 100%);
-		color: #fff;
-		border: 1px solid rgba(40,150,255,0.2);
-		cursor: pointer;
-		font-family: 'Nunito', sans-serif;
-		min-height: 38px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 4px;
-		text-shadow: 0 1px 4px rgba(0,60,160,0.4);
-		box-shadow: 0 0 15px rgba(0,100,220,0.15);
-		transition: transform 0.15s, box-shadow 0.15s;
-		}
-	.store-tier-price:active { transform: scale(0.95); }
-	.store-tier-price:disabled {
-		background: rgba(20,40,60,0.5);
-		color: rgba(140,190,240,0.3);
-		box-shadow: none;
-		cursor: not-allowed;
-		border-color: rgba(40,120,200,0.06);
-		text-shadow: none;
-		}
-	.store-tier-price .claws-icon {
-		display: inline-flex;
-		width: 14px; height: 14px;
-		background: rgba(255,255,255,0.1);
-		border-radius: 50%;
-		align-items: center;
-		justify-content: center;
-		font-size: 8px;
-		font-weight: 900;
-		}
-	.store-footer {
-		padding: 8px 0;
-		}
-	.store-footer-note {
-		font-size: 10px;
-		color: rgba(80,140,200,0.3);
-		text-align: center;
-		line-height: 1.5;
-		}
 	.cosmetic-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -1609,6 +1507,7 @@
 	.deck-name-input:focus { border-color:rgba(40,140,220,0.3); }
 	.deck-del-btn { padding:6px 12px; border-radius:8px; font-size:11px; font-weight:700; background:rgba(80,20,20,.2); color:rgba(255,120,120,.5); border:1px solid rgba(120,40,40,.15); }
 	#duel-screen {
+		display:flex;flex-direction:column;
 		height: 100vh;
 		max-height: 100vh;
 		overflow: hidden;
@@ -1707,6 +1606,7 @@
 		padding: 2px 8px;
 		gap: 2px;
 		min-height: 0;
+		overflow-y:auto;
 		position: relative;
 		z-index: 1;
 		}
@@ -1937,34 +1837,13 @@
 	.action-btn.position { background: rgba(255,215,0,0.1); color: #ffd700; border: 1px solid rgba(255,215,0,0.12); }
 	.action-btn.cancel { background: rgba(255,255,255,0.03); color: #555; border: 1px solid rgba(255,255,255,0.04); }
 	.action-btn:active { filter: brightness(1.3); transform: scale(0.97); }
-	.duel-log {
-		position: absolute;
-		top: 36px;
-		left: 8px;
-		right: 8px;
-		max-height: 100px;
-		overflow-y: auto;
-		pointer-events: auto;
-		z-index: 20;
-		}
-	.log-entry {
-		font-size: 11px;
-		padding: 4px 10px;
-		background: rgba(0,0,0,0.7);
-		backdrop-filter: blur(6px);
-		border-radius: 6px;
-		margin-bottom: 2px;
-		color: #a0aac0;
-		animation: logFade 5s forwards;
-		border-left: 2px solid rgba(0,212,255,0.3);
-		}
-	@keyframes logFade {
-			0% { opacity: 1; }
-			80% { opacity: 1; }
-			100% { opacity: 0; }
+	.htp-b{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:rgba(0,50,100,.4);color:#8cc8ff;font:900 13px/24px sans-serif;text-align:center;cursor:pointer;z-index:25}
+	.htp-p{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:center;justify-content:center}
+	.htp-x{width:90%;max-width:300px;max-height:80vh;overflow-y:auto;padding:14px;background:#0a1828;border:1px solid rgba(0,212,255,.15);border-radius:8px;color:#a0b8d0;font-size:10px;line-height:1.5}
+	.htp-x h3{color:#8cc8ff;font-size:12px;margin:8px 0 3px;font-family:'Chakra Petch',sans-serif}
 		}
 	.trap-prompt-overlay {
-		display: none;
+		display: none !important;
 		position: fixed;
 		top: 0; left: 0; right: 0; bottom: 0;
 		background: rgba(0,0,0,0.88);
@@ -1975,7 +1854,6 @@
 		flex-direction: column;
 		padding: 20px;
 		}
-	.trap-prompt-overlay.active { display: flex; }
 	.trap-prompt-box {
 		background: linear-gradient(135deg, rgba(30,12,55,0.95) 0%, rgba(10,20,40,0.95) 100%);
 		border: 2px solid #ff2d78;
@@ -2533,8 +2411,6 @@
 		.field-center-row { gap: 12px; }
 		.lp-value { font-size: 18px; }
 		.lp-fill { width: 80px; }
-		.duel-log { max-height: 110px; }
-		.log-entry { font-size: 11px; }
 		}
 	@media (min-width: 1024px) {
 		.title-logo-img { width: 300px; }
@@ -2561,7 +2437,6 @@
 		.duel-field { max-width: 580px; width: 100%; }
 		.phase-bar { max-width: 520px; width: 100%; }
 		.hand-area { max-width: 640px; width: 100%; }
-		.duel-log { max-width: 580px; max-height: 120px; }
 		.field-zone { width: 64px; height: 88px; }
 		.field-row { gap: 6px; }
 		.field-zone.field-spell-zone { width: 56px; height: 78px; }
@@ -2577,7 +2452,6 @@
 		.field-center-row { gap: 14px; }
 		.action-menu { min-width: 230px; padding: 14px; }
 		.action-btn { padding: 13px 22px; font-size: 14px; }
-		.log-entry { font-size: 11px; }
 		.phase-btn { padding: 8px 18px; font-size: 13px; }
 		.card-preview-panel { display: block; position: fixed; right: 16px; top: 50%; transform: translateY(-50%); z-index: 60; pointer-events: none; opacity: 0; transition: opacity 0.2s; cursor: pointer; }
 		.card-preview-panel.active { opacity: 1; pointer-events: auto; }
@@ -2619,8 +2493,6 @@
 		.gy-zone, .deck-zone { width: 52px; height: 72px; font-size: 8px; }
 		.zone-count { font-size: 15px; }
 		.field-center-row { gap: 20px; }
-		.duel-log { max-width: 700px; max-height: 130px; }
-		.log-entry { font-size: 12px; padding: 3px 10px; }
 		.action-menu { min-width: 260px; }
 		.action-btn { padding: 14px 24px; font-size: 15px; }
 		.phase-btn { padding: 10px 22px; font-size: 14px; }
@@ -2800,7 +2672,7 @@
 	<div class="wallet-modal-overlay" id="wallet-modal">
 		<div class="wallet-modal">
 			<h2>Connect Wallet</h2>
-			<p class="wallet-subtitle">$DD (DuckDollars) is the in-game currency. Connect your wallet to track your on-chain balance.</p>
+			<p class="wallet-subtitle">Connect your wallet to purchase packs with $CLAWS, $ETH, or $USDC on Base.</p>
 			<button class="wallet-connect-btn" id="wallet-metamask-btn" onclick="connectWithProvider()" style="margin-bottom:12px;display:none">Connect Wallet</button>
 			<div class="wallet-divider" id="wallet-divider" style="display:none"><span>or enter address manually</span></div>
 			<input type="text" id="wallet-input" placeholder="0x..." maxlength="42" autocomplete="off" autocorrect="off" spellcheck="false">
@@ -2831,11 +2703,11 @@
 				<button class="menu-tile" onclick="showScreen('gallery-screen')">Gallery</button>
 				<button class="menu-tile" onclick="showScreen('trade-screen')">Trade Hub</button>
 				<button class="menu-tile" onclick="showScreen('market-screen')">Marketplace</button>
-				<button class="menu-tile" onclick="openStore()">Buy $DD</button>
+				<button class="menu-tile" onclick="showScreen('pack-screen')">Shop</button>
 			</div>
 		</div>
 		<div class="title-info-bar">
-			<div class="coin-display" id="title-coins">$DD 0</div>
+			<div class="coin-display" id="title-coins">$CLAWS ...</div>
 			<div class="wallet-display" id="title-wallet">
 				<span class="wallet-addr" id="title-wallet-addr">No Wallet</span>
 				<button class="wallet-change-btn" id="title-wallet-btn" onclick="showWalletModal()">Connect</button>
@@ -2859,8 +2731,17 @@
 					<input id="mp-code-input" maxlength="8" placeholder="Room code...">
 					<div style="display:flex;gap:8px"><button onclick="mpCreatePrivate()">CREATE</button><button onclick="mpJoinPrivate()">JOIN</button></div>
 				</div>
-				<button class="mp-priv-toggle" style="margin-top:8px;background:rgba(231,76,60,.08);border-color:rgba(231,76,60,.15);color:rgba(255,150,130,.6)" onclick="mpStartFFA()">FFA BATTLE (4 Players)</button>
+				<button class="mp-priv-toggle" style="margin-top:8px;background:rgba(231,76,60,.08);border-color:rgba(231,76,60,.15);color:rgba(255,150,130,.6)" onclick="mpFFAToggle()">FFA BATTLE (4 Players)</button>
+				<div class="mp-priv-panel" id="mp-ffa-panel" style="display:none">
+					<div id="ffa-room-list" style="margin-bottom:8px"><div class="mp-empty">Loading rooms...</div></div>
+					<div style="display:flex;gap:8px;align-items:center">
+						<button onclick="mpFFACreate()">CREATE ROOM</button>
+						<label style="font-size:9px;color:rgba(140,125,95,.4);display:flex;align-items:center;gap:4px"><input type="checkbox" id="ffa-private-check"> Private</label>
+						<button onclick="mpStartFFA()" style="background:rgba(140,125,95,.1);color:rgba(140,125,95,.5)">LOCAL</button>
+					</div>
+				</div>
 			</div>
+			<div id="mp-lobby-chat" style="padding:6px 10px;border-top:1px solid rgba(40,120,200,.06)"><div id="mp-lobby-msgs" style="overflow-y:auto;max-height:70px;font-size:11px;margin-bottom:3px"></div><div style="display:flex;gap:3px"><input id="mp-lobby-input" maxlength="80" placeholder="Chat..." style="flex:1;background:rgba(8,18,35,.6);border:1px solid rgba(40,120,200,.1);border-radius:4px;color:#e2e8f0;font-size:11px;padding:3px 5px;outline:none" onkeydown="if(event.key==='Enter')mpLobbySend()"><button onclick="mpLobbySend()" style="padding:3px 8px;border-radius:4px;background:rgba(40,120,200,.15);color:rgba(140,200,255,.7);border:1px solid rgba(40,120,200,.15);font-size:10px;font-weight:700;cursor:pointer">SEND</button></div></div>
 			<div id="mp-no-sdk" style="display:none;text-align:center;padding:20px;">
 				<div style="font-family:'Chakra Petch',sans-serif;font-size:14px;color:rgba(140,200,255,0.9);margin-bottom:12px;">Multiplayer Unavailable</div>
 				<div style="font-size:13px;color:rgba(140,190,240,.4);">AppDB not detected. Only works on inclawbate.com</div>
@@ -2891,6 +2772,7 @@
 				<option value="type">Type</option>
 				<option value="archetype">Archetype</option>
 				<option value="date">Date Collected</option>
+				<option value="vault">Vault Only</option>
 			</select>
 		</div>
 		<div class="filter-bar" id="coll-filters"></div>
@@ -2900,8 +2782,7 @@
 		<div class="header-bar">
 			<button class="back-btn" onclick="showScreen('title-screen')">← Back</button>
 			<h2>Store</h2>
-			<span id="pack-coins" class="coin-display" style="position:static">$DD 0</span>
-			<button onclick="refreshDDBalance()" style="background:none;border:1px solid rgba(40,120,200,0.2);border-radius:6px;color:rgba(140,200,255,0.7);font-size:10px;padding:4px 8px;cursor:pointer;font-weight:700" id="refresh-dd-btn">&#x21BB; Refresh</button>
+			<span id="pack-coins" class="coin-display" style="position:static">$CLAWS ...</span>
 		</div>
 		<div class="shop-tabs">
 			<button class="shop-tab active" id="tab-packs" onclick="switchShopTab('packs')">Packs</button>
@@ -2913,7 +2794,6 @@
 			<button class="shop-tab" id="tab-borders" onclick="switchShopTab('borders')">Borders</button>
 			<button class="shop-tab" id="tab-lighting" onclick="switchShopTab('lighting')">Lighting</button>
 			<button class="shop-tab" id="tab-avatars" onclick="switchShopTab('avatars')">Avatars</button>
-			<button class="shop-tab" id="tab-store" onclick="switchShopTab('store')">Buy $DD</button>
 		</div>
 		<div class="cosmetic-grid" id="pack-list"></div>
 		<div class="store-section" id="decks-section">
@@ -2940,21 +2820,6 @@
 		<div class="store-section" id="avatars-section">
 			<div class="cosmetic-grid" id="avatars-grid"></div>
 		</div>
-		<div class="store-section" id="store-section">
-			<div class="store-banner">
-				<div class="store-banner-icon">
-					<svg viewBox="0 0 40 40" width="40" height="40"><circle cx="20" cy="20" r="17" fill="none" stroke="rgba(255,215,0,0.6)" stroke-width="2"/><text x="20" y="26" text-anchor="middle" fill="#ffd700" font-size="16" font-weight="900">$</text></svg>
-				</div>
-				<div class="store-banner-text">
-					<div class="store-banner-title">DuckDollars Store</div>
-					<div class="store-banner-sub">Buy $DD to open card packs</div>
-				</div>
-			</div>
-			<div class="store-grid" id="store-grid"></div>
-			<div class="store-footer">
-				<div class="store-footer-note">On-chain purchases require CLAWS tokens and a connected wallet on Base chain.</div>
-			</div>
-		</div>
 		<div class="pack-reveal" id="pack-reveal">
 			<div class="pack-cards-row" id="reveal-cards"></div>
 			<button class="menu-btn primary" onclick="closeReveal()" style="width:200px">CONTINUE</button>
@@ -2970,6 +2835,7 @@
 		<div class="db-tabs">
 			<button class="db-tab active" id="db-tab-deck" onclick="switchDeckTab('deck')">My Deck <span id="db-deck-count">0/60</span></button>
 			<button class="db-tab" id="db-tab-add" onclick="switchDeckTab('add')">Add Cards</button>
+			<button class="db-tab" id="db-tab-vault" onclick="switchDeckTab('vault')">Vault</button>
 		</div>
 		<div class="db-body" id="deck-area"></div>
 	</div>
@@ -3069,7 +2935,8 @@
 			</div>
 		</div>
 		<div id="ffa-bar" class="ffa-bar" style="display:none"></div>
-		<div class="duel-log" id="duel-log"></div>
+		<div class="htp-b" onclick="document.getElementById('htp').style.display='flex'">?</div>
+		<div id="htp" class="htp-p" onclick="this.style.display='none'"><div class="htp-x" onclick="event.stopPropagation()"><span onclick="document.getElementById('htp').style.display='none'" style="float:right;cursor:pointer;color:#8cc8ff">✕</span><h3>Basics</h3>Summon monsters, cast spells, set traps. Reduce opponent LP to 0.<h3>Energy</h3>5⚡ start +3/turn. Summon=2, Spell/Trap=1, Attack=1, Draw=2<h3>Vault</h3>Fusion: Shell Fusion + materials<br>Surge: Conduit + mons = level<br>Ritual: Ritual spell + tribute<h3>Mechanics</h3>Molt: +500 ATK after 1 turn<br>Burrow: dodge, +300 ATK<br>Shell: absorbs DEF damage<br>Tide: ±3 gives +200 ATK<br>Reef: grows with mons, bonuses at 2/3/5</div></div>
 		<div class="duel-field" id="duel-field"></div>
 		<div class="phase-bar" id="phase-bar"></div>
 		<div class="hand-area" id="player-hand"></div>
@@ -3085,7 +2952,7 @@
 			</div>
 		</div>
 		<div class="action-menu" id="action-menu"></div>
-		<div class="trap-prompt-overlay" id="trap-prompt">
+		<div class="trap-prompt-overlay" id="trap-prompt" style="display:none">
 			<div class="trap-prompt-box">
 				<div class="trap-prompt-title">Activate Trap?</div>
 				<div class="trap-prompt-cards-row">
@@ -3142,7 +3009,7 @@
 	</div>
 	<div class="store-toast" id="store-toast">
 		<div class="store-toast-amount" id="store-toast-amount">+500</div>
-		<div class="store-toast-label" id="store-toast-label">$DD added to your balance</div>
+		<div class="store-toast-label" id="store-toast-label"></div>
 	</div>
 	<div id="trade-screen" class="screen" style="position:relative;">
 		<div class="header-bar">
@@ -3182,7 +3049,7 @@
 		<div class="header-bar">
 			<button class="back-btn" onclick="showScreen('title-screen')">← Back</button>
 			<h2>Marketplace</h2>
-			<div class="trade-coins-display" id="market-coins">$DD 0</div>
+			<div class="trade-coins-display" id="market-coins">$CLAWS ...</div>
 		</div>
 		<div class="trade-tabs">
 			<div class="trade-tab active" onclick="switchMarketTab('browse')" id="market-tab-browse">Browse</div>
@@ -3205,13 +3072,13 @@
 				<div class="trade-section-label">CARDS TO SELL</div>
 				<div class="trade-selected-cards" id="market-sell-selected"></div>
 				<div class="trade-pick-grid" id="market-sell-grid"></div>
-				<div class="trade-section-label">ASKING PRICE ($DD)</div>
+				<div class="trade-section-label">ASKING PRICE ($CLAWS)</div>
 				<div class="trade-dd-input">
 					<label>Price:</label>
 					<input type="number" id="market-price-input" min="1" value="100" placeholder="100">
-					<label>$DD</label>
+					<label>$CLAWS</label>
 				</div>
-				<div style="font-size:9px;color:rgba(140,190,240,0.3);margin-top:2px;">Set the total $DD price buyers will pay for these cards.</div>
+				<div style="font-size:9px;color:rgba(140,190,240,0.3);margin-top:2px;">Set the total $CLAWS price buyers will pay for these cards.</div>
 				<div class="trade-msg" id="market-creator-msg" style="display:none;"></div>
 				<button class="trade-post-btn" id="market-post-btn" onclick="postMarketListing()">List for Sale</button>
 			</div>
@@ -3358,7 +3225,7 @@ function setConnectedWallet(addr) {
 	offlineMode = false;
 	localStorage.setItem('cc_wallet', addr);
 	updateWalletDisplay();
-	syncDDBalance();
+	syncBalance();
 }
 function disconnectWallet() {
 	connectedWallet = null;
@@ -3895,6 +3762,12 @@ makeCard(210,'Tidal Entrapment','trap','continuous',{rarity:'SR',
 	art:{bg:['#081838','#040c20'],icon:'power'},
 	effects:[{trigger:'passive',action:'fieldBuffType',value:200,attrTarget:'WATER'}]
 }),
+makeCard(211,'Abyss Crawler','monster','effect',{
+	level:4, atk:1600, def:1200, attribute:'DARK', rarity:'SR',
+	desc:'When this card is summoned: inflict 400 damage to your opponent. Once per duel, this card can Burrow to avoid an attack and resurface with +300 ATK.',
+	art:{bg:['#0c0818','#060410'],color:'#9060c0'},
+	effects:[{trigger:'onSummon',action:'damage',value:400,target:'opponent'}]
+}),
 ];
 function getCard(id) { return CARDS.find(c => c.id === id); }
 const _CARD_ART_BASE = 'https://raw.githubusercontent.com/stuart5915/inclawbate-apps/master/apps/card-art/';
@@ -3903,29 +3776,31 @@ function _cardArtUrl(name) {
 	return _CARD_ART_BASE + encodeURIComponent(name) + '.png';
 }
 const _CARD_ART_NAMES = [
-	'Abyssal Angler','Abyssal Feast','Abyssal Hydra','Abyssal Lurker','Abyssal Monarch','Abyssal Pincer','Abyssal Plate','Abyssal Remora','Abyssal Sovereign','Abyssal Summons',
+	'Abyss Crawler','Abyss Rebuke',
+	'Abyssal Angler','Abyssal Echo','Abyssal Eruption','Abyssal Feast','Abyssal Hydra','Abyssal Lurker','Abyssal Monarch','Abyssal Net','Abyssal Pincer','Abyssal Plate','Abyssal Remora','Abyssal Sovereign','Abyssal Summons',
 	'Antenna Oracle','Barnacle Armor','Barnacle Bind','Barnacle Parasite','Barnacle Scout','Bedrock Formation',
 	'Biolume Flare','Biolume Lance','Biolume Minnow','Bioluminescent Dragon Eel','Brine Bomb','Brine Wasp','Brood Mother',
-	'Celestial Nautilus','Chain Urchin','Charybdis the Devourer','Chitin Gauntlet',
-	'Claw Recruit','Claw Sharpening','Claw of Dominion','Coconut Crab King',
+	'Camouflage Ink','Celestial Nautilus','Cephalopod Grasp','Chain Urchin','Charybdis the Devourer','Chitin Gauntlet',
+	'Claw Recruit','Claw Sharpening','Claw of Dominion','Coconut Crab King','Conch Shell Blast',
 	'Coral Bastion','Coral Blade','Coral Bloom','Coral Colossus','Coral Growth','Coral Reef Kingdom','Coral Snare','Coral Witch',
 	'Countercurrent','Crustacean Fury','Current Draw','Current Sprite','Cuttlebone Spy',
-	'Deep Sea Berserker','Deepwater Titan','Depth Charge','Depth Mine','Drift Anemone','Driftwood Shield',
-	'Ember Urchin','Emergency Molt','Emperor Crustacean','Flashtide','Gale Currents','Gale Fin',
-	'Gilded Cephalopod','Glacial Lobster','Gloom Squid','Hermit Lobster','Howling Abyss','Hydra Polyp','Hydro Burst','Hydrothermal Charge','Hydrothermal Drake',
-	'Infernal Tidecaller','Inferno Crustacean','Ink Cloud','Ink Eruption','Ironclad Nautilus','Ironshell Crab','Kelp Runner','Kelp Wrap',
-	'Jet Current','Kraken Hatchling','Kraken Overlord','Lantern Angler','Larval Drifter','Leviathan Lobster','Leviathan Prime',
+	'Deep Sea Berserker','Deep Silence','Deepwater Titan','Depth Charge','Depth Mine','Drift Anemone','Driftwood Shield',
+	'Ebb Flow','Electric Ray','Ember Urchin','Emergency Molt','Emperor Crustacean','Flashtide','Gale Currents','Gale Fin',
+	'Gilded Cephalopod','Glacial Lobster','Gloom Squid','Hardened Carapace','Hermit Lobster','Howling Abyss','Hydra Polyp','Hydro Burst','Hydrothermal Charge','Hydrothermal Drake','Hydrothermal Geyser',
+	'Infernal Tidecaller','Inferno Crustacean','Ink Cloud','Ink Eruption','Ironclad Nautilus','Ironshell Crab',
+	'Jellyfish Sting','Jet Current','Kelp Entangle','Kelp Runner','Kelp Wrap',
+	'Kraken Hatchling','Kraken Overlord',"Kraken's Reach",'Lantern Angler','Larval Drifter','Leviathan Lobster','Leviathan Prime',
 	'Lobster Pot',"Lobster's Feast",'Luminous Atoll','Maelstrom Dragon','Maelstrom Ritual','Maelstrom Wrath','Magma Hermit','Magma Rite','Magma Wisp',
-	'Mantis Shrimp','Mantis Shrimp Striker','Mariana Plunge','Mirror Tide','Molt Striker','Molting Season','Nautilus Warden',
+	'Mantis Shrimp','Mantis Shrimp Striker','Mariana Plunge','Mirror Tide','Molt Striker','Molting Season','Narwhal Lance','Nautilus Warden','Nullifying Tide',
 	'Oblivion Crawler','Obsidian Shellbreaker',"Ocean's Bounty","Ocean's Wrath",
 	'Pearl Diver','Phantom Jellyfish','Phantom Maw','Phosphor Flash','Phosphor Shrimp',
-	'Pincer Duelist','Pincer Trap','Pistol Shrimp','Plankton Surge',"Poseidon's Chosen",'Predator Instinct','Pressure Blast','Prism Jellyfish','Pyroclasm Leviathan',
-	'Radiant Depths','Reef Chanter','Reef Reclamation','Reef Sentinel','Reef Stalker',
-	'Refraction Pulse','Riptide Crab','Riptide Purge','Ritual of the Deep','Sand Burrower','Scaldstream','Seabed Scour','Seafloor Spikes','Shadow Current',
+	'Pincer Duelist','Pincer Retaliation','Pincer Trap','Pistol Shrimp','Plankton Surge',"Poseidon's Chosen",'Predator Instinct','Predator Lure','Pressure Blast','Pressure Collapse','Pressure Crush','Pressure Wave','Prism Jellyfish','Pyroclasm Leviathan',
+	'Radiant Depths','Reef Chanter','Reef Reclamation','Reef Rejection','Reef Sentinel','Reef Stalker',
+	'Refraction Pulse','Riptide Crab','Riptide Purge','Ritual of the Deep','Sand Burrower','Scaldstream','Seabed Scour','Seafloor Spikes','Shadow Current','Silt Storm',
 	'Shell Fusion','Shell Knight','Shell Reinforce','Shell Shield','Siphon Worm',"Siren's Call",'Snapping Ambush','Spore Polyp','Stormfin Serpent','Sunken Treasure',
-	'Tempest Wyrm','Thermidor the Blaze','Tidal Ambush','Tidal Bounty','Tidal Crawler','Tidal Renewal','Tidal Wave','Tide Caller','Tide Pool Lurker',
+	'Tempest Wyrm','Thermidor the Blaze','Tidal Ambush','Tidal Bounty','Tidal Crawler','Tidal Negation','Tidal Pressure','Tidal Renewal','Tidal Wave','Tide Caller','Tide Pool Lurker','Torpedo Barb','Toxic Bloom','Trawler Net',
 	'Trench Collapse','Trench Stalker','Trident of Tides','Tsunami Wipe','Twin Claw Dragon',
-	'Undertow','Undertow Surge','Verdant Shallows','Volcanic Krill','Volcanic Seabed','Volcanic Spine','Volcanic Vent Crab','Volcanic Vents','Vortex Sacrament','Whirlpool Eel','Whirlpool Trap'
+	'Undertow','Undertow Surge','Urchin Barrage','Verdant Shallows','Volcanic Krill','Volcanic Seabed','Volcanic Spine','Volcanic Vent Bomb','Volcanic Vent Crab','Volcanic Vents','Vortex Sacrament','Waterspout','Whirlpool Eel','Whirlpool Trap'
 ];
 _CARD_ART_NAMES.forEach(name => { _cardArtImages[name] = _cardArtUrl(name); });
 function getFrameClass(card) {
@@ -4048,80 +3923,80 @@ function renderCardMini(card) {
 		<div class="card-mini-name">${card.name}</div>
 	</div>`;
 }
-const DD_TOKEN = '0x0c6a04473c00725deadcc266b100889f62fa4113';
 const BASE_RPC = 'https://mainnet.base.org';
-const DD_CREATOR_WALLET = '0x18b18E245122f4bDA5F2ee4F25c702E05C241D49';
-let _onChainDD = null;
-async function fetchDDBalance(wallet) {
-	if (!wallet) wallet = connectedWallet;
-	if (!wallet) return null;
+const CW = '0x18b18E245122f4bDA5F2ee4F25c702E05C241D49';
+const USDC = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+let _clawsBal = null, _payCb = null;
+async function fetchClawsBalance() {
+	if (!connectedWallet) return null;
 	try {
-	const data = '0x70a08231' + wallet.slice(2).toLowerCase().padStart(64, '0');
+	const data = '0x70a08231' + connectedWallet.slice(2).toLowerCase().padStart(64, '0');
 	const res = await fetch(BASE_RPC, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			jsonrpc: '2.0', id: 1,
-			method: 'eth_call',
-			params: [{ to: DD_TOKEN, data }, 'latest']
-			})
+		body: JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'eth_call', params: [{ to: CLAWS_TOKEN, data }, 'latest'] })
 		});
-	const json = await res.json();
-	return Math.floor(Number(BigInt(json.result || '0x0') / BigInt(1e18)));
+	const j = await res.json();
+	return Math.floor(Number(BigInt(j.result || '0x0') / BigInt(1e18)));
 	} catch { return null; }
 }
-async function syncDDBalance() {
-	if (offlineMode || !connectedWallet) { _onChainDD = null; return; }
-	const balance = await fetchDDBalance(connectedWallet);
-	if (balance !== null) {
-		_onChainDD = balance;
-	updateCoinsDisplay();
-	}
-}
-function getDisplayBalance() {
-	if (connectedWallet && !offlineMode && _onChainDD !== null) return _onChainDD;
-	return playerData.coins;
-}
-async function refreshDDBalance() {
-	const btn = document.getElementById('refresh-dd-btn');
-	if (btn) { btn.textContent = '↻ Scanning...'; btn.disabled = true; }
-	if (!connectedWallet || offlineMode) {
-		if (btn) { btn.textContent = '↻ No wallet'; setTimeout(() => { btn.textContent = '↻ Refresh'; btn.disabled = false; }, 2000); }
-		return;
-	}
-	const balance = await fetchDDBalance(connectedWallet);
-	if (balance !== null) {
-		_onChainDD = balance;
-		updateCoinsDisplay();
-		if (btn) { btn.textContent = '↻ Updated!'; btn.style.borderColor = 'rgba(80,200,120,0.4)'; }
-	} else {
-		if (btn) { btn.textContent = '↻ Failed'; }
-	}
-	setTimeout(() => { if (btn) { btn.textContent = '↻ Refresh'; btn.disabled = false; btn.style.borderColor = ''; } }, 2000);
+async function syncBalance() {
+	if (offlineMode || !connectedWallet) { _clawsBal = null; return; }
+	const b = await fetchClawsBalance();
+	if (b !== null) { _clawsBal = b; updateCoinsDisplay(); }
 }
 function canPurchase() { return navigator.onLine && connectedWallet && !offlineMode; }
-async function spendDD(amount) {
-	if (!connectedWallet || offlineMode) { showWalletModal(); return false; }
-	if (!window.ethereum) { showStoreToast('MetaMask required', 'Install MetaMask to make purchases'); return false; }
+function _closePay(cur) { const m = document.getElementById('pay-modal'); if (m) m.remove(); if (_payCb) _payCb(cur); }
+function _showPayPicker(ca) {
+	const usd = clawsPrice ? (ca * clawsPrice) : null;
+	const ea = (usd && ethPrice) ? (usd / ethPrice) : null;
+	const m = document.createElement('div'); m.id = 'pay-modal';
+	m.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;display:flex;align-items:center;justify-content:center';
+	m.innerHTML = `<div style="background:#0a1828;border:1px solid rgba(0,212,255,.15);border-radius:10px;padding:16px;width:260px;text-align:center">
+		<div style="font-size:13px;font-weight:800;color:#8cc8ff;margin-bottom:12px">Choose Payment</div>
+		<div style="display:flex;flex-direction:column;gap:8px">
+			<button onclick="_closePay('claws')" style="padding:10px;border-radius:8px;background:linear-gradient(135deg,#1050a0,#2090ff);color:#fff;border:none;font-weight:700;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif">${formatClaws(ca)} $CLAWS<br><span style="font-size:9px;color:#80ffc0">+10% bonus cards</span></button>
+			<button onclick="_closePay('eth')" style="padding:10px;border-radius:8px;background:linear-gradient(135deg,#404060,#606080);color:#fff;border:none;font-weight:700;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif"${ea ? '' : ' disabled'}>${ea ? ea.toFixed(6) : '...'} ETH<br><span style="font-size:9px;color:#80ffc0">+5% bonus cards</span></button>
+			<button onclick="_closePay('usdc')" style="padding:10px;border-radius:8px;background:linear-gradient(135deg,#105030,#208060);color:#fff;border:none;font-weight:700;font-size:12px;cursor:pointer;font-family:Nunito,sans-serif"${usd ? '' : ' disabled'}>${usd ? '$' + usd.toFixed(2) : '...'} USDC</button>
+		</div>
+		<button onclick="_closePay(null)" style="margin-top:10px;background:none;border:1px solid rgba(255,255,255,.1);color:#8892a8;border-radius:8px;padding:6px 16px;cursor:pointer;font-size:11px;font-family:Nunito,sans-serif">Cancel</button>
+	</div>`;
+	document.body.appendChild(m);
+}
+async function payItem(clawsAmt) {
+	if (!connectedWallet || offlineMode) { showWalletModal(); return null; }
+	if (!window.ethereum) { showStoreToast('MetaMask required', 'Install MetaMask'); return null; }
+	try { await fetchTokenPrices(); } catch(e) {}
+	const accs = await window.ethereum.request({ method: 'eth_requestAccounts' });
+	const from = accs[0];
+	if (!from) { showStoreToast('No account', 'Connect wallet'); return null; }
+	const onBase = await ensureBaseChain();
+	if (!onBase) { showStoreToast('Wrong network', 'Switch to Base'); return null; }
+	const cur = await new Promise(r => { _payCb = r; _showPayPicker(clawsAmt); });
+	if (!cur) return null;
+	const usd = clawsAmt * (clawsPrice || 0);
 	try {
-		const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-		const from = accounts[0];
-		if (!from) { showStoreToast('No account', 'Connect your wallet'); return false; }
-		const onBase = await ensureBaseChain();
-		if (!onBase) { showStoreToast('Wrong network', 'Switch to Base in your wallet'); return false; }
-		showStoreToast('Sending ' + amount + ' $DD...', 'Confirm in your wallet');
-		const recipient = '0xa51D1F1E1D1323bA7e852E5Cb4812efcf928de75';
-		const amountWei = (BigInt(amount) * 10n ** 18n).toString(16);
-		const txData = '0xa9059cbb' + recipient.slice(2).toLowerCase().padStart(64, '0') + amountWei.padStart(64, '0');
-		const txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from, to: DD_TOKEN, data: txData }] });
-		showStoreToast('Confirming...', 'Waiting for Base confirmation');
-		const success = await waitForTx(txHash);
-		if (!success) { showStoreToast('Transaction failed', 'Transfer reverted on-chain'); return false; }
-		setTimeout(() => syncDDBalance(), 3000);
-		return true;
+		showStoreToast('Sending...', 'Confirm in wallet');
+		let txHash;
+		if (cur === 'claws') {
+			const w = (BigInt(Math.round(clawsAmt * 1e8)) * 10n ** 10n).toString(16).padStart(64, '0');
+			txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from, to: CLAWS_TOKEN, data: '0xa9059cbb' + CW.slice(2).toLowerCase().padStart(64, '0') + w }] });
+		} else if (cur === 'eth') {
+			const ethWei = '0x' + BigInt(Math.round(usd / ethPrice * 1e18)).toString(16);
+			txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from, to: CW, value: ethWei }] });
+		} else {
+			const uw = BigInt(Math.round(usd * 1e6)).toString(16).padStart(64, '0');
+			txHash = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from, to: USDC, data: '0xa9059cbb' + CW.slice(2).toLowerCase().padStart(64, '0') + uw }] });
+		}
+		showStoreToast('Confirming...', 'Waiting for Base');
+		const ok = await waitForTx(txHash);
+		if (!ok) { showStoreToast('Failed', 'Transaction reverted'); return null; }
+		showStoreToast('Paid!', 'Payment confirmed');
+		setTimeout(() => syncBalance(), 3000);
+		return cur;
 	} catch(e) {
-		if (e.code !== 4001) showStoreToast('Transaction failed', e.message || 'Error');
-		return false;
+		if (e.code !== 4001) showStoreToast('Failed', e.message || 'Error');
+		return null;
 	}
 }
 const CC_DATA_VERSION = 2;
@@ -4243,41 +4118,17 @@ function unlockAllCards() {
 	});
 	playerData.coins = 99999;
 	saveData();
-	updateCoinDisplays();
+	updateCoinsDisplay();
 	if (document.getElementById('collection-screen').classList.contains('active') ||
 	document.getElementById('collection-screen').style.display !== 'none') {
 	renderCollection();
 	}
-	alert('All 210 cards unlocked (x3 each) + 99999 $DD');
+	alert('All 210 cards unlocked (x3 each)');
 }
 const STARTER_DECKS = [
-	{
-	id: 'tidal_fury', name: 'Tidal Fury', theme: 'WATER',
-	desc: 'An aggressive water deck that overwhelms opponents with powerful crustacean warriors.',
-	color: ['#0a3858','#051828'],
-	main: [1,1,2,2,3,3,5,5,6,6,11,11,49,49,58,58,52,52,
-			   26,26,27,28,93,93,32,33,111,29,
-			   35,35,36,36,39,39,141,141,142,142,145,145],
-	extra: [22]
-	},
-	{
-	id: 'abyssal_shadow', name: 'Abyssal Shadow', theme: 'DARK',
-	desc: 'A cunning dark control deck that disrupts opponents and strikes from the shadows.',
-	color: ['#180838','#0c0418'],
-	main: [4,4,44,44,55,55,59,59,13,13,60,60,9,9,42,42,
-			   116,34,27,27,92,93,94,105,135,95,
-			   38,38,37,37,40,40,143,143,156,156,144,144,38,151],
-	extra: [87]
-	},
-	{
-	id: 'volcanic_blaze', name: 'Volcanic Blaze', theme: 'FIRE',
-	desc: 'A fiery burn deck that scorches opponents with relentless damage and flame creatures.',
-	color: ['#380808','#1c0404'],
-	main: [46,46,53,53,64,64,1,1,43,43,42,42,50,50,12,12,
-			   112,133,118,32,92,92,101,101,34,124,
-			   35,35,146,146,165,165,166,166,150,150,36,36,170,170],
-	extra: [89]
-	}
+	{id:'tidal_fury',name:'Tidal Fury',theme:'WATER',desc:'Aggressive water deck with powerful crustacean fusion.',color:['#0a3858','#051828'],main:[1,1,2,2,6,6,12,12,52,52,49,49,41,41,3,3,4,16,11,58,26,26,93,93,27,28,32,29,35,35,36,36,39,39,141,141,142,142,145,145],extra:[22]},
+	{id:'abyssal_shadow',name:'Abyssal Shadow',theme:'DARK',desc:'Cunning dark control deck that surges from the shadows.',color:['#180838','#0c0418'],main:[13,13,60,60,42,42,59,59,55,55,44,44,4,14,14,78,9,41,27,27,93,93,92,94,34,105,38,38,37,37,40,40,143,143,156,156,144,144,135,151],extra:[25]},
+	{id:'volcanic_blaze',name:'Volcanic Blaze',theme:'FIRE',desc:'Fiery burn deck with a devastating ritual leviathan.',color:['#380808','#1c0404'],main:[46,46,53,53,64,64,1,1,43,43,42,42,50,50,12,12,80,133,138,32,92,92,101,101,34,124,35,35,146,146,165,165,166,166,150,150,36,36,170,170],extra:[74]}
 ];
 function giveStarterCards() {
 	if (playerData.starterClaimed) return;
@@ -4346,7 +4197,7 @@ const ACHIEVEMENTS = [
 	{id:'playmat_1',name:'Home Turf',desc:'Buy a playmat',icon:'🗺️',check:()=>(playerData.ownedPlaymats||[]).length>=1},
 	{id:'cosmetics_5',name:'Stylist',desc:'Own 5 cosmetics',icon:'✨',check:()=>((playerData.ownedSleeves||[]).length+(playerData.ownedPlaymats||[]).length)>=5},
 	{id:'winstreak_5',name:'On Fire',desc:'Win 5 duels in a row',icon:'🔥',check:()=>(playerData.stats.bestStreak||0)>=5},
-	{id:'rich',name:'Deep Pockets',desc:'Accumulate 10,000 $DD',icon:'💰',check:()=>(playerData.stats.totalEarned||0)>=10000},
+	{id:'rich',name:'Deep Pockets',desc:'Win 50 duels',icon:'💰',check:()=>(playerData.stats.wins||0)>=50},
 	{id:'deck_3',name:'Strategist',desc:'Build 3 different decks',icon:'📋',check:()=>(playerData.decks||[]).length>=3},
 ];
 function getUnlockedAchievements() {
@@ -4798,9 +4649,7 @@ function renderMarketListing(listing, myWallet) {
 	if (isMine) {
 	actions = `<div class="trade-listing-actions"><button class="trade-cancel-btn" style="flex:1" onclick="cancelListing('${listing.id}')">Cancel Listing</button></div>`;
 	} else {
-	const canAfford = getDisplayBalance() >= listing.price;
-	actions = `<div class="trade-listing-actions"><button class="market-buy-btn" style="flex:1" ${canAfford ? '' : 'disabled style="flex:1;opacity:0.4;cursor:not-allowed;"'} onclick="buyMarketListing('${listing.id}')">Buy for ${listing.price} $DD</button></div>`;
-	if (!canAfford) actions += '<div style="font-size:9px;color:#ff6b6b;text-align:center;margin-top:4px;">not enough $DD</div>';
+	actions = `<div class="trade-listing-actions"><button class="market-buy-btn" style="flex:1" onclick="buyMarketListing('${listing.id}')">Buy for ${listing.price} $CLAWS</button></div>`;
 	}
 	return `<div class="market-listing">
 		<div class="market-listing-header">
@@ -4815,7 +4664,7 @@ function renderMarketListing(listing, myWallet) {
 			<div class="market-price-area">
 				<div class="market-price-label">Price</div>
 				<div class="market-price">${listing.price}</div>
-				<div class="market-price-label">$DD</div>
+				<div class="market-price-label">$CLAWS</div>
 			</div>
 		</div>
 		${actions}
@@ -5046,7 +4895,7 @@ async function postMarketListing() {
 	if (!connectedWallet) { alert('Connect wallet first.'); return; }
 	if (!window.AppDB) { alert('Marketplace requires inclawbate.com'); return; }
 	const price = Math.max(1, parseInt(document.getElementById('market-price-input').value) || 0);
-	if (price < 1) { showCreatorMsg('market-creator-msg', 'Price must be at least 1 $DD.', true); return; }
+	if (price < 1) { showCreatorMsg('market-creator-msg', 'Price must be at least 1 $CLAWS.', true); return; }
 	const displayName = playerData.profileName || connectedWallet.slice(0, 6) + '...' + connectedWallet.slice(-4);
 	const listing = {
 	id: 'ccmarket_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
@@ -5081,7 +4930,7 @@ async function buyMarketListing(listingId) {
 		loadMarketListings();
 		return;
 		}
-	const paid = await spendDD(listing.price);
+	const paid = await payItem(listing.price);
 	if (!paid) return;
 	for (const cid of listing.cards) {
 		playerData.collection[cid] = (playerData.collection[cid] || 0) + 1;
@@ -5195,7 +5044,7 @@ async function checkTradeClaims() {
 	const totalDD = claims.reduce((sum, c) => sum + (c.dd || 0), 0);
 	const parts = [];
 	if (totalCards > 0) parts.push(totalCards + ' card' + (totalCards > 1 ? 's' : ''));
-	if (totalDD > 0) parts.push(totalDD + ' $DD');
+	if (totalDD > 0) parts.push(totalDD + ' $CLAWS');
 	if (parts.length > 0) alert('Trade completed! You received: ' + parts.join(' + '));
 }
 function showCreatorMsg(elId, msg, isError) {
@@ -5236,6 +5085,8 @@ function initTitleShowcase() {
 	}
 }
 function showScreen(id) {
+	const _tp = document.getElementById('trap-prompt'); if (_tp) { _tp.style.display = 'none'; _tp.classList.remove('active'); }
+	const _vb = document.getElementById('view-board-back'); if (_vb) _vb.remove();
 	document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
 	document.getElementById(id).classList.add('active');
 	const oc = document.getElementById('online-counter');
@@ -5247,18 +5098,18 @@ function showScreen(id) {
 	if (id === 'pack-screen') renderPackShop();
 	if (id === 'deckbuilder-screen') renderDeckBuilder();
 	if (id === 'profile-screen') profTab(_profTab || 'profile');
-	if (id === 'mp-lobby' && !mp.room) renderMPLobby();
+	if (id === 'mp-lobby' && !mp.room) { renderMPLobby(); mpLobbyLoadChat(); if(!_lcPoll)_lcPoll=setInterval(()=>{if(!document.getElementById('mp-lobby')?.classList.contains('active')){clearInterval(_lcPoll);_lcPoll=null;return;}mpLobbyLoadChat();},4000); }
 	if (id === 'gallery-screen') renderGallery();
 	if (id === 'trade-screen') renderTradeHub();
 	if (id === 'market-screen') renderMarketplace();
 }
 function updateCoinsDisplay() {
-	const bal = getDisplayBalance();
-	document.getElementById('title-coins').textContent = '$DD ' + bal;
+	const bal = _clawsBal !== null ? formatClaws(_clawsBal) + ' $CLAWS' : 'Connect Wallet';
+	document.getElementById('title-coins').textContent = bal;
 	const pc = document.getElementById('pack-coins');
-	if (pc) pc.textContent = '$DD ' + bal;
+	if (pc) pc.textContent = bal;
 	const mc = document.getElementById('market-coins');
-	if (mc) mc.textContent = '$DD ' + bal;
+	if (mc) mc.textContent = bal;
 }
 let collFilter = 'all';
 const RARITY_ORDER = { C: 0, R: 1, SR: 2, UR: 3, ScR: 4, GhR: 5, UltR: 6, StR: 7 };
@@ -5313,7 +5164,8 @@ function renderCollection() {
 		getArchetype(c).toLowerCase().includes(searchTerm)
 		);
 	}
-	if (sortBy === 'alpha') cards.sort((a, b) => a.name.localeCompare(b.name));
+	if (sortBy === 'vault') cards = cards.filter(c => _vc(c));
+	else if (sortBy === 'alpha') cards.sort((a, b) => a.name.localeCompare(b.name));
 	else if (sortBy === 'rarity') cards.sort((a, b) => (RARITY_ORDER[b.rarity] || 0) - (RARITY_ORDER[a.rarity] || 0));
 	else if (sortBy === 'type') cards.sort((a, b) => a.type.localeCompare(b.type) || a.id - b.id);
 	else if (sortBy === 'archetype') cards.sort((a, b) => getArchetype(a).localeCompare(getArchetype(b)) || a.id - b.id);
@@ -5434,22 +5286,22 @@ const PACKS = [
 	  guarantee: 'R',
 	  colors: ['#2a4a6a','#1a2a3a']
 	},
-	{ id: 'reef', name: 'Reef Pack', desc: '5 cards. Guaranteed 1 Super Rare', cost: 2000, count: 5,
+	{ id: 'reef', name: 'Reef Pack', desc: '5 cards. Guaranteed 1 Super Rare', cost: 400, count: 5,
 	  pool: () => CARDS.filter(c => ['C','R','SR'].includes(c.rarity)),
 	  guarantee: 'SR',
 	  colors: ['#1a5a4a','#0a2a20']
 	},
-	{ id: 'abyss', name: 'Abyssal Pack', desc: '5 cards. Guaranteed 1 Ultra Rare', cost: 5000, count: 5,
+	{ id: 'abyss', name: 'Abyssal Pack', desc: '5 cards. Guaranteed 1 Ultra Rare', cost: 1000, count: 5,
 	  pool: () => CARDS.filter(c => ['C','R','SR','UR'].includes(c.rarity)),
 	  guarantee: 'UR',
 	  colors: ['#2a1a4a','#100828']
 	},
-	{ id: 'mega', name: 'Mega Pack', desc: '10 cards. Guaranteed 2 Ultra Rare', cost: 20000, count: 10,
+	{ id: 'mega', name: 'Mega Pack', desc: '10 cards. Guaranteed 2 Ultra Rare', cost: 4000, count: 10,
 	  pool: () => CARDS.filter(c => c.rarity !== 'StR'),
 	  guarantee: 'UR', guaranteeCount: 2,
 	  colors: ['#3a0828','#1a0418']
 	},
-	{ id: 'legend', name: 'Legendary Pack', desc: '5 cards. Guaranteed 1 rare pull: Secret 80% / Phantom 15% / Embossed 4% / Cosmic 1%', cost: 50000, count: 5,
+	{ id: 'legend', name: 'Legendary Pack', desc: '5 cards. Guaranteed 1 rare pull: Secret 80% / Phantom 15% / Embossed 4% / Cosmic 1%', cost: 10000, count: 5,
 	  pool: () => CARDS,
 	  guarantee: 'legendaryWeighted',
 	  colors: ['#3a2a08','#1a1204']
@@ -5482,7 +5334,7 @@ function renderShopDecks() {
 	const online = canPurchase();
 	grid.innerHTML = SHOP_DECKS.map(d => {
 	const bought = deckBuys[d.id] || false;
-	const canBuy = online && !bought && getDisplayBalance() >= 15000;
+	const canBuy = online && !bought;
 	return `<div class="cosmetic-item">
 			<div class="pack-icon" style="background:linear-gradient(135deg,${d.color[0]},${d.color[1]});border:1px solid rgba(255,255,255,0.15)">
 				<span style="font-size:22px">${d.theme==='WATER'?'🌊':d.theme==='DARK'?'🌑':d.theme==='FIRE'?'🔥':d.theme==='WIND'?'🌪️':'⚡'}</span>
@@ -5491,7 +5343,7 @@ function renderShopDecks() {
 			<div class="pack-desc">${d.desc}</div>
 			<div class="pack-desc" style="color:rgba(140,200,255,0.5)">${d.main.length} cards + ${d.extra.length} vault</div>
 			<button class="cosmetic-btn${canBuy ? ' buy' : ''}" onclick="buyShopDeck('${d.id}')" ${canBuy ? '' : 'disabled'}>
-				${bought ? 'OWNED' : !online ? 'UNAVAILABLE' : '$DD 15000'}
+				${bought ? 'OWNED' : !online ? 'UNAVAILABLE' : '3000 $CLAWS'}
 			</button>
 		</div>`;
 	}).join('');
@@ -5499,7 +5351,7 @@ function renderShopDecks() {
 async function buyShopDeck(deckId) {
 	const deck = SHOP_DECKS.find(d => d.id === deckId);
 	if (!deck || deckBuys[deckId]) return;
-	const paid = await spendDD(15000);
+	const paid = await payItem(3000);
 	if (!paid) return;
 	deckBuys[deckId] = true;
 	const now = Date.now();
@@ -5517,21 +5369,21 @@ async function buyShopDeck(deckId) {
 	}
 	playerData.decks.push({ name: deck.name, cards: [...deck.main], extra: [...deck.extra] });
 	saveData();
-	document.getElementById('pack-coins').textContent = '$DD ' + playerData.coins;
+	updateCoinsDisplay();
 	renderShopDecks();
 }
 let packBuys = {};
 let _freePackTimer = null;
 function renderPackShop() {
 	const list = document.getElementById('pack-list');
-	document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
+	updateCoinsDisplay();
 	switchShopTab('packs');
 	if (_freePackTimer) { clearInterval(_freePackTimer); _freePackTimer = null; }
 	const online = canPurchase();
 	list.innerHTML = PACKS.map(p => {
 	const bought = packBuys[p.id] || 0;
 	const onCooldown = p.isFree && playerData.freePackCooldown && (Date.now() - playerData.freePackCooldown < 86400000);
-	const canBuy = online && !onCooldown && getDisplayBalance() >= p.cost && (!p.maxBuys || bought < p.maxBuys);
+	const canBuy = online && !onCooldown && (!p.maxBuys || bought < p.maxBuys);
 	const soldOut = p.maxBuys && bought >= p.maxBuys;
 	let btnHTML;
 	if (!online && !p.isFree) {
@@ -5541,7 +5393,7 @@ function renderPackShop() {
 		} else if (soldOut) {
 		btnHTML = `<button class="cosmetic-btn" disabled>SOLD OUT</button>`;
 		} else {
-		btnHTML = `<button class="cosmetic-btn${canBuy ? ' buy' : ''}" onclick="buyPack('${p.id}')" ${canBuy || p.isFree ? '' : 'disabled'}>${p.cost === 0 ? 'FREE' : '$DD ' + p.cost}</button>`;
+		btnHTML = `<button class="cosmetic-btn${canBuy ? ' buy' : ''}" onclick="buyPack('${p.id}')" ${canBuy || p.isFree ? '' : 'disabled'}>${p.cost === 0 ? 'FREE' : p.cost + ' $CLAWS'}</button>`;
 		}
 	return `<div class="cosmetic-item">
 			<div class="pack-icon" style="background:linear-gradient(135deg,${p.colors[0]},${p.colors[1]});border:1px solid rgba(255,255,255,0.15)">
@@ -5576,11 +5428,10 @@ function showNoCoinPopup() {
 		<div class="no-coin-overlay" onclick="closeNoCoinPopup()"></div>
 		<div class="no-coin-box">
 			<div style="font-size:32px;margin-bottom:8px">💰</div>
-			<div style="font-size:15px;font-weight:800;color:rgba(140,200,255,0.95);margin-bottom:6px">Not Enough $DD</div>
-			<div style="font-size:12px;color:rgba(140,200,255,0.5);margin-bottom:16px">Would you like to purchase some DuckDollars?</div>
+			<div style="font-size:15px;font-weight:800;color:rgba(140,200,255,0.95);margin-bottom:6px">Wallet Required</div>
+			<div style="font-size:12px;color:rgba(140,200,255,0.5);margin-bottom:16px">Connect your wallet to purchase with $CLAWS, $ETH, or $USDC</div>
 			<div style="display:flex;gap:10px;justify-content:center">
-				<button onclick="closeNoCoinPopup();switchShopTab('store')" style="padding:8px 20px;border-radius:10px;background:linear-gradient(135deg,#1050a0,#2090ff);color:#fff;border:none;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;font-size:13px">Buy $DD</button>
-				<button onclick="closeNoCoinPopup()" style="padding:8px 20px;border-radius:10px;background:rgba(255,255,255,0.06);color:#8892a8;border:1px solid rgba(255,255,255,0.06);font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;font-size:13px">Cancel</button>
+				<button onclick="closeNoCoinPopup()" style="padding:8px 20px;border-radius:10px;background:linear-gradient(135deg,#1050a0,#2090ff);color:#fff;border:none;font-weight:700;font-family:'Nunito',sans-serif;cursor:pointer;font-size:13px">OK</button>
 			</div>
 		</div>
 	`;
@@ -5597,10 +5448,13 @@ async function buyPack(packId) {
 	if (playerData.freePackCooldown && (Date.now() - playerData.freePackCooldown < 86400000)) return;
 	}
 	if (pack.maxBuys && (packBuys[pack.id] || 0) >= pack.maxBuys) return;
+	let _payCur = null;
 	if (pack.cost > 0) {
-	const paid = await spendDD(pack.cost);
-	if (!paid) return;
+	_payCur = await payItem(pack.cost);
+	if (!_payCur) return;
 	}
+	const bonusCards = _payCur === 'claws' ? Math.max(1, Math.round(pack.count * 0.1)) : _payCur === 'eth' ? Math.max(0, Math.round(pack.count * 0.05)) : 0;
+	const totalCount = pack.count + bonusCards;
 	packBuys[pack.id] = (packBuys[pack.id] || 0) + 1;
 	if (pack.isFree) playerData.freePackCooldown = Date.now();
 	const pool = pack.pool();
@@ -5621,7 +5475,7 @@ async function buyPack(packId) {
 		pulled.push(guaranteePool[Math.floor(Math.random() * guaranteePool.length)]);
 		}
 	}
-	while (pulled.length < pack.count) {
+	while (pulled.length < totalCount) {
 	if (pack.isFree && Math.random() < 0.00000005) {
 		const luckyRarities = ['SR','UR','ScR','GhR','UltR'];
 		const lr = luckyRarities[Math.floor(Math.random() * luckyRarities.length)];
@@ -5677,35 +5531,24 @@ function closeReveal() {
 	document.getElementById('pack-list').style.display = '';
 	renderPackShop();
 }
-const DD_TIERS = [
-	{ id: 'dd100', amount: 100, bonus: null },
-	{ id: 'dd500', amount: 500, bonus: '+50 bonus', popular: true },
-	{ id: 'dd1000', amount: 1000, bonus: '+200 bonus' },
-	{ id: 'dd5000', amount: 5000, bonus: '+1,000 bonus' },
-	{ id: 'dd10000', amount: 10000, bonus: '+3,000 bonus' },
-	{ id: 'dd25000', amount: 25000, bonus: '+8,000 bonus' },
-	{ id: 'dd50000', amount: 50000, bonus: '+18,000 bonus' },
-	{ id: 'dd100000', amount: 100000, bonus: '+40,000 bonus', popular: true },
-	{ id: 'dd500000', amount: 500000, bonus: '+100,000 bonus' },
-	{ id: 'dd1000000', amount: 1000000, bonus: '+250,000 bonus' },
-];
 const CLAWS_TOKEN = '0x7ca47B141639B893C6782823C0b219f872056379';
-const SWAP_CONTRACT = '0x495E16d1f4EE1cf9A8eb1A7abF804cFB6D616aDf';
-let clawsPrice = null;
+let clawsPrice = null, ethPrice = null;
 let priceLastFetch = 0;
 const PRICE_CACHE_MS = 60000;
-const DD_PER_CLAWS = 5;
 async function fetchTokenPrices() {
 	const now = Date.now();
-	if (clawsPrice && now - priceLastFetch < PRICE_CACHE_MS) return;
+	if (clawsPrice && ethPrice && now - priceLastFetch < PRICE_CACHE_MS) return;
 	try {
-	const res = await fetch('https://api.dexscreener.com/latest/dex/tokens/' + CLAWS_TOKEN).then(r => r.json());
-	const pair = res.pairs && res.pairs.find(p => p.chainId === 'base' && parseFloat(p.priceUsd) > 0);
-	if (pair) { clawsPrice = parseFloat(pair.priceUsd); priceLastFetch = now; }
+	const [cr, er] = await Promise.all([
+		fetch('https://api.dexscreener.com/latest/dex/tokens/' + CLAWS_TOKEN).then(r => r.json()),
+		fetch('https://api.dexscreener.com/latest/dex/tokens/0x4200000000000000000000000000000000000006').then(r => r.json())
+	]);
+	const cp = cr.pairs && cr.pairs.find(p => p.chainId === 'base' && parseFloat(p.priceUsd) > 0);
+	if (cp) clawsPrice = parseFloat(cp.priceUsd);
+	const ep = er.pairs && er.pairs.find(p => p.chainId === 'base' && parseFloat(p.priceUsd) > 0);
+	if (ep) ethPrice = parseFloat(ep.priceUsd);
+	priceLastFetch = now;
 	} catch(e) {}
-}
-function getClawsCost(ddAmount) {
-	return ddAmount / DD_PER_CLAWS;
 }
 function formatClaws(n) {
 	if (n === null || n === undefined) return '...';
@@ -5716,7 +5559,7 @@ function formatClaws(n) {
 	return n.toFixed(8);
 }
 function switchShopTab(tab) {
-	['packs','decks','sleeves','playmats','boards','layouts','borders','lighting','avatars','store'].forEach(t => {
+	['packs','decks','sleeves','playmats','boards','layouts','borders','lighting','avatars'].forEach(t => {
 	var el = document.getElementById('tab-'+t);
 	if (el) el.classList.toggle('active', tab === t);
 	});
@@ -5729,8 +5572,6 @@ function switchShopTab(tab) {
 	document.getElementById('borders-section').classList.toggle('active', tab === 'borders');
 	document.getElementById('lighting-section').classList.toggle('active', tab === 'lighting');
 	document.getElementById('avatars-section').classList.toggle('active', tab === 'avatars');
-	document.getElementById('store-section').classList.toggle('active', tab === 'store');
-	if (tab === 'store') renderStore();
 	if (tab === 'decks') renderShopDecks();
 	if (tab === 'sleeves') renderSleeves();
 	if (tab === 'playmats') renderPlaymats();
@@ -5777,13 +5618,13 @@ function renderAvatarShop() {
 			<div class="cosmetic-name">${av.name}</div>
 			${isActive ? '<div style="font-size:10px;color:#00d4ff;font-weight:800;margin-top:4px">EQUIPPED</div>'
 			: has ? `<button class="cosmetic-btn owned" onclick="equipAvatar('${av.id}')">Equip</button>`
-			: `<button class="cosmetic-btn" onclick="buyAvatar('${av.id}')">100 $DD</button>`}
+			: `<button class="cosmetic-btn" onclick="buyAvatar('${av.id}')">20 $CLAWS</button>`}
 		</div>`;
 	}).join('');
 }
 async function buyAvatar(avId) {
 	if ((playerData.ownedAvatars||[]).includes(avId)) return;
-	const paid = await spendDD(100);
+	const paid = await payItem(20);
 	if (!paid) return;
 	if (!playerData.ownedAvatars) playerData.ownedAvatars = [];
 	playerData.ownedAvatars.push(avId);
@@ -5810,54 +5651,6 @@ function getAvatarHTML(size) {
 	const dn = playerData.profileName || 'A';
 	return `<div class="profile-avatar" style="width:${size}px;height:${size}px">${dn.charAt(0).toUpperCase()}</div>`;
 }
-let storePriceInterval = null;
-function startStorePriceRefresh() {
-	if (storePriceInterval) clearInterval(storePriceInterval);
-	storePriceInterval = setInterval(() => {
-	const storeVisible = document.getElementById('store-section')?.classList.contains('active');
-	if (storeVisible) renderStore();
-	}, PRICE_CACHE_MS);
-}
-function openStore() {
-	showScreen('pack-screen');
-	setTimeout(() => { switchShopTab('store'); startStorePriceRefresh(); }, 50);
-}
-async function renderStore() {
-	const grid = document.getElementById('store-grid');
-	try { await fetchTokenPrices(); } catch(e) {}
-	const hasPrice = !!clawsPrice;
-	grid.innerHTML = DD_TIERS.map(t => {
-	const cost = getClawsCost(t.amount);
-	const priceLabel = formatClaws(cost) + ' $CLAWS';
-	const usdLabel = hasPrice ? '$' + (cost * clawsPrice).toFixed(2) + ' USD' : '';
-	return `<div class="store-tier${t.popular ? ' popular' : ''}" onclick="buyDD('${t.id}')">
-			${t.popular ? '<div class="store-tier-badge">Best Value</div>' : ''}
-			<div class="store-tier-amount">${t.amount.toLocaleString()}</div>
-			<div class="store-tier-label">$DD</div>
-			<div class="store-tier-bonus">${t.bonus || ''}</div>
-			<div class="store-tier-price">
-				<span class="claws-icon">C</span> ${priceLabel}
-			</div>
-			${usdLabel ? `<div style="font-size:8px;color:rgba(150,180,220,0.35);margin-top:3px">${usdLabel}</div>` : ''}
-		</div>`;
-	}).join('') +
-	`<div style="grid-column:1/-1;text-align:center;font-size:10px;color:rgba(150,160,180,0.4);padding:6px 0;line-height:1.6">
-		<div style="color:rgba(140,200,255,0.6);font-weight:700">RATE: 1 $CLAWS = ${DD_PER_CLAWS} $DD</div>
-		${hasPrice
-		? `<div>1 $CLAWS = $${clawsPrice.toFixed(8)} USD</div>
-		   <div style="font-size:8px;margin-top:2px">Live $CLAWS price from DexScreener · Refreshes every 60s</div>`
-		: `<div style="font-size:8px;margin-top:2px">Fetching live $CLAWS price...</div>`}
-	</div>`;
-}
-async function buyDD(tierId) {
-	try {
-		const tier = DD_TIERS.find(t => t.id === tierId);
-		if (!tier) return;
-		const cost = getClawsCost(tier.amount);
-		const total = tier.amount + (DD_BONUSES[tier.id] || 0);
-		await executeBuyDD(tier, cost, total);
-	} catch(e) { showStoreToast('Error', String(e.message || e)); }
-}
 async function waitForTx(txHash) {
 	for (let i = 0; i < 30; i++) {
 		const r = await window.ethereum.request({ method: 'eth_getTransactionReceipt', params: [txHash] });
@@ -5882,44 +5675,6 @@ async function ensureBaseChain() {
 		}
 		return false;
 	}
-}
-async function executeBuyDD(tier, cost, total) {
-	showStoreToast('Starting purchase...', 'Connecting to wallet');
-	if (window.ethereum) {
-		try {
-			const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-			const from = accounts[0];
-			if (!from) { showStoreToast('No account', 'Connect your wallet in MetaMask'); return; }
-			const onBase = await ensureBaseChain();
-			if (!onBase) { showStoreToast('Wrong network', 'Switch to Base in your wallet'); return; }
-			showStoreToast('Approving CLAWS...', 'Confirm in your wallet');
-			const amt = BigInt(tier.amount) * 10n ** 18n / BigInt(DD_PER_CLAWS);
-			const amtHex = amt.toString(16).padStart(64, '0');
-			const approveData = '0x095ea7b3' + SWAP_CONTRACT.slice(2).toLowerCase().padStart(64, '0') + amtHex;
-			const approveTx = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from, to: CLAWS_TOKEN, data: approveData }] });
-			showStoreToast('Waiting for approval...', 'Confirming on Base');
-			const approved = await waitForTx(approveTx);
-			if (!approved) { showStoreToast('Approval failed', 'Transaction reverted'); return; }
-			showStoreToast('Swapping...', 'Confirm in your wallet');
-			const swapData = '0x94b918de' + amtHex;
-			const swapTx = await window.ethereum.request({ method: 'eth_sendTransaction', params: [{ from, to: SWAP_CONTRACT, data: swapData }] });
-			showStoreToast('Waiting for swap...', 'Confirming on Base');
-			const swapped = await waitForTx(swapTx);
-			if (swapped) { creditDD(tier); showStoreToast('Swapped! +' + total.toLocaleString() + ' $DD', '$DD added to your balance'); }
-			else { showStoreToast('Swap failed', 'Transaction reverted — check CLAWS balance'); }
-		} catch(e) { showStoreToast('Swap failed', e.message || 'Transaction error'); }
-	} else {
-		showStoreToast('MetaMask required', 'Install MetaMask to purchase $DD');
-	}
-}
-const DD_BONUSES = { dd500:50, dd1000:200, dd5000:1000, dd10000:3000, dd25000:8000, dd50000:18000, dd100000:40000, dd500000:100000, dd1000000:250000 };
-function creditDD(tier) {
-	const total = tier.amount + (DD_BONUSES[tier.id] || 0);
-	playerData.coins += total;
-	saveData();
-	updateCoinsDisplay();
-	renderStore();
-	showStoreToast('+' + total.toLocaleString(), '$DD added to your balance');
 }
 function showStoreToast(text, sub) {
 	const toast = document.getElementById('store-toast');
@@ -5953,7 +5708,7 @@ const PLAYMATS = [
 	{ id:'m10', name:'Magma Core', bg:'linear-gradient(180deg, #100804 0%, #201008 25%, #30180c 50%, #201008 75%, #080402 100%)', accent:'rgba(255,120,40,0.03)', grid:'rgba(255,140,60,0.01)' },
 ];
 function renderSleeves() {
-	document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
+	updateCoinsDisplay();
 	const grid = document.getElementById('sleeves-grid');
 	const online = canPurchase();
 	grid.innerHTML = SLEEVES.map(s => {
@@ -5967,13 +5722,13 @@ function renderSleeves() {
 			<div class="cosmetic-name">${s.name}</div>
 			${owned
 				? `<button class="cosmetic-btn${equipped?' active':''}" onclick="equipSleeve('${s.id}')">${equipped?'EQUIPPED':'EQUIP'}</button>`
-				: `<button class="cosmetic-btn${online?' buy':''}" onclick="buySleeve('${s.id}')" ${online?'':'disabled'}>${online?'1000 $DD':'UNAVAILABLE'}</button>`
+				: `<button class="cosmetic-btn${online?' buy':''}" onclick="buySleeve('${s.id}')" ${online?'':'disabled'}>${online?'200 $CLAWS':'UNAVAILABLE'}</button>`
 			}
 		</div>`;
 	}).join('');
 }
 function renderPlaymats() {
-	document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
+	updateCoinsDisplay();
 	const grid = document.getElementById('playmats-grid');
 	const online = canPurchase();
 	grid.innerHTML = PLAYMATS.map(m => {
@@ -5988,14 +5743,14 @@ function renderPlaymats() {
 			<div class="cosmetic-name">${m.name}</div>
 			${owned
 				? `<button class="cosmetic-btn${equipped?' active':''}" onclick="equipPlaymat('${m.id}')">${equipped?'EQUIPPED':'EQUIP'}</button>`
-				: `<button class="cosmetic-btn${online?' buy':''}" onclick="buyPlaymat('${m.id}')" ${online?'':'disabled'}>${online?'1000 $DD':'UNAVAILABLE'}</button>`
+				: `<button class="cosmetic-btn${online?' buy':''}" onclick="buyPlaymat('${m.id}')" ${online?'':'disabled'}>${online?'200 $CLAWS':'UNAVAILABLE'}</button>`
 			}
 		</div>`;
 	}).join('');
 }
 async function buySleeve(id) {
 	if ((playerData.ownedSleeves||[]).includes(id)) return;
-	const paid = await spendDD(1000);
+	const paid = await payItem(200);
 	if (!paid) return;
 	if (!playerData.ownedSleeves) playerData.ownedSleeves = [];
 	playerData.ownedSleeves.push(id);
@@ -6005,7 +5760,7 @@ async function buySleeve(id) {
 }
 async function buyPlaymat(id) {
 	if ((playerData.ownedPlaymats||[]).includes(id)) return;
-	const paid = await spendDD(1000);
+	const paid = await payItem(200);
 	if (!paid) return;
 	if (!playerData.ownedPlaymats) playerData.ownedPlaymats = [];
 	playerData.ownedPlaymats.push(id);
@@ -6030,43 +5785,43 @@ function getActivePlaymat() {
 const GALLERY_BOARDS = [
 	{ id:'gb_default', name:'Reef Display', desc:'Standard coral reef display board', cost:0,
 	  bg:'linear-gradient(180deg, #081020 0%, #0c1830 40%, #102040 70%, #081828 100%)', slotBorder:'rgba(40,120,200,0.15)' },
-	{ id:'gb_ocean_floor', name:'Deep Ocean Floor', desc:'Cards rest on the sandy ocean bottom', cost:1000,
+	{ id:'gb_ocean_floor', name:'Deep Ocean Floor', desc:'Cards rest on the sandy ocean bottom', cost:200,
 	  bg:'linear-gradient(180deg, #040810 0%, #081018 30%, #0c1828 60%, #0a1420 100%)', slotBorder:'rgba(60,140,220,0.15)' },
-	{ id:'gb_coral_throne', name:'Coral Throne Room', desc:'A majestic coral palace display', cost:1000,
+	{ id:'gb_coral_throne', name:'Coral Throne Room', desc:'A majestic coral palace display', cost:200,
 	  bg:'radial-gradient(ellipse at 50% 80%, #2a1020 0%, #180810 40%, #0c0408 100%)', slotBorder:'rgba(220,100,160,0.2)' },
-	{ id:'gb_volcanic', name:'Volcanic Vent', desc:'Cards displayed near searing thermal vents', cost:1000,
+	{ id:'gb_volcanic', name:'Volcanic Vent', desc:'Cards displayed near searing thermal vents', cost:200,
 	  bg:'linear-gradient(180deg, #1a0808 0%, #2a0c08 30%, #3a1810 60%, #201008 100%)', slotBorder:'rgba(255,120,60,0.2)' },
-	{ id:'gb_crystal', name:'Crystal Cave', desc:'Shimmering crystals illuminate your cards', cost:1000,
+	{ id:'gb_crystal', name:'Crystal Cave', desc:'Shimmering crystals illuminate your cards', cost:200,
 	  bg:'radial-gradient(ellipse at 30% 20%, rgba(100,60,220,0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 70%, rgba(60,180,220,0.1) 0%, transparent 40%), linear-gradient(180deg, #0a0818 0%, #100c28 50%, #080618 100%)', slotBorder:'rgba(140,100,255,0.25)' },
-	{ id:'gb_shipwreck', name:'Shipwreck Display', desc:'Cards arranged in an ancient sunken vessel', cost:1000,
+	{ id:'gb_shipwreck', name:'Shipwreck Display', desc:'Cards arranged in an ancient sunken vessel', cost:200,
 	  bg:'linear-gradient(180deg, #0c1018 0%, #141810 30%, #181c14 60%, #0c1008 100%)', slotBorder:'rgba(160,180,100,0.2)' },
-	{ id:'gb_abyss', name:'Abyssal Shrine', desc:'A void-touched shrine in the deepest trench', cost:1000,
+	{ id:'gb_abyss', name:'Abyssal Shrine', desc:'A void-touched shrine in the deepest trench', cost:200,
 	  bg:'radial-gradient(ellipse at 50% 50%, #0a0a14 0%, #040408 70%, #000002 100%)', slotBorder:'rgba(120,80,255,0.15)' },
-	{ id:'gb_golden', name:'Golden Vault', desc:'The most prestigious display in all the reef', cost:1000,
+	{ id:'gb_golden', name:'Golden Vault', desc:'The most prestigious display in all the reef', cost:200,
 	  bg:'radial-gradient(ellipse at 50% 30%, rgba(255,215,0,0.08) 0%, transparent 60%), linear-gradient(180deg, #181408 0%, #201a08 30%, #282010 60%, #181408 100%)', slotBorder:'rgba(255,215,0,0.3)' },
 ];
 const GALLERY_LAYOUTS = [
 	{ id:'grid', name:'Grid', slots:12, cost:0, desc:'Standard 3-column grid display' },
-	{ id:'shelf', name:'Shelf', slots:9, cost:1000, desc:'Cards displayed on perspective shelves' },
-	{ id:'fan', name:'Fan', slots:7, cost:1000, desc:'Cards arranged in an elegant arc' },
-	{ id:'cascade', name:'Cascade', slots:8, cost:1000, desc:'Overlapping diagonal cascade' },
-	{ id:'spotlight', name:'Spotlight', slots:5, cost:1000, desc:'One hero card with supporting cast' },
+	{ id:'shelf', name:'Shelf', slots:9, cost:200, desc:'Cards displayed on perspective shelves' },
+	{ id:'fan', name:'Fan', slots:7, cost:200, desc:'Cards arranged in an elegant arc' },
+	{ id:'cascade', name:'Cascade', slots:8, cost:200, desc:'Overlapping diagonal cascade' },
+	{ id:'spotlight', name:'Spotlight', slots:5, cost:200, desc:'One hero card with supporting cast' },
 ];
 const GALLERY_BORDERS = [
 	{ id:'none', name:'None', cost:0, desc:'No border effect' },
-	{ id:'gold', name:'Gold', cost:1000, desc:'Golden glow around each card' },
-	{ id:'silver', name:'Silver', cost:1000, desc:'Cool silver edge highlight' },
-	{ id:'crystal', name:'Crystal', cost:1000, desc:'Shimmering crystal blue aura' },
-	{ id:'coral', name:'Coral', cost:1000, desc:'Warm coral reef radiance' },
-	{ id:'abyssal', name:'Abyssal', cost:1000, desc:'Deep void purple energy' },
+	{ id:'gold', name:'Gold', cost:200, desc:'Golden glow around each card' },
+	{ id:'silver', name:'Silver', cost:200, desc:'Cool silver edge highlight' },
+	{ id:'crystal', name:'Crystal', cost:200, desc:'Shimmering crystal blue aura' },
+	{ id:'coral', name:'Coral', cost:200, desc:'Warm coral reef radiance' },
+	{ id:'abyssal', name:'Abyssal', cost:200, desc:'Deep void purple energy' },
 ];
 const GALLERY_LIGHTINGS = [
 	{ id:'none', name:'None', cost:0, desc:'No ambient lighting' },
-	{ id:'glow', name:'Glow', cost:1000, desc:'Soft blue radial glow' },
-	{ id:'caustic', name:'Caustic', cost:1000, desc:'Underwater light refraction' },
-	{ id:'ember', name:'Ember', cost:1000, desc:'Floating warm ember particles' },
-	{ id:'biolum', name:'Bioluminescent', cost:1000, desc:'Deep sea bioluminescent dots' },
-	{ id:'shimmer', name:'Shimmer', cost:1000, desc:'Prismatic light sweep' },
+	{ id:'glow', name:'Glow', cost:200, desc:'Soft blue radial glow' },
+	{ id:'caustic', name:'Caustic', cost:200, desc:'Underwater light refraction' },
+	{ id:'ember', name:'Ember', cost:200, desc:'Floating warm ember particles' },
+	{ id:'biolum', name:'Bioluminescent', cost:200, desc:'Deep sea bioluminescent dots' },
+	{ id:'shimmer', name:'Shimmer', cost:200, desc:'Prismatic light sweep' },
 ];
 let currentGallerySlot = 0;
 function getGallerySlotCount() {
@@ -6171,7 +5926,7 @@ function closeGalleryPicker() {
 	document.getElementById('gallery-picker').classList.remove('open');
 }
 function renderBoards() {
-	document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
+	updateCoinsDisplay();
 	const grid = document.getElementById('boards-grid');
 	const online = canPurchase();
 	grid.innerHTML = GALLERY_BOARDS.map(b => {
@@ -6185,7 +5940,7 @@ function renderBoards() {
 			<div class="board-desc">${b.desc}</div>
 			${owned
 				? `<button class="cosmetic-btn${equipped?' active':''}" onclick="equipBoard('${b.id}')">${equipped?'EQUIPPED':'EQUIP'}</button>`
-				: `<button class="cosmetic-btn${online||b.cost===0?' buy':''}" onclick="buyBoard('${b.id}')" ${online||b.cost===0?'':'disabled'}>${!online&&b.cost>0?'UNAVAILABLE':b.cost===0?'FREE':b.cost.toLocaleString()+' $DD'}</button>`
+				: `<button class="cosmetic-btn${online||b.cost===0?' buy':''}" onclick="buyBoard('${b.id}')" ${online||b.cost===0?'':'disabled'}>${!online&&b.cost>0?'UNAVAILABLE':b.cost===0?'FREE':b.cost.toLocaleString()+' $CLAWS'}</button>`
 			}
 		</div>`;
 	}).join('');
@@ -6195,7 +5950,7 @@ async function buyBoard(id) {
 	if (!board) return;
 	if ((playerData.ownedBoards||[]).includes(id)) return;
 	if (board.cost > 0) {
-	const paid = await spendDD(board.cost);
+	const paid = await payItem(board.cost);
 	if (!paid) return;
 	}
 	if (!playerData.ownedBoards) playerData.ownedBoards = ['gb_default'];
@@ -6208,7 +5963,7 @@ function equipBoard(id) {
 	saveData(); renderBoards();
 }
 function renderShopLayouts() {
-	document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
+	updateCoinsDisplay();
 	const owned = playerData.ownedLayouts || ['grid'];
 	const online = canPurchase();
 	document.getElementById('layouts-grid').innerHTML = GALLERY_LAYOUTS.map(l => {
@@ -6219,13 +5974,13 @@ function renderShopLayouts() {
 			<div class="board-desc">${l.desc} (${l.slots} slots)</div>
 			${has
 				? `<button class="cosmetic-btn${active?' active':''}" onclick="equipGalleryOpt('layout','${l.id}','renderShopLayouts')">${active?'EQUIPPED':'EQUIP'}</button>`
-				: `<button class="cosmetic-btn${online?' buy':''}" onclick="buyGalleryItem('ownedLayouts','${l.id}',${l.cost},'renderShopLayouts')" ${online?'':'disabled'}>${online?l.cost.toLocaleString()+' $DD':'UNAVAILABLE'}</button>`
+				: `<button class="cosmetic-btn${online?' buy':''}" onclick="buyGalleryItem('ownedLayouts','${l.id}',${l.cost},'renderShopLayouts')" ${online?'':'disabled'}>${online?l.cost.toLocaleString()+' $CLAWS':'UNAVAILABLE'}</button>`
 			}
 		</div>`;
 	}).join('');
 }
 function renderShopBorders() {
-	document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
+	updateCoinsDisplay();
 	const owned = playerData.ownedBorders || ['none'];
 	const online = canPurchase();
 	document.getElementById('borders-grid').innerHTML = GALLERY_BORDERS.map(b => {
@@ -6236,13 +5991,13 @@ function renderShopBorders() {
 			<div class="board-desc">${b.desc}</div>
 			${has
 				? `<button class="cosmetic-btn${active?' active':''}" onclick="equipGalleryOpt('borderStyle','${b.id}','renderShopBorders')">${active?'EQUIPPED':'EQUIP'}</button>`
-				: `<button class="cosmetic-btn${online?' buy':''}" onclick="buyGalleryItem('ownedBorders','${b.id}',${b.cost},'renderShopBorders')" ${online?'':'disabled'}>${online?b.cost.toLocaleString()+' $DD':'UNAVAILABLE'}</button>`
+				: `<button class="cosmetic-btn${online?' buy':''}" onclick="buyGalleryItem('ownedBorders','${b.id}',${b.cost},'renderShopBorders')" ${online?'':'disabled'}>${online?b.cost.toLocaleString()+' $CLAWS':'UNAVAILABLE'}</button>`
 			}
 		</div>`;
 	}).join('');
 }
 function renderShopLighting() {
-	document.getElementById('pack-coins').textContent = '$DD ' + getDisplayBalance();
+	updateCoinsDisplay();
 	const owned = playerData.ownedLightings || ['none'];
 	const online = canPurchase();
 	document.getElementById('lighting-grid').innerHTML = GALLERY_LIGHTINGS.map(l => {
@@ -6253,7 +6008,7 @@ function renderShopLighting() {
 			<div class="board-desc">${l.desc}</div>
 			${has
 				? `<button class="cosmetic-btn${active?' active':''}" onclick="equipGalleryOpt('lighting','${l.id}','renderShopLighting')">${active?'EQUIPPED':'EQUIP'}</button>`
-				: `<button class="cosmetic-btn${online?' buy':''}" onclick="buyGalleryItem('ownedLightings','${l.id}',${l.cost},'renderShopLighting')" ${online?'':'disabled'}>${online?l.cost.toLocaleString()+' $DD':'UNAVAILABLE'}</button>`
+				: `<button class="cosmetic-btn${online?' buy':''}" onclick="buyGalleryItem('ownedLightings','${l.id}',${l.cost},'renderShopLighting')" ${online?'':'disabled'}>${online?l.cost.toLocaleString()+' $CLAWS':'UNAVAILABLE'}</button>`
 			}
 		</div>`;
 	}).join('');
@@ -6261,7 +6016,7 @@ function renderShopLighting() {
 async function buyGalleryItem(ownedKey, id, cost, renderFn) {
 	if ((playerData[ownedKey]||[]).includes(id)) return;
 	if (cost > 0) {
-	const paid = await spendDD(cost);
+	const paid = await payItem(cost);
 	if (!paid) return;
 	}
 	if (!playerData[ownedKey]) playerData[ownedKey] = [];
@@ -6365,6 +6120,7 @@ function switchDeckTab(tab) {
 	_dbTab = tab;
 	document.getElementById('db-tab-deck').classList.toggle('active', tab === 'deck');
 	document.getElementById('db-tab-add').classList.toggle('active', tab === 'add');
+	document.getElementById('db-tab-vault').classList.toggle('active', tab === 'vault');
 	renderDeckArea();
 }
 function setDbFilter(f) {
@@ -6422,7 +6178,7 @@ function renderDeckArea() {
 				<button class="deck-save-btn clear" onclick="clearAllDeck()">Clear</button>
 			</div>
 		`;
-	} else {
+	} else if (_dbTab === 'add') {
 	const owned = [];
 		Object.entries(playerData.collection).forEach(([id, count]) => {
 		const card = getCard(parseInt(id));
@@ -6462,8 +6218,13 @@ function renderDeckArea() {
 		`;
 	const el = document.getElementById('db-add-search');
 	if (el && query) { el.focus(); el.setSelectionRange(searchVal.length, searchVal.length); }
+	} else if (_dbTab === 'vault') {
+	const vc=CARDS.filter(c=>_vc(c)&&(playerData.collection[c.id]||0)>0);
+	const vcIds=vc.map(c=>c.id);
+	area.innerHTML=vc.length?`<div class="db-section-label">Vault Monsters (${vc.length})</div><div class="deck-mini-grid">${vc.map(c=>`<div class="deck-hover-wrap" onclick="deckCardZoom(${c.id},'add',0,[${vcIds}])">${getDeckTypeBadge(c)}<div class="card-count-badge">${playerData.collection[c.id]}</div>${renderCardMini(c)}</div>`).join('')}</div>`:'<div class="db-empty">No vault monsters owned</div>';
 	}
 }
+const _vc=c=>c.type==='monster'&&['fusion','surge','ritual'].includes(c.subtype);
 function addToDeck(cardId) {
 	const card = getCard(cardId);
 	if (!card) return;
@@ -6471,7 +6232,7 @@ function addToDeck(cardId) {
 			   playerData.extraDeck.filter(d => d === cardId).length;
 	const owned = playerData.collection[cardId] || 0;
 	if (inDeck >= owned || inDeck >= 3) return;
-	if (card.subtype === 'fusion' || card.subtype === 'surge') {
+	if (_vc(card)) {
 	if (playerData.extraDeck.length >= 15) return;
 	playerData.extraDeck.push(cardId);
 	} else {
@@ -6496,7 +6257,7 @@ function autoFillDeck() {
 	Object.entries(playerData.collection).forEach(([id, count]) => {
 	owned[parseInt(id)] = count;
 	});
-	const ownedMonsters = CARDS.filter(c => c.type === 'monster' && !['fusion','surge'].includes(c.subtype) && (owned[c.id] || 0) > 0);
+	const ownedMonsters = CARDS.filter(c => c.type === 'monster' && !_vc(c) && (owned[c.id] || 0) > 0);
 	const ownedSpells = CARDS.filter(c => c.type === 'spell' && (owned[c.id] || 0) > 0);
 	const ownedTraps = CARDS.filter(c => c.type === 'trap' && (owned[c.id] || 0) > 0);
 	const lowLvl = ownedMonsters.filter(c => (c.level || 0) <= 3).sort((a,b) => (b.atk||0) - (a.atk||0));
@@ -6534,7 +6295,7 @@ function autoFillDeck() {
 	}
 	if (playerData.deck.length < 40) {
 	const inDeck = new Set(playerData.deck);
-	const remaining = CARDS.filter(c => (owned[c.id] || 0) > 0 && !['fusion','surge'].includes(c.subtype))
+	const remaining = CARDS.filter(c => (owned[c.id] || 0) > 0 && !_vc(c))
 		.sort((a,b) => (b.atk||0) - (a.atk||0));
 	for (const card of remaining) {
 		if (playerData.deck.length >= 40) break;
@@ -6544,7 +6305,7 @@ function autoFillDeck() {
 		for (let i = 0; i < copies; i++) playerData.deck.push(card.id);
 		}
 	}
-	CARDS.filter(c => ['fusion','surge'].includes(c.subtype)).forEach(c => {
+	CARDS.filter(c => _vc(c)).forEach(c => {
 	if ((owned[c.id] || 0) > 0 && playerData.extraDeck.length < 15) {
 		playerData.extraDeck.push(c.id);
 		}
@@ -6587,7 +6348,12 @@ function ffaFlush() {
 	t.reef5Used = duel.aiReef5Used; t.inkUsed = duel.aiInkUsed; t.inkActive = duel.aiInkActive;
 	t.inkCloudTurn = duel.inkCloudTurn;
 }
-function ffaAliveNPCs() { return ffa ? ffa.seats.filter((s,i) => i > 0 && !s.eliminated) : []; }
+function ffaAliveOpponents() {
+	if (!ffa) return [];
+	const mySeat = mpFFA.room ? mpFFA.seat : 0;
+	return ffa.seats.filter((s,i) => i !== mySeat && !s.eliminated);
+}
+function ffaAliveNPCs() { return ffaAliveOpponents(); }
 function ffaPickTarget(mySeat, targets) {
 	if (targets.length <= 1) return targets[0];
 	const me = ffa.seats[mySeat];
@@ -6596,30 +6362,27 @@ function ffaPickTarget(mySeat, targets) {
 	for (const ti of targets) {
 		const t = ffa.seats[ti];
 		let score = 0;
-		// Prefer low LP targets — go for the kill
 		score += (8000 - t.state.lp) * 2;
-		// Prefer targets with fewer monsters (easier to hit directly)
 		const tMonCount = t.state.monsters.filter(m => m !== null).length;
 		score += (5 - tMonCount) * 500;
-		// Prefer targets with weaker board presence
 		const tATK = t.state.monsters.reduce((s, m) => s + (m && m.faceUp && m.position === 'atk' ? m.card.atk + m.permAtkMod : 0), 0);
 		if (myATK > tATK) score += 800;
-		// Slight preference to attack the leading player (highest LP among others)
 		const isLeader = targets.every(oi => ffa.seats[oi].state.lp <= t.state.lp);
 		if (isLeader && t.state.lp > 4000) score += 600;
-		// Avoid targets that just attacked us (revenge is tempting but not always smart)
-		// Small random factor so NPCs aren't completely predictable
 		score += Math.random() * 400;
 		if (score > bestScore) { bestScore = score; best = ti; }
 	}
 	return best;
 }
 function ffaFirstAliveNPC() {
-	for (let i = 1; i < 4; i++) if (!ffa.seats[i].eliminated) return i;
-	return 1;
+	const mySeat = mpFFA.room ? mpFFA.seat : 0;
+	for (let i = 1; i < 4; i++) if (i !== mySeat && !ffa.seats[i].eliminated) return i;
+	for (let i = 0; i < 4; i++) if (i !== mySeat && !ffa.seats[i].eliminated) return i;
+	return mySeat === 0 ? 1 : 0;
 }
 function ffaSwitchView(targetIdx) {
-	if (!ffa || ffa.seats[targetIdx].eliminated || targetIdx === 0) return;
+	const mySeat = mpFFA.room ? mpFFA.seat : 0;
+	if (!ffa || ffa.seats[targetIdx].eliminated || targetIdx === mySeat) return;
 	if (duel.currentPlayer !== 'player') return; // can't switch during NPC turn
 	ffaFlush();
 	ffa.viewTarget = targetIdx;
@@ -6634,11 +6397,15 @@ function ffaNextTurn() {
 	if (safety >= 4) return;
 	ffa.turnIdx = next;
 	duel.turn++;
-	if (next === 0) {
-		// Human's turn
+	const mySeat = mpFFA.room ? mpFFA.seat : 0;
+	const isMyTurn = (next === mySeat);
+	const isRemotePlayer = mpFFA.room && mpFFA.players[next] && next !== mySeat;
+	const isNPC = ffa.seats[next].isNPC;
+	if (isMyTurn) {
+	
 		const vt = ffa.seats[ffa.viewTarget].eliminated ? ffaFirstAliveNPC() : ffa.viewTarget;
 		ffa.viewTarget = vt;
-		ffaSwap(0, vt);
+		ffaSwap(mySeat, vt);
 		duel.currentPlayer = 'player';
 		duel.playerEnergy += 3;
 		duel.phase = 'main1';
@@ -6651,12 +6418,27 @@ function ffaNextTurn() {
 		duelLog(`--- Your Turn ${duel.turn} --- Energy: ${duel.playerEnergy}⚡`);
 		renderDuel();
 		showDiveDraw('player', () => { const drawn = drawCard('player'); if (drawn) duelLog(`Drew ${drawn.name}.`); renderDuel(); });
-	} else {
-		// NPC's turn — pick target strategically
+		if (mpFFA.room && mpFFA.isHost) mpFFABroadcastState();
+	} else if (isRemotePlayer) {
+	
+		duel.currentPlayer = 'ai';
+		duel.phase = 'main1';
+		duel.uiState = 'idle'; duel.selectedCard = null;
+		duelLog(`--- ${ffa.seats[next].name}'s Turn ---`);
+		renderDuel();
+		if (mpFFA.room && mpFFA.isHost) mpFFABroadcastState();
+	} else if (isNPC) {
+	
+		if (mpFFA.room && !mpFFA.isHost) {
+		
+			duel.currentPlayer = 'ai';
+			renderDuel();
+			return;
+		}
 		const npc = ffa.seats[next];
 		const targets = ffa.seats.map((s,i) => i).filter(i => i !== next && !ffa.seats[i].eliminated);
 		ffa.npcTarget = ffaPickTarget(next, targets);
-		ffaSwap(0, next);
+		ffaSwap(mySeat === next ? mySeat : 0, next);
 		duel.currentPlayer = 'ai';
 		duel.phase = 'draw';
 		duel.uiState = 'idle'; duel.selectedCard = null;
@@ -6667,18 +6449,19 @@ function ffaNextTurn() {
 		setTimeout(() => aiTurn(), 800);
 	}
 }
-function createPlayerState(deckIds, extraIds) {
+function createPlayerState(deckIds, extraIds, zones) {
 	const deck = deckIds.map(id => ({ ...getCard(id), uid: Math.random().toString(36).slice(2) }));
 	for (let i = deck.length - 1; i > 0; i--) {
 	const j = Math.floor(Math.random() * (i + 1));
 		[deck[i], deck[j]] = [deck[j], deck[i]];
 	}
+	const n = zones || 5;
 	return {
 	lp: 8000,
 	deck,
 	hand: [],
-	monsters: [null, null, null, null, null],
-	spells: [null, null, null, null, null],
+	monsters: Array(n).fill(null),
+	spells: Array(n).fill(null),
 	fieldSpell: null,
 	graveyard: [],
 	extraDeck: extraIds.map(id => ({ ...getCard(id), uid: Math.random().toString(36).slice(2) })),
@@ -6761,7 +6544,7 @@ function buildRandomDeck() {
 	Object.keys(playerData.collection).forEach(id => {
 	if (playerData.collection[id] > 0) {
 		const c = getCard(Number(id));
-		if (c && !['fusion','surge'].includes(c.subtype)) {
+		if (c && !_vc(c)) {
 			for (let i = 0; i < Math.min(playerData.collection[id], 3); i++) owned.push(Number(id));
 			}
 		}
@@ -6776,7 +6559,7 @@ function buildRandomDeck() {
 	const extra = [];
 	Object.keys(playerData.collection).forEach(id => {
 	const c = getCard(Number(id));
-	if (c && ['fusion','surge'].includes(c.subtype) && playerData.collection[id] > 0) extra.push(Number(id));
+	if (c && _vc(c) && playerData.collection[id] > 0) extra.push(Number(id));
 	});
 	return { deck: deck.slice(0, 40), extra };
 }
@@ -6813,8 +6596,8 @@ const AI_DECK = [
 ];
 const AI_EXTRA = [22, 24, 25, 81, 87];
 function startFFADuel(deckIds, extraIds) {
-	const playerState = createPlayerState(deckIds, extraIds || []);
-	const npcStates = FFA_DECKS.map((d, i) => createPlayerState([...d], [...FFA_EXTRA[i]]));
+	const playerState = createPlayerState(deckIds, extraIds || [], 3);
+	const npcStates = FFA_DECKS.map((d, i) => createPlayerState([...d], [...FFA_EXTRA[i]], 3));
 	ffa = {
 		seats: [
 			ffaMakeSeat(FFA_NAMES[0], false, playerState, aiDifficulty),
@@ -6850,6 +6633,7 @@ function startFFADuel(deckIds, extraIds) {
 	document.getElementById('ffa-bar').style.display = '';
 	const chatEl = document.getElementById('ffa-chat');
 	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''; }
+	const tp2 = document.getElementById('trap-prompt'); if (tp2) { tp2.style.display = 'none'; tp2.classList.remove('active'); }
 	addFFAChat(null, 'FFA Duel started! 4 players.', null, true);
 	duelLog('FFA Duel Start! 4 Players. You go first. Energy: 5');
 	duelLog('Turn 1 - Skipping first draw.');
@@ -6896,6 +6680,7 @@ function startDuel(deckIds, extraIds) {
 	drawCard('player');
 	drawCard('ai');
 	}
+	const tp = document.getElementById('trap-prompt'); if (tp) { tp.style.display = 'none'; tp.classList.remove('active'); }
 	showScreen('duel-screen');
 	const pm = getActivePlaymat();
 	const ds = document.getElementById('duel-screen');
@@ -6926,19 +6711,7 @@ function drawCard(who) {
 	p.hand.push(card);
 	return card;
 }
-function duelLog(msg) {
-	if (!duel) return;
-	duel.log.push(msg);
-	const logEl = document.getElementById('duel-log');
-	if (logEl) {
-	const entry = document.createElement('div');
-	entry.className = 'log-entry';
-	entry.textContent = msg;
-	logEl.appendChild(entry);
-	while (logEl.children.length > 8) logEl.removeChild(logEl.firstChild);
-	logEl.scrollTop = logEl.scrollHeight;
-	}
-}
+function duelLog(msg){if(duel)duel.log.push(msg);}
 function showDamageFlash(amount, heal, who) {
 	const el = document.createElement('div');
 	el.className = 'damage-flash' + (heal ? ' heal' : '') + (who === 'ai' ? ' flash-ai' : ' flash-player');
@@ -7074,28 +6847,24 @@ function updateReef(who) {
 	else if (duel[key] > 0) { duel[key] = Math.max(0, duel[key] - 1); duelLog(`${who === 'player' ? 'Your' : "AI's"} Coral Reef decays to ${duel[key]}.`); }
 }
 function processTurnStartMechanics(who) {
-	// Molt completion
 	duel[who].monsters.forEach(m => {
 		if (m && m.moltingTurn >= 0 && m.moltingTurn < duel.turn) {
 			m.moltingTurn = -1; m.molted = true; m.permAtkMod += 500; m.canAttack = true;
 			duelLog(`${m.card.name} completed molting! +500 ATK permanently!`);
 		}
 	});
-	// Burrow resurface
 	duel[who].monsters.forEach(m => {
 		if (m && m.burrowed && m.burrowTurn < duel.turn) {
 			m.burrowed = false; m.burrowTurn = -1; m.permAtkMod += 300;
 			duelLog(`${m.card.name} resurfaces! +300 ATK permanently!`);
 		}
 	});
-	// Ink cloud clear
 	if (who === 'player' && duel.playerInkActive && duel.inkCloudTurn < duel.turn) {
 		duel.playerInkActive = false; duelLog('Your Ink Cloud dissipates.');
 	}
 	if (who === 'ai' && duel.aiInkActive && duel.inkCloudTurn < duel.turn) {
 		duel.aiInkActive = false; duelLog("AI's Ink Cloud dissipates.");
 	}
-	// Reef 3 bonus draw every other turn
 	const reef = who === 'player' ? duel.playerReef : duel.aiReef;
 	if (reef >= 3 && duel.turn % 2 === 0) {
 		const drawn = drawCard(who);
@@ -7246,6 +7015,29 @@ function destroySpellTrap(who, zoneIdx) {
 	duel[who].spells[zoneIdx] = null;
 	sendToGraveyard(who, fc);
 }
+function effectDamageAllFoes(who, amount) {
+	if (!ffa) { takeDamage(who === 'player' ? 'ai' : 'player', amount); return; }
+	ffaFlush();
+	const whoSeat = who === 'player' ? ffa.currentSeat : ffa.viewTarget;
+	const mySeat = mpFFA.room ? mpFFA.seat : 0;
+	for (let i = 0; i < 4; i++) {
+		if (i === whoSeat || ffa.seats[i].eliminated) continue;
+		ffa.seats[i].state.lp = Math.max(0, ffa.seats[i].state.lp - amount);
+		duelLog(`${ffa.seats[i].name} takes ${amount} effect damage!`);
+		if (ffa.seats[i].state.lp <= 0 && !ffa.seats[i].eliminated) {
+			ffa.seats[i].eliminated = true;
+			ffa.seats[i].state.monsters = [null,null,null,null,null];
+			ffa.seats[i].state.spells = [null,null,null,null,null];
+			ffa.seats[i].state.fieldSpell = null;
+			duelLog(`${ffa.seats[i].name} eliminated!`);
+			if (ffa.seats[i].isNPC) npcAutoChat(ffa.seats[i].name, 'eliminated');
+			if (i === mySeat) { endDuelResult('lose'); return; }
+		}
+	}
+	ffaSwap(ffa.currentSeat, ffa.viewTarget);
+	if (ffa.seats.filter((s, i) => i !== mySeat && !s.eliminated).length === 0) { duelLog('All opponents eliminated!'); endDuelResult('win'); return; }
+	renderDuel();
+}
 function takeDamage(who, amount) {
 	duel[who].lp = Math.max(0, duel[who].lp - amount);
 	showDamageFlash(amount, false, who);
@@ -7256,35 +7048,38 @@ function takeDamage(who, amount) {
 }
 function ffaEliminate(who) {
 	if (!ffa) return;
+	const mySeat = mpFFA.room ? mpFFA.seat : 0;
 	if (who === 'player') {
-		// Human eliminated = lose
+	
 		duelLog('You have been eliminated!');
 		endDuelResult('lose');
 	} else {
-		// NPC eliminated
 		const seatIdx = ffa.viewTarget;
 		ffa.seats[seatIdx].eliminated = true;
 		duelLog(`${ffa.seats[seatIdx].name} has been eliminated!`);
-		npcAutoChat(ffa.seats[seatIdx].name, 'eliminated');
-		const killerAlive = ffaAliveNPCs().filter(s => s.name !== ffa.seats[seatIdx].name);
-		if (killerAlive.length > 0) npcAutoChat(killerAlive[Math.floor(Math.random() * killerAlive.length)].name, 'kill');
-		// Clear their field
+		if (ffa.seats[seatIdx].isNPC) npcAutoChat(ffa.seats[seatIdx].name, 'eliminated');
+		const killerAlive = ffaAliveOpponents().filter(s => s.name !== ffa.seats[seatIdx].name);
+		if (killerAlive.length > 0 && killerAlive.some(s => s.isNPC)) {
+			const npcAlive = killerAlive.filter(s => s.isNPC);
+			if (npcAlive.length > 0) npcAutoChat(npcAlive[Math.floor(Math.random() * npcAlive.length)].name, 'kill');
+		}
 		duel.ai.monsters = [null,null,null,null,null];
 		duel.ai.spells = [null,null,null,null,null];
 		duel.ai.fieldSpell = null;
 		ffaFlush();
-		const alive = ffaAliveNPCs();
+		const alive = ffaAliveOpponents();
 		if (alive.length === 0) {
 			duelLog('All opponents eliminated!');
 			endDuelResult('win');
 		} else {
-			// Auto-switch view to next alive NPC
+			// Auto-switch view to next alive opponent
 			if (duel.currentPlayer === 'player') {
 				const nextAlive = ffaFirstAliveNPC();
 				ffa.viewTarget = nextAlive;
-				ffaSwap(0, nextAlive);
+				ffaSwap(mySeat, nextAlive);
 			}
 			renderDuel();
+			if (mpFFA.room && mpFFA.isHost) mpFFABroadcastState();
 		}
 	}
 }
@@ -7295,6 +7090,7 @@ function gainLP(who, amount) {
 function endDuelResult(result) {
 	duel.gameOver = true;
 	if (duel.isMultiplayer) mpCleanupRoom();
+	if (mpFFA.room) mpFFACleanup();
 	const overlay = document.getElementById('game-over');
 	const textEl = document.getElementById('game-over-text');
 	const rewardEl = document.getElementById('game-over-reward');
@@ -7354,7 +7150,17 @@ function endTurn() {
 	duelLog(`Discarded ${discarded.name} (hand limit).`);
 	}
 	updateReef('player');
-	if (ffa) { ffaFlush(); ffaNextTurn(); return; }
+	if (ffa) {
+		ffaFlush();
+		if (mpFFA.room && !mpFFA.isHost) {
+		
+			mpFFASendTurnState();
+			return;
+		}
+		ffaNextTurn();
+		if (mpFFA.room && mpFFA.isHost) mpFFABroadcastState();
+		return;
+	}
 	duel.currentPlayer = 'ai';
 	duel.turn++;
 	duel.isFirstTurn = false;
@@ -7535,7 +7341,6 @@ function handleFieldMonsterClick(who, zoneIdx) {
 	if (!fc) return;
 	const buttons = [];
 	const en = duel.playerEnergy;
-	// Attack option
 	if (fc.faceUp && fc.position === 'atk' && !fc.frozen && !fc.burrowed && fc.canAttack && fc.attacks < fc.maxAttacks && en >= ENERGY_COST.attack) {
 		const oppMonsters = duel.ai.monsters.filter(m => m !== null && !m.burrowed);
 		if (oppMonsters.length === 0) {
@@ -7559,11 +7364,9 @@ function handleFieldMonsterClick(who, zoneIdx) {
 	if (fc.faceUp && !fc.effectUsed && fc.card.effects?.some(e => e.trigger === 'activated')) {
 		buttons.push({ label: 'Activate Effect', cls: 'activate', action: () => activateMonsterEffect('player', zoneIdx) });
 		}
-	// Molt
 	if (fc.faceUp && !fc.burrowed && !fc.molted && fc.moltingTurn < 0 && fc.card.type === 'monster' && isCrustacean(fc.card)) {
 		buttons.push({ label: 'Molt (+500 ATK)', cls: 'activate', action: () => moltMonster('player', zoneIdx) });
 		}
-	// Ink Cloud
 	if (fc.faceUp && !duel.playerInkUsed && getArchetype(fc.card) === 'Cephalopod') {
 		buttons.push({ label: 'Ink Cloud', cls: 'activate', action: () => activateInkCloud('player') });
 		}
@@ -7891,7 +7694,7 @@ function resolveSpellEffect(eff, who, card) {
 		break;
 		}
 	case 'damage':
-		takeDamage(opp, eff.value);
+		effectDamageAllFoes(who, eff.value);
 		duelLog(`Dealt ${eff.value} damage!`);
 		break;
 	case 'destroyMonster': {
@@ -7961,7 +7764,7 @@ function resolveDepthCharge(fc, owner) {
 	if (!fc.card.effects) return;
 	fc.card.effects.forEach(eff => {
 	if (eff.action === 'damage') {
-		takeDamage(opp, eff.value);
+		effectDamageAllFoes(owner, eff.value);
 		duelLog(`${fc.card.name} inflicts ${eff.value} damage!`);
 		} else if (eff.action === 'destroyStrongest') {
 		let bestIdx = -1, bestATK = -1;
@@ -8088,7 +7891,7 @@ function resolveEffect(eff, who, zoneIdx) {
 		duelLog(`All ${eff.target} monsters gained ${eff.value} ATK!`);
 		break;
 	case 'damage':
-		takeDamage(opp, eff.value);
+		effectDamageAllFoes(who, eff.value);
 		duelLog(`Dealt ${eff.value} damage!`);
 		break;
 	}
@@ -8167,9 +7970,9 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
 	triggerCardArea.innerHTML = triggerCard ? renderCard(triggerCard) : '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.03);border-radius:6px;color:rgba(255,255,255,0.2);font-size:9px;">Unknown</div>';
 	cardArea.innerHTML = renderCard(trap.fc.card);
 	descEl.textContent = `${trap.fc.card.name}: ${trap.fc.card.desc}`;
-	overlay.classList.add('active');
+	overlay.style.display = 'flex';
 	document.getElementById('trap-yes-btn').onclick = () => {
-	overlay.classList.remove('active');
+	overlay.style.display = 'none';
 	trap.fc.faceUp = true;
 	duelLog(`Activated ${trap.fc.card.name}!`);
 	resolveTrapEffect('player', trap.zone, trigger, context);
@@ -8178,7 +7981,7 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
 	setTimeout(() => callback(true), 400);
 	};
 	document.getElementById('trap-no-btn').onclick = () => {
-	overlay.classList.remove('active');
+	overlay.style.display = 'none';
 	if (trapIdx + 1 < traps.length) {
 		showTrapPrompt(traps, trapIdx + 1, trigger, context, callback);
 		} else {
@@ -8186,7 +7989,7 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
 		}
 	};
 	document.getElementById('trap-view-btn').onclick = () => {
-	overlay.classList.remove('active');
+	overlay.style.display = 'none';
 	const backBtn = document.createElement('button');
 	backBtn.className = 'phase-btn clickable';
 	backBtn.id = 'view-board-back';
@@ -8197,6 +8000,7 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
 	};
 }
 function checkAndActivateTraps(who, trigger, context, callback) {
+	if(ffa&&who==='player'&&duel.currentPlayer==='ai'){const ms=mpFFA.room?mpFFA.seat:0;if(ffa.npcTarget!==undefined&&ffa.npcTarget!==ms){if(callback)callback(false);return false;}}
 	const traps = [];
 	duel[who].spells.forEach((s, i) => {
 	if (s && !s.faceUp && s.card.type === 'trap' && s.card.subtype !== 'depthcharge' && s.turnSet < duel.turn) {
@@ -8238,7 +8042,7 @@ function resolveTrapEffect(who, zoneIdx, trigger, context) {
 	if (!eff) return;
 	switch (eff.action) {
 	case 'negateAttack': _negAtk(opp, context); break;
-	case 'negateAttackDamage': _negAtk(opp, context); takeDamage(opp, eff.value); duelLog(`Dealt ${eff.value} damage!`); break;
+	case 'negateAttackDamage': _negAtk(opp, context); effectDamageAllFoes(who, eff.value); duelLog(`Dealt ${eff.value} damage!`); break;
 	case 'destroyThat':
 		if (context?.summonedZoneIdx !== undefined) { duelLog('Destroyed the summoned monster!'); destroyMonster(opp, context.summonedZoneIdx); }
 		else if (context?.defZoneIdx !== undefined) { duelLog('Destroyed the summoned monster!'); destroyMonster(opp, context.defZoneIdx); }
@@ -8297,7 +8101,7 @@ function resolveTrapEffect(who, zoneIdx, trigger, context) {
 		if (context?.atkZoneIdx !== undefined && duel[opp].monsters[context.atkZoneIdx]) { duelLog(`${duel[opp].monsters[context.atkZoneIdx].card.name} destroyed!`); destroyMonster(opp, context.atkZoneIdx); }
 		break;
 	case 'freezeAllOpponent': _negAtk(opp, context); duel[opp].monsters.forEach(m => { if (m && m.faceUp) m.frozen = true; }); duelLog('All opponent monsters frozen!'); break;
-	case 'negateAttackMutualDamage': _negAtk(opp, context); takeDamage('player', eff.value); takeDamage('ai', eff.value); duelLog(`Both take ${eff.value} damage!`); break;
+	case 'negateAttackMutualDamage': _negAtk(opp, context); takeDamage(who, eff.value); effectDamageAllFoes(who, eff.value); duelLog(`All combatants take ${eff.value} damage!`); break;
 	case 'negateAttackPermBuff':
 		_negAtk(opp, context);
 		if (context?.defZoneIdx !== undefined && duel[who].monsters[context.defZoneIdx]) { const m = duel[who].monsters[context.defZoneIdx]; m.permAtkMod = (m.permAtkMod||0) + eff.value; duelLog(`${m.card.name} +${eff.value} ATK permanently!`); }
@@ -8311,7 +8115,7 @@ function resolveTrapEffect(who, zoneIdx, trigger, context) {
 	case 'negateAttackRevive': _negAtk(opp, context); _reviveGY(who); break;
 	case 'negateAttackDestroyWeakest': { _negAtk(opp, context); const wi = _weakest(opp); if (wi >= 0) { duelLog(`${duel[opp].monsters[wi].card.name} destroyed!`); destroyMonster(opp,wi); } break; }
 	case 'negateAttackBuffAll': _negAtk(opp, context); duel[who].monsters.forEach(m => { if (m && m.faceUp) m.permAtkMod = (m.permAtkMod||0) + eff.value; }); duelLog(`All monsters +${eff.value} ATK!`); break;
-	case 'damageOnTrigger': takeDamage(opp, eff.value); duelLog(`Dealt ${eff.value} damage!`); break;
+	case 'damageOnTrigger': effectDamageAllFoes(who, eff.value); duelLog(`Dealt ${eff.value} damage!`); break;
 	case 'bounceSummoned':
 		if (context?.summonedZoneIdx !== undefined && duel[opp].monsters[context.summonedZoneIdx]) { const m = duel[opp].monsters[context.summonedZoneIdx]; duelLog(`${m.card.name} returned to hand!`); duel[opp].hand.push(m.card); duel[opp].monsters[context.summonedZoneIdx] = null; }
 		break;
@@ -8319,13 +8123,13 @@ function resolveTrapEffect(who, zoneIdx, trigger, context) {
 		if (context?.summonedZoneIdx !== undefined && duel[opp].monsters[context.summonedZoneIdx]) { const m = duel[opp].monsters[context.summonedZoneIdx]; m.position = 'def'; m.defMod -= eff.value; duelLog(`${m.card.name} forced to DEF, -${eff.value} DEF!`); }
 		break;
 	case 'negateDestroyDraw': _negCard(); drawCard(who); duelLog('Drew 1 card!'); break;
-	case 'negateDestroyDamage': _negCard(); takeDamage(opp, eff.value); duelLog(`Dealt ${eff.value} damage!`); break;
+	case 'negateDestroyDamage': _negCard(); effectDamageAllFoes(who, eff.value); duelLog(`Dealt ${eff.value} damage!`); break;
 	case 'negateDestroyTide': _negCard(); _tideShift(who, eff.value); break;
 	case 'negateDestroyHeal': _negCard(); gainLP(who, eff.value); duelLog(`Gained ${eff.value} LP!`); break;
 	case 'negateDestroyDiscard': _negCard(); _randDiscard(opp); break;
 	case 'negateDestroyFreeze': { _negCard(); const t = duel[opp].monsters.filter(m => m && m.faceUp); if (t.length > 0) { const r = t[Math.floor(Math.random()*t.length)]; r.frozen = true; duelLog(`${r.card.name} frozen!`); } break; }
 	case 'negateDestroyShell': _negCard(); duel[who].monsters.forEach(m => { if (m && m.faceUp) m.shell = (m.shell||0) + eff.value; }); duelLog(`All monsters gain Shell ${eff.value}!`); break;
-	case 'negateDestroyBurn': { _negCard(); const n = duel[opp].monsters.filter(m=>m).length; if (n>0) { takeDamage(opp, eff.value*n); duelLog(`${eff.value*n} damage (${eff.value}x${n})!`); } break; }
+	case 'negateDestroyBurn': { _negCard(); const n = duel[opp].monsters.filter(m=>m).length; if (n>0) { effectDamageAllFoes(who, eff.value*n); duelLog(`${eff.value*n} damage (${eff.value}x${n})!`); } break; }
 	}
 }
 function canFusionSummon(who) {
@@ -8657,7 +8461,7 @@ function aiProcessSpecialSummons(done) {
 }
 function aiProcessNormalSummon(done) {
 	if (duel.gameOver || !hasEnergy('ai', ENERGY_COST.summon)) { done(); return; }
-	const handMonsters = duel.ai.hand.filter(c => c.type === 'monster' && !['fusion', 'surge'].includes(c.subtype));
+	const handMonsters = duel.ai.hand.filter(c => c.type === 'monster' && !_vc(c));
 	if (aiDifficulty === 'easy') { for (let i = handMonsters.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [handMonsters[i], handMonsters[j]] = [handMonsters[j], handMonsters[i]]; } }
 	else handMonsters.sort((a, b) => (b.atk || 0) - (a.atk || 0));
 	let summoned = false;
@@ -8771,7 +8575,6 @@ function aiMainPhaseFinish2() {
 		activateMonsterEffect('ai', i);
 		}
 	});
-	// AI Molt: molt crustaceans strategically — weaker monsters or when behind on LP
 	const aiLPBehind = duel.ai.lp < duel.player.lp;
 	duel.ai.monsters.forEach((m, i) => {
 		if (m && m.faceUp && !m.molted && m.moltingTurn < 0 && isCrustacean(m.card)) {
@@ -8779,7 +8582,6 @@ function aiMainPhaseFinish2() {
 			if (aiDifficulty === 'hard' ? shouldMolt : m.card.atk <= 1500) moltMonster('ai', i);
 		}
 	});
-	// AI extra draw — more aggressive on hard when hand is thin
 	const drawThresh = aiDifficulty === 'hard' ? 3 : 2;
 	if (hasEnergy('ai', ENERGY_COST.extraDraw) && duel.ai.hand.length <= drawThresh) {
 		extraDraw('ai');
@@ -8992,16 +8794,13 @@ function aiEndPhase() {
 	duel.ai.graveyard.push(duel.ai.hand.pop());
 	}
 	updateReef('ai');
-	// AI Ink Cloud: use when outmatched or strategically on hard
 	if (!duel.aiInkUsed && duel.ai.monsters.some(m => m && m.faceUp && getArchetype(m.card) === 'Cephalopod')) {
 		const outmatched = getMonsterCount('player') >= 2 || duel.ai.lp < duel.player.lp - 2000;
 		if (outmatched || (aiDifficulty === 'hard' && duel.turn >= 4)) activateInkCloud('ai');
 	}
-	// AI reef revive: revive strongest available
 	if (duel.aiReef >= 5 && !duel.aiReef5Used && duel.ai.graveyard.some(c => c.type === 'monster') && getEmptyMonsterZone('ai') >= 0) {
 		reefRevive('ai');
 	}
-	// AI summon DEF position for shell monsters in hand (hard mode)
 	if (aiDifficulty === 'hard' && duel.ai.hand.some(c => c.type === 'monster' && c.shell > 0)) {
 		const shellCard = duel.ai.hand.find(c => c.type === 'monster' && c.shell > 0 && c.level <= 4);
 		const zi = getEmptyMonsterZone('ai');
@@ -9015,7 +8814,7 @@ function aiEndPhase() {
 	}
 	duelLog(ffa ? `${ffa.seats[ffa.viewTarget].name} ends turn.` : 'AI ends turn.');
 	renderDuel();
-	if (ffa) { setTimeout(() => { if (duel.gameOver) return; ffaFlush(); ffaNextTurn(); }, 800); return; }
+	if (ffa) { setTimeout(() => { if (duel.gameOver) return; ffaFlush(); ffaNextTurn(); if (mpFFA.room && mpFFA.isHost) mpFFABroadcastState(); }, 800); return; }
 	setTimeout(() => {
 	if (duel.gameOver) return;
 	duel.currentPlayer = 'player';
@@ -9050,20 +8849,30 @@ function renderDuel() {
 	document.getElementById('ai-lp-bar').style.width = (duel.ai.lp / 8000 * 100) + '%';
 	if (ffa) {
 		const turnSeat = ffa.seats[ffa.turnIdx];
-		const turnName = ffa.turnIdx === 0 ? 'Your Turn' : turnSeat.name + "'s Turn";
+		const myS = mpFFA.room ? mpFFA.seat : 0;
+		const turnName = ffa.turnIdx === myS ? 'Your Turn' : turnSeat.name + "'s Turn";
 		document.getElementById('turn-info').textContent = `Turn ${duel.turn} - ${turnName}`;
-		document.getElementById('ai-lp').parentElement.querySelector('.lp-label').textContent = ffa.seats[ffa.viewTarget].name;
+		const aiLpParent = document.getElementById('ai-lp').parentElement;
+		aiLpParent.style.display = 'none';
+		const plLpParent = document.getElementById('player-lp').parentElement;
+		plLpParent.style.display = 'none';
 		const ffaBar = document.getElementById('ffa-bar');
 		if (ffaBar) {
-			ffaBar.style.display = '';
-			ffaBar.innerHTML = ffa.seats.filter((s,i) => i > 0).map((s,i) => {
-				const idx = i + 1;
-				const cls = 'ffa-tab' + (idx === ffa.viewTarget ? ' active' : '') + (s.eliminated ? ' eliminated' : '');
-				return `<div class="${cls}" onclick="ffaSwitchView(${idx})">${s.name}<span class="ffa-lp">${s.eliminated ? 'OUT' : s.state.lp + ' LP'}</span></div>`;
+			ffaBar.style.display = 'flex';
+			const _fc = ['#64d2ff','#ff8c8c','#ffc878','#c8a0ff'];
+			ffaBar.innerHTML = ffa.seats.map((s, i) => {
+				const pct = Math.max(0, s.state.lp / 8000 * 100);
+				const el = s.eliminated;
+				const nm = i === myS ? 'YOU' : s.name.split(' ').pop().toUpperCase();
+				return `<div style="flex:1;text-align:center;opacity:${el?'.25':'1'}"><div style="font-size:7px;color:${_fc[i]};font-weight:800;font-family:'Chakra Petch',sans-serif;letter-spacing:1px">${nm}</div><div style="font-size:14px;font-weight:900;color:${el?'#555':_fc[i]};font-family:'Chakra Petch',sans-serif">${el?'OUT':s.state.lp}</div><div style="width:90%;height:3px;margin:2px auto 0;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${_fc[i]};border-radius:2px;transition:width .3s"></div></div></div>`;
 			}).join('');
 		}
 	} else {
-		document.getElementById('ai-lp').parentElement.querySelector('.lp-label').textContent = 'AI';
+		const aiLpParent = document.getElementById('ai-lp').parentElement;
+		aiLpParent.style.display = '';
+		aiLpParent.querySelector('.lp-label').textContent = 'AI';
+		const plLpParent = document.getElementById('player-lp').parentElement;
+		plLpParent.style.display = '';
 		const ffaBar = document.getElementById('ffa-bar');
 		if (ffaBar) ffaBar.style.display = 'none';
 		document.getElementById('turn-info').textContent = `Turn ${duel.turn} - ${duel.currentPlayer === 'player' ? 'Your Turn' : (duel.isMultiplayer ? "Opponent's Turn" : 'AI Turn')}`;
@@ -9080,6 +8889,9 @@ function renderDuel() {
 	tideVal.className = 'tide-val' + (duel.tide >= 3 ? ' player-favor' : duel.tide <= -3 ? ' ai-favor' : '');
 	}
 	const field = document.getElementById('duel-field');
+	if (ffa) {
+		renderFFAField();
+	} else {
 	field.innerHTML = `
 		${renderFieldRow('ai', 'spells')}
 		${renderFieldRow('ai', 'monsters')}
@@ -9131,11 +8943,11 @@ function renderDuel() {
 		if (z.querySelector('.card')) z.classList.add('selected');
 		});
 	}
+	}
 	const phaseBar = document.getElementById('phase-bar');
 	const isPlayerTurn = duel.currentPlayer === 'player';
 	const en = duel.playerEnergy;
 	let barHTML = `<div class="energy-display"><span class="energy-icon">⚡</span><span class="energy-value">${en}</span></div>`;
-	// Reef gauge
 	const pReef = duel.playerReef;
 	barHTML += `<div class="reef-gauge">${[1,2,3,4,5].map(i => `<div class="reef-seg ${pReef >= i ? 'active' : ''}"></div>`).join('')}<span class="reef-label">REEF</span></div>`;
 	if (isPlayerTurn && !duel.gameOver) {
@@ -9160,11 +8972,41 @@ function renderDuel() {
 		`<div onclick="handleHandCardClick(${i})">${renderCard(card, {compact:true})}</div>`
 	).join('');
 }
+const FFA_SC=['sc0','sc1','sc2','sc3'];
+function ffaSideOpp(si,pos){
+	const s=ffa.seats[si],tgt=si===ffa.viewTarget,atk=duel.uiState==='selectAttackTarget';
+	let h=`<div class="ffa-sd pos-${pos} ${FFA_SC[si]}${tgt?' tgt':''}${s.eliminated?' elim':''}" onclick="ffaSwitchView(${si})">`;
+	h+=`<div class="ffa-nm">${s.name} ${s.state.lp} ⚡${s.energy||0}</div>`;
+	h+='<div class="ffa-zr">';
+	s.state.monsters.forEach((m,i)=>{
+		if(m){const fu=m.faceUp&&!m.burrowed,df=m.position==='def';
+			const mc=m.burrowed?'<div class="fc fd" style="opacity:.3"></div>':`<div class="fc${fu?'':' fd'}${df?' df':''}"></div>`;
+			const st=fu?`<div class="zo"><span class="a">${getFieldATK(m,'ai')}</span><span class="d">${getFieldDEF(m,'ai')}</span></div>`:'';
+			h+=`<div class="ffa-z${tgt&&atk?' atk-tgt':''}" onclick="event.stopPropagation();ffaFieldMonClick(${si},${i})">${mc}${st}</div>`;
+		}else{const dc=tgt&&atk?`onclick="event.stopPropagation();ffaFieldDirectAtk(${si})"`:'';
+			h+=`<div class="ffa-z" ${dc}><span class="zl">M</span></div>`;}
+	});
+	h+='</div><div class="ffa-zr">';
+	s.state.spells.forEach(sp=>{h+=`<div class="ffa-z">${sp?`<div class="st-i${sp.faceUp?' fu':''}"></div>`:'<span class="zl">S</span>'}</div>`;});
+	h+=`</div><div class="ffa-info" onclick="event.stopPropagation();showFFAGraveyard(${si})"><span class="ffa-gy-btn">GY ${s.state.graveyard.length}</span> <span style="opacity:.4">DK ${s.state.deck.length}</span> <span style="opacity:.4;color:rgba(160,120,220,.6)">VLT ${s.state.extraDeck.length}</span></div></div>`;return h;
+}
+function ffaFieldMonClick(si,mi){if(duel.uiState==='selectAttackTarget'){if(si!==ffa.viewTarget)ffaSwitchView(si);setTimeout(()=>handleFieldMonsterClick('ai',mi),50);}else ffaSwitchView(si);}
+function ffaFieldDirectAtk(si){if(duel.uiState==='selectAttackTarget'){if(si!==ffa.viewTarget)ffaSwitchView(si);setTimeout(()=>handleDirectAttackClick(),50);}else ffaSwitchView(si);}
+function renderFFAField(){
+	const my=mpFFA.room?mpFFA.seat:0,field=document.getElementById('duel-field');
+	const op=[(my+1)%4,(my+2)%4,(my+3)%4];
+	let h='<div class="ffa-table"><div class="ffa-corn tl"></div><div class="ffa-corn tr"></div><div class="ffa-corn bl"></div><div class="ffa-corn br"></div>';
+	h+=ffaSideOpp(op[1],'t')+ffaSideOpp(op[0],'l')+ffaSideOpp(op[2],'r');
+	h+='<div class="ffa-sd pos-b">'+renderFieldRow('player','spells')+renderFieldRow('player','monsters');
+	h+=`<div class="ffa-bu">${renderFieldSpellZone('player')}<div class="gy-zone" onclick="showFFAGraveyard(${my})"><span style="font-size:5px">GY</span><span class="zone-count">${duel.player.graveyard.length}</span></div><div class="gy-zone"><span style="font-size:5px">DECK</span><span class="zone-count">${duel.player.deck.length}</span></div><div class="gy-zone" onclick="showVault()" style="border-color:rgba(160,120,220,.25)"><span style="font-size:5px;color:rgba(160,120,220,.7)">VLT</span><span class="zone-count" style="color:rgba(160,120,220,.9)">${duel.player.extraDeck.length}</span></div></div></div></div>`;
+	field.innerHTML=h;
+	if(duel.uiState==='selectTribute'||duel.uiState==='selectRitualTribute'){duel.tributeTargets.forEach(zi=>{const z=field.querySelectorAll('.player-monster-zone');if(z[zi])z[zi].classList.add('selected');});}
+	if(duel.uiState==='selectEquipTarget'){field.querySelectorAll('.player-monster-zone').forEach(z=>{if(z.querySelector('.card'))z.classList.add('selected');});}
+}
 function renderFieldRow(who, zone) {
 	const slots = zone === 'monsters' ? duel[who].monsters : duel[who].spells;
 	const zoneClass = `${who}-${zone === 'monsters' ? 'monster' : 'spell'}-zone`;
 	const inkActive = (who === 'ai' && duel.aiInkActive) || (who === 'player' && duel.playerInkActive);
-	const isOpponentInk = (who === 'ai' && duel.aiInkActive) || (who === 'player' && duel.playerInkActive);
 	return `<div class="field-row ${inkActive ? 'ink-clouded' : ''}">
 		${slots.map((fc, i) => {
 		let cardHTML = '';
@@ -9321,6 +9163,21 @@ function showGraveyard(who) {
 	}
 	overlay.classList.add('active');
 }
+function showFFAGraveyard(si) {
+	if (!ffa || !ffa.seats[si]) return;
+	const s = ffa.seats[si];
+	const gy = s.state.graveyard;
+	const overlay = document.getElementById('gy-overlay');
+	const mySeat = mpFFA.room ? mpFFA.seat : 0;
+	document.getElementById('gy-overlay-title').textContent = (si === mySeat ? 'Your' : s.name + "'s") + ` Graveyard (${gy.length})`;
+	const grid = document.getElementById('gy-overlay-grid');
+	if (gy.length === 0) {
+		grid.innerHTML = '<div style="color:rgba(140,190,240,0.4);font-size:13px;text-align:center;padding:30px;">Empty</div>';
+	} else {
+		grid.innerHTML = gy.map(c => `<div onclick="showCardDetail(${c.id})">${renderCard(c)}</div>`).join('');
+	}
+	overlay.classList.add('active');
+}
 function showVault() {
 	if (!duel) return;
 	const vault = duel.player.extraDeck;
@@ -9339,13 +9196,14 @@ function showVault() {
 loadData();
 updateCoinsDisplay();
 initWalletConnect();
+const _btp=document.getElementById('trap-prompt');if(_btp){_btp.style.display='none';_btp.classList.remove('active');}
 initTitleShowcase();
 setTimeout(() => {
 	const ls = document.getElementById('loading-screen');
 	if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
 }, 1500);
 setTimeout(() => checkTradeClaims(), 2000);
-setInterval(() => syncDDBalance(), 30000);
+setInterval(() => syncBalance(), 30000);
 const _onlineId = 'ccon_' + Math.random().toString(36).substr(2,8);
 let _appdbReady = false;
 async function _waitAppDB() {
@@ -9380,7 +9238,7 @@ setInterval(mpCheckChallenges, 8000);
 window.addEventListener('beforeunload', () => { if (window.AppDB) AppDB.deleteGlobal(_onlineId).catch(()=>{}); });
 (function() {
 	const w = getWalletFromCookie();
-	if (w && w.toLowerCase() === DD_CREATOR_WALLET.toLowerCase()) {
+	if (w && w.toLowerCase() === CW.toLowerCase()) {
 	const btn = document.getElementById('dev-unlock-btn');
 	if (btn) btn.style.display = '';
 	}
@@ -9404,13 +9262,426 @@ function mpStartFFA() {
 	ffaMode = 'ffa';
 	startFFADuel(deckIds, extraIds);
 }
+let _ffaScanTimer = null;
+function mpFFAToggle() {
+	const p = document.getElementById('mp-ffa-panel');
+	const show = p.style.display === 'none';
+	p.style.display = show ? '' : 'none';
+	if (show) { mpFFAScanRooms(); _ffaScanTimer = setInterval(mpFFAScanRooms, 3000); }
+	else { if (_ffaScanTimer) { clearInterval(_ffaScanTimer); _ffaScanTimer = null; } }
+}
+async function mpFFAScanRooms() {
+	if (!_appdbReady) return;
+	const el = document.getElementById('ffa-room-list');
+	if (!el) return;
+	try {
+		const all = await AppDB.listGlobal();
+		const now = Date.now();
+		const rooms = all.filter(e => e.key.startsWith('ccffa_') && e.value && e.value.players && !e.value.started && (now - (e.value.ts||0)) < 180000 && !e.value.private && e.value.players.some(p => !p));
+		if (!rooms.length) { el.innerHTML = '<div class="mp-empty" style="font-size:10px;color:rgba(255,150,130,.3)">No open rooms</div>'; return; }
+		el.innerHTML = rooms.map(r => {
+			const code = r.key.replace('ccffa_','');
+			const cnt = r.value.players.filter(p => p).length;
+			const name = r.value.players[0] ? r.value.players[0].n : '?';
+			return `<div class="ffa-room-row"><span>${name}'s room — ${cnt}/4</span><button onclick="mpFFAJoinRoom('${code}')">JOIN</button></div>`;
+		}).join('');
+	} catch(e) { el.innerHTML = '<div class="mp-empty" style="font-size:10px;color:rgba(255,150,130,.3)">Error loading</div>'; }
+}
+let mpFFA = { room: null, seat: -1, isHost: false, players: [], session: 0, poll: null, movePoll: null, moveIdx: [0,0,0,0], started: false };
+function mpFFACreate() {
+	const priv = document.getElementById('ffa-private-check') && document.getElementById('ffa-private-check').checked;
+	const code = Math.random().toString(36).substr(2,6).toUpperCase();
+	mpFFAConnect(code, true, priv);
+}
+function mpFFAJoinRoom(code) {
+	mpFFAConnect(code, false, false);
+}
+async function mpFFAConnect(code, creating, isPrivate) {
+	if (!_appdbReady) { document.getElementById('mp-no-sdk').style.display = 'block'; return; }
+	if (_ffaScanTimer) { clearInterval(_ffaScanTimer); _ffaScanTimer = null; }
+	mpFFA.session++; const sess = mpFFA.session;
+	mpFFA.room = code; mpFFA.started = false;
+	const myName = playerData.profileName || (connectedWallet ? connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4) : 'Anonymous');
+	const myInfo = { id: _onlineId, n: myName, ts: Date.now() };
+	const rk = 'ccffa_' + code;
+	try {
+		let room = await AppDB.getGlobal(rk);
+		if (creating || !room || Date.now() - (room.ts||0) > 180000) {
+			room = { players: [myInfo, null, null, null], ts: Date.now(), private: !!isPrivate };
+			mpFFA.seat = 0; mpFFA.isHost = true;
+		} else {
+			const slot = room.players.findIndex(p => !p);
+			if (slot < 0) { alert('Room is full'); return; }
+			room.players[slot] = myInfo;
+			mpFFA.seat = slot; mpFFA.isHost = false;
+		}
+		await AppDB.setGlobal(rk, room);
+		mpFFA.players = room.players;
+	} catch(e) { alert('Connection failed'); return; }
+	document.getElementById('mp-main-lobby').style.display = 'none';
+	document.getElementById('mp-waiting').style.display = 'flex';
+	document.getElementById('mp-room-display').textContent = code;
+	const _fc=document.getElementById('ffa-chat');if(_fc){_fc.style.display='';ffaChatLog=[];const _fm=document.getElementById('ffa-chat-msgs');if(_fm)_fm.innerHTML='';addFFAChat(null,'Waiting in '+code+'...',null,true);}
+	mpFFAUpdateLobby();
+	if (mpFFA.isHost) document.getElementById('mp-start-btn').style.display = 'block';
+	document.getElementById('mp-start-btn').onclick = mpFFAStartGame;
+	mpFFA.poll = setInterval(async () => {
+		if (sess !== mpFFA.session) { clearInterval(mpFFA.poll); return; }
+		try {
+			const room = await AppDB.getGlobal(rk);
+			if (!room) return;
+			mpFFA.players = room.players;
+			mpFFAUpdateLobby();
+			if (room.started && !mpFFA.started && !mpFFA.isHost) {
+				mpFFA.started = true;
+				clearInterval(mpFFA.poll); mpFFA.poll = null;
+				mpFFAGuestInit(room);
+			}
+		} catch(e) {}
+	}, 1200);
+}
+function mpFFAUpdateLobby() {
+	const el = document.getElementById('mp-players-list');
+	if (!el) return;
+	const count = mpFFA.players.filter(p => p).length;
+	document.getElementById('mp-status-text').textContent = `FFA Room: ${count}/4 players\n${mpFFA.isHost ? 'Share code: ' + mpFFA.room : 'Waiting for host to start...'}`;
+	el.innerHTML = mpFFA.players.map((p, i) => {
+		const label = p ? p.n : 'NPC';
+		const cls = p ? (i === mpFFA.seat ? 'mp-player' : 'mp-player') : 'mp-player';
+		const you = i === mpFFA.seat ? ' (You)' : '';
+		return `<div class="${cls}" style="${p ? '' : 'opacity:.4'}">P${i+1}: ${label}${you}</div>`;
+	}).join('');
+}
+async function mpFFAStartGame() {
+	if (!mpFFA.isHost) return;
+	const deckIds = playerData.deck.length >= 20 ? [...playerData.deck] : [...STARTER_DECK_IDS];
+	const extraIds = playerData.deck.length >= 20 ? [...playerData.extraDeck] : [...STARTER_EXTRA_IDS];
+	const rk = 'ccffa_' + mpFFA.room;
+	try {
+		const room = await AppDB.getGlobal(rk);
+		if (room) { room.started = true; room.ts = Date.now(); await AppDB.setGlobal(rk, room); mpFFA.players = room.players; }
+	} catch(e) {}
+	if (mpFFA.poll) { clearInterval(mpFFA.poll); mpFFA.poll = null; }
+	mpFFA.started = true;
+
+	ffaMode = 'ffa';
+	const playerState = createPlayerState(deckIds, extraIds, 3);
+	const npcStates = FFA_DECKS.map((d, i) => createPlayerState([...d], [...FFA_EXTRA[i]], 3));
+	const names = mpFFA.players.map((p, i) => p ? p.n : FFA_NAMES[i] || ('NPC ' + i));
+	names[mpFFA.seat] = 'You';
+	ffa = {
+		seats: mpFFA.players.map((p, i) => {
+			const st = i === mpFFA.seat ? playerState : npcStates[Math.min(i, 2)] || npcStates[0];
+			return ffaMakeSeat(names[i], !p, st, aiDifficulty);
+		}),
+		turnIdx: 0, currentSeat: 0, viewTarget: mpFFA.seat === 0 ? 1 : 0 === mpFFA.seat ? 2 : 1,
+		mpRoom: mpFFA.room, mpSeat: mpFFA.seat, mpPlayers: mpFFA.players
+	};
+	ffa.viewTarget = ffa.seats.findIndex((s,i) => i !== mpFFA.seat && !s.eliminated) || 1;
+	duel = {
+		turn: 1, currentPlayer: 'player', phase: 'main1',
+		player: ffa.seats[mpFFA.seat].state, ai: ffa.seats[ffa.viewTarget].state,
+		log: [], gameOver: false, selectedCard: null, selectedZone: null,
+		uiState: 'idle', tributeTargets: [], tributeNeeded: 0,
+		pendingAction: null, chainResolving: false,
+		isFirstTurn: true, difficulty: aiDifficulty,
+		tide: 0, playerEnergy: 5, aiEnergy: 5,
+		playerReef: 0, aiReef: 0, playerReef5Used: false, aiReef5Used: false,
+		playerInkUsed: false, aiInkUsed: false,
+		playerInkActive: false, aiInkActive: false, inkCloudTurn: -1,
+		isFFA: true, isFFAMP: true,
+	};
+	for (let s = 0; s < 4; s++) {
+		const st = ffa.seats[s].state;
+		for (let i = 0; i < 5; i++) { if (st.deck.length > 0) st.hand.push(st.deck.shift()); }
+	}
+	showScreen('duel-screen');
+	const pm = getActivePlaymat();
+	const ds = document.getElementById('duel-screen');
+	if (pm) ds.style.background = pm.bg; else ds.style.background = '';
+	document.getElementById('ffa-bar').style.display = '';
+	const chatEl = document.getElementById('ffa-chat');
+	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''; }
+	addFFAChat(null, 'FFA Multiplayer started! ' + mpFFA.players.filter(p=>p).length + ' real players, ' + mpFFA.players.filter(p=>!p).length + ' NPCs.', null, true);
+	duelLog('FFA Duel Start! You go first. Energy: 5');
+	renderDuel();
+
+	mpFFABroadcastState();
+	mpFFAStartPoll();
+}
+function mpFFAGuestInit(room) {
+
+	const deckIds = playerData.deck.length >= 20 ? [...playerData.deck] : [...STARTER_DECK_IDS];
+	const extraIds = playerData.deck.length >= 20 ? [...playerData.extraDeck] : [...STARTER_EXTRA_IDS];
+	ffaMode = 'ffa';
+	mpFFA.players = room.players;
+	const names = mpFFA.players.map((p, i) => p ? (i === mpFFA.seat ? 'You' : p.n) : FFA_NAMES[i] || ('NPC ' + i));
+	const playerState = createPlayerState(deckIds, extraIds, 3);
+	const npcStates = FFA_DECKS.map((d, i) => createPlayerState([...d], [...FFA_EXTRA[i]], 3));
+	ffa = {
+		seats: mpFFA.players.map((p, i) => {
+			const st = i === mpFFA.seat ? playerState : npcStates[Math.min(i, 2)] || npcStates[0];
+			return ffaMakeSeat(names[i], !p && i !== mpFFA.seat, st, aiDifficulty);
+		}),
+		turnIdx: 0, currentSeat: 0, viewTarget: mpFFA.seat === 0 ? 1 : 0,
+		mpRoom: mpFFA.room, mpSeat: mpFFA.seat, mpPlayers: mpFFA.players
+	};
+	ffa.viewTarget = ffa.seats.findIndex((s,i) => i !== mpFFA.seat) || 1;
+	duel = {
+		turn: 1, currentPlayer: mpFFA.seat === 0 ? 'player' : 'ai', phase: 'main1',
+		player: ffa.seats[mpFFA.seat].state, ai: ffa.seats[ffa.viewTarget].state,
+		log: [], gameOver: false, selectedCard: null, selectedZone: null,
+		uiState: 'idle', tributeTargets: [], tributeNeeded: 0,
+		pendingAction: null, chainResolving: false,
+		isFirstTurn: true, difficulty: aiDifficulty,
+		tide: 0, playerEnergy: 5, aiEnergy: 5,
+		playerReef: 0, aiReef: 0, playerReef5Used: false, aiReef5Used: false,
+		playerInkUsed: false, aiInkUsed: false,
+		playerInkActive: false, aiInkActive: false, inkCloudTurn: -1,
+		isFFA: true, isFFAMP: true,
+	};
+	for (let i = 0; i < 5; i++) { if (ffa.seats[mpFFA.seat].state.deck.length > 0) ffa.seats[mpFFA.seat].state.hand.push(ffa.seats[mpFFA.seat].state.deck.shift()); }
+	showScreen('duel-screen');
+	document.getElementById('ffa-bar').style.display = '';
+	const chatEl = document.getElementById('ffa-chat');
+	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''; }
+	addFFAChat(null, 'FFA Multiplayer joined! Waiting for game updates...', null, true);
+	duelLog('FFA Duel — waiting for updates...');
+	renderDuel();
+	mpFFAStartPoll();
+}
+async function mpFFABroadcastState() {
+	if (!mpFFA.room || !_appdbReady) return;
+	const sk = 'ccffa_' + mpFFA.room + '_state';
+	const snapshot = {
+		turn: duel.turn, activeSeat: ffa.turnIdx, tide: duel.tide,
+		seats: ffa.seats.map((s, i) => ({
+			lp: s.state.lp, eliminated: s.eliminated, name: s.name, isNPC: s.isNPC,
+			energy: s.energy, reef: s.reef,
+			mons: s.state.monsters.map(m => m ? { id: m.card.id, pos: m.position, faceUp: m.faceUp, atk: m.card.atk + m.permAtkMod, def: m.card.def + (m.permDefMod||0), shell: m.shell, frozen: m.frozen, burrowed: m.burrowed } : null),
+			spells: s.state.spells.map(sp => sp ? { id: sp.card.id, faceUp: sp.faceUp, dt: sp.depthTimer } : null),
+			fieldSpell: s.state.fieldSpell ? s.state.fieldSpell.card.id : null,
+			handCount: s.state.hand.length, deckCount: s.state.deck.length, gyCount: s.state.graveyard.length,
+		})),
+		log: duel.log.slice(-8),
+		chat: ffaChatLog.slice(-10),
+		ts: Date.now()
+	};
+	try { await AppDB.setGlobal(sk, snapshot); } catch(e) {}
+}
+async function mpFFASendMove(move) {
+	if (!mpFFA.room || !_appdbReady) return;
+	const mk = 'ccffa_' + mpFFA.room + '_m' + mpFFA.seat;
+	try {
+		let moves = await AppDB.getGlobal(mk) || [];
+		moves.push(move);
+		if (moves.length > 200) moves = moves.slice(-200);
+		await AppDB.setGlobal(mk, moves);
+	} catch(e) {}
+}
+function mpFFASerializeSeat(s) {
+	const sm = m => m ? {i:m.card.id,p:m.position,f:m.faceUp,a:m.atkMod,pa:m.permAtkMod,d:m.defMod,pd:m.permDefMod||0,sh:m.shell,fr:m.frozen,br:m.burrowed,mo:m.molted,ca:m.canAttack,at:m.attacks,ma:m.maxAttacks,js:m.justSet,eu:m.effectUsed} : null;
+	return {lp:s.state.lp,el:s.eliminated,en:s.energy,rf:s.reef,r5:s.reef5Used,iu:s.inkUsed,ia:s.inkActive,it:s.inkCloudTurn||-1,
+		ms:s.state.monsters.map(sm),sp:s.state.spells.map(sp=>sp?{i:sp.card.id,f:sp.faceUp,d:sp.depthTimer}:null),
+		fs:s.state.fieldSpell?s.state.fieldSpell.card.id:null,h:s.state.hand.map(c=>c.id),dk:s.state.deck.map(c=>c.id),g:s.state.graveyard.map(c=>c.id)};
+}
+function mpFFADeserializeSeat(d, s) {
+	s.state.lp=d.lp; s.eliminated=d.el; s.energy=d.en; s.reef=d.rf; s.reef5Used=d.r5;
+	s.inkUsed=d.iu; s.inkActive=d.ia; s.inkCloudTurn=d.it;
+	const uid = () => Math.random().toString(36).slice(2);
+	s.state.monsters = d.ms.map(m => {
+		if(!m) return null; const c=getCard(m.i); if(!c) return null;
+		const fc=createFieldCard(c,m.p,m.f); fc.atkMod=m.a; fc.permAtkMod=m.pa; fc.defMod=m.d; fc.permDefMod=m.pd;
+		fc.shell=m.sh; fc.frozen=m.fr; fc.burrowed=m.br; fc.molted=m.mo;
+		fc.canAttack=m.ca; fc.attacks=m.at; fc.maxAttacks=m.ma; fc.justSet=m.js; fc.effectUsed=m.eu; return fc;
+	});
+	s.state.spells = d.sp.map(sp => { if(!sp) return null; const c=getCard(sp.i); if(!c) return null; const fc=createFieldCard(c,'atk',sp.f); fc.depthTimer=sp.d||0; return fc; });
+	s.state.fieldSpell = d.fs ? createFieldCard(getCard(d.fs),'atk',true) : null;
+	s.state.hand = d.h.map(id=>({...getCard(id),uid:uid()}));
+	s.state.deck = d.dk.map(id=>({...getCard(id),uid:uid()}));
+	s.state.graveyard = d.g.map(id=>({...getCard(id),uid:uid()}));
+}
+async function mpFFASendTurnState() {
+	if (!mpFFA.room || !_appdbReady || !ffa) return;
+
+	const mySeat = mpFFA.seat;
+	const affected = {};
+	for (let i = 0; i < 4; i++) {
+		affected[i] = mpFFASerializeSeat(ffa.seats[i]);
+	}
+	await mpFFASendMove({
+		type: 'turnState',
+		seats: affected,
+		tide: duel.tide,
+		log: duel.log.slice(-8)
+	});
+	duel.currentPlayer = 'ai'; renderDuel();
+}
+function mpFFAStartPoll() {
+	if (mpFFA.movePoll) clearInterval(mpFFA.movePoll);
+	mpFFA.moveIdx = [0,0,0,0];
+	const sess = mpFFA.session;
+	mpFFA.movePoll = setInterval(async () => {
+		if (sess !== mpFFA.session || !mpFFA.room || duel?.gameOver) { clearInterval(mpFFA.movePoll); mpFFA.movePoll = null; return; }
+		try {
+			if (!mpFFA.isHost) {
+				const sk = 'ccffa_' + mpFFA.room + '_state';
+				const snap = await AppDB.getGlobal(sk);
+				if (snap && snap.ts && snap.ts > (mpFFA._lastStateTs || 0)) { mpFFA._lastStateTs = snap.ts; mpFFAApplySnapshot(snap); }
+			}
+			if (mpFFA.isHost) {
+				for (let i = 0; i < 4; i++) {
+					if (i === mpFFA.seat || !mpFFA.players[i]) continue;
+					const mk = 'ccffa_' + mpFFA.room + '_m' + i;
+					const moves = await AppDB.getGlobal(mk) || [];
+					while (mpFFA.moveIdx[i] < moves.length) {
+						mpFFAHostReceive(i, moves[mpFFA.moveIdx[i]]);
+						mpFFA.moveIdx[i]++;
+					}
+				}
+			}
+			const ck = 'ccffa_' + mpFFA.room + '_chat';
+			const chatData = await AppDB.getGlobal(ck) || [];
+			if (chatData.length > ffaChatLog.length) {
+				const newMsgs = chatData.slice(ffaChatLog.length);
+				newMsgs.forEach(m => { if (m.name !== (playerData.profileName || 'You')) addFFAChat(m.name, m.msg, m.color, m.sys); });
+			}
+		} catch(e) {}
+	}, 1000);
+}
+function mpFFAApplySnapshot(snap) {
+	if (!ffa || !duel) return;
+	const wasMyTurn = duel.currentPlayer === 'player';
+	const isMyTurn = snap.activeSeat === mpFFA.seat;
+	snap.seats.forEach((ss, i) => {
+		if (i === mpFFA.seat && wasMyTurn) return;
+		const seat = ffa.seats[i];
+		seat.state.lp = ss.lp;
+		seat.eliminated = ss.eliminated;
+		seat.energy = ss.energy;
+		seat.reef = ss.reef;
+		seat.state.monsters = ss.mons.map(m => {
+			if (!m) return null;
+			const card = getCard(m.id); if (!card) return null;
+			const fc = createFieldCard(card, m.pos, m.faceUp);
+			fc.permAtkMod = m.atk - card.atk;
+			fc.permDefMod = m.def - card.def;
+			fc.shell = m.shell; fc.frozen = m.frozen; fc.burrowed = m.burrowed;
+			return fc;
+		});
+		seat.state.spells = ss.spells.map(sp => {
+			if (!sp) return null;
+			const card = getCard(sp.id); if (!card) return null;
+			const fc = createFieldCard(card, 'atk', sp.faceUp);
+			fc.depthTimer = sp.dt || 0; return fc;
+		});
+		seat.state.fieldSpell = ss.fieldSpell ? createFieldCard(getCard(ss.fieldSpell), 'atk', true) : null;
+		if (i !== mpFFA.seat) {
+			seat.state.hand = new Array(ss.handCount).fill(null);
+			seat.state.deck = new Array(ss.deckCount).fill(null);
+			seat.state.graveyard = new Array(ss.gyCount).fill(null);
+		}
+	});
+	duel.turn = snap.turn;
+	duel.tide = snap.tide;
+	ffa.turnIdx = snap.activeSeat;
+	snap.seats.forEach((ss, i) => {
+		if (ss.eliminated && i === mpFFA.seat && !ffa.seats[i].eliminated) {
+			ffa.seats[i].eliminated = true;
+			endDuelResult('lose');
+			return;
+		}
+	});
+	if (duel.gameOver) return;
+	if (isMyTurn && !wasMyTurn) {
+		const vt = ffa.seats[ffa.viewTarget]?.eliminated ? ffaFirstAliveNPC() : ffa.viewTarget;
+		ffa.viewTarget = vt;
+		ffaSwap(mpFFA.seat, vt);
+		duel.currentPlayer = 'player';
+		duel.playerEnergy += 3;
+		duel.phase = 'main1';
+		duel.isFirstTurn = false;
+		processTurnStartMechanics('player');
+		duel.player.monsters.forEach(m => {
+			if (m) { m.canAttack = true; m.attacks = 0; m.canChangePos = true; m.frozen = false; m.justSet = false; m.effectUsed = false; if (m.card.effects?.some(e => e.action === 'doubleAttack')) m.maxAttacks = 2; }
+		});
+		duel.uiState = 'idle'; duel.selectedCard = null;
+		duelLog(`--- Your Turn ${duel.turn} --- Energy: ${duel.playerEnergy}⚡`);
+		renderDuel();
+		showDiveDraw('player', () => { const drawn = drawCard('player'); if (drawn) duelLog(`Drew ${drawn.name}.`); renderDuel(); });
+	} else {
+		duel.currentPlayer = isMyTurn ? 'player' : 'ai';
+		if (!isMyTurn) {
+			const activeSeat = snap.activeSeat;
+			if (!ffa.seats[activeSeat].eliminated) ffa.viewTarget = activeSeat;
+		}
+		ffaSwap(mpFFA.seat, ffa.viewTarget);
+		duel.player = ffa.seats[mpFFA.seat].state;
+		duel.ai = ffa.seats[ffa.viewTarget].state;
+		if (snap.log) duel.log = snap.log;
+		renderDuel();
+	}
+}
+function mpFFAHostReceive(seatIdx, move) {
+	if (!move || !move.type || !ffa || duel.gameOver) return;
+	if (move.type === 'turnState') {
+	
+		if (ffa.turnIdx !== seatIdx) return; // not their turn
+		if (move.seats) {
+			for (const [idx, data] of Object.entries(move.seats)) {
+				const i = parseInt(idx);
+				if (i === mpFFA.seat) continue; // don't overwrite host's own seat
+				mpFFADeserializeSeat(data, ffa.seats[i]);
+			}
+		}
+		if (move.tide !== undefined) duel.tide = move.tide;
+		if (move.log) duel.log = move.log;
+	
+		const mySeat = mpFFA.seat;
+		duel.player = ffa.seats[mySeat].state;
+		duel.ai = ffa.seats[ffa.viewTarget].state;
+		ffaNextTurn();
+		mpFFABroadcastState();
+	} else if (move.type === 'end') {
+		if (ffa.turnIdx === seatIdx) {
+			ffaFlush();
+			ffaNextTurn();
+			mpFFABroadcastState();
+		}
+	} else if (move.type === 'chat') {
+		addFFAChat(move.name, move.msg, 'rgba(100,200,255,.9)');
+		mpFFABroadcastChat(move.name, move.msg);
+	}
+}
+async function mpFFABroadcastChat(name, msg) {
+	if (!mpFFA.room || !_appdbReady) return;
+	const ck = 'ccffa_' + mpFFA.room + '_chat';
+	try {
+		let chat = await AppDB.getGlobal(ck) || [];
+		chat.push({ name, msg, color: 'rgba(100,200,255,.9)', ts: Date.now() });
+		if (chat.length > 50) chat = chat.slice(-50);
+		await AppDB.setGlobal(ck, chat);
+	} catch(e) {}
+}
+function mpFFACleanup() {
+	if (mpFFA.poll) { clearInterval(mpFFA.poll); mpFFA.poll = null; }
+	if (mpFFA.movePoll) { clearInterval(mpFFA.movePoll); mpFFA.movePoll = null; }
+	if (mpFFA.room && _appdbReady) {
+		const c = mpFFA.room;
+		AppDB.deleteGlobal('ccffa_'+c).catch(()=>{});
+		AppDB.deleteGlobal('ccffa_'+c+'_state').catch(()=>{});
+		AppDB.deleteGlobal('ccffa_'+c+'_chat').catch(()=>{});
+		for (let i=0;i<4;i++) AppDB.deleteGlobal('ccffa_'+c+'_m'+i).catch(()=>{});
+	}
+	mpFFA.room = null; mpFFA.started = false; mpFFA.session++;
+}
 let ffaChatLog = [];
 const NPC_CHAT_LINES = {
-	attack: ['Prepare yourself!','Here I come!','Take this!','No mercy!','Face me!'],
-	eliminated: ['How... impossible!','I\'ll get you next time...','Noooo!','This isn\'t over...'],
-	kill: ['One down!','Too easy.','Who\'s next?','Hah!','Farewell!'],
-	idle: ['Hmm...','Interesting move.','Not bad.','I see what you did there.','This is getting intense!','Let\'s go!'],
-	taunt: ['You call that a deck?','Is that all you\'ve got?','My grandma hits harder!','Scared yet?']
+	attack: ['Here I come!','Take this!','No mercy!'],
+	eliminated: ['Impossible!','Next time...','Noooo!'],
+	kill: ['One down!','Too easy.','Hah!'],
+	idle: ['Hmm...','Not bad.','Interesting.','Let\'s go!'],
+	taunt: ['Is that all?','Scared yet?','My grandma hits harder!']
 };
 function toggleFFAChat() {
 	const body = document.getElementById('ffa-chat-body');
@@ -9441,9 +9712,16 @@ function sendFFAChat() {
 	inp.value = '';
 	const pName = playerData.profileName || 'You';
 	addFFAChat(pName, msg, 'rgba(100,200,255,.9)');
-	// NPCs may react
-	if (ffa && Math.random() < 0.35) {
-		const alive = ffaAliveNPCs();
+	if (mpFFA.room) {
+		if (mpFFA.isHost) {
+			mpFFABroadcastChat(pName, msg);
+		} else {
+			mpFFASendMove({ type: 'chat', name: pName, msg });
+		}
+	}
+
+	if (ffa && (!mpFFA.room || mpFFA.isHost) && Math.random() < 0.35) {
+		const alive = ffaAliveNPCs().filter(s => s.isNPC);
 		if (alive.length > 0) {
 			const npc = alive[Math.floor(Math.random() * alive.length)];
 			const lines = NPC_CHAT_LINES[Math.random() < 0.4 ? 'taunt' : 'idle'];
@@ -9501,6 +9779,9 @@ async function renderMPLobby() {
 		}, 5000);
 	}
 }
+let _lcM=[],_lcPoll=null;
+async function mpLobbyLoadChat(){if(!_appdbReady)return;try{const d=await AppDB.getGlobal('cc_lobby_chat');if(!d||!Array.isArray(d))return;const el=document.getElementById('mp-lobby-msgs');if(!el)return;const nw=d.slice(-20);if(nw.length===_lcM.length)return;_lcM=nw;el.innerHTML=_lcM.map(m=>`<div><b style="color:${m.c||'#8cc8ff'}">${(m.n||'?').replace(/</g,'&lt;')}:</b> ${(m.m||'').replace(/</g,'&lt;')}</div>`).join('');el.scrollTop=el.scrollHeight;}catch(e){}}
+async function mpLobbySend(){const inp=document.getElementById('mp-lobby-input');if(!inp||!_appdbReady)return;const m=inp.value.trim();if(!m)return;inp.value='';try{let d=await AppDB.getGlobal('cc_lobby_chat');if(!d||!Array.isArray(d))d=[];d.push({n:playerData.profileName||'Anon',m,t:Date.now(),c:'rgba(100,200,255,.9)'});if(d.length>30)d=d.slice(-30);await AppDB.setGlobal('cc_lobby_chat',d);mpLobbyLoadChat();}catch(e){}}
 let _challPending = null;
 let _challPollTimer = null;
 function mpChallengeUser(targetSid) {
@@ -9581,6 +9862,7 @@ function mpCancelWait() {
 	if (_challPollTimer) { clearInterval(_challPollTimer); _challPollTimer = null; }
 	if (_challPending) { AppDB.deleteGlobal(_challPending).catch(()=>{}); _challPending = null; }
 	mpCleanupRoom();
+	if (mpFFA.room) mpFFACleanup();
 	mp.session++; mp.room = null; mp.active = false; mp.opponentId = null;
 	mpResetLobbyUI();
 	renderMPLobby();
