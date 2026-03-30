@@ -4579,9 +4579,9 @@ async function loadTradeListings() {
 		.map(e => e.value)
 		.sort((a, b) => (b.created || 0) - (a.created || 0));
 	if (tradeTab === 'mine') {
-		trades = trades.filter(t => t.seller.wallet === myWallet);
+		trades = trades.filter(t => t.seller?.wallet === myWallet);
 		} else {
-		trades = trades.filter(t => t.seller.wallet !== myWallet);
+		trades = trades.filter(t => t.seller?.wallet !== myWallet);
 		}
 	if (cardQ) {
 		trades = trades.filter(t => {
@@ -4594,8 +4594,8 @@ async function loadTradeListings() {
 		}
 	if (userQ) {
 		trades = trades.filter(t =>
-			t.seller.name.toLowerCase().includes(userQ) ||
-			t.seller.wallet.includes(userQ)
+			(t.seller?.name||'').toLowerCase().includes(userQ) ||
+			(t.seller?.wallet||'').includes(userQ)
 			);
 		}
 	if (trades.length === 0) {
@@ -4608,7 +4608,7 @@ async function loadTradeListings() {
 	}
 }
 function renderTradeListing(trade, myWallet) {
-	const isMine = trade.seller.wallet === myWallet;
+	const isMine = trade.seller?.wallet === myWallet;
 	const timeAgo = getTimeAgo(trade.created);
 	const offerCards = (trade.offering || []).map(cid => {
 	const card = CARDS.find(c => c.id === cid);
@@ -4633,7 +4633,7 @@ function renderTradeListing(trade, myWallet) {
 	}
 	return `<div class="trade-listing">
 		<div class="trade-listing-header">
-			<div class="trade-listing-user">${_esc(trade.seller.name)}</div>
+			<div class="trade-listing-user">${_esc(trade.seller?.name||'Unknown')}</div>
 			<div class="trade-listing-time">${timeAgo}</div>
 		</div>
 		<div class="trade-listing-body">
@@ -4651,7 +4651,7 @@ function renderTradeListing(trade, myWallet) {
 	</div>`;
 }
 function renderMarketListing(listing, myWallet) {
-	const isMine = listing.seller.wallet === myWallet;
+	const isMine = listing.seller?.wallet === myWallet;
 	const timeAgo = getTimeAgo(listing.created);
 	const cards = (listing.cards || []).map(cid => {
 	const card = CARDS.find(c => c.id === cid);
@@ -4666,7 +4666,7 @@ function renderMarketListing(listing, myWallet) {
 	}
 	return `<div class="market-listing">
 		<div class="market-listing-header">
-			<div class="trade-listing-user">${_esc(listing.seller.name)}</div>
+			<div class="trade-listing-user">${_esc(listing.seller?.name||'Unknown')}</div>
 			<div class="trade-listing-time">${timeAgo}</div>
 		</div>
 		<div class="market-listing-body">
@@ -4827,9 +4827,9 @@ async function loadMarketListings() {
 		.map(e => e.value)
 		.sort((a, b) => (b.created || 0) - (a.created || 0));
 	if (marketTab === 'mine') {
-		listings = listings.filter(t => t.seller.wallet === myWallet);
+		listings = listings.filter(t => t.seller?.wallet === myWallet);
 		} else {
-		listings = listings.filter(t => t.seller.wallet !== myWallet);
+		listings = listings.filter(t => t.seller?.wallet !== myWallet);
 		}
 	if (cardQ) {
 		listings = listings.filter(t =>
@@ -4841,8 +4841,8 @@ async function loadMarketListings() {
 		}
 	if (userQ) {
 		listings = listings.filter(t =>
-			t.seller.name.toLowerCase().includes(userQ) ||
-			t.seller.wallet.includes(userQ)
+			(t.seller?.name||'').toLowerCase().includes(userQ) ||
+			(t.seller?.wallet||'').includes(userQ)
 			);
 		}
 	if (listings.length === 0) {
@@ -4966,7 +4966,7 @@ async function buyMarketListing(listingId) {
 		fromName: playerData.profileName || connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4),
 		created: Date.now()
 		};
-	const sellerClaimsKey = 'ccclaims_' + listing.seller.wallet;
+	const sellerClaimsKey = 'ccclaims_' + (listing.seller?.wallet||'');
 	let claims = [];
 	try { claims = (await window.AppDB.getGlobal(sellerClaimsKey)) || []; } catch(e) {}
 	claims.push(claimData);
@@ -4988,7 +4988,7 @@ async function cancelListing(listingId) {
 	try {
 	const listing = await window.AppDB.getGlobal(listingId);
 	if (!listing) return;
-	if (listing.seller.wallet !== (connectedWallet || '').toLowerCase()) return;
+	if (listing.seller?.wallet !== (connectedWallet || '').toLowerCase()) return;
 	const cards = listing.offering || listing.cards || [];
 	for (const cid of cards) {
 		playerData.collection[cid] = (playerData.collection[cid] || 0) + 1;
@@ -5033,7 +5033,7 @@ async function acceptTrade(tradeId) {
 		fromName: playerData.profileName || connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4),
 		created: Date.now()
 		};
-	const sellerClaimsKey = 'ccclaims_' + trade.seller.wallet;
+	const sellerClaimsKey = 'ccclaims_' + (trade.seller?.wallet||'');
 	let claims = [];
 	try { claims = (await window.AppDB.getGlobal(sellerClaimsKey)) || []; } catch(e) {}
 	claims.push(claimData);
