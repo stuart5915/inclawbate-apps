@@ -4023,18 +4023,21 @@ function defaultPlayerData() {
 let playerData = defaultPlayerData();
 function saveData() {
 	playerData._v = CC_DATA_VERSION;
+	playerData._ts = Date.now();
 	localStorage.setItem('cc_data', JSON.stringify(playerData));
 	if (window.AppDB) {
 	window.AppDB.set('cc_data', playerData).catch(() => {});
 	}
 }
 function loadData() {
+	let localTs = 0;
 	try {
 	const saved = localStorage.getItem('cc_data');
 	if (saved) {
 		const parsed = JSON.parse(saved);
 		if (parsed._v === CC_DATA_VERSION) {
 			playerData = { ...defaultPlayerData(), ...parsed };
+			localTs = parsed._ts || 0;
 		} else {
 			localStorage.removeItem('cc_data');
 			playerData = defaultPlayerData();
@@ -4050,12 +4053,12 @@ function loadData() {
 			window.AppDB.delete('cc_data').catch(()=>{});
 			return;
 		}
-		const localEmpty = Object.keys(playerData.collection).length <= 10 && playerData.stats.totalDuels === 0;
-		if (localEmpty) {
+		if ((cloud._ts || 0) >= localTs) {
 			playerData = { ...defaultPlayerData(), ...cloud };
 			saveData();
-			updateCoinsDisplay();
-			}
+			try { updateCoinsDisplay(); } catch(e) {}
+			try { initTitleShowcase(); } catch(e) {}
+		}
 		}).catch(() => {});
 	}
 	} catch(e) {}
