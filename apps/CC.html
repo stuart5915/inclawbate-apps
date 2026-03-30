@@ -4042,6 +4042,7 @@ function loadData() {
 		}
 		}
 	} catch(e) {}
+	try {
 	if (window.AppDB) {
 	window.AppDB.get('cc_data').then(cloud => {
 		if (!cloud) return;
@@ -4057,6 +4058,7 @@ function loadData() {
 			}
 		}).catch(() => {});
 	}
+	} catch(e) {}
 	_finishLoad();
 }
 function _finishLoad() {
@@ -9212,17 +9214,17 @@ function showVault() {
 	}
 	overlay.classList.add('active');
 }
-loadData();
-updateCoinsDisplay();
-initWalletConnect();
+try { loadData(); } catch(e) { console.error('loadData:', e); }
+try { updateCoinsDisplay(); } catch(e) {}
+try { initWalletConnect(); } catch(e) {}
 const _btp=document.getElementById('trap-prompt');if(_btp){_btp.style.display='none';_btp.classList.remove('active');}
-initTitleShowcase();
+try { initTitleShowcase(); } catch(e) {}
 setTimeout(() => {
 	const ls = document.getElementById('loading-screen');
 	if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
 }, 1500);
-setTimeout(() => checkTradeClaims(), 2000);
-setInterval(() => syncBalance(), 30000);
+setTimeout(() => { try { checkTradeClaims(); } catch(e) {} }, 2000);
+setInterval(() => { try { syncBalance(); } catch(e) {} }, 30000);
 const _onlineId = 'ccon_' + Math.random().toString(36).substr(2,8);
 let _appdbReady = false;
 async function _waitAppDB() {
