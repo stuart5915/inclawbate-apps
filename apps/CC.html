@@ -5603,28 +5603,7 @@ function switchShopTab(tab) {
 	if (tab === 'lighting') renderShopLighting();
 	if (tab === 'avatars') renderAvatarShop();
 }
-const AVATARS = [
-	{id:'av_claw_recruit',name:'Claw Recruit',art:'Claw Recruit'},
-	{id:'av_shell_knight',name:'Shell Knight',art:'Shell Knight'},
-	{id:'av_coral_witch',name:'Coral Witch',art:'Coral Witch'},
-	{id:'av_deep_sea_berserker',name:'Deep Sea Berserker',art:'Deep Sea Berserker'},
-	{id:'av_coconut_crab_king',name:'Coconut Crab King',art:'Coconut Crab King'},
-	{id:'av_emperor_crustacean',name:'Emperor Crustacean',art:'Emperor Crustacean'},
-	{id:'av_twin_claw_dragon',name:'Twin Claw Dragon',art:'Twin Claw Dragon'},
-	{id:'av_abyssal_sovereign',name:'Abyssal Sovereign',art:'Abyssal Sovereign'},
-	{id:'av_mantis_shrimp',name:'Mantis Shrimp',art:'Mantis Shrimp'},
-	{id:'av_pistol_shrimp',name:'Pistol Shrimp',art:'Pistol Shrimp'},
-	{id:'av_kraken_overlord',name:'Kraken Overlord',art:'Kraken Overlord'},
-	{id:'av_charybdis',name:'Charybdis',art:'Charybdis the Devourer'},
-	{id:'av_pyroclasm',name:'Pyroclasm Leviathan',art:'Pyroclasm Leviathan'},
-	{id:'av_celestial_nautilus',name:'Celestial Nautilus',art:'Celestial Nautilus'},
-	{id:'av_maelstrom_dragon',name:'Maelstrom Dragon',art:'Maelstrom Dragon'},
-	{id:'av_abyssal_hydra',name:'Abyssal Hydra',art:'Abyssal Hydra'},
-	{id:'av_tempest_wyrm',name:'Tempest Wyrm',art:'Tempest Wyrm'},
-	{id:'av_stormfin_serpent',name:'Stormfin Serpent',art:'Stormfin Serpent'},
-	{id:'av_gilded_cephalopod',name:'Gilded Cephalopod',art:'Gilded Cephalopod'},
-	{id:'av_nautilus_warden',name:'Nautilus Warden',art:'Nautilus Warden'},
-];
+const AVATARS = _CARD_ART_NAMES.map((n,i) => ({id:'av_'+i, name:n, art:n}));
 function renderAvatarShop() {
 	const grid = document.getElementById('avatars-grid');
 	const owned = playerData.ownedAvatars || [];
@@ -5705,30 +5684,9 @@ function showStoreToast(text, sub) {
 	toast.classList.add('active');
 	setTimeout(() => toast.classList.remove('active'), 2000);
 }
-const SLEEVES = [
-	{ id:'s1', name:'Crimson Tide', art:'Thermidor the Blaze', border:'#a03030' },
-	{ id:'s2', name:'Deep Abyss', art:'Abyssal Lurker', border:'#2060a0' },
-	{ id:'s3', name:'Jade Emperor', art:'Emperor Crustacean', border:'#30a050' },
-	{ id:'s4', name:'Solar Flare', art:'Coconut Crab King', border:'#c09030' },
-	{ id:'s5', name:'Void Walker', art:'Abyssal Sovereign', border:'#7040a0' },
-	{ id:'s6', name:'Arctic Frost', art:'Glacial Lobster', border:'#60a8d0' },
-	{ id:'s7', name:'Obsidian', art:'Deep Sea Berserker', border:'#505050' },
-	{ id:'s8', name:'Coral Bloom', art:'Coral Witch', border:'#c06090' },
-	{ id:'s9', name:'Thunder Strike', art:'Twin Claw Dragon', border:'#b0a040' },
-	{ id:'s10', name:'Neon Depths', art:"Poseidon's Chosen", border:'#30d0a0' },
-];
-const PLAYMATS = [
-	{ id:'m1', name:'Volcanic Rift', bg:'linear-gradient(180deg, #1a0808 0%, #2a1010 25%, #381818 50%, #2a0c0c 75%, #0a0404 100%)', accent:'rgba(200,60,40,0.03)', grid:'rgba(200,80,60,0.01)' },
-	{ id:'m2', name:'Frozen Tundra', bg:'linear-gradient(180deg, #0a1828 0%, #102838 25%, #183848 50%, #102838 75%, #060c18 100%)', accent:'rgba(100,180,240,0.03)', grid:'rgba(120,200,255,0.01)' },
-	{ id:'m3', name:'Emerald Reef', bg:'linear-gradient(180deg, #081808 0%, #0c2810 25%, #103818 50%, #0c280c 75%, #040804 100%)', accent:'rgba(60,200,100,0.03)', grid:'rgba(80,220,120,0.01)' },
-	{ id:'m4', name:'Twilight Nexus', bg:'linear-gradient(180deg, #100820 0%, #181030 25%, #201840 50%, #181030 75%, #080410 100%)', accent:'rgba(140,80,220,0.03)', grid:'rgba(160,100,240,0.01)' },
-	{ id:'m5', name:'Golden Sands', bg:'linear-gradient(180deg, #181408 0%, #282010 25%, #382c18 50%, #282010 75%, #0c0a04 100%)', accent:'rgba(200,160,60,0.03)', grid:'rgba(220,180,80,0.01)' },
-	{ id:'m6', name:'Midnight Storm', bg:'linear-gradient(180deg, #060610 0%, #0a0a18 25%, #101020 50%, #0a0a18 75%, #040408 100%)', accent:'rgba(80,80,180,0.03)', grid:'rgba(100,100,200,0.01)' },
-	{ id:'m7', name:'Coral Palace', bg:'linear-gradient(180deg, #180810 0%, #281018 25%, #381820 50%, #281018 75%, #0a0408 100%)', accent:'rgba(220,80,140,0.03)', grid:'rgba(240,100,160,0.01)' },
-	{ id:'m8', name:'Shadow Trench', bg:'linear-gradient(180deg, #050505 0%, #0a0a0a 25%, #111111 50%, #0a0a0a 75%, #030303 100%)', accent:'rgba(255,255,255,0.015)', grid:'rgba(255,255,255,0.008)' },
-	{ id:'m9', name:'Bioluminescent', bg:'linear-gradient(180deg, #041018 0%, #081828 25%, #0c2838 50%, #081828 75%, #020810 100%)', accent:'rgba(0,240,200,0.03)', grid:'rgba(0,255,220,0.012)' },
-	{ id:'m10', name:'Magma Core', bg:'linear-gradient(180deg, #100804 0%, #201008 25%, #30180c 50%, #201008 75%, #080402 100%)', accent:'rgba(255,120,40,0.03)', grid:'rgba(255,140,60,0.01)' },
-];
+const _slvBorders = ['#a03030','#2060a0','#30a050','#c09030','#7040a0','#60a8d0','#505050','#c06090','#b0a040','#30d0a0','#4080c0','#a06040','#3090a0','#8050a0','#50a080'];
+const SLEEVES = _CARD_ART_NAMES.map((n,i) => ({id:'sl_'+i, name:n, art:n, border:_slvBorders[i%_slvBorders.length]}));
+const PLAYMATS = _CARD_ART_NAMES.map((n,i) => ({id:'pm_'+i, name:n, art:n}));
 function renderSleeves() {
 	updateCoinsDisplay();
 	const grid = document.getElementById('sleeves-grid');
@@ -5756,8 +5714,9 @@ function renderPlaymats() {
 	grid.innerHTML = PLAYMATS.map(m => {
 	const owned = (playerData.ownedPlaymats||[]).includes(m.id);
 	const equipped = playerData.activePlaymat === m.id;
+	const bgStyle = m.art ? `background:linear-gradient(rgba(4,8,16,0.6),rgba(4,8,16,0.7)),url('${_cardArtUrl(m.art)}') center/cover` : `background:${m.bg}`;
 	return `<div class="cosmetic-item${equipped?' equipped':''}">
-			<div class="playmat-preview" style="background:${m.bg}">
+			<div class="playmat-preview" style="${bgStyle}">
 				<div class="playmat-zones">
 					${[0,1,2,3,4].map(()=>'<div class="pm-zone"></div>').join('')}
 				</div>
@@ -5803,6 +5762,11 @@ function getActiveSleeve() {
 }
 function getActivePlaymat() {
 	return PLAYMATS.find(m => m.id === playerData.activePlaymat) || null;
+}
+function _pmBg(pm) {
+	if (!pm) return '';
+	if (pm.art) return `linear-gradient(rgba(4,8,16,0.65),rgba(4,8,16,0.75)),url('${_cardArtUrl(pm.art)}') center/cover`;
+	return pm.bg;
 }
 const GALLERY_BOARDS = [
 	{ id:'gb_default', name:'Reef Display', desc:'Standard coral reef display board', cost:0,
@@ -6651,7 +6615,7 @@ function startFFADuel(deckIds, extraIds) {
 	showScreen('duel-screen');
 	const pm = getActivePlaymat();
 	const ds = document.getElementById('duel-screen');
-	if (pm) ds.style.background = pm.bg; else ds.style.background = '';
+	if (pm) ds.style.background = _pmBg(pm); else ds.style.background = '';
 	document.getElementById('ffa-bar').style.display = '';
 	const chatEl = document.getElementById('ffa-chat');
 	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''; }
@@ -6706,7 +6670,7 @@ function startDuel(deckIds, extraIds) {
 	showScreen('duel-screen');
 	const pm = getActivePlaymat();
 	const ds = document.getElementById('duel-screen');
-	if (pm) ds.style.background = pm.bg;
+	if (pm) ds.style.background = _pmBg(pm);
 	else ds.style.background = '';
 	const ffaBar = document.getElementById('ffa-bar');
 	if (ffaBar) ffaBar.style.display = 'none';
@@ -9423,7 +9387,7 @@ async function mpFFAStartGame() {
 	showScreen('duel-screen');
 	const pm = getActivePlaymat();
 	const ds = document.getElementById('duel-screen');
-	if (pm) ds.style.background = pm.bg; else ds.style.background = '';
+	if (pm) ds.style.background = _pmBg(pm); else ds.style.background = '';
 	document.getElementById('ffa-bar').style.display = '';
 	const chatEl = document.getElementById('ffa-chat');
 	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''; }
