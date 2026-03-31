@@ -3542,15 +3542,15 @@ const _CARD_ART_NAMES = [
 	'Camouflage Ink','Celestial Nautilus','Cephalopod Grasp','Chain Urchin','Charybdis the Devourer','Chitin Gauntlet',
 	'Claw Recruit','Claw Sharpening','Claw of Dominion','Coconut Crab King','Conch Shell Blast',
 	'Coral Bastion','Coral Blade','Coral Bloom','Coral Colossus','Coral Growth','Coral Reef Kingdom','Coral Snare','Coral Witch',
-	'Countercurrent','Crustacean Fury','Current Draw','Current Sprite','Cuttlebone Spy',
-	'Deep Sea Berserker','Deep Silence','Deepwater Titan','Depth Charge','Depth Mine','Drift Anemone','Driftwood Shield',
+	'Countercurrent','Crushing Depths','Crustacean Fury','Current Draw','Current Sprite','Cuttlebone Spy',
+	'Deep Sea Berserker','Deep Silence','Deepwater Titan','Depth Charge','Depth Mine','Depth Rejection','Drift Anemone','Driftwood Shield',
 	'Ebb Flow','Electric Ray','Ember Urchin','Emergency Molt','Emperor Crustacean','Flashtide','Gale Currents','Gale Fin',
 	'Gilded Cephalopod','Glacial Lobster','Gloom Squid','Hardened Carapace','Hermit Lobster','Howling Abyss','Hydra Polyp','Hydro Burst','Hydrothermal Charge','Hydrothermal Drake','Hydrothermal Geyser',
 	'Infernal Tidecaller','Inferno Crustacean','Ink Cloud','Ink Eruption','Ironclad Nautilus','Ironshell Crab',
 	'Jellyfish Sting','Jet Current','Kelp Entangle','Kelp Runner','Kelp Wrap',
 	'Kraken Hatchling','Kraken Overlord',"Kraken's Reach",'Lantern Angler','Larval Drifter','Leviathan Lobster','Leviathan Prime',
 	'Lobster Pot',"Lobster's Feast",'Luminous Atoll','Maelstrom Dragon','Maelstrom Ritual','Maelstrom Wrath','Magma Hermit','Magma Rite','Magma Wisp',
-	'Mantis Shrimp','Mantis Shrimp Striker','Mariana Plunge','Mirror Tide','Molt Striker','Molting Season','Narwhal Lance','Nautilus Warden','Nullifying Tide',
+	'Mantis Shrimp','Mantis Shrimp Striker','Mariana Plunge','Mirror Tide','Molt Striker','Molting Season','Murky Veil','Narwhal Lance','Nautilus Warden','Nullifying Tide',
 	'Oblivion Crawler','Obsidian Shellbreaker',"Ocean's Bounty","Ocean's Wrath",
 	'Pearl Diver','Phantom Jellyfish','Phantom Maw','Phosphor Flash','Phosphor Shrimp',
 	'Pincer Duelist','Pincer Retaliation','Pincer Trap','Pistol Shrimp','Plankton Surge',"Poseidon's Chosen",'Predator Instinct','Predator Lure','Pressure Blast','Pressure Collapse','Pressure Crush','Pressure Wave','Prism Jellyfish','Pyroclasm Leviathan',
@@ -3812,7 +3812,7 @@ function loadData() {
 			playerData = { ...defaultPlayerData(), ...cloud };
 			saveData();
 			try { updateCoinsDisplay(); } catch(e) {}
-			try { initTitleShowcase(); } catch(e) {}
+			try{initTitleShowcase();}catch(e){}
 		}
 		}).catch(() => {});
 	}
@@ -6190,7 +6190,7 @@ function ffaNextTurn() {
 	const isRemotePlayer = mpFFA.room && mpFFA.players[next] && next !== mySeat;
 	const isNPC = ffa.seats[next].isNPC;
 	if (isMyTurn) {
-	
+
 		const vt = ffa.seats[ffa.viewTarget].eliminated ? ffaFirstAliveNPC() : ffa.viewTarget;
 		ffa.viewTarget = vt;
 		ffaSwap(mySeat, vt);
@@ -6208,7 +6208,7 @@ function ffaNextTurn() {
 		showDiveDraw('player', () => { const drawn = drawCard('player'); if (drawn) duelLog(`Drew ${drawn.name}.`); renderDuel(); });
 		if (mpFFA.room && mpFFA.isHost) mpFFABroadcastState();
 	} else if (isRemotePlayer) {
-	
+
 		duel.currentPlayer = 'ai';
 		duel.phase = 'main1';
 		duel.uiState = 'idle'; duel.selectedCard = null;
@@ -6216,9 +6216,9 @@ function ffaNextTurn() {
 		renderDuel();
 		if (mpFFA.room && mpFFA.isHost) mpFFABroadcastState();
 	} else if (isNPC) {
-	
+
 		if (mpFFA.room && !mpFFA.isHost) {
-		
+
 			duel.currentPlayer = 'ai';
 			renderDuel();
 			return;
@@ -6838,7 +6838,7 @@ function ffaEliminate(who) {
 	if (!ffa) return;
 	const mySeat = mpFFA.room ? mpFFA.seat : 0;
 	if (who === 'player') {
-	
+
 		duelLog('You have been eliminated!');
 		endDuelResult('lose');
 	} else {
@@ -6941,7 +6941,7 @@ function endTurn() {
 	if (ffa) {
 		ffaFlush();
 		if (mpFFA.room && !mpFFA.isHost) {
-		
+
 			mpFFASendTurnState();
 			return;
 		}
@@ -8984,11 +8984,11 @@ function showVault() {
 	}
 	overlay.classList.add('active');
 }
-try { loadData(); } catch(e) { console.error('loadData:', e); }
-try { updateCoinsDisplay(); } catch(e) {}
-try { initWalletConnect(); } catch(e) {}
+try{loadData();}catch(e){console.error(e);}
+try{updateCoinsDisplay();}catch(e){}
+try{initWalletConnect();}catch(e){}
 const _btp=document.getElementById('trap-prompt');if(_btp){_btp.style.display='none';_btp.classList.remove('active');}
-try { initTitleShowcase(); } catch(e) {}
+try{initTitleShowcase();}catch(e){}
 setTimeout(() => {
 	const ls = document.getElementById('loading-screen');
 	if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
@@ -9416,7 +9416,7 @@ function mpFFAApplySnapshot(snap) {
 function mpFFAHostReceive(seatIdx, move) {
 	if (!move || !move.type || !ffa || duel.gameOver) return;
 	if (move.type === 'turnState') {
-	
+
 		if (ffa.turnIdx !== seatIdx) return; // not their turn
 		if (move.seats) {
 			for (const [idx, data] of Object.entries(move.seats)) {
@@ -9427,7 +9427,7 @@ function mpFFAHostReceive(seatIdx, move) {
 		}
 		if (move.tide !== undefined) duel.tide = move.tide;
 		if (move.log) duel.log = move.log;
-	
+
 		const mySeat = mpFFA.seat;
 		duel.player = ffa.seats[mySeat].state;
 		duel.ai = ffa.seats[ffa.viewTarget].state;
