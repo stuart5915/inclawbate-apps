@@ -2902,7 +2902,7 @@ function getWalletFromCookie() {
 	if (!match) return null;
 	const payload = JSON.parse(atob(decodeURIComponent(match[1]).split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
 	return payload.wallet_address || null;
-	} catch { return null; }
+	} catch { return null}
 }
 function isValidWallet(addr) {
 	return typeof addr === 'string' && /^0x[0-9a-fA-F]{40}$/.test(addr);
@@ -2911,12 +2911,12 @@ function truncateWallet(addr) {
 	if (!addr || addr.length < 10) return addr || '';
 	return addr.slice(0, 6) + '...' + addr.slice(-4);
 }
-function _esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function _esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML}
 async function initWalletConnect() {
 	const cookieWallet = getWalletFromCookie();
-	if (cookieWallet && isValidWallet(cookieWallet)) { setConnectedWallet(cookieWallet); return; }
+	if (cookieWallet && isValidWallet(cookieWallet)) { setConnectedWallet(cookieWallet); return}
 	const savedWallet = localStorage.getItem('cc_wallet');
-	if (savedWallet && isValidWallet(savedWallet)) { setConnectedWallet(savedWallet); return; }
+	if (savedWallet && isValidWallet(savedWallet)) { setConnectedWallet(savedWallet); return}
 	if (window.ethereum) {
 	try {
 		const accounts = await window.ethereum.request({ method: 'eth_accounts' });
@@ -3528,8 +3528,10 @@ makeCard(211,'Abyss Crawler','monster','effect',{
 	effects:[{trigger:'onSummon',action:'damage',value:400,target:'opponent'}]
 }),
 ];
-function getCard(id) { return CARDS.find(c => c.id === id); }
+function getCard(id) { return CARDS.find(c => c.id === id)}
 const _CARD_ART_BASE = 'https://raw.githubusercontent.com/stuart5915/inclawbate-apps/master/apps/card-art/';
+const _PACK_ART_BASE = 'https://raw.githubusercontent.com/stuart5915/inclawbate-apps/master/apps/card-packs/';
+function _packArtUrl(n){return _PACK_ART_BASE+encodeURIComponent(n)+'.png'}
 const _cardArtImages = {};
 function _cardArtUrl(name) {
 	return _CARD_ART_BASE + encodeURIComponent(name) + '.png';
@@ -3561,7 +3563,7 @@ const _CARD_ART_NAMES = [
 	'Trench Collapse','Trench Stalker','Trident of Tides','Tsunami Wipe','Twin Claw Dragon',
 	'Undertow','Undertow Surge','Urchin Barrage','Verdant Shallows','Volcanic Krill','Volcanic Seabed','Volcanic Spine','Volcanic Vent Bomb','Volcanic Vent Crab','Volcanic Vents','Vortex Sacrament','Waterspout','Whirlpool Eel','Whirlpool Trap'
 ];
-_CARD_ART_NAMES.forEach(name => { _cardArtImages[name] = _cardArtUrl(name); });
+_CARD_ART_NAMES.forEach(name => { _cardArtImages[name] = _cardArtUrl(name)});
 function getFrameClass(card) {
 	if (card.type === 'spell') return 'spell';
 	if (card.type === 'trap') return 'trap';
@@ -3575,7 +3577,7 @@ function getSpellTrapLabel(card) {
 	const labels = { normal: 'Trap', continuous: 'Continuous Trap', counter: 'Reaction Trap', depthcharge: 'Depth Charge' };
 	return labels[card.subtype] || 'Trap';
 }
-function cardNumber(id) { return 'CC-' + String(id).padStart(3, '0'); }
+function cardNumber(id) { return 'CC-' + String(id).padStart(3, '0')}
 function renderCard(card, opts = {}) {
 	const faceDown = opts.faceDown;
 	const defPos = opts.defPos;
@@ -3697,15 +3699,15 @@ async function fetchClawsBalance() {
 		});
 	const j = await res.json();
 	return Math.floor(Number(BigInt(j.result || '0x0') / BigInt(1e18)));
-	} catch { return null; }
+	} catch { return null}
 }
 async function syncBalance() {
-	if (offlineMode || !connectedWallet) { _clawsBal = null; return; }
+	if (offlineMode || !connectedWallet) { _clawsBal = null; return}
 	const b = await fetchClawsBalance();
-	if (b !== null) { _clawsBal = b; updateCoinsDisplay(); }
+	if (b !== null) { _clawsBal = b; updateCoinsDisplay()}
 }
-function canPurchase() { return navigator.onLine && connectedWallet && !offlineMode; }
-function _closePay(cur) { const m = document.getElementById('pay-modal'); if (m) m.remove(); if (_payCb) _payCb(cur); }
+function canPurchase() { return navigator.onLine && connectedWallet && !offlineMode}
+function _closePay(cur) { const m = document.getElementById('pay-modal'); if (m) m.remove(); if (_payCb) _payCb(cur)}
 function _showPayPicker(ca) {
 	const usd = clawsPrice ? (ca * clawsPrice) : null;
 	const ea = (usd && ethPrice) ? (usd / ethPrice) : null;
@@ -3726,15 +3728,15 @@ async function payItem(clawsAmt) {
 	if (payItem._busy) return null;
 	payItem._busy = true;
 	try {
-	if (!connectedWallet || offlineMode) { showWalletModal(); return null; }
-	if (!window.ethereum) { showStoreToast('MetaMask required', 'Install MetaMask'); return null; }
-	try { await fetchTokenPrices(); } catch(e) {}
+	if (!connectedWallet || offlineMode) { showWalletModal(); return null}
+	if (!window.ethereum) { showStoreToast('MetaMask required', 'Install MetaMask'); return null}
+	try { await fetchTokenPrices()} catch(e) {}
 	const accs = await window.ethereum.request({ method: 'eth_requestAccounts' });
 	const from = accs[0];
-	if (!from) { showStoreToast('No account', 'Connect wallet'); return null; }
+	if (!from) { showStoreToast('No account', 'Connect wallet'); return null}
 	const onBase = await ensureBaseChain();
-	if (!onBase) { showStoreToast('Wrong network', 'Switch to Base'); return null; }
-	const cur = await new Promise(r => { _payCb = r; _showPayPicker(clawsAmt); });
+	if (!onBase) { showStoreToast('Wrong network', 'Switch to Base'); return null}
+	const cur = await new Promise(r => { _payCb = r; _showPayPicker(clawsAmt)});
 	if (!cur) return null;
 	const usd = clawsAmt * (clawsPrice || 0);
 	try {
@@ -3752,7 +3754,7 @@ async function payItem(clawsAmt) {
 		}
 		showStoreToast('Confirming...', 'Waiting for Base');
 		const ok = await waitForTx(txHash);
-		if (!ok) { showStoreToast('Failed', 'Transaction reverted'); return null; }
+		if (!ok) { showStoreToast('Failed', 'Transaction reverted'); return null}
 		showStoreToast('Paid!', 'Payment confirmed');
 		setTimeout(() => syncBalance(), 3000);
 		return cur;
@@ -3760,7 +3762,7 @@ async function payItem(clawsAmt) {
 		if (e.code !== 4001) showStoreToast('Failed', e.message || 'Error');
 		return null;
 	}
-	} finally { payItem._busy = false; }
+	} finally { payItem._busy = false}
 }
 const CC_DATA_VERSION = 2;
 function defaultPlayerData() {
@@ -3811,8 +3813,8 @@ function loadData() {
 		if ((cloud._ts || 0) >= localTs) {
 			playerData = { ...defaultPlayerData(), ...cloud };
 			saveData();
-			try { updateCoinsDisplay(); } catch(e) {}
-			try{initTitleShowcase();}catch(e){}
+			try { updateCoinsDisplay()} catch(e) {}
+			try{initTitleShowcase()}catch(e){}
 		}
 		}).catch(() => {});
 	}
@@ -4040,7 +4042,7 @@ function renderOwnProfile() {
 			}).join('')}
 		</div>`;
 }
-function toggleProfilePublic() { document.getElementById('profile-public-switch').classList.toggle('on'); }
+function toggleProfilePublic() { document.getElementById('profile-public-switch').classList.toggle('on')}
 async function saveProfile() {
 	const name = document.getElementById('profile-name-input').value.trim().slice(0,20);
 	const isPublic = document.getElementById('profile-public-switch').classList.contains('on');
@@ -4048,7 +4050,7 @@ async function saveProfile() {
 	if (name && name.toLowerCase() !== oldName.toLowerCase() && window.AppDB) {
 	try {
 		const existing = await window.AppDB.getGlobal('ccname_' + name.toLowerCase());
-		if (existing && existing !== (connectedWallet || '').toLowerCase()) { showProfileMsg('That display name is already taken.', true); return; }
+		if (existing && existing !== (connectedWallet || '').toLowerCase()) { showProfileMsg('That display name is already taken.', true); return}
 		} catch(e) {}
 	}
 	if (oldName && oldName.toLowerCase() !== name.toLowerCase() && connectedWallet && window.AppDB) {
@@ -4090,7 +4092,7 @@ async function renderFriendsTab() {
 	}
 	let reqs = [];
 	if (connectedWallet && _appdbReady) {
-	try { reqs = await AppDB.getGlobal('ccfreq_' + connectedWallet.toLowerCase()) || []; } catch(e) {}
+	try { reqs = await AppDB.getGlobal('ccfreq_' + connectedWallet.toLowerCase()) || []} catch(e) {}
 	}
 	if (reqs.length > 0) {
 	html += `<div class="mp-sec-lbl" style="padding:0 12px;margin-top:12px">REQUESTS (${reqs.length})</div>`;
@@ -4105,7 +4107,7 @@ async function _getFriendName(wallet) {
 	try {
 	const p = await AppDB.getGlobal('profile_' + wallet.toLowerCase());
 	return p?.name || wallet.slice(0,6)+'...'+wallet.slice(-4);
-	} catch(e) { return wallet.slice(0,6)+'...'+wallet.slice(-4); }
+	} catch(e) { return wallet.slice(0,6)+'...'+wallet.slice(-4)}
 }
 async function searchFriend() {
 	const input = document.getElementById('fr-search').value.trim();
@@ -4122,12 +4124,12 @@ async function searchFriend() {
 		wallet = await AppDB.getGlobal('ccname_' + input.toLowerCase());
 		if (wallet) profile = await AppDB.getGlobal('profile_' + wallet);
 		}
-	if (!wallet) { el.innerHTML = '<div style="text-align:center;padding:8px;color:rgba(255,120,120,0.6);font-size:11px">Player not found</div>'; return; }
-	if (connectedWallet && wallet === connectedWallet.toLowerCase()) { el.innerHTML = '<div style="text-align:center;padding:8px;color:rgba(140,190,240,0.3);font-size:11px">That\'s you!</div>'; return; }
+	if (!wallet) { el.innerHTML = '<div style="text-align:center;padding:8px;color:rgba(255,120,120,0.6);font-size:11px">Player not found</div>'; return}
+	if (connectedWallet && wallet === connectedWallet.toLowerCase()) { el.innerHTML = '<div style="text-align:center;padding:8px;color:rgba(140,190,240,0.3);font-size:11px">That\'s you!</div>'; return}
 	const name = profile?.name || wallet.slice(0,6)+'...'+wallet.slice(-4);
 	const already = (playerData.friends||[]).includes(wallet);
 	el.innerHTML = `<div class="fr-row"><span class="fr-name">${name}</span>${already ? '<span style="font-size:10px;color:rgba(140,190,240,0.3)">Already friends</span>' : `<button class="fr-btn fr-btn-add" onclick="addFriend('${wallet}','${name.replace(/'/g,"\\'")}')">Add</button>`}</div>`;
-	} catch(e) { el.innerHTML = '<div style="text-align:center;padding:8px;color:rgba(255,120,120,0.6);font-size:11px">Search failed</div>'; }
+	} catch(e) { el.innerHTML = '<div style="text-align:center;padding:8px;color:rgba(255,120,120,0.6);font-size:11px">Search failed</div>'}
 }
 async function addFriend(wallet, name) {
 	if (!connectedWallet || !_appdbReady) return;
@@ -4174,15 +4176,15 @@ function removeFriend(wallet) {
 	renderFriendsTab();
 }
 async function friendDuel(wallet) {
-	if (!_appdbReady) { alert('Not connected'); return; }
+	if (!_appdbReady) { alert('Not connected'); return}
 	try {
 	const all = await AppDB.listGlobal();
 	const now = Date.now();
 	const target = all.find(e => e.key.startsWith('ccon_') && typeof e.value === 'object' && e.value.w === wallet && (now - e.value.t) < 90000);
-	if (!target) { alert('Friend is not online right now'); return; }
+	if (!target) { alert('Friend is not online right now'); return}
 	showScreen('mp-lobby');
 	mpChallengeUser(target.value.id || target.key);
-	} catch(e) { alert('Could not send challenge'); }
+	} catch(e) { alert('Could not send challenge')}
 }
 function _dmKey(w1, w2) {
 	const a = w1.toLowerCase(), b = w2.toLowerCase();
@@ -4190,13 +4192,13 @@ function _dmKey(w1, w2) {
 }
 async function renderMsgsTab() {
 	const el = document.getElementById('profile-content');
-	if (_activeConvo) { openConvo(_activeConvo); return; }
+	if (_activeConvo) { openConvo(_activeConvo); return}
 	const friends = playerData.friends || [];
-	if (!friends.length) { el.innerHTML = '<div class="mp-empty">Add friends to start messaging</div>'; return; }
+	if (!friends.length) { el.innerHTML = '<div class="mp-empty">Add friends to start messaging</div>'; return}
 	let html = '<div class="mp-sec-lbl" style="padding:0 12px">CONVERSATIONS</div>';
 	for (const fw of friends) {
 	let last = null;
-	if (_appdbReady) { try { const msgs = await AppDB.getGlobal(_dmKey(connectedWallet,fw)); last = msgs?.[msgs.length-1]; } catch(e) {} }
+	if (_appdbReady) { try { const msgs = await AppDB.getGlobal(_dmKey(connectedWallet,fw)); last = msgs?.[msgs.length-1]} catch(e) {} }
 	const name = await _getFriendName(fw);
 	const preview = last ? ((last.f===connectedWallet.toLowerCase()?'You: ':'')+last.t).slice(0,35) : 'No messages yet';
 	html += `<div class="msg-row" onclick="openConvo('${fw}')"><span class="msg-name">${name}</span><span class="msg-preview">${preview}</span></div>`;
@@ -4208,7 +4210,7 @@ async function openConvo(wallet) {
 	const el = document.getElementById('profile-content');
 	const name = await _getFriendName(wallet);
 	let msgs = [];
-	if (_appdbReady && connectedWallet) { try { msgs = await AppDB.getGlobal(_dmKey(connectedWallet,wallet)) || []; } catch(e) {} }
+	if (_appdbReady && connectedWallet) { try { msgs = await AppDB.getGlobal(_dmKey(connectedWallet,wallet)) || []} catch(e) {} }
 	const mw = connectedWallet?.toLowerCase();
 	el.innerHTML = `
 		<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid rgba(40,120,200,0.1)">
@@ -4241,7 +4243,7 @@ async function dmSend() {
 	openConvo(_activeConvo);
 }
 async function lookupProfile(input) {
-	if (!input) { input = document.getElementById('fr-search')?.value?.trim(); }
+	if (!input) { input = document.getElementById('fr-search')?.value?.trim()}
 	if (!input || input.length < 2 || !_appdbReady) return null;
 	const isW = /^0x[a-fA-F0-9]{40}$/.test(input);
 	try {
@@ -4289,18 +4291,18 @@ function renderViewedProfile(data) {
 function viewPlayerGallery(slots, playerName) {
 	const modal = document.createElement('div');
 	modal.className = 'player-gallery-modal';
-	modal.innerHTML = `<div class="player-gallery-overlay" onclick="this.parentElement.remove()"></div><div class="player-gallery-content"><div class="player-gallery-header"><span>${playerName}'s Gallery</span><button onclick="this.closest('.player-gallery-modal').remove()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);color:#8892a8;padding:6px 14px;border-radius:16px;font-size:11px;cursor:pointer">Close</button></div><div class="player-gallery-grid">${(slots||[]).map(cid => { if (!cid) return '<div class="player-gallery-empty"></div>'; const card = CARDS.find(c => c.id === cid); if (!card) return '<div class="player-gallery-empty"></div>'; return '<div class="player-gallery-card">'+renderCard(card)+'</div>'; }).join('')}</div></div>`;
+	modal.innerHTML = `<div class="player-gallery-overlay" onclick="this.parentElement.remove()"></div><div class="player-gallery-content"><div class="player-gallery-header"><span>${playerName}'s Gallery</span><button onclick="this.closest('.player-gallery-modal').remove()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.06);color:#8892a8;padding:6px 14px;border-radius:16px;font-size:11px;cursor:pointer">Close</button></div><div class="player-gallery-grid">${(slots||[]).map(cid => { if (!cid) return '<div class="player-gallery-empty"></div>'; const card = CARDS.find(c => c.id === cid); if (!card) return '<div class="player-gallery-empty"></div>'; return '<div class="player-gallery-card">'+renderCard(card)+'</div>'}).join('')}</div></div>`;
 	document.body.appendChild(modal);
 }
 function showProfileMsg(msg, isError) {
 	let el = document.getElementById('profile-msg');
-	if (!el) { el = document.createElement('div'); el.id = 'profile-msg'; const c = document.getElementById('profile-content'); c.parentNode.insertBefore(el, c); }
+	if (!el) { el = document.createElement('div'); el.id = 'profile-msg'; const c = document.getElementById('profile-content'); c.parentNode.insertBefore(el, c)}
 	el.style.cssText = 'text-align:center;padding:8px 12px;margin:0 12px;border-radius:6px;font-size:12px;font-weight:700;transition:opacity 0.3s;';
 	el.style.background = isError ? 'rgba(200,40,40,0.15)' : 'rgba(40,140,220,0.15)';
 	el.style.color = isError ? '#ff6b6b' : 'rgba(140,200,255,0.9)';
 	el.style.border = isError ? '1px solid rgba(200,40,40,0.2)' : '1px solid rgba(40,140,220,0.2)';
 	el.textContent = msg; el.style.opacity = '1';
-	setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { if (el.parentNode) el.remove(); }, 300); }, 3000);
+	setTimeout(() => { el.style.opacity = '0'; setTimeout(() => { if (el.parentNode) el.remove()}, 300)}, 3000);
 }
 let tradeTab = 'browse';
 let tradeOfferCards = [];
@@ -4450,7 +4452,7 @@ function getTimeAgo(ts) {
 	return days + 'd ago';
 }
 function openTradeCreator() {
-	if (!connectedWallet) { alert('Connect your wallet to create trades.'); return; }
+	if (!connectedWallet) { alert('Connect your wallet to create trades.'); return}
 	tradeOfferCards = [];
 	tradeWantCards = [];
 	document.getElementById('trade-creator').classList.add('open');
@@ -4489,8 +4491,8 @@ function toggleTradeOffer(cid) {
 }
 function toggleTradeWant(cid) {
 	const idx = tradeWantCards.indexOf(cid);
-	if (idx >= 0) { tradeWantCards.splice(idx, 1); }
-	else { if (tradeWantCards.length >= 10) return; tradeWantCards.push(cid); }
+	if (idx >= 0) { tradeWantCards.splice(idx, 1)}
+	else { if (tradeWantCards.length >= 10) return; tradeWantCards.push(cid)}
 	renderTradeCreatorGrids();
 }
 function removeTradeOffer(cid) {
@@ -4524,8 +4526,8 @@ function renderTradeSelections() {
 }
 async function postTradeListing() {
 	if (tradeOfferCards.length === 0) return;
-	if (!connectedWallet) { alert('Connect wallet first.'); return; }
-	if (!window.AppDB) { alert('Trade Hub requires inclawbate.com'); return; }
+	if (!connectedWallet) { alert('Connect wallet first.'); return}
+	if (!window.AppDB) { alert('Trade Hub requires inclawbate.com'); return}
 	const displayName = playerData.profileName || connectedWallet.slice(0, 6) + '...' + connectedWallet.slice(-4);
 	const trade = {
 	id: 'cctrade_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
@@ -4545,7 +4547,7 @@ async function postTradeListing() {
 	closeTradeCreator();
 	switchTradeTab('mine');
 	} catch(e) {
-	for (const cid of trade.offering) { playerData.collection[cid] = (playerData.collection[cid] || 0) + 1; }
+	for (const cid of trade.offering) { playerData.collection[cid] = (playerData.collection[cid] || 0) + 1}
 	saveData();
 	showCreatorMsg('trade-creator-msg', 'Failed to post trade. Try again.', true);
 	}
@@ -4610,7 +4612,7 @@ async function loadMarketListings() {
 	}
 }
 function openMarketCreator() {
-	if (!connectedWallet) { alert('Connect your wallet to sell cards.'); return; }
+	if (!connectedWallet) { alert('Connect your wallet to sell cards.'); return}
 	marketSellCards = [];
 	document.getElementById('market-price-input').value = '100';
 	document.getElementById('market-creator').classList.add('open');
@@ -4660,10 +4662,10 @@ function renderMarketSelections() {
 }
 async function postMarketListing() {
 	if (marketSellCards.length === 0) return;
-	if (!connectedWallet) { alert('Connect wallet first.'); return; }
-	if (!window.AppDB) { alert('Marketplace requires inclawbate.com'); return; }
+	if (!connectedWallet) { alert('Connect wallet first.'); return}
+	if (!window.AppDB) { alert('Marketplace requires inclawbate.com'); return}
 	const price = Math.max(1, parseInt(document.getElementById('market-price-input').value) || 0);
-	if (price < 1) { showCreatorMsg('market-creator-msg', 'Price must be at least 1 $CLAWS.', true); return; }
+	if (price < 1) { showCreatorMsg('market-creator-msg', 'Price must be at least 1 $CLAWS.', true); return}
 	const displayName = playerData.profileName || connectedWallet.slice(0, 6) + '...' + connectedWallet.slice(-4);
 	const listing = {
 	id: 'ccmarket_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
@@ -4683,7 +4685,7 @@ async function postMarketListing() {
 	closeMarketCreator();
 	switchMarketTab('mine');
 	} catch(e) {
-	for (const cid of listing.cards) { playerData.collection[cid] = (playerData.collection[cid] || 0) + 1; }
+	for (const cid of listing.cards) { playerData.collection[cid] = (playerData.collection[cid] || 0) + 1}
 	saveData();
 	showCreatorMsg('market-creator-msg', 'Failed to list cards. Try again.', true);
 	}
@@ -4692,7 +4694,7 @@ async function buyMarketListing(listingId) {
 	if (buyMarketListing._busy) return;
 	buyMarketListing._busy = true;
 	try {
-	if (!connectedWallet) { alert('Connect wallet first.'); return; }
+	if (!connectedWallet) { alert('Connect wallet first.'); return}
 	if (!window.AppDB) return;
 	const listing = await window.AppDB.getGlobal(listingId);
 	if (!listing || listing.status !== 'open') {
@@ -4723,7 +4725,7 @@ async function buyMarketListing(listingId) {
 		};
 	const sellerClaimsKey = 'ccclaims_' + (listing.seller?.wallet||'');
 	let claims = [];
-	try { claims = (await window.AppDB.getGlobal(sellerClaimsKey)) || []; } catch(e) {}
+	try { claims = (await window.AppDB.getGlobal(sellerClaimsKey)) || []} catch(e) {}
 	claims.push(claimData);
 	await window.AppDB.setGlobal(sellerClaimsKey, claims);
 	await window.AppDB.deleteGlobal(listingId);
@@ -4732,7 +4734,7 @@ async function buyMarketListing(listingId) {
 	updateCoinsDisplay();
 	} catch(e) {
 	alert('Purchase failed. Please try again.');
-	} finally { buyMarketListing._busy = false; }
+	} finally { buyMarketListing._busy = false}
 }
 function refreshActiveListings() {
 	if (document.getElementById('market-screen').classList.contains('active')) loadMarketListings();
@@ -4756,7 +4758,7 @@ async function cancelListing(listingId) {
 	}
 }
 async function acceptTrade(tradeId) {
-	if (!connectedWallet) { alert('Connect wallet first.'); return; }
+	if (!connectedWallet) { alert('Connect wallet first.'); return}
 	if (!window.AppDB) return;
 	try {
 	const trade = await window.AppDB.getGlobal(tradeId);
@@ -4790,7 +4792,7 @@ async function acceptTrade(tradeId) {
 		};
 	const sellerClaimsKey = 'ccclaims_' + (trade.seller?.wallet||'');
 	let claims = [];
-	try { claims = (await window.AppDB.getGlobal(sellerClaimsKey)) || []; } catch(e) {}
+	try { claims = (await window.AppDB.getGlobal(sellerClaimsKey)) || []} catch(e) {}
 	claims.push(claimData);
 	await window.AppDB.setGlobal(sellerClaimsKey, claims);
 	await window.AppDB.deleteGlobal(tradeId);
@@ -4804,7 +4806,7 @@ async function checkTradeClaims() {
 	if (!connectedWallet || !window.AppDB) return;
 	const claimsKey = 'ccclaims_' + connectedWallet.toLowerCase();
 	let claims = [];
-	try { claims = (await window.AppDB.getGlobal(claimsKey)) || []; } catch(e) {}
+	try { claims = (await window.AppDB.getGlobal(claimsKey)) || []} catch(e) {}
 	if (claims.length === 0) return;
 	for (const claim of claims) {
 	for (const cid of (claim.cards || [])) {
@@ -4830,7 +4832,7 @@ function showCreatorMsg(elId, msg, isError) {
 	el.style.color = isError ? '#ff6b6b' : 'rgba(140,200,255,0.9)';
 	el.style.border = isError ? '1px solid rgba(200,40,40,0.2)' : '1px solid rgba(40,140,220,0.2)';
 	el.textContent = msg;
-	setTimeout(() => { el.style.display = 'none'; }, 3000);
+	setTimeout(() => { el.style.display = 'none'}, 3000);
 }
 let titleShowcaseInit = false;
 function initTitleShowcase() {
@@ -4861,7 +4863,7 @@ function initTitleShowcase() {
 	}
 }
 function showScreen(id) {
-	const _tp = document.getElementById('trap-prompt'); if (_tp) { _tp.style.display = 'none'; _tp.classList.remove('active'); }
+	const _tp = document.getElementById('trap-prompt'); if (_tp) { _tp.style.display = 'none'; _tp.classList.remove('active')}
 	const _vb = document.getElementById('view-board-back'); if (_vb) _vb.remove();
 	document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
 	document.getElementById(id).classList.add('active');
@@ -4874,7 +4876,7 @@ function showScreen(id) {
 	if (id === 'pack-screen') renderPackShop();
 	if (id === 'deckbuilder-screen') renderDeckBuilder();
 	if (id === 'profile-screen') profTab(_profTab || 'profile');
-	if (id === 'mp-lobby' && !mp.room) { renderMPLobby(); mpLobbyLoadChat(); if(!_lcPoll)_lcPoll=setInterval(()=>{if(!document.getElementById('mp-lobby')?.classList.contains('active')){clearInterval(_lcPoll);_lcPoll=null;return;}mpLobbyLoadChat();},4000); }
+	if (id === 'mp-lobby' && !mp.room) { renderMPLobby(); mpLobbyLoadChat(); if(!_lcPoll)_lcPoll=setInterval(()=>{if(!document.getElementById('mp-lobby')?.classList.contains('active')){clearInterval(_lcPoll);_lcPoll=null;return}mpLobbyLoadChat()},4000)}
 	if (id === 'gallery-screen') renderGallery();
 	if (id === 'trade-screen') renderTradeHub();
 	if (id === 'market-screen') renderMarketplace();
@@ -5065,22 +5067,22 @@ const PACKS = [
 	{ id: 'reef', name: 'Reef Pack', desc: '5 cards. Guaranteed 1 Super Rare', cost: 1500, count: 5,
 	  pool: () => CARDS.filter(c => ['C','R','SR'].includes(c.rarity)),
 	  guarantee: 'SR',
-	  colors: ['#1a5a4a','#0a2a20']
+	  colors: ['#1a5a4a','#0a2a20'], img:'Reef Pack'
 	},
 	{ id: 'abyss', name: 'Abyssal Pack', desc: '5 cards. Guaranteed 1 Ultra Rare', cost: 2500, count: 5,
 	  pool: () => CARDS.filter(c => ['C','R','SR','UR'].includes(c.rarity)),
 	  guarantee: 'UR',
-	  colors: ['#2a1a4a','#100828']
+	  colors: ['#2a1a4a','#100828'], img:'Abyssal Pack'
 	},
 	{ id: 'mega', name: 'Mega Pack', desc: '10 cards. Guaranteed 2 Ultra Rare', cost: 7500, count: 10,
 	  pool: () => CARDS.filter(c => c.rarity !== 'StR'),
 	  guarantee: 'UR', guaranteeCount: 2,
-	  colors: ['#3a0828','#1a0418']
+	  colors: ['#3a0828','#1a0418'], img:'Mega Pack'
 	},
 	{ id: 'legend', name: 'Legendary Pack', desc: '5 cards. Guaranteed 1 rare pull: Secret 80% / Phantom 15% / Embossed 4% / Cosmic 1%', cost: 15000, count: 5,
 	  pool: () => CARDS,
 	  guarantee: 'legendaryWeighted',
-	  colors: ['#3a2a08','#1a1204']
+	  colors: ['#3a2a08','#1a1204'], img:'Legendary Pack'
 	},
 ];
 const SHOP_DECKS = [
@@ -5155,7 +5157,7 @@ function renderPackShop() {
 	const list = document.getElementById('pack-list');
 	updateCoinsDisplay();
 	switchShopTab('packs');
-	if (_freePackTimer) { clearInterval(_freePackTimer); _freePackTimer = null; }
+	if (_freePackTimer) { clearInterval(_freePackTimer); _freePackTimer = null}
 	const online = canPurchase();
 	list.innerHTML = PACKS.map(p => {
 	const bought = packBuys[p.id] || 0;
@@ -5173,9 +5175,7 @@ function renderPackShop() {
 		btnHTML = `<button class="cosmetic-btn${canBuy ? ' buy' : ''}" onclick="buyPack('${p.id}')" ${canBuy || p.isFree ? '' : 'disabled'}>${p.cost === 0 ? 'FREE' : p.cost + ' $CLAWS'}</button>`;
 		}
 	return `<div class="cosmetic-item" onclick="showShopPreview('pack','${p.id}')">
-			<div class="pack-icon" style="background:linear-gradient(135deg,${p.colors[0]},${p.colors[1]});border:1px solid rgba(255,255,255,0.15)">
-				<svg viewBox="0 0 40 50" width="28" height="38"><rect x="5" y="5" width="30" height="40" rx="3" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/><text x="20" y="30" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="8" font-weight="900">CC</text></svg>
-			</div>
+			${p.img?`<div class="pack-icon" style="padding:0;overflow:hidden;border:1px solid rgba(255,255,255,0.15)"><img src="${_packArtUrl(p.img)}" style="width:100%;height:100%;object-fit:cover;border-radius:7px"></div>`:`<div class="pack-icon" style="background:linear-gradient(135deg,${p.colors[0]},${p.colors[1]});border:1px solid rgba(255,255,255,0.15)"><svg viewBox="0 0 40 50" width="28" height="38"><rect x="5" y="5" width="30" height="40" rx="3" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.2)"/><text x="20" y="30" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="8" font-weight="900">CC</text></svg></div>`}
 			<div class="cosmetic-name">${p.name}</div>
 			<div class="pack-desc">${p.desc}</div>
 			${btnHTML}
@@ -5190,7 +5190,7 @@ function _updateFreeCd() {
 	const el = document.getElementById('free-pack-cd');
 	if (!el) return;
 	const left = 86400000 - (Date.now() - (playerData.freePackCooldown || 0));
-	if (left <= 0) { if (_freePackTimer) clearInterval(_freePackTimer); renderPackShop(); return; }
+	if (left <= 0) { if (_freePackTimer) clearInterval(_freePackTimer); renderPackShop(); return}
 	const h = Math.floor(left / 3600000);
 	const m = Math.floor((left % 3600000) / 60000);
 	const s = Math.floor((left % 60000) / 1000);
@@ -5257,7 +5257,7 @@ async function buyPack(packId) {
 		const luckyRarities = ['SR','UR','ScR','GhR','UltR'];
 		const lr = luckyRarities[Math.floor(Math.random() * luckyRarities.length)];
 		const luckyPool = CARDS.filter(c => c.rarity === lr);
-		if (luckyPool.length > 0) { pulled.push(luckyPool[Math.floor(Math.random() * luckyPool.length)]); continue; }
+		if (luckyPool.length > 0) { pulled.push(luckyPool[Math.floor(Math.random() * luckyPool.length)]); continue}
 		}
 	const r = Math.random();
 	let rarityFilter;
@@ -5427,7 +5427,7 @@ async function ensureBaseChain() {
 			try {
 				await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: '0x2105', chainName: 'Base', rpcUrls: ['https://mainnet.base.org'], nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 }, blockExplorerUrls: ['https://basescan.org'] }] });
 				return true;
-			} catch { return false; }
+			} catch { return false}
 		}
 		return false;
 	}
@@ -5439,8 +5439,8 @@ function showStoreToast(text, sub) {
 	toast.classList.add('active');
 	setTimeout(() => toast.classList.remove('active'), 2000);
 }
-function closeShopPreview(){const el=document.getElementById('shop-preview');if(el)el.remove();}
-function _spBtn(cls,onclick,label,dis){return `<button class="cosmetic-btn${cls}" onclick="${onclick};closeShopPreview()"${dis?' disabled':''}>${label}</button>`;}
+function closeShopPreview(){const el=document.getElementById('shop-preview');if(el)el.remove()}
+function _spBtn(cls,onclick,label,dis){return `<button class="cosmetic-btn${cls}" onclick="${onclick};closeShopPreview()"${dis?' disabled':''}>${label}</button>`}
 function showShopPreview(type,id){
 	closeShopPreview();
 	let t='',a='',d='',ac='';const on=canPurchase();
@@ -5469,20 +5469,20 @@ function showShopPreview(type,id){
 		const dk=SHOP_DECKS.find(x=>x.id===id);if(!dk)return;
 		const bought=deckBuys[dk.id]||false,isSt=STARTER_DECKS.some(sd=>sd.id===dk.id),price=isSt?25000:50000;
 		t=dk.name;d=dk.desc;
-		const allIds=[...dk.main,...(dk.extra||[])],counts={};allIds.forEach(c=>{counts[c]=(counts[c]||0)+1;});
+		const allIds=[...dk.main,...(dk.extra||[])],counts={};allIds.forEach(c=>{counts[c]=(counts[c]||0)+1});
 		const unique=[...new Set(allIds)];
-		a=`<div style="max-height:50vh;overflow-y:auto;text-align:left;padding:4px 8px">${unique.map(cid=>{const c=CARDS.find(x=>x.id===cid);if(!c)return '';const qty=counts[cid]>1?' x'+counts[cid]:'';const clr=c.type==='monster'?'#c0a050':c.type==='spell'?'#50a0c0':'#a060a0';return `<div style="font-size:11px;padding:3px 0;border-bottom:1px solid rgba(140,200,255,.06);color:rgba(200,220,240,.8);cursor:pointer" onclick="event.stopPropagation();showCardDetail(${cid})"><span style="color:${clr};font-weight:700">${c.name}</span>${qty?'<span style="color:rgba(140,200,255,.4);font-size:9px"> '+qty+'</span>':''} <span style="float:right;color:rgba(140,200,255,.3);font-size:9px">${c.type==='monster'?c.atk+'/'+c.def:c.type}</span></div>`;}).join('')}</div>`;
+		a=`<div style="max-height:50vh;overflow-y:auto;text-align:left;padding:4px 8px">${unique.map(cid=>{const c=CARDS.find(x=>x.id===cid);if(!c)return '';const qty=counts[cid]>1?' x'+counts[cid]:'';const clr=c.type==='monster'?'#c0a050':c.type==='spell'?'#50a0c0':'#a060a0';return `<div style="font-size:11px;padding:3px 0;border-bottom:1px solid rgba(140,200,255,.06);color:rgba(200,220,240,.8);cursor:pointer" onclick="event.stopPropagation();showCardDetail(${cid})"><span style="color:${clr};font-weight:700">${c.name}</span>${qty?'<span style="color:rgba(140,200,255,.4);font-size:9px"> '+qty+'</span>':''} <span style="float:right;color:rgba(140,200,255,.3);font-size:9px">${c.type==='monster'?c.atk+'/'+c.def:c.type}</span></div>`}).join('')}</div>`;
 		d+=`<br><span style="color:rgba(140,200,255,.5)">${dk.main.length} main + ${(dk.extra||[]).length} vault</span>`;
 		ac=bought?'<button class="cosmetic-btn" disabled>OWNED</button>':_spBtn(on?' buy':'',`buyShopDeck('${dk.id}')`,on?price.toLocaleString()+' $CLAWS':'UNAVAILABLE',!on);
 	}else if(type==='pack'){
 		const p=PACKS.find(x=>x.id===id);if(!p)return;
 		t=p.name;d=p.desc+'<br><span style="color:rgba(140,200,255,.5)">'+p.count+' cards per pack</span>';
-		a=`<div style="width:80px;height:100px;border-radius:8px;margin:0 auto;background:linear-gradient(135deg,${p.colors[0]},${p.colors[1]});border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 40 50" width="36" height="46"><rect x="5" y="5" width="30" height="40" rx="3" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.2)"/><text x="20" y="30" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="8" font-weight="900">CC</text></svg></div>`;
+		a=p.img?`<div style="width:140px;height:180px;border-radius:8px;margin:0 auto;overflow:hidden;border:1px solid rgba(255,255,255,.15)"><img src="${_packArtUrl(p.img)}" style="width:100%;height:100%;object-fit:cover"></div>`:`<div style="width:80px;height:100px;border-radius:8px;margin:0 auto;background:linear-gradient(135deg,${p.colors[0]},${p.colors[1]});border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 40 50" width="36" height="46"><rect x="5" y="5" width="30" height="40" rx="3" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.2)"/><text x="20" y="30" text-anchor="middle" fill="rgba(255,255,255,.5)" font-size="8" font-weight="900">CC</text></svg></div>`;
 		const cd=p.isFree&&playerData.freePackCooldown&&(Date.now()-playerData.freePackCooldown<86400000);
 		ac=cd?'<button class="cosmetic-btn" disabled>On Cooldown</button>':_spBtn(on||p.isFree?' buy':'',`buyPack('${p.id}')`,p.cost===0?'FREE':p.cost.toLocaleString()+' $CLAWS',!on&&!p.isFree);
 	}else return;
 	const ov=document.createElement('div');ov.id='shop-preview';ov.className='shop-preview-overlay';
-	ov.onclick=e=>{if(e.target===ov)closeShopPreview();};
+	ov.onclick=e=>{if(e.target===ov)closeShopPreview()};
 	ov.innerHTML=`<div class="shop-preview-box"><button class="shop-preview-close" onclick="closeShopPreview()">✕</button><div class="shop-preview-title">${t}</div><div class="shop-preview-art">${a}</div>${d?'<div class="shop-preview-desc">'+d+'</div>':''}<div class="shop-preview-actions">${ac}</div></div>`;
 	document.body.appendChild(ov);
 }
@@ -6005,7 +6005,7 @@ function renderDeckArea() {
 			` : `<div class="db-empty">No cards found</div>`}
 		`;
 	const el = document.getElementById('db-add-search');
-	if (el && query) { el.focus(); el.setSelectionRange(searchVal.length, searchVal.length); }
+	if (el && query) { el.focus(); el.setSelectionRange(searchVal.length, searchVal.length)}
 	} else if (_dbTab === 'vault') {
 	const vc=CARDS.filter(c=>_vc(c)&&(playerData.collection[c.id]||0)>0);
 	const vcIds=vc.map(c=>c.id);
@@ -6062,7 +6062,7 @@ function autoFillDeck() {
 		if (filled >= target || playerData.deck.length >= 40) break;
 		const avail = owned[card.id] || 0;
 		const copies = Math.min(avail, card.rarity === 'C' ? 3 : 2, target - filled, 40 - playerData.deck.length);
-		for (let i = 0; i < copies; i++) { playerData.deck.push(card.id); filled++; }
+		for (let i = 0; i < copies; i++) { playerData.deck.push(card.id); filled++}
 		}
 	}
 	const spellsSorted = ownedSpells.sort(() => Math.random() - 0.5);
@@ -6071,7 +6071,7 @@ function autoFillDeck() {
 	if (spellCount >= 10 || playerData.deck.length >= 40) break;
 	const avail = owned[card.id] || 0;
 	const copies = Math.min(avail, card.rarity === 'C' ? 3 : 2, 10 - spellCount, 40 - playerData.deck.length);
-	for (let i = 0; i < copies; i++) { playerData.deck.push(card.id); spellCount++; }
+	for (let i = 0; i < copies; i++) { playerData.deck.push(card.id); spellCount++}
 	}
 	const trapsSorted = ownedTraps.sort(() => Math.random() - 0.5);
 	let trapCount = 0;
@@ -6079,7 +6079,7 @@ function autoFillDeck() {
 	if (trapCount >= 10 || playerData.deck.length >= 40) break;
 	const avail = owned[card.id] || 0;
 	const copies = Math.min(avail, card.rarity === 'C' ? 3 : 2, 10 - trapCount, 40 - playerData.deck.length);
-	for (let i = 0; i < copies; i++) { playerData.deck.push(card.id); trapCount++; }
+	for (let i = 0; i < copies; i++) { playerData.deck.push(card.id); trapCount++}
 	}
 	if (playerData.deck.length < 40) {
 	const inDeck = new Set(playerData.deck);
@@ -6141,7 +6141,7 @@ function ffaAliveOpponents() {
 	const mySeat = mpFFA.room ? mpFFA.seat : 0;
 	return ffa.seats.filter((s,i) => i !== mySeat && !s.eliminated);
 }
-function ffaAliveNPCs() { return ffaAliveOpponents(); }
+function ffaAliveNPCs() { return ffaAliveOpponents()}
 function ffaPickTarget(mySeat, targets) {
 	if (targets.length <= 1) return targets[0];
 	const me = ffa.seats[mySeat];
@@ -6158,7 +6158,7 @@ function ffaPickTarget(mySeat, targets) {
 		const isLeader = targets.every(oi => ffa.seats[oi].state.lp <= t.state.lp);
 		if (isLeader && t.state.lp > 4000) score += 600;
 		score += Math.random() * 400;
-		if (score > bestScore) { bestScore = score; best = ti; }
+		if (score > bestScore) { bestScore = score; best = ti}
 	}
 	return best;
 }
@@ -6181,7 +6181,7 @@ function ffaNextTurn() {
 	if (!ffa || duel.gameOver) return;
 	let next = (ffa.turnIdx + 1) % 4;
 	let safety = 0;
-	while (ffa.seats[next].eliminated && safety < 4) { next = (next + 1) % 4; safety++; }
+	while (ffa.seats[next].eliminated && safety < 4) { next = (next + 1) % 4; safety++}
 	if (safety >= 4) return;
 	ffa.turnIdx = next;
 	duel.turn++;
@@ -6200,12 +6200,12 @@ function ffaNextTurn() {
 		duel.isFirstTurn = false;
 		processTurnStartMechanics('player');
 		duel.player.monsters.forEach(m => {
-			if (m) { m.canAttack = true; m.attacks = 0; m.canChangePos = true; m.frozen = false; m.justSet = false; m.effectUsed = false; if (m.card.effects?.some(e => e.action === 'doubleAttack')) m.maxAttacks = 2; }
+			if (m) { m.canAttack = true; m.attacks = 0; m.canChangePos = true; m.frozen = false; m.justSet = false; m.effectUsed = false; if (m.card.effects?.some(e => e.action === 'doubleAttack')) m.maxAttacks = 2}
 		});
 		duel.uiState = 'idle'; duel.selectedCard = null;
 		duelLog(`--- Your Turn ${duel.turn} --- Energy: ${duel.playerEnergy}⚡`);
 		renderDuel();
-		showDiveDraw('player', () => { const drawn = drawCard('player'); if (drawn) duelLog(`Drew ${drawn.name}.`); renderDuel(); });
+		showDiveDraw('player', () => { const drawn = drawCard('player'); if (drawn) duelLog(`Drew ${drawn.name}.`); renderDuel()});
 		if (mpFFA.room && mpFFA.isHost) mpFFABroadcastState();
 	} else if (isRemotePlayer) {
 
@@ -6337,10 +6337,10 @@ function buildRandomDeck() {
 			}
 		}
 	});
-	for (let i = owned.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [owned[i], owned[j]] = [owned[j], owned[i]]; }
-	const monsters = owned.filter(id => { const c = getCard(id); return c && c.type === 'monster'; });
-	const spells = owned.filter(id => { const c = getCard(id); return c && c.type === 'spell'; });
-	const traps = owned.filter(id => { const c = getCard(id); return c && c.type === 'trap'; });
+	for (let i = owned.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [owned[i], owned[j]] = [owned[j], owned[i]]}
+	const monsters = owned.filter(id => { const c = getCard(id); return c && c.type === 'monster'});
+	const spells = owned.filter(id => { const c = getCard(id); return c && c.type === 'spell'});
+	const traps = owned.filter(id => { const c = getCard(id); return c && c.type === 'trap'});
 	const deck = [...monsters.slice(0, 20), ...spells.slice(0, 12), ...traps.slice(0, 8)];
 	const remaining = owned.filter(id => !deck.includes(id) || deck.filter(x => x === id).length < 3);
 	while (deck.length < 40 && remaining.length > 0) deck.push(remaining.shift());
@@ -6367,9 +6367,9 @@ function launchDuel() {
 	deckIds = r.deck;
 	extraIds = r.extra;
 	}
-	if (deckIds.length < 20) { alert('Deck needs at least 20 cards!'); return; }
+	if (deckIds.length < 20) { alert('Deck needs at least 20 cards!'); return}
 	hideDuelSetup();
-	if (ffaMode === 'ffa') { startFFADuel(deckIds, extraIds); return; }
+	if (ffaMode === 'ffa') { startFFADuel(deckIds, extraIds); return}
 	startDuel(deckIds, extraIds);
 }
 const AI_DECK = [
@@ -6420,8 +6420,8 @@ function startFFADuel(deckIds, extraIds) {
 	if (pm) ds.style.background = _pmBg(pm); else ds.style.background = '';
 	document.getElementById('ffa-bar').style.display = '';
 	const chatEl = document.getElementById('ffa-chat');
-	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''; }
-	const tp2 = document.getElementById('trap-prompt'); if (tp2) { tp2.style.display = 'none'; tp2.classList.remove('active'); }
+	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''}
+	const tp2 = document.getElementById('trap-prompt'); if (tp2) { tp2.style.display = 'none'; tp2.classList.remove('active')}
 	addFFAChat(null, 'FFA Duel started! 4 players.', null, true);
 	duelLog('FFA Duel Start! 4 Players. You go first. Energy: 5');
 	duelLog('Turn 1 - Skipping first draw.');
@@ -6429,7 +6429,7 @@ function startFFADuel(deckIds, extraIds) {
 }
 function startDuel(deckIds, extraIds) {
 	ffa = null;
-	if (!deckIds) { deckIds = [...playerData.deck]; extraIds = [...playerData.extraDeck]; }
+	if (!deckIds) { deckIds = [...playerData.deck]; extraIds = [...playerData.extraDeck]}
 	if (deckIds.length < 20) {
 	alert('You need at least 20 cards in your deck! Go to Deck Builder.');
 	return;
@@ -6468,7 +6468,7 @@ function startDuel(deckIds, extraIds) {
 	drawCard('player');
 	drawCard('ai');
 	}
-	const tp = document.getElementById('trap-prompt'); if (tp) { tp.style.display = 'none'; tp.classList.remove('active'); }
+	const tp = document.getElementById('trap-prompt'); if (tp) { tp.style.display = 'none'; tp.classList.remove('active')}
 	showScreen('duel-screen');
 	const pm = getActivePlaymat();
 	const ds = document.getElementById('duel-screen');
@@ -6499,7 +6499,7 @@ function drawCard(who) {
 	p.hand.push(card);
 	return card;
 }
-function duelLog(msg){if(duel)duel.log.push(msg);}
+function duelLog(msg){if(duel)duel.log.push(msg)}
 function showDamageFlash(amount, heal, who) {
 	const el = document.createElement('div');
 	el.className = 'damage-flash' + (heal ? ' heal' : '') + (who === 'ai' ? ' flash-ai' : ' flash-player');
@@ -6560,12 +6560,12 @@ const PREDATOR_CHAIN = {
 	'Maelstrom': ['Deep Sea','Tidal'],
 	'Volcanic': ['Coral','Kelp'],
 };
-function getEnergy(who) { return who === 'player' ? duel.playerEnergy : duel.aiEnergy; }
+function getEnergy(who) { return who === 'player' ? duel.playerEnergy : duel.aiEnergy}
 function spendEnergy(who, amt) {
 	if (who === 'player') duel.playerEnergy = Math.max(0, duel.playerEnergy - amt);
 	else duel.aiEnergy = Math.max(0, duel.aiEnergy - amt);
 }
-function hasEnergy(who, amt) { return getEnergy(who) >= amt; }
+function hasEnergy(who, amt) { return getEnergy(who) >= amt}
 function checkPredatorChain(card, opponentWho) {
 	const arch = getArchetype(card);
 	const preyList = PREDATOR_CHAIN[arch];
@@ -6595,9 +6595,9 @@ function burrowMonster(who, zoneIdx) {
 }
 function showBurrowPrompt(defIdx, onBurrow, onDecline) {
 	const fc = duel.player.monsters[defIdx];
-	if (!fc) { onDecline(); return; }
-	window._burrowYes = () => { document.getElementById('burrow-prompt')?.remove(); onBurrow(); };
-	window._burrowNo = () => { document.getElementById('burrow-prompt')?.remove(); onDecline(); };
+	if (!fc) { onDecline(); return}
+	window._burrowYes = () => { document.getElementById('burrow-prompt')?.remove(); onBurrow()};
+	window._burrowNo = () => { document.getElementById('burrow-prompt')?.remove(); onDecline()};
 	window._burrowView = () => {
 		document.getElementById('burrow-prompt')?.remove();
 		const backBtn = document.createElement('button');
@@ -6605,7 +6605,7 @@ function showBurrowPrompt(defIdx, onBurrow, onDecline) {
 		backBtn.id = 'view-board-back';
 		backBtn.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:200;background:rgba(40,120,200,0.3);color:#8cc8ff;border:1px solid rgba(40,120,200,0.4);padding:10px 24px;font-size:14px;font-weight:800;border-radius:8px;font-family:Chakra Petch,sans-serif;letter-spacing:2px;';
 		backBtn.textContent = 'BACK TO PROMPT';
-		backBtn.onclick = () => { backBtn.remove(); showBurrowPrompt(defIdx, onBurrow, onDecline); };
+		backBtn.onclick = () => { backBtn.remove(); showBurrowPrompt(defIdx, onBurrow, onDecline)};
 		document.body.appendChild(backBtn);
 	};
 	const ov = document.createElement('div');
@@ -6622,8 +6622,8 @@ function showBurrowPrompt(defIdx, onBurrow, onDecline) {
 }
 function activateInkCloud(who) {
 	hideActionMenu();
-	if (who === 'player') { duel.playerInkUsed = true; duel.playerInkActive = true; }
-	else { duel.aiInkUsed = true; duel.aiInkActive = true; }
+	if (who === 'player') { duel.playerInkUsed = true; duel.playerInkActive = true}
+	else { duel.aiInkUsed = true; duel.aiInkActive = true}
 	duel.inkCloudTurn = duel.turn;
 	duelLog(`${who === 'player' ? 'You' : 'AI'} deployed Ink Cloud! Field is obscured!`);
 	renderDuel();
@@ -6631,8 +6631,8 @@ function activateInkCloud(who) {
 function updateReef(who) {
 	const ct = duel[who].monsters.filter(m => m !== null).length;
 	const key = who + 'Reef';
-	if (ct > 0) { duel[key] = Math.min(5, duel[key] + 1); duelLog(`${who === 'player' ? 'Your' : "AI's"} Coral Reef grows to ${duel[key]}!`); }
-	else if (duel[key] > 0) { duel[key] = Math.max(0, duel[key] - 1); duelLog(`${who === 'player' ? 'Your' : "AI's"} Coral Reef decays to ${duel[key]}.`); }
+	if (ct > 0) { duel[key] = Math.min(5, duel[key] + 1); duelLog(`${who === 'player' ? 'Your' : "AI's"} Coral Reef grows to ${duel[key]}!`)}
+	else if (duel[key] > 0) { duel[key] = Math.max(0, duel[key] - 1); duelLog(`${who === 'player' ? 'Your' : "AI's"} Coral Reef decays to ${duel[key]}.`)}
 }
 function processTurnStartMechanics(who) {
 	duel[who].monsters.forEach(m => {
@@ -6669,7 +6669,7 @@ function extraDraw(who) {
 function showChooseDraw() {
 	if (!hasEnergy('player', ENERGY_COST.chooseDraw)) return;
 	const deck = duel.player.deck;
-	if (deck.length === 0) { duelLog('Deck is empty!'); renderDuel(); return; }
+	if (deck.length === 0) { duelLog('Deck is empty!'); renderDuel(); return}
 	const overlay = document.createElement('div');
 	overlay.className = 'choose-draw-overlay';
 	overlay.innerHTML = `<div class="choose-draw-title">Search Deck — ${deck.length} card${deck.length !== 1 ? 's' : ''} remaining (10⚡)</div>
@@ -6690,7 +6690,7 @@ function pickChosenCard(idx) {
 	renderDuel();
 }
 function showDiveDraw(who, callback) {
-	if (who !== 'player') { callback(); return; }
+	if (who !== 'player') { callback(); return}
 	const overlay = document.createElement('div');
 	overlay.className = 'dive-draw-overlay';
 	const deckSize = Math.min(duel.player.deck.length, 7);
@@ -6706,7 +6706,7 @@ function showDiveDraw(who, callback) {
 		const pick = Math.floor(Math.random() * deckSize);
 		const chosen = overlay.querySelectorAll('.dive-card')[pick];
 		if (chosen) chosen.classList.add('chosen');
-		setTimeout(() => { overlay.remove(); callback(); }, 900);
+		setTimeout(() => { overlay.remove(); callback()}, 900);
 	}, 600);
 }
 function reefRevive(who) {
@@ -6804,7 +6804,7 @@ function destroySpellTrap(who, zoneIdx) {
 	sendToGraveyard(who, fc);
 }
 function effectDamageAllFoes(who, amount) {
-	if (!ffa) { takeDamage(who === 'player' ? 'ai' : 'player', amount); return; }
+	if (!ffa) { takeDamage(who === 'player' ? 'ai' : 'player', amount); return}
 	ffaFlush();
 	const whoSeat = who === 'player' ? ffa.currentSeat : ffa.viewTarget;
 	const mySeat = mpFFA.room ? mpFFA.seat : 0;
@@ -6819,18 +6819,18 @@ function effectDamageAllFoes(who, amount) {
 			ffa.seats[i].state.fieldSpell = null;
 			duelLog(`${ffa.seats[i].name} eliminated!`);
 			if (ffa.seats[i].isNPC) npcAutoChat(ffa.seats[i].name, 'eliminated');
-			if (i === mySeat) { endDuelResult('lose'); return; }
+			if (i === mySeat) { endDuelResult('lose'); return}
 		}
 	}
 	ffaSwap(ffa.currentSeat, ffa.viewTarget);
-	if (ffa.seats.filter((s, i) => i !== mySeat && !s.eliminated).length === 0) { duelLog('All opponents eliminated!'); endDuelResult('win'); return; }
+	if (ffa.seats.filter((s, i) => i !== mySeat && !s.eliminated).length === 0) { duelLog('All opponents eliminated!'); endDuelResult('win'); return}
 	renderDuel();
 }
 function takeDamage(who, amount) {
 	duel[who].lp = Math.max(0, duel[who].lp - amount);
 	showDamageFlash(amount, false, who);
 	if (duel[who].lp <= 0) {
-		if (ffa) { ffaEliminate(who); return; }
+		if (ffa) { ffaEliminate(who); return}
 		endDuelResult(who === 'player' ? 'lose' : 'win');
 	}
 }
@@ -6860,7 +6860,6 @@ function ffaEliminate(who) {
 			duelLog('All opponents eliminated!');
 			endDuelResult('win');
 		} else {
-			// Auto-switch view to next alive opponent
 			if (duel.currentPlayer === 'player') {
 				const nextAlive = ffaFirstAliveNPC();
 				ffa.viewTarget = nextAlive;
@@ -7040,19 +7039,19 @@ function actionMenuClick(idx) {
 	const menu = document.getElementById('action-menu');
 	const action = menu._actions?.[idx];
 	menu.classList.remove('active');
-	if (window._actionMenuBackdrop) { window._actionMenuBackdrop.remove(); window._actionMenuBackdrop = null; }
+	if (window._actionMenuBackdrop) { window._actionMenuBackdrop.remove(); window._actionMenuBackdrop = null}
 	if (action) action();
 }
 function hideActionMenu() {
 	document.getElementById('action-menu').classList.remove('active');
-	if (window._actionMenuBackdrop) { window._actionMenuBackdrop.remove(); window._actionMenuBackdrop = null; }
+	if (window._actionMenuBackdrop) { window._actionMenuBackdrop.remove(); window._actionMenuBackdrop = null}
 	duel.uiState = 'idle';
 	duel.selectedCard = null;
 	renderDuel();
 }
 function normalSummon(handIdx) {
 	hideActionMenu();
-	if (getEmptyMonsterZone('player') === -1) { renderDuel(); return; }
+	if (getEmptyMonsterZone('player') === -1) { renderDuel(); return}
 	spendEnergy('player', ENERGY_COST.summon);
 	const card = duel.player.hand.splice(handIdx, 1)[0];
 	const zi = getEmptyMonsterZone('player');
@@ -7065,11 +7064,11 @@ function normalSummon(handIdx) {
 	}
 	triggerSummonEffects('player', zi);
 	renderDuel();
-	checkAndActivateTraps('ai', 'onOpponentSummon', { summonedZoneIdx: zi }, () => { renderDuel(); });
+	checkAndActivateTraps('ai', 'onOpponentSummon', { summonedZoneIdx: zi }, () => { renderDuel()});
 }
 function setMonster(handIdx) {
 	hideActionMenu();
-	if (getEmptyMonsterZone('player') === -1) { renderDuel(); return; }
+	if (getEmptyMonsterZone('player') === -1) { renderDuel(); return}
 	spendEnergy('player', ENERGY_COST.summon);
 	const card = duel.player.hand.splice(handIdx, 1)[0];
 	const zi = getEmptyMonsterZone('player');
@@ -7209,7 +7208,7 @@ function confirmTributes() {
 		duelLog(`Predator Chain! ${card.name} gains +500 ATK and can attack immediately!`);
 	}
 	triggerSummonEffects('player', zi);
-	checkAndActivateTraps('ai', 'onOpponentSummon', { summonedZoneIdx: zi }, () => { renderDuel(); });
+	checkAndActivateTraps('ai', 'onOpponentSummon', { summonedZoneIdx: zi }, () => { renderDuel()});
 	}
 	if (duel.pendingAction?.type === 'ritualSummon') {
 	completeRitualSummon();
@@ -7259,7 +7258,7 @@ function specialSummonFromHand(handIdx) {
 	triggerSummonEffects('player', zi);
 	renderDuel();
 }
-function viewCardBtn(cardId) { return { label: 'View Card', cls: 'position', action: () => { hideActionMenu(); showCardDetail(cardId); } }; }
+function viewCardBtn(cardId) { return { label: 'View Card', cls: 'position', action: () => { hideActionMenu(); showCardDetail(cardId)} }}
 function resolveBattleDamage(attacker, defender, atkATK, atkOwner, defOwner, atkIdx, defIdx) {
 	if (defender.position === 'atk') {
 		const defATK = getFieldATK(defender, defOwner);
@@ -7308,7 +7307,7 @@ function performAttack(atkZoneIdx, defZoneIdx) {
 	const attacker = duel.player.monsters[atkZoneIdx];
 	const defender = duel.ai.monsters[defZoneIdx];
 	if (!attacker || !defender) return;
-	if (defender.burrowed) { duelLog(`${defender.card.name} is burrowed! Cannot target.`); renderDuel(); return; }
+	if (defender.burrowed) { duelLog(`${defender.card.name} is burrowed! Cannot target.`); renderDuel(); return}
 	spendEnergy('player', ENERGY_COST.attack);
 	attacker.attacks++;
 	if (attacker.attacks >= attacker.maxAttacks) attacker.canAttack = false;
@@ -7460,7 +7459,7 @@ function resolveSpellEffect(eff, who, card) {
 			duel[who].monsters.forEach((m, i) => {
 				if (m && m.faceUp) {
 					const a = getFieldATK(m, who);
-					if (a > bestATK) { bestATK = a; best = i; }
+					if (a > bestATK) { bestATK = a; best = i}
 					}
 				});
 			if (best >= 0) {
@@ -7490,7 +7489,7 @@ function resolveSpellEffect(eff, who, card) {
 	case 'destroyMonster': {
 		let best = -1, bestATK = -1;
 		duel[opp].monsters.forEach((m, i) => {
-			if (m) { const a = getFieldATK(m, opp); if (a > bestATK) { bestATK = a; best = i; } }
+			if (m) { const a = getFieldATK(m, opp); if (a > bestATK) { bestATK = a; best = i} }
 			});
 		if (best >= 0) {
 			duelLog(`Destroyed ${duel[opp].monsters[best].card.name}!`);
@@ -7500,7 +7499,7 @@ function resolveSpellEffect(eff, who, card) {
 		}
 	case 'destroyST': {
 		const stTargets = [];
-		duel[opp].spells.forEach((s, i) => { if (s) stTargets.push(i); });
+		duel[opp].spells.forEach((s, i) => { if (s) stTargets.push(i)});
 		if (stTargets.length > 0) {
 			const t = stTargets[Math.floor(Math.random() * stTargets.length)];
 			duelLog(`Destroyed ${duel[opp].spells[t].card.name}!`);
@@ -7536,7 +7535,7 @@ function resolveSpellEffect(eff, who, card) {
 		duel[who].monsters.forEach((m, i) => {
 			if (m && m.faceUp) {
 				const d = getFieldDEF(m, who);
-				if (d > bestDEF) { bestDEF = d; best = i; }
+				if (d > bestDEF) { bestDEF = d; best = i}
 				}
 			});
 		if (best >= 0) {
@@ -7561,7 +7560,7 @@ function resolveDepthCharge(fc, owner) {
 		duel[opp].monsters.forEach((m, i) => {
 			if (m && m.faceUp) {
 				const atk = getFieldATK(m, opp);
-				if (atk > bestATK) { bestATK = atk; bestIdx = i; }
+				if (atk > bestATK) { bestATK = atk; bestIdx = i}
 				}
 			});
 		if (bestIdx >= 0) {
@@ -7569,11 +7568,11 @@ function resolveDepthCharge(fc, owner) {
 			destroyMonster(opp, bestIdx);
 			}
 		} else if (eff.action === 'atkDebuffAllPermanent') {
-		duel[opp].monsters.forEach(m => { if (m) m.permAtkMod = (m.permAtkMod || 0) - eff.value; });
+		duel[opp].monsters.forEach(m => { if (m) m.permAtkMod = (m.permAtkMod || 0) - eff.value});
 		duelLog(`${fc.card.name} weakens all opponent monsters by ${eff.value} ATK!`);
 		} else if (eff.action === 'destroyAllOpponentST') {
 		duel[opp].spells.forEach((s, i) => {
-			if (s) { sendToGraveyard(opp, s); duel[opp].spells[i] = null; }
+			if (s) { sendToGraveyard(opp, s); duel[opp].spells[i] = null}
 			});
 		duelLog(`${fc.card.name} destroys all opponent Spell/Trap cards!`);
 		}
@@ -7589,7 +7588,7 @@ function resolveEffect(eff, who, zoneIdx) {
 		break;
 	case 'destroyST': {
 		const targets = [];
-		duel[opp].spells.forEach((s, i) => { if (s) targets.push(i); });
+		duel[opp].spells.forEach((s, i) => { if (s) targets.push(i)});
 		if (duel[opp].fieldSpell) targets.push('field');
 		if (targets.length > 0) {
 			const t = targets[Math.floor(Math.random() * targets.length)];
@@ -7610,7 +7609,7 @@ function resolveEffect(eff, who, zoneIdx) {
 		duel[opp].monsters.forEach((m, i) => {
 			if (m && m.faceUp) {
 				const a = getFieldATK(m, opp);
-				if (a > bestATK) { bestATK = a; bestIdx = i; }
+				if (a > bestATK) { bestATK = a; bestIdx = i}
 				}
 			});
 		if (bestIdx >= 0) {
@@ -7629,8 +7628,8 @@ function resolveEffect(eff, who, zoneIdx) {
 		}
 	case 'destroySetST': {
 		const targets = [];
-		duel[opp].spells.forEach((s, i) => { if (s && !s.faceUp) targets.push(i); });
-		duel[who].spells.forEach((s, i) => { if (s && !s.faceUp) targets.push({ who, i }); });
+		duel[opp].spells.forEach((s, i) => { if (s && !s.faceUp) targets.push(i)});
+		duel[who].spells.forEach((s, i) => { if (s && !s.faceUp) targets.push({ who, i })});
 		if (targets.length > 0) {
 			const t = targets[0];
 			if (typeof t === 'number') {
@@ -7725,7 +7724,7 @@ function activateMonsterEffect(who, zoneIdx) {
 	renderDuel();
 }
 function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
-	if (trapIdx >= traps.length) { callback(false); return; }
+	if (trapIdx >= traps.length) { callback(false); return}
 	const trap = traps[trapIdx];
 	const overlay = document.getElementById('trap-prompt');
 	const cardArea = document.getElementById('trap-prompt-card');
@@ -7786,12 +7785,12 @@ function showTrapPrompt(traps, trapIdx, trigger, context, callback) {
 	backBtn.id = 'view-board-back';
 	backBtn.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:200;background:rgba(40,120,200,0.3);color:#8cc8ff;border:1px solid rgba(40,120,200,0.4);padding:10px 24px;font-size:14px;font-weight:800;border-radius:8px;font-family:Chakra Petch,sans-serif;letter-spacing:2px;';
 	backBtn.textContent = 'BACK TO PROMPT';
-	backBtn.onclick = () => { backBtn.remove(); showTrapPrompt(traps, trapIdx, trigger, context, callback); };
+	backBtn.onclick = () => { backBtn.remove(); showTrapPrompt(traps, trapIdx, trigger, context, callback)};
 	document.body.appendChild(backBtn);
 	};
 }
 function checkAndActivateTraps(who, trigger, context, callback) {
-	if(ffa&&who==='player'&&duel.currentPlayer==='ai'){const ms=mpFFA.room?mpFFA.seat:0;if(ffa.npcTarget!==undefined&&ffa.npcTarget!==ms){if(callback)callback(false);return false;}}
+	if(ffa&&who==='player'&&duel.currentPlayer==='ai'){const ms=mpFFA.room?mpFFA.seat:0;if(ffa.npcTarget!==undefined&&ffa.npcTarget!==ms){if(callback)callback(false);return false}}
 	const traps = [];
 	duel[who].spells.forEach((s, i) => {
 	if (s && !s.faceUp && s.card.type === 'trap' && s.card.subtype !== 'depthcharge' && s.turnSet < duel.turn) {
@@ -7819,12 +7818,12 @@ function checkAndActivateTraps(who, trigger, context, callback) {
 	}
 	return false;
 }
-function _negAtk(opp, ctx) { duelLog('Attack negated!'); if (ctx?.atkZoneIdx !== undefined && duel[opp].monsters[ctx.atkZoneIdx]) duel[opp].monsters[ctx.atkZoneIdx].canAttack = false; }
-function _negCard() { duelLog('Card negated and destroyed!'); }
-function _tideShift(who, val) { const s = who === 'player' ? val : -val; duel.tide = Math.max(-5, Math.min(5, duel.tide + s)); duelLog(`Tide shifts ${val}! (${duel.tide > 0 ? '+' : ''}${duel.tide})`); }
-function _randDiscard(side) { if (duel[side].hand.length > 0) { const d = duel[side].hand.splice(Math.floor(Math.random() * duel[side].hand.length), 1)[0]; duel[side].graveyard.push(d); duelLog(`${side === 'player' ? 'You' : 'AI'} discarded ${d.name}!`); } }
-function _reviveGY(who) { const gy = duel[who].graveyard.filter(c => c.type === 'monster'); const zi = getEmptyMonsterZone(who); if (gy.length > 0 && zi >= 0) { const c = gy[gy.length-1]; duel[who].graveyard.splice(duel[who].graveyard.lastIndexOf(c),1); duel[who].monsters[zi] = createFieldCard(c,'def',true); duelLog(`${c.name} revived from GY!`); } }
-function _weakest(side) { let wi=-1,wa=Infinity; duel[side].monsters.forEach((m,i)=>{if(m&&m.faceUp){const a=getFieldATK(m,side);if(a<wa){wa=a;wi=i;}}}); return wi; }
+function _negAtk(opp, ctx) { duelLog('Attack negated!'); if (ctx?.atkZoneIdx !== undefined && duel[opp].monsters[ctx.atkZoneIdx]) duel[opp].monsters[ctx.atkZoneIdx].canAttack = false}
+function _negCard() { duelLog('Card negated and destroyed!')}
+function _tideShift(who, val) { const s = who === 'player' ? val : -val; duel.tide = Math.max(-5, Math.min(5, duel.tide + s)); duelLog(`Tide shifts ${val}! (${duel.tide > 0 ? '+' : ''}${duel.tide})`)}
+function _randDiscard(side) { if (duel[side].hand.length > 0) { const d = duel[side].hand.splice(Math.floor(Math.random() * duel[side].hand.length), 1)[0]; duel[side].graveyard.push(d); duelLog(`${side === 'player' ? 'You' : 'AI'} discarded ${d.name}!`)} }
+function _reviveGY(who) { const gy = duel[who].graveyard.filter(c => c.type === 'monster'); const zi = getEmptyMonsterZone(who); if (gy.length > 0 && zi >= 0) { const c = gy[gy.length-1]; duel[who].graveyard.splice(duel[who].graveyard.lastIndexOf(c),1); duel[who].monsters[zi] = createFieldCard(c,'def',true); duelLog(`${c.name} revived from GY!`)} }
+function _weakest(side) { let wi=-1,wa=Infinity; duel[side].monsters.forEach((m,i)=>{if(m&&m.faceUp){const a=getFieldATK(m,side);if(a<wa){wa=a;wi=i}}}); return wi}
 function resolveTrapEffect(who, zoneIdx, trigger, context) {
 	const opp = who === 'player' ? 'ai' : 'player';
 	const fc = duel[who].spells[zoneIdx];
@@ -7835,8 +7834,8 @@ function resolveTrapEffect(who, zoneIdx, trigger, context) {
 	case 'negateAttack': _negAtk(opp, context); break;
 	case 'negateAttackDamage': _negAtk(opp, context); effectDamageAllFoes(who, eff.value); duelLog(`Dealt ${eff.value} damage!`); break;
 	case 'destroyThat':
-		if (context?.summonedZoneIdx !== undefined) { duelLog('Destroyed the summoned monster!'); destroyMonster(opp, context.summonedZoneIdx); }
-		else if (context?.defZoneIdx !== undefined) { duelLog('Destroyed the summoned monster!'); destroyMonster(opp, context.defZoneIdx); }
+		if (context?.summonedZoneIdx !== undefined) { duelLog('Destroyed the summoned monster!'); destroyMonster(opp, context.summonedZoneIdx)}
+		else if (context?.defZoneIdx !== undefined) { duelLog('Destroyed the summoned monster!'); destroyMonster(opp, context.defZoneIdx)}
 		break;
 	case 'negateDestroy': _negCard(); break;
 	case 'specialSummonFromHand': {
@@ -7851,76 +7850,76 @@ function resolveTrapEffect(who, zoneIdx, trigger, context) {
 	}
 	case 'tideShift':
 		_tideShift(who, eff.value);
-		if (duel.tide >= 3 && who === 'player') { drawCard(who); duelLog('Tide surging! Drew 1.'); }
-		if (duel.tide <= -3 && who === 'ai') { drawCard(who); duelLog('AI rides the tide!'); }
+		if (duel.tide >= 3 && who === 'player') { drawCard(who); duelLog('Tide surging! Drew 1.')}
+		if (duel.tide <= -3 && who === 'ai') { drawCard(who); duelLog('AI rides the tide!')}
 		break;
 	case 'grantShell': {
-		let best=-1,bestD=0; duel[who].monsters.forEach((m,i)=>{if(m&&m.faceUp){const d=getFieldDEF(m,who);if(d>bestD){bestD=d;best=i;}}});
-		if (best >= 0) { duel[who].monsters[best].shell = (duel[who].monsters[best].shell||0) + eff.value; duelLog(`${duel[who].monsters[best].card.name} gains Shell ${eff.value}!`); }
+		let best=-1,bestD=0; duel[who].monsters.forEach((m,i)=>{if(m&&m.faceUp){const d=getFieldDEF(m,who);if(d>bestD){bestD=d;best=i}}});
+		if (best >= 0) { duel[who].monsters[best].shell = (duel[who].monsters[best].shell||0) + eff.value; duelLog(`${duel[who].monsters[best].card.name} gains Shell ${eff.value}!`)}
 		break;
 	}
 	case 'atkDebuffAttacker':
-		if (context?.atkZoneIdx !== undefined && duel[opp].monsters[context.atkZoneIdx]) { const m = duel[opp].monsters[context.atkZoneIdx]; m.permAtkMod = (m.permAtkMod||0) - eff.value; duelLog(`${m.card.name} loses ${eff.value} ATK permanently!`); }
+		if (context?.atkZoneIdx !== undefined && duel[opp].monsters[context.atkZoneIdx]) { const m = duel[opp].monsters[context.atkZoneIdx]; m.permAtkMod = (m.permAtkMod||0) - eff.value; duelLog(`${m.card.name} loses ${eff.value} ATK permanently!`)}
 		break;
 	case 'reviveOnAttack':
 		_negAtk(opp, context);
 		{ const gy = duel[who].graveyard.filter(c => c.type==='monster' && c.level <= (eff.levelMax||4)); const zi = getEmptyMonsterZone(who);
-		if (gy.length > 0 && zi >= 0) { const c = gy[gy.length-1]; duel[who].graveyard.splice(duel[who].graveyard.lastIndexOf(c),1); duel[who].monsters[zi] = createFieldCard(c,'def',true); duelLog(`${c.name} revived from GY!`); } }
+		if (gy.length > 0 && zi >= 0) { const c = gy[gy.length-1]; duel[who].graveyard.splice(duel[who].graveyard.lastIndexOf(c),1); duel[who].monsters[zi] = createFieldCard(c,'def',true); duelLog(`${c.name} revived from GY!`)} }
 		break;
 	case 'negateAttackShell':
 		_negAtk(opp, context);
-		if (context?.defZoneIdx !== undefined && duel[who].monsters[context.defZoneIdx]) { const m = duel[who].monsters[context.defZoneIdx]; m.shell = (m.shell||0) + eff.value; duelLog(`${m.card.name} gains Shell ${eff.value}!`); }
+		if (context?.defZoneIdx !== undefined && duel[who].monsters[context.defZoneIdx]) { const m = duel[who].monsters[context.defZoneIdx]; m.shell = (m.shell||0) + eff.value; duelLog(`${m.card.name} gains Shell ${eff.value}!`)}
 		break;
 	case 'freezeOnSummon':
-		if (context?.summonedZoneIdx !== undefined && duel[opp].monsters[context.summonedZoneIdx]) { duel[opp].monsters[context.summonedZoneIdx].frozen = true; duelLog(`${duel[opp].monsters[context.summonedZoneIdx].card.name} frozen!`); }
+		if (context?.summonedZoneIdx !== undefined && duel[opp].monsters[context.summonedZoneIdx]) { duel[opp].monsters[context.summonedZoneIdx].frozen = true; duelLog(`${duel[opp].monsters[context.summonedZoneIdx].card.name} frozen!`)}
 		break;
 	case 'negateAttackDraw': _negAtk(opp, context); drawCard(who); duelLog(`Drew 1 card!`); break;
 	case 'negateAttackFreeze':
 		_negAtk(opp, context);
-		if (context?.atkZoneIdx !== undefined && duel[opp].monsters[context.atkZoneIdx]) { duel[opp].monsters[context.atkZoneIdx].frozen = true; duelLog(`${duel[opp].monsters[context.atkZoneIdx].card.name} frozen!`); }
+		if (context?.atkZoneIdx !== undefined && duel[opp].monsters[context.atkZoneIdx]) { duel[opp].monsters[context.atkZoneIdx].frozen = true; duelLog(`${duel[opp].monsters[context.atkZoneIdx].card.name} frozen!`)}
 		break;
 	case 'bounceMonster': {
 		const wi = _weakest(opp);
-		if (wi >= 0) { const m = duel[opp].monsters[wi]; duelLog(`${m.card.name} returned to hand!`); duel[opp].hand.push(m.card); duel[opp].monsters[wi] = null; }
+		if (wi >= 0) { const m = duel[opp].monsters[wi]; duelLog(`${m.card.name} returned to hand!`); duel[opp].hand.push(m.card); duel[opp].monsters[wi] = null}
 		break;
 	}
 	case 'halfAtkAttacker':
-		if (context?.atkZoneIdx !== undefined && duel[opp].monsters[context.atkZoneIdx]) { const m = duel[opp].monsters[context.atkZoneIdx]; const intrinsic = m.card.atk + m.atkMod + (m.permAtkMod||0); m.permAtkMod = (m.permAtkMod||0) - Math.floor(intrinsic/2); duelLog(`${m.card.name}'s ATK halved!`); }
+		if (context?.atkZoneIdx !== undefined && duel[opp].monsters[context.atkZoneIdx]) { const m = duel[opp].monsters[context.atkZoneIdx]; const intrinsic = m.card.atk + m.atkMod + (m.permAtkMod||0); m.permAtkMod = (m.permAtkMod||0) - Math.floor(intrinsic/2); duelLog(`${m.card.name}'s ATK halved!`)}
 		break;
 	case 'destroyAttacker':
 		_negAtk(opp, context);
-		if (context?.atkZoneIdx !== undefined && duel[opp].monsters[context.atkZoneIdx]) { duelLog(`${duel[opp].monsters[context.atkZoneIdx].card.name} destroyed!`); destroyMonster(opp, context.atkZoneIdx); }
+		if (context?.atkZoneIdx !== undefined && duel[opp].monsters[context.atkZoneIdx]) { duelLog(`${duel[opp].monsters[context.atkZoneIdx].card.name} destroyed!`); destroyMonster(opp, context.atkZoneIdx)}
 		break;
-	case 'freezeAllOpponent': _negAtk(opp, context); duel[opp].monsters.forEach(m => { if (m && m.faceUp) m.frozen = true; }); duelLog('All opponent monsters frozen!'); break;
+	case 'freezeAllOpponent': _negAtk(opp, context); duel[opp].monsters.forEach(m => { if (m && m.faceUp) m.frozen = true}); duelLog('All opponent monsters frozen!'); break;
 	case 'negateAttackMutualDamage': _negAtk(opp, context); takeDamage(who, eff.value); effectDamageAllFoes(who, eff.value); duelLog(`All combatants take ${eff.value} damage!`); break;
 	case 'negateAttackPermBuff':
 		_negAtk(opp, context);
-		if (context?.defZoneIdx !== undefined && duel[who].monsters[context.defZoneIdx]) { const m = duel[who].monsters[context.defZoneIdx]; m.permAtkMod = (m.permAtkMod||0) + eff.value; duelLog(`${m.card.name} +${eff.value} ATK permanently!`); }
+		if (context?.defZoneIdx !== undefined && duel[who].monsters[context.defZoneIdx]) { const m = duel[who].monsters[context.defZoneIdx]; m.permAtkMod = (m.permAtkMod||0) + eff.value; duelLog(`${m.card.name} +${eff.value} ATK permanently!`)}
 		break;
 	case 'negateAttackDiscard': _negAtk(opp, context); _randDiscard(opp); break;
 	case 'negateAttackTide': _negAtk(opp, context); _tideShift(who, eff.value); break;
 	case 'destroyAllAtkPos':
 		_negAtk(opp, context);
-		for (let i=4;i>=0;i--) { const m = duel[opp].monsters[i]; if (m && m.faceUp && m.position === 'atk') { duelLog(`${m.card.name} destroyed!`); destroyMonster(opp,i); } }
+		for (let i=4;i>=0;i--) { const m = duel[opp].monsters[i]; if (m && m.faceUp && m.position === 'atk') { duelLog(`${m.card.name} destroyed!`); destroyMonster(opp,i)} }
 		break;
 	case 'negateAttackRevive': _negAtk(opp, context); _reviveGY(who); break;
-	case 'negateAttackDestroyWeakest': { _negAtk(opp, context); const wi = _weakest(opp); if (wi >= 0) { duelLog(`${duel[opp].monsters[wi].card.name} destroyed!`); destroyMonster(opp,wi); } break; }
-	case 'negateAttackBuffAll': _negAtk(opp, context); duel[who].monsters.forEach(m => { if (m && m.faceUp) m.permAtkMod = (m.permAtkMod||0) + eff.value; }); duelLog(`All monsters +${eff.value} ATK!`); break;
+	case 'negateAttackDestroyWeakest': { _negAtk(opp, context); const wi = _weakest(opp); if (wi >= 0) { duelLog(`${duel[opp].monsters[wi].card.name} destroyed!`); destroyMonster(opp,wi)} break}
+	case 'negateAttackBuffAll': _negAtk(opp, context); duel[who].monsters.forEach(m => { if (m && m.faceUp) m.permAtkMod = (m.permAtkMod||0) + eff.value}); duelLog(`All monsters +${eff.value} ATK!`); break;
 	case 'damageOnTrigger': effectDamageAllFoes(who, eff.value); duelLog(`Dealt ${eff.value} damage!`); break;
 	case 'bounceSummoned':
-		if (context?.summonedZoneIdx !== undefined && duel[opp].monsters[context.summonedZoneIdx]) { const m = duel[opp].monsters[context.summonedZoneIdx]; duelLog(`${m.card.name} returned to hand!`); duel[opp].hand.push(m.card); duel[opp].monsters[context.summonedZoneIdx] = null; }
+		if (context?.summonedZoneIdx !== undefined && duel[opp].monsters[context.summonedZoneIdx]) { const m = duel[opp].monsters[context.summonedZoneIdx]; duelLog(`${m.card.name} returned to hand!`); duel[opp].hand.push(m.card); duel[opp].monsters[context.summonedZoneIdx] = null}
 		break;
 	case 'forceDefDebuff':
-		if (context?.summonedZoneIdx !== undefined && duel[opp].monsters[context.summonedZoneIdx]) { const m = duel[opp].monsters[context.summonedZoneIdx]; m.position = 'def'; m.defMod -= eff.value; duelLog(`${m.card.name} forced to DEF, -${eff.value} DEF!`); }
+		if (context?.summonedZoneIdx !== undefined && duel[opp].monsters[context.summonedZoneIdx]) { const m = duel[opp].monsters[context.summonedZoneIdx]; m.position = 'def'; m.defMod -= eff.value; duelLog(`${m.card.name} forced to DEF, -${eff.value} DEF!`)}
 		break;
 	case 'negateDestroyDraw': _negCard(); drawCard(who); duelLog('Drew 1 card!'); break;
 	case 'negateDestroyDamage': _negCard(); effectDamageAllFoes(who, eff.value); duelLog(`Dealt ${eff.value} damage!`); break;
 	case 'negateDestroyTide': _negCard(); _tideShift(who, eff.value); break;
 	case 'negateDestroyHeal': _negCard(); gainLP(who, eff.value); duelLog(`Gained ${eff.value} LP!`); break;
 	case 'negateDestroyDiscard': _negCard(); _randDiscard(opp); break;
-	case 'negateDestroyFreeze': { _negCard(); const t = duel[opp].monsters.filter(m => m && m.faceUp); if (t.length > 0) { const r = t[Math.floor(Math.random()*t.length)]; r.frozen = true; duelLog(`${r.card.name} frozen!`); } break; }
-	case 'negateDestroyShell': _negCard(); duel[who].monsters.forEach(m => { if (m && m.faceUp) m.shell = (m.shell||0) + eff.value; }); duelLog(`All monsters gain Shell ${eff.value}!`); break;
-	case 'negateDestroyBurn': { _negCard(); const n = duel[opp].monsters.filter(m=>m).length; if (n>0) { effectDamageAllFoes(who, eff.value*n); duelLog(`${eff.value*n} damage (${eff.value}x${n})!`); } break; }
+	case 'negateDestroyFreeze': { _negCard(); const t = duel[opp].monsters.filter(m => m && m.faceUp); if (t.length > 0) { const r = t[Math.floor(Math.random()*t.length)]; r.frozen = true; duelLog(`${r.card.name} frozen!`)} break}
+	case 'negateDestroyShell': _negCard(); duel[who].monsters.forEach(m => { if (m && m.faceUp) m.shell = (m.shell||0) + eff.value}); duelLog(`All monsters gain Shell ${eff.value}!`); break;
+	case 'negateDestroyBurn': { _negCard(); const n = duel[opp].monsters.filter(m=>m).length; if (n>0) { effectDamageAllFoes(who, eff.value*n); duelLog(`${eff.value*n} damage (${eff.value}x${n})!`)} break}
 	}
 }
 function canFusionSummon(who) {
@@ -8107,7 +8106,7 @@ function aiTurn() {
 	setTimeout(() => {
 	if (duel.gameOver) return;
 	duel.phase = 'main1';
-	duel.ai.monsters.forEach(m => { if (m) { m.frozen = false; m.canChangePos = true; m.effectUsed = false; m.canAttack = true; m.attacks = 0; if (m.card.effects?.some(e => e.action === 'doubleAttack')) m.maxAttacks = 2; } });
+	duel.ai.monsters.forEach(m => { if (m) { m.frozen = false; m.canChangePos = true; m.effectUsed = false; m.canAttack = true; m.attacks = 0; if (m.card.effects?.some(e => e.action === 'doubleAttack')) m.maxAttacks = 2} });
 	aiMainPhase();
 	}, 600);
 }
@@ -8145,10 +8144,10 @@ function aiMainPhase() {
 	});
 }
 function aiProcessSpellQueue(spells, idx, done) {
-	if (duel.gameOver || idx >= spells.length || !hasEnergy('ai', ENERGY_COST.spell)) { done(); return; }
+	if (duel.gameOver || idx >= spells.length || !hasEnergy('ai', ENERGY_COST.spell)) { done(); return}
 	const spell = spells[idx];
 	const hi = duel.ai.hand.indexOf(spell);
-	if (hi < 0) { aiProcessSpellQueue(spells, idx + 1, done); return; }
+	if (hi < 0) { aiProcessSpellQueue(spells, idx + 1, done); return}
 	spendEnergy('ai', ENERGY_COST.spell);
 	if (spell.effects?.[0]?.action === 'fusionSummon') {
 	if (canFusionSummon('ai')) {
@@ -8160,7 +8159,7 @@ function aiProcessSpellQueue(spells, idx, done) {
 				if (currentHi >= 0) doFusionSummon('ai', currentHi);
 				} else {
 				const currentHi = duel.ai.hand.indexOf(spell);
-				if (currentHi >= 0) { duel.ai.hand.splice(currentHi, 1); duel.ai.graveyard.push(spell); }
+				if (currentHi >= 0) { duel.ai.hand.splice(currentHi, 1); duel.ai.graveyard.push(spell)}
 				}
 			renderDuel();
 			setTimeout(() => aiProcessSpellQueue(spells, idx + 1, done), 500);
@@ -8227,7 +8226,7 @@ function aiProcessSpellQueue(spells, idx, done) {
 	aiProcessSpellQueue(spells, idx + 1, done);
 }
 function aiProcessSpecialSummons(done) {
-	if (duel.gameOver) { done(); return; }
+	if (duel.gameOver) { done(); return}
 	const card = duel.ai.hand.find(c => {
 	if (!c.effects?.some(e => e.trigger === 'hand' && e.action === 'specialSummonSelf')) return false;
 	const eff = c.effects.find(e => e.trigger === 'hand');
@@ -8236,13 +8235,13 @@ function aiProcessSpecialSummons(done) {
 	if (eff.condition === 'opponentMoreMonsters' && getMonsterCount('player') > getMonsterCount('ai')) return true;
 	return false;
 	});
-	if (!card || getEmptyMonsterZone('ai') < 0) { done(); return; }
+	if (!card || getEmptyMonsterZone('ai') < 0) { done(); return}
 	const hi = duel.ai.hand.indexOf(card);
 	duel.ai.hand.splice(hi, 1);
 	const zi = getEmptyMonsterZone('ai');
 	duel.ai.monsters[zi] = createFieldCard(card, 'atk', true);
 	duelLog(`AI Special Summoned ${card.name}!`);
-	if (checkPredatorChain(card, 'player')) { duel.ai.monsters[zi].permAtkMod += 500; duel.ai.monsters[zi].canAttack = true; duelLog(`Predator Chain! ${card.name} gains +500 ATK!`); }
+	if (checkPredatorChain(card, 'player')) { duel.ai.monsters[zi].permAtkMod += 500; duel.ai.monsters[zi].canAttack = true; duelLog(`Predator Chain! ${card.name} gains +500 ATK!`)}
 	triggerSummonEffects('ai', zi);
 	renderDuel();
 	checkAndActivateTraps('player', 'onOpponentSpecialSummon', { summonedZoneIdx: zi }, (activated) => {
@@ -8251,9 +8250,9 @@ function aiProcessSpecialSummons(done) {
 	});
 }
 function aiProcessNormalSummon(done) {
-	if (duel.gameOver || !hasEnergy('ai', ENERGY_COST.summon)) { done(); return; }
+	if (duel.gameOver || !hasEnergy('ai', ENERGY_COST.summon)) { done(); return}
 	const handMonsters = duel.ai.hand.filter(c => c.type === 'monster' && !_vc(c));
-	if (aiDifficulty === 'easy') { for (let i = handMonsters.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [handMonsters[i], handMonsters[j]] = [handMonsters[j], handMonsters[i]]; } }
+	if (aiDifficulty === 'easy') { for (let i = handMonsters.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [handMonsters[i], handMonsters[j]] = [handMonsters[j], handMonsters[i]]} }
 	else handMonsters.sort((a, b) => (b.atk || 0) - (a.atk || 0));
 	let summoned = false;
 	let summonZone = -1;
@@ -8279,7 +8278,7 @@ function aiProcessNormalSummon(done) {
 			triggerSummonEffects('ai', zi);
 			}
 		spendEnergy('ai', ENERGY_COST.summon);
-		if (checkPredatorChain(card, 'player')) { duel.ai.monsters[zi].permAtkMod += 500; duel.ai.monsters[zi].canAttack = true; duelLog(`Predator Chain! ${card.name} gains +500 ATK!`); }
+		if (checkPredatorChain(card, 'player')) { duel.ai.monsters[zi].permAtkMod += 500; duel.ai.monsters[zi].canAttack = true; duelLog(`Predator Chain! ${card.name} gains +500 ATK!`)}
 		summoned = true; summonZone = zi;
 		break;
 		} else if (card.level <= 6 && getMonsterCount('ai') >= 1) {
@@ -8287,7 +8286,7 @@ function aiProcessNormalSummon(done) {
 		duel.ai.monsters.forEach((m, i) => {
 			if (m) {
 				const a = getFieldATK(m, 'ai');
-				if (a < weakATK) { weakATK = a; weakest = i; }
+				if (a < weakATK) { weakATK = a; weakest = i}
 				}
 			});
 		if (weakest >= 0) {
@@ -8300,13 +8299,13 @@ function aiProcessNormalSummon(done) {
 			duelLog(`AI sacrifice summoned ${card.name}!`);
 			triggerSummonEffects('ai', zi);
 			spendEnergy('ai', ENERGY_COST.summon);
-			if (checkPredatorChain(card, 'player')) { duel.ai.monsters[zi].permAtkMod += 500; duel.ai.monsters[zi].canAttack = true; duelLog(`Predator Chain! ${card.name} gains +500 ATK!`); }
+			if (checkPredatorChain(card, 'player')) { duel.ai.monsters[zi].permAtkMod += 500; duel.ai.monsters[zi].canAttack = true; duelLog(`Predator Chain! ${card.name} gains +500 ATK!`)}
 			summoned = true; summonZone = zi;
 			break;
 			}
 		} else if (card.level >= 7 && getMonsterCount('ai') >= 2) {
 		const sorted = [];
-		duel.ai.monsters.forEach((m, i) => { if (m) sorted.push({ m, i, atk: getFieldATK(m, 'ai') }); });
+		duel.ai.monsters.forEach((m, i) => { if (m) sorted.push({ m, i, atk: getFieldATK(m, 'ai') })});
 		sorted.sort((a, b) => a.atk - b.atk);
 		if (sorted.length >= 2) {
 			duelLog(`AI tributed ${sorted[0].m.card.name} and ${sorted[1].m.card.name}.`);
@@ -8319,7 +8318,7 @@ function aiProcessNormalSummon(done) {
 			duelLog(`AI sacrifice summoned ${card.name}!`);
 			triggerSummonEffects('ai', zi);
 			spendEnergy('ai', ENERGY_COST.summon);
-			if (checkPredatorChain(card, 'player')) { duel.ai.monsters[zi].permAtkMod += 500; duel.ai.monsters[zi].canAttack = true; duelLog(`Predator Chain! ${card.name} gains +500 ATK!`); }
+			if (checkPredatorChain(card, 'player')) { duel.ai.monsters[zi].permAtkMod += 500; duel.ai.monsters[zi].canAttack = true; duelLog(`Predator Chain! ${card.name} gains +500 ATK!`)}
 			summoned = true; summonZone = zi;
 			break;
 			}
@@ -8440,8 +8439,8 @@ function ffaNPCvsNPC(atkSeatIdx, defSeatIdx) {
 		duelLog(`${def.name} has been eliminated!`);
 		npcAutoChat(def.name, 'eliminated');
 		npcAutoChat(atk.name, 'kill');
-		if (defSeatIdx === 0) { endDuelResult('lose'); return; }
-		if (ffaAliveNPCs().length === 0) { endDuelResult('win'); return; }
+		if (defSeatIdx === 0) { endDuelResult('lose'); return}
+		if (ffaAliveNPCs().length === 0) { endDuelResult('win'); return}
 	}
 	renderDuel();
 	setTimeout(() => aiEndPhase(), 400);
@@ -8476,21 +8475,18 @@ function aiBattlePhase() {
 			});
 		if (beatable.length > 0) {
 			if (aiDifficulty === 'hard') {
-				// Smart targeting: maximize damage dealt to player
 				beatable.sort((a, b) => {
 					const aDmg = a.m.position === 'atk' ? atkATK - getFieldATK(a.m, 'player') : 0;
 					const bDmg = b.m.position === 'atk' ? atkATK - getFieldATK(b.m, 'player') : 0;
 					return bDmg - aDmg || getFieldATK(b.m, 'player') - getFieldATK(a.m, 'player');
 				});
 			} else if (aiDifficulty === 'easy') {
-				// Easy: attack randomly from beatable set
 				beatable.sort(() => Math.random() - 0.5);
 			} else {
 				beatable.sort((a, b) => getFieldATK(a.m, 'player') - getFieldATK(b.m, 'player'));
 			}
 			attacks.push({ type: 'battle', atkIdx, defIdx: beatable[0].i, attacker });
 		} else if (aiDifficulty !== 'hard') {
-			// Normal/Easy: skip unwinnable fights
 		} else if (attacker.card.effects?.some(e => e.action === 'mustAttack') && playerMonsters.length > 0) {
 			attacks.push({ type: 'battle', atkIdx, defIdx: playerMonsters[0].i, attacker });
 			}
@@ -8503,7 +8499,7 @@ function aiBattlePhase() {
 		}
 	const atk = attacks[idx];
 	const attacker = duel.ai.monsters[atk.atkIdx];
-	if (!attacker || !hasEnergy('ai', ENERGY_COST.attack)) { executeNextAttack(idx + 1); return; }
+	if (!attacker || !hasEnergy('ai', ENERGY_COST.attack)) { executeNextAttack(idx + 1); return}
 	spendEnergy('ai', ENERGY_COST.attack);
 	if (atk.type === 'direct') {
 		const atkATK = getFieldATK(attacker, 'ai');
@@ -8511,7 +8507,7 @@ function aiBattlePhase() {
 		renderDuel();
 		checkAndActivateTraps('player', 'onOpponentAttack', { atkZoneIdx: atk.atkIdx }, (activated) => {
 			if (activated) {
-				setTimeout(() => { renderDuel(); executeNextAttack(idx + 1); }, 600);
+				setTimeout(() => { renderDuel(); executeNextAttack(idx + 1)}, 600);
 				return;
 				}
 			takeDamage('player', atkATK);
@@ -8521,7 +8517,7 @@ function aiBattlePhase() {
 		return;
 		} else {
 		const defender = duel.player.monsters[atk.defIdx];
-		if (!defender) { executeNextAttack(idx + 1); return; }
+		if (!defender) { executeNextAttack(idx + 1); return}
 		const atkATK = getFieldATK(attacker, 'ai');
 		duelLog(`${attacker.card.name} attacks ${defender.faceUp ? defender.card.name : 'a face-down monster'}!`);
 		if (!defender.faceUp) {
@@ -8536,10 +8532,10 @@ function aiBattlePhase() {
 		renderDuel();
 		checkAndActivateTraps('player', 'onOpponentAttack', { atkZoneIdx: atk.atkIdx, defZoneIdx: atk.defIdx }, (activated) => {
 			if (activated) {
-				setTimeout(() => { renderDuel(); executeNextAttack(idx + 1); }, 600);
+				setTimeout(() => { renderDuel(); executeNextAttack(idx + 1)}, 600);
 				return;
 				}
-			if (!duel.player.monsters[atk.defIdx] || defender.burrowed) { executeNextAttack(idx + 1); return; }
+			if (!duel.player.monsters[atk.defIdx] || defender.burrowed) { executeNextAttack(idx + 1); return}
 			function resolveBattle() {
 			resolveBattleDamage(attacker, defender, atkATK, 'ai', 'player', atk.atkIdx, atk.defIdx);
 			renderDuel();
@@ -8568,7 +8564,7 @@ function aiBattlePhase() {
 function aiEndPhase() {
 	if (duel.gameOver) return;
 	duel.ai.monsters.forEach(m => {
-	if (m) { m.atkMod = 0; m.defMod = 0; }
+	if (m) { m.atkMod = 0; m.defMod = 0}
 	});
 	duel.ai.spells.forEach((fc, i) => {
 	if (fc && fc.depthTimer > 0) {
@@ -8605,7 +8601,7 @@ function aiEndPhase() {
 	}
 	duelLog(ffa ? `${ffa.seats[ffa.viewTarget].name} ends turn.` : 'AI ends turn.');
 	renderDuel();
-	if (ffa) { setTimeout(() => { if (duel.gameOver) return; ffaFlush(); ffaNextTurn(); if (mpFFA.room && mpFFA.isHost) mpFFABroadcastState(); }, 800); return; }
+	if (ffa) { setTimeout(() => { if (duel.gameOver) return; ffaFlush(); ffaNextTurn(); if (mpFFA.room && mpFFA.isHost) mpFFABroadcastState()}, 800); return}
 	setTimeout(() => {
 	if (duel.gameOver) return;
 	duel.currentPlayer = 'player';
@@ -8775,14 +8771,14 @@ function ffaSideOpp(si,pos){
 			const st=fu?`<div class="zo"><span class="a">${getFieldATK(m,'ai')}</span><span class="d">${getFieldDEF(m,'ai')}</span></div>`:'';
 			h+=`<div class="ffa-z${tgt&&atk?' atk-tgt':''}" onclick="event.stopPropagation();ffaFieldMonClick(${si},${i})">${mc}${st}</div>`;
 		}else{const dc=tgt&&atk?`onclick="event.stopPropagation();ffaFieldDirectAtk(${si})"`:'';
-			h+=`<div class="ffa-z" ${dc}><span class="zl">M</span></div>`;}
+			h+=`<div class="ffa-z" ${dc}><span class="zl">M</span></div>`}
 	});
 	h+='</div><div class="ffa-zr">';
-	s.state.spells.forEach(sp=>{h+=`<div class="ffa-z">${sp?`<div class="st-i${sp.faceUp?' fu':''}"></div>`:'<span class="zl">S</span>'}</div>`;});
+	s.state.spells.forEach(sp=>{h+=`<div class="ffa-z">${sp?`<div class="st-i${sp.faceUp?' fu':''}"></div>`:'<span class="zl">S</span>'}</div>`});
 	h+=`</div><div class="ffa-info" onclick="event.stopPropagation();showFFAGraveyard(${si})"><span class="ffa-gy-btn">GY ${s.state.graveyard.length}</span> <span style="opacity:.4">DK ${s.state.deck.length}</span> <span style="opacity:.4;color:rgba(160,120,220,.6)">VLT ${s.state.extraDeck.length}</span></div></div>`;return h;
 }
-function ffaFieldMonClick(si,mi){if(duel.uiState==='selectAttackTarget'){if(si!==ffa.viewTarget)ffaSwitchView(si);setTimeout(()=>handleFieldMonsterClick('ai',mi),50);}else ffaSwitchView(si);}
-function ffaFieldDirectAtk(si){if(duel.uiState==='selectAttackTarget'){if(si!==ffa.viewTarget)ffaSwitchView(si);setTimeout(()=>handleDirectAttackClick(),50);}else ffaSwitchView(si);}
+function ffaFieldMonClick(si,mi){if(duel.uiState==='selectAttackTarget'){if(si!==ffa.viewTarget)ffaSwitchView(si);setTimeout(()=>handleFieldMonsterClick('ai',mi),50)}else ffaSwitchView(si)}
+function ffaFieldDirectAtk(si){if(duel.uiState==='selectAttackTarget'){if(si!==ffa.viewTarget)ffaSwitchView(si);setTimeout(()=>handleDirectAttackClick(),50)}else ffaSwitchView(si)}
 function renderFFAField(){
 	const my=mpFFA.room?mpFFA.seat:0,field=document.getElementById('duel-field');
 	const op=[(my+1)%4,(my+2)%4,(my+3)%4];
@@ -8791,8 +8787,8 @@ function renderFFAField(){
 	h+='<div class="ffa-sd pos-b">'+renderFieldRow('player','spells')+renderFieldRow('player','monsters');
 	h+=`<div class="ffa-bu">${renderFieldSpellZone('player')}<div class="gy-zone" onclick="showFFAGraveyard(${my})"><span style="font-size:5px">GY</span><span class="zone-count">${duel.player.graveyard.length}</span></div><div class="gy-zone"><span style="font-size:5px">DECK</span><span class="zone-count">${duel.player.deck.length}</span></div><div class="gy-zone" onclick="showVault()" style="border-color:rgba(160,120,220,.25)"><span style="font-size:5px;color:rgba(160,120,220,.7)">VLT</span><span class="zone-count" style="color:rgba(160,120,220,.9)">${duel.player.extraDeck.length}</span></div></div></div></div>`;
 	field.innerHTML=h;
-	if(duel.uiState==='selectTribute'||duel.uiState==='selectRitualTribute'){duel.tributeTargets.forEach(zi=>{const z=field.querySelectorAll('.player-monster-zone');if(z[zi])z[zi].classList.add('selected');});}
-	if(duel.uiState==='selectEquipTarget'){field.querySelectorAll('.player-monster-zone').forEach(z=>{if(z.querySelector('.card'))z.classList.add('selected');});}
+	if(duel.uiState==='selectTribute'||duel.uiState==='selectRitualTribute'){duel.tributeTargets.forEach(zi=>{const z=field.querySelectorAll('.player-monster-zone');if(z[zi])z[zi].classList.add('selected')})}
+	if(duel.uiState==='selectEquipTarget'){field.querySelectorAll('.player-monster-zone').forEach(z=>{if(z.querySelector('.card'))z.classList.add('selected')})}
 }
 function renderFieldRow(who, zone) {
 	const slots = zone === 'monsters' ? duel[who].monsters : duel[who].spells;
@@ -8806,7 +8802,6 @@ function renderFieldRow(who, zone) {
 		let mechBadge = '';
 		if (fc) {
 			const isDefPos = fc.position === 'def';
-			// Ink cloud hides opponent's cards
 			const hideCard = (who === 'ai' && duel.aiInkActive && duel.currentPlayer === 'player');
 			if (hideCard && fc.faceUp) {
 				cardHTML = renderCard(fc.card, { faceDown: true, defPos: isDefPos, compact: true });
@@ -8984,30 +8979,30 @@ function showVault() {
 	}
 	overlay.classList.add('active');
 }
-try{loadData();}catch(e){console.error(e);}
-try{updateCoinsDisplay();}catch(e){}
-try{initWalletConnect();}catch(e){}
-const _btp=document.getElementById('trap-prompt');if(_btp){_btp.style.display='none';_btp.classList.remove('active');}
-try{initTitleShowcase();}catch(e){}
+try{loadData()}catch(e){console.error(e)}
+try{updateCoinsDisplay()}catch(e){}
+try{initWalletConnect()}catch(e){}
+const _btp=document.getElementById('trap-prompt');if(_btp){_btp.style.display='none';_btp.classList.remove('active')}
+try{initTitleShowcase()}catch(e){}
 setTimeout(() => {
 	const ls = document.getElementById('loading-screen');
-	if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500); }
+	if (ls) { ls.classList.add('fade-out'); setTimeout(() => ls.remove(), 500)}
 }, 1500);
-setTimeout(() => { try { checkTradeClaims(); } catch(e) {} }, 2000);
-setInterval(() => { try { syncBalance(); } catch(e) {} }, 30000);
+setTimeout(() => { try { checkTradeClaims()} catch(e) {} }, 2000);
+setInterval(() => { try { syncBalance()} catch(e) {} }, 30000);
 const _onlineId = 'ccon_' + Math.random().toString(36).substr(2,8);
 let _appdbReady = false;
 async function _waitAppDB() {
-	if (window.AppDB) { _appdbReady = true; return true; }
+	if (window.AppDB) { _appdbReady = true; return true}
 	for (let i = 0; i < 60; i++) {
 	await new Promise(r => setTimeout(r, 500));
-	if (window.AppDB) { _appdbReady = true; return true; }
+	if (window.AppDB) { _appdbReady = true; return true}
 	}
 	return false;
 }
 async function _heartbeat() {
 	if (!_appdbReady && !(await _waitAppDB())) return;
-	try { await AppDB.setGlobal(_onlineId, {t:Date.now(),w:(connectedWallet||'').toLowerCase(),n:playerData.profileName||'',id:_onlineId}); } catch(e) {}
+	try { await AppDB.setGlobal(_onlineId, {t:Date.now(),w:(connectedWallet||'').toLowerCase(),n:playerData.profileName||'',id:_onlineId})} catch(e) {}
 }
 async function _countOnline() {
 	if (!_appdbReady && !(await _waitAppDB())) return;
@@ -9026,7 +9021,7 @@ _heartbeat().then(() => _countOnline());
 setInterval(_heartbeat, 30000);
 setInterval(_countOnline, 15000);
 setInterval(mpCheckChallenges, 8000);
-window.addEventListener('beforeunload', () => { if (window.AppDB) AppDB.deleteGlobal(_onlineId).catch(()=>{}); });
+window.addEventListener('beforeunload', () => { if (window.AppDB) AppDB.deleteGlobal(_onlineId).catch(()=>{})});
 (function() {
 	const w = getWalletFromCookie();
 	if (w && w.toLowerCase() === CW.toLowerCase()) {
@@ -9058,8 +9053,8 @@ function mpFFAToggle() {
 	const p = document.getElementById('mp-ffa-panel');
 	const show = p.style.display === 'none';
 	p.style.display = show ? '' : 'none';
-	if (show) { mpFFAScanRooms(); _ffaScanTimer = setInterval(mpFFAScanRooms, 3000); }
-	else { if (_ffaScanTimer) { clearInterval(_ffaScanTimer); _ffaScanTimer = null; } }
+	if (show) { mpFFAScanRooms(); _ffaScanTimer = setInterval(mpFFAScanRooms, 3000)}
+	else { if (_ffaScanTimer) { clearInterval(_ffaScanTimer); _ffaScanTimer = null} }
 }
 async function mpFFAScanRooms() {
 	if (!_appdbReady) return;
@@ -9069,14 +9064,14 @@ async function mpFFAScanRooms() {
 		const all = await AppDB.listGlobal();
 		const now = Date.now();
 		const rooms = all.filter(e => e.key.startsWith('ccffa_') && e.value && e.value.players && !e.value.started && (now - (e.value.ts||0)) < 180000 && !e.value.private && e.value.players.some(p => !p));
-		if (!rooms.length) { el.innerHTML = '<div class="mp-empty" style="font-size:10px;color:rgba(255,150,130,.3)">No open rooms</div>'; return; }
+		if (!rooms.length) { el.innerHTML = '<div class="mp-empty" style="font-size:10px;color:rgba(255,150,130,.3)">No open rooms</div>'; return}
 		el.innerHTML = rooms.map(r => {
 			const code = r.key.replace('ccffa_','');
 			const cnt = r.value.players.filter(p => p).length;
 			const name = r.value.players[0] ? r.value.players[0].n : '?';
 			return `<div class="ffa-room-row"><span>${name}'s room — ${cnt}/4</span><button onclick="mpFFAJoinRoom('${code}')">JOIN</button></div>`;
 		}).join('');
-	} catch(e) { el.innerHTML = '<div class="mp-empty" style="font-size:10px;color:rgba(255,150,130,.3)">Error loading</div>'; }
+	} catch(e) { el.innerHTML = '<div class="mp-empty" style="font-size:10px;color:rgba(255,150,130,.3)">Error loading</div>'}
 }
 let mpFFA = { room: null, seat: -1, isHost: false, players: [], session: 0, poll: null, movePoll: null, moveIdx: [0,0,0,0], started: false };
 function mpFFACreate() {
@@ -9088,8 +9083,8 @@ function mpFFAJoinRoom(code) {
 	mpFFAConnect(code, false, false);
 }
 async function mpFFAConnect(code, creating, isPrivate) {
-	if (!_appdbReady) { document.getElementById('mp-no-sdk').style.display = 'block'; return; }
-	if (_ffaScanTimer) { clearInterval(_ffaScanTimer); _ffaScanTimer = null; }
+	if (!_appdbReady) { document.getElementById('mp-no-sdk').style.display = 'block'; return}
+	if (_ffaScanTimer) { clearInterval(_ffaScanTimer); _ffaScanTimer = null}
 	mpFFA.session++; const sess = mpFFA.session;
 	mpFFA.room = code; mpFFA.started = false;
 	const myName = playerData.profileName || (connectedWallet ? connectedWallet.slice(0,6)+'...'+connectedWallet.slice(-4) : 'Anonymous');
@@ -9102,22 +9097,22 @@ async function mpFFAConnect(code, creating, isPrivate) {
 			mpFFA.seat = 0; mpFFA.isHost = true;
 		} else {
 			const slot = room.players.findIndex(p => !p);
-			if (slot < 0) { alert('Room is full'); return; }
+			if (slot < 0) { alert('Room is full'); return}
 			room.players[slot] = myInfo;
 			mpFFA.seat = slot; mpFFA.isHost = false;
 		}
 		await AppDB.setGlobal(rk, room);
 		mpFFA.players = room.players;
-	} catch(e) { alert('Connection failed'); return; }
+	} catch(e) { alert('Connection failed'); return}
 	document.getElementById('mp-main-lobby').style.display = 'none';
 	document.getElementById('mp-waiting').style.display = 'flex';
 	document.getElementById('mp-room-display').textContent = code;
-	const _fc=document.getElementById('ffa-chat');if(_fc){_fc.style.display='';ffaChatLog=[];const _fm=document.getElementById('ffa-chat-msgs');if(_fm)_fm.innerHTML='';addFFAChat(null,'Waiting in '+code+'...',null,true);}
+	const _fc=document.getElementById('ffa-chat');if(_fc){_fc.style.display='';ffaChatLog=[];const _fm=document.getElementById('ffa-chat-msgs');if(_fm)_fm.innerHTML='';addFFAChat(null,'Waiting in '+code+'...',null,true)}
 	mpFFAUpdateLobby();
 	if (mpFFA.isHost) document.getElementById('mp-start-btn').style.display = 'block';
 	document.getElementById('mp-start-btn').onclick = mpFFAStartGame;
 	mpFFA.poll = setInterval(async () => {
-		if (sess !== mpFFA.session) { clearInterval(mpFFA.poll); return; }
+		if (sess !== mpFFA.session) { clearInterval(mpFFA.poll); return}
 		try {
 			const room = await AppDB.getGlobal(rk);
 			if (!room) return;
@@ -9150,9 +9145,9 @@ async function mpFFAStartGame() {
 	const rk = 'ccffa_' + mpFFA.room;
 	try {
 		const room = await AppDB.getGlobal(rk);
-		if (room) { room.started = true; room.ts = Date.now(); await AppDB.setGlobal(rk, room); mpFFA.players = room.players; }
+		if (room) { room.started = true; room.ts = Date.now(); await AppDB.setGlobal(rk, room); mpFFA.players = room.players}
 	} catch(e) {}
-	if (mpFFA.poll) { clearInterval(mpFFA.poll); mpFFA.poll = null; }
+	if (mpFFA.poll) { clearInterval(mpFFA.poll); mpFFA.poll = null}
 	mpFFA.started = true;
 
 	ffaMode = 'ffa';
@@ -9184,7 +9179,7 @@ async function mpFFAStartGame() {
 	};
 	for (let s = 0; s < 4; s++) {
 		const st = ffa.seats[s].state;
-		for (let i = 0; i < 5; i++) { if (st.deck.length > 0) st.hand.push(st.deck.shift()); }
+		for (let i = 0; i < 5; i++) { if (st.deck.length > 0) st.hand.push(st.deck.shift())}
 	}
 	showScreen('duel-screen');
 	const pm = getActivePlaymat();
@@ -9192,7 +9187,7 @@ async function mpFFAStartGame() {
 	if (pm) ds.style.background = _pmBg(pm); else ds.style.background = '';
 	document.getElementById('ffa-bar').style.display = '';
 	const chatEl = document.getElementById('ffa-chat');
-	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''; }
+	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''}
 	addFFAChat(null, 'FFA Multiplayer started! ' + mpFFA.players.filter(p=>p).length + ' real players, ' + mpFFA.players.filter(p=>!p).length + ' NPCs.', null, true);
 	duelLog('FFA Duel Start! You go first. Energy: 5');
 	renderDuel();
@@ -9231,11 +9226,11 @@ function mpFFAGuestInit(room) {
 		playerInkActive: false, aiInkActive: false, inkCloudTurn: -1,
 		isFFA: true, isFFAMP: true,
 	};
-	for (let i = 0; i < 5; i++) { if (ffa.seats[mpFFA.seat].state.deck.length > 0) ffa.seats[mpFFA.seat].state.hand.push(ffa.seats[mpFFA.seat].state.deck.shift()); }
+	for (let i = 0; i < 5; i++) { if (ffa.seats[mpFFA.seat].state.deck.length > 0) ffa.seats[mpFFA.seat].state.hand.push(ffa.seats[mpFFA.seat].state.deck.shift())}
 	showScreen('duel-screen');
 	document.getElementById('ffa-bar').style.display = '';
 	const chatEl = document.getElementById('ffa-chat');
-	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''; }
+	if (chatEl) { chatEl.style.display = ''; ffaChatLog = []; const msgs = document.getElementById('ffa-chat-msgs'); if (msgs) msgs.innerHTML = ''}
 	addFFAChat(null, 'FFA Multiplayer joined! Waiting for game updates...', null, true);
 	duelLog('FFA Duel — waiting for updates...');
 	renderDuel();
@@ -9258,7 +9253,7 @@ async function mpFFABroadcastState() {
 		chat: ffaChatLog.slice(-10),
 		ts: Date.now()
 	};
-	try { await AppDB.setGlobal(sk, snapshot); } catch(e) {}
+	try { await AppDB.setGlobal(sk, snapshot)} catch(e) {}
 }
 async function mpFFASendMove(move) {
 	if (!mpFFA.room || !_appdbReady) return;
@@ -9286,7 +9281,7 @@ function mpFFADeserializeSeat(d, s) {
 		fc.shell=m.sh; fc.frozen=m.fr; fc.burrowed=m.br; fc.molted=m.mo;
 		fc.canAttack=m.ca; fc.attacks=m.at; fc.maxAttacks=m.ma; fc.justSet=m.js; fc.effectUsed=m.eu; return fc;
 	});
-	s.state.spells = d.sp.map(sp => { if(!sp) return null; const c=getCard(sp.i); if(!c) return null; const fc=createFieldCard(c,'atk',sp.f); fc.depthTimer=sp.d||0; return fc; });
+	s.state.spells = d.sp.map(sp => { if(!sp) return null; const c=getCard(sp.i); if(!c) return null; const fc=createFieldCard(c,'atk',sp.f); fc.depthTimer=sp.d||0; return fc});
 	s.state.fieldSpell = d.fs ? createFieldCard(getCard(d.fs),'atk',true) : null;
 	s.state.hand = d.h.map(id=>({...getCard(id),uid:uid()}));
 	s.state.deck = d.dk.map(id=>({...getCard(id),uid:uid()}));
@@ -9313,12 +9308,12 @@ function mpFFAStartPoll() {
 	mpFFA.moveIdx = [0,0,0,0];
 	const sess = mpFFA.session;
 	mpFFA.movePoll = setInterval(async () => {
-		if (sess !== mpFFA.session || !mpFFA.room || duel?.gameOver) { clearInterval(mpFFA.movePoll); mpFFA.movePoll = null; return; }
+		if (sess !== mpFFA.session || !mpFFA.room || duel?.gameOver) { clearInterval(mpFFA.movePoll); mpFFA.movePoll = null; return}
 		try {
 			if (!mpFFA.isHost) {
 				const sk = 'ccffa_' + mpFFA.room + '_state';
 				const snap = await AppDB.getGlobal(sk);
-				if (snap && snap.ts && snap.ts > (mpFFA._lastStateTs || 0)) { mpFFA._lastStateTs = snap.ts; mpFFAApplySnapshot(snap); }
+				if (snap && snap.ts && snap.ts > (mpFFA._lastStateTs || 0)) { mpFFA._lastStateTs = snap.ts; mpFFAApplySnapshot(snap)}
 			}
 			if (mpFFA.isHost) {
 				for (let i = 0; i < 4; i++) {
@@ -9335,7 +9330,7 @@ function mpFFAStartPoll() {
 			const chatData = await AppDB.getGlobal(ck) || [];
 			if (chatData.length > ffaChatLog.length) {
 				const newMsgs = chatData.slice(ffaChatLog.length);
-				newMsgs.forEach(m => { if (m.name !== (playerData.profileName || 'You')) addFFAChat(m.name, m.msg, m.color, m.sys); });
+				newMsgs.forEach(m => { if (m.name !== (playerData.profileName || 'You')) addFFAChat(m.name, m.msg, m.color, m.sys)});
 			}
 		} catch(e) {}
 	}, 1000);
@@ -9394,12 +9389,12 @@ function mpFFAApplySnapshot(snap) {
 		duel.isFirstTurn = false;
 		processTurnStartMechanics('player');
 		duel.player.monsters.forEach(m => {
-			if (m) { m.canAttack = true; m.attacks = 0; m.canChangePos = true; m.frozen = false; m.justSet = false; m.effectUsed = false; if (m.card.effects?.some(e => e.action === 'doubleAttack')) m.maxAttacks = 2; }
+			if (m) { m.canAttack = true; m.attacks = 0; m.canChangePos = true; m.frozen = false; m.justSet = false; m.effectUsed = false; if (m.card.effects?.some(e => e.action === 'doubleAttack')) m.maxAttacks = 2}
 		});
 		duel.uiState = 'idle'; duel.selectedCard = null;
 		duelLog(`--- Your Turn ${duel.turn} --- Energy: ${duel.playerEnergy}⚡`);
 		renderDuel();
-		showDiveDraw('player', () => { const drawn = drawCard('player'); if (drawn) duelLog(`Drew ${drawn.name}.`); renderDuel(); });
+		showDiveDraw('player', () => { const drawn = drawCard('player'); if (drawn) duelLog(`Drew ${drawn.name}.`); renderDuel()});
 	} else {
 		duel.currentPlayer = isMyTurn ? 'player' : 'ai';
 		if (!isMyTurn) {
@@ -9455,8 +9450,8 @@ async function mpFFABroadcastChat(name, msg) {
 	} catch(e) {}
 }
 function mpFFACleanup() {
-	if (mpFFA.poll) { clearInterval(mpFFA.poll); mpFFA.poll = null; }
-	if (mpFFA.movePoll) { clearInterval(mpFFA.movePoll); mpFFA.movePoll = null; }
+	if (mpFFA.poll) { clearInterval(mpFFA.poll); mpFFA.poll = null}
+	if (mpFFA.movePoll) { clearInterval(mpFFA.movePoll); mpFFA.movePoll = null}
 	if (mpFFA.room && _appdbReady) {
 		const c = mpFFA.room;
 		AppDB.deleteGlobal('ccffa_'+c).catch(()=>{});
@@ -9490,8 +9485,8 @@ function addFFAChat(name, msg, color, sys) {
 	if (!el) return;
 	const div = document.createElement('div');
 	div.className = 'ffa-chat-msg' + (sys ? ' sys' : '');
-	if (sys) { div.textContent = msg; }
-	else { div.innerHTML = `<span class="chat-name" style="color:${color||'#8cc8ff'}">${name}:</span>${msg.replace(/</g,'&lt;')}`; }
+	if (sys) { div.textContent = msg}
+	else { div.innerHTML = `<span class="chat-name" style="color:${color||'#8cc8ff'}">${name}:</span>${msg.replace(/</g,'&lt;')}`}
 	el.appendChild(div);
 	el.scrollTop = el.scrollHeight;
 }
@@ -9544,7 +9539,7 @@ let _mpLobbyTimer = null;
 async function renderMPLobby() {
 	const el = document.getElementById('mp-online-users');
 	if (!el) return;
-	if (!_appdbReady) { el.innerHTML = '<div class="mp-empty">Connecting...</div>'; return; }
+	if (!_appdbReady) { el.innerHTML = '<div class="mp-empty">Connecting...</div>'; return}
 	try {
 	const all = await AppDB.listGlobal();
 	const now = Date.now();
@@ -9560,19 +9555,19 @@ async function renderMPLobby() {
 			return `<div class="mp-user-row"><span class="mp-uname">${name}</span><button class="mp-dbtn" onclick="mpChallengeUser('${u.sid}')">DUEL</button></div>`;
 			}).join('');
 		}
-	} catch(e) { el.innerHTML = '<div class="mp-empty">Could not load players</div>'; }
+	} catch(e) { el.innerHTML = '<div class="mp-empty">Could not load players</div>'}
 	mpCheckChallenges();
 	if (!_mpLobbyTimer) {
 		_mpLobbyTimer = setInterval(() => {
 		const lobby = document.getElementById('mp-lobby');
-		if (!lobby || !lobby.classList.contains('active') || mp.room) { clearInterval(_mpLobbyTimer); _mpLobbyTimer = null; return; }
+		if (!lobby || !lobby.classList.contains('active') || mp.room) { clearInterval(_mpLobbyTimer); _mpLobbyTimer = null; return}
 		renderMPLobby();
 		}, 5000);
 	}
 }
 let _lcM=[],_lcPoll=null;
-async function mpLobbyLoadChat(){if(!_appdbReady)return;try{const d=await AppDB.getGlobal('cc_lobby_chat');if(!d||!Array.isArray(d))return;const el=document.getElementById('mp-lobby-msgs');if(!el)return;const nw=d.slice(-20);if(nw.length===_lcM.length)return;_lcM=nw;el.innerHTML=_lcM.map(m=>`<div><b style="color:${m.c||'#8cc8ff'}">${(m.n||'?').replace(/</g,'&lt;')}:</b> ${(m.m||'').replace(/</g,'&lt;')}</div>`).join('');el.scrollTop=el.scrollHeight;}catch(e){}}
-async function mpLobbySend(){const inp=document.getElementById('mp-lobby-input');if(!inp||!_appdbReady)return;const m=inp.value.trim();if(!m)return;inp.value='';try{let d=await AppDB.getGlobal('cc_lobby_chat');if(!d||!Array.isArray(d))d=[];d.push({n:playerData.profileName||'Anon',m,t:Date.now(),c:'rgba(100,200,255,.9)'});if(d.length>30)d=d.slice(-30);await AppDB.setGlobal('cc_lobby_chat',d);mpLobbyLoadChat();}catch(e){}}
+async function mpLobbyLoadChat(){if(!_appdbReady)return;try{const d=await AppDB.getGlobal('cc_lobby_chat');if(!d||!Array.isArray(d))return;const el=document.getElementById('mp-lobby-msgs');if(!el)return;const nw=d.slice(-20);if(nw.length===_lcM.length)return;_lcM=nw;el.innerHTML=_lcM.map(m=>`<div><b style="color:${m.c||'#8cc8ff'}">${(m.n||'?').replace(/</g,'&lt;')}:</b> ${(m.m||'').replace(/</g,'&lt;')}</div>`).join('');el.scrollTop=el.scrollHeight}catch(e){}}
+async function mpLobbySend(){const inp=document.getElementById('mp-lobby-input');if(!inp||!_appdbReady)return;const m=inp.value.trim();if(!m)return;inp.value='';try{let d=await AppDB.getGlobal('cc_lobby_chat');if(!d||!Array.isArray(d))d=[];d.push({n:playerData.profileName||'Anon',m,t:Date.now(),c:'rgba(100,200,255,.9)'});if(d.length>30)d=d.slice(-30);await AppDB.setGlobal('cc_lobby_chat',d);mpLobbyLoadChat()}catch(e){}}
 let _challPending = null;
 let _challPollTimer = null;
 function mpChallengeUser(targetSid) {
@@ -9589,10 +9584,10 @@ function mpChallengeUser(targetSid) {
 	document.getElementById('mp-start-btn').style.display = 'none';
 	document.getElementById('mp-players-list').innerHTML = '';
 	_challPollTimer = setInterval(async () => {
-	if (!_challPending) { clearInterval(_challPollTimer); _challPollTimer = null; return; }
+	if (!_challPending) { clearInterval(_challPollTimer); _challPollTimer = null; return}
 	try {
 		const c = await AppDB.getGlobal(_challPending);
-		if (!c) { clearInterval(_challPollTimer); _challPollTimer = null; _challPending = null; document.getElementById('mp-status-text').textContent = 'No response'; setTimeout(mpCancelWait, 2000); return; }
+		if (!c) { clearInterval(_challPollTimer); _challPollTimer = null; _challPending = null; document.getElementById('mp-status-text').textContent = 'No response'; setTimeout(mpCancelWait, 2000); return}
 		if (c.status === 'accepted' && c.room) {
 			clearInterval(_challPollTimer); _challPollTimer = null;
 				AppDB.deleteGlobal(_challPending).catch(()=>{});
@@ -9633,7 +9628,7 @@ function mpDeclineChall(fromSid) {
 	const el = document.getElementById('mp-chall-popup');
 	if (el) el.remove();
 	AppDB.setGlobal('ccchall_' + _onlineId, {status:'declined', ts:Date.now()}).catch(()=>{});
-	setTimeout(() => { AppDB.deleteGlobal('ccchall_' + _onlineId).catch(()=>{}); }, 5000);
+	setTimeout(() => { AppDB.deleteGlobal('ccchall_' + _onlineId).catch(()=>{})}, 5000);
 }
 function mpTogglePrivate() {
 	const p = document.getElementById('mp-priv-panel');
@@ -9649,9 +9644,9 @@ function mpJoinPrivate() {
 	mpConnect(code);
 }
 function mpCancelWait() {
-	if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null; }
-	if (_challPollTimer) { clearInterval(_challPollTimer); _challPollTimer = null; }
-	if (_challPending) { AppDB.deleteGlobal(_challPending).catch(()=>{}); _challPending = null; }
+	if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null}
+	if (_challPollTimer) { clearInterval(_challPollTimer); _challPollTimer = null}
+	if (_challPending) { AppDB.deleteGlobal(_challPending).catch(()=>{}); _challPending = null}
 	mpCleanupRoom();
 	if (mpFFA.room) mpFFACleanup();
 	mp.session++; mp.room = null; mp.active = false; mp.opponentId = null;
@@ -9659,7 +9654,7 @@ function mpCancelWait() {
 	renderMPLobby();
 }
 function mpLeaveLobby() {
-	if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null; }
+	if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null}
 	mp.session++;
 	showScreen('title-screen');
 }
@@ -9683,8 +9678,8 @@ function mpConnect(code) {
 	_mpMoveIdx = 0;
 	_mpSendQueue = [];
 	_mpSendBusy = false;
-	if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null; }
-	if (_mpMovePoll) { clearInterval(_mpMovePoll); _mpMovePoll = null; }
+	if (_mpPollTimer) { clearInterval(_mpPollTimer); _mpPollTimer = null}
+	if (_mpMovePoll) { clearInterval(_mpMovePoll); _mpMovePoll = null}
 	document.getElementById('mp-main-lobby').style.display = 'none';
 	document.getElementById('mp-waiting').style.display = 'flex';
 	document.getElementById('mp-room-display').textContent = code;
@@ -9720,8 +9715,8 @@ async function mpJoinRoom(sess, code) {
 	mp.active = true;
 	document.getElementById('mp-status-text').textContent = mp.role === 'host' ? 'Waiting for opponent...\nShare code: ' + code : 'Waiting for opponent...';
 	_mpPollTimer = setInterval(async () => {
-	if (sess !== mp.session) { clearInterval(_mpPollTimer); _mpPollTimer = null; return; }
-	if (mp.opponentId) { clearInterval(_mpPollTimer); _mpPollTimer = null; return; }
+	if (sess !== mp.session) { clearInterval(_mpPollTimer); _mpPollTimer = null; return}
+	if (mp.opponentId) { clearInterval(_mpPollTimer); _mpPollTimer = null; return}
 	try {
 		const room = await AppDB.getGlobal(roomKey);
 		if (!room) return;
@@ -9744,7 +9739,7 @@ function mpStartMovePoll() {
 	if (_mpMovePoll) clearInterval(_mpMovePoll);
 	const oppKey = 'ccgm_' + mp.room + '_' + (mp.role === 'host' ? 'g' : 'h');
 	_mpMovePoll = setInterval(async () => {
-	if (!mp.active || !mp.room) { clearInterval(_mpMovePoll); _mpMovePoll = null; return; }
+	if (!mp.active || !mp.room) { clearInterval(_mpMovePoll); _mpMovePoll = null; return}
 	try {
 		const moves = await AppDB.getGlobal(oppKey) || [];
 		while (_mpMoveIdx < moves.length) {
@@ -9755,7 +9750,7 @@ function mpStartMovePoll() {
 	}, 800);
 }
 function mpCleanupRoom() {
-	if (_mpMovePoll) { clearInterval(_mpMovePoll); _mpMovePoll = null; }
+	if (_mpMovePoll) { clearInterval(_mpMovePoll); _mpMovePoll = null}
 	mpTimerClear();
 	if (!mp.room || !_appdbReady) return;
 	const c = mp.room;
@@ -9790,7 +9785,7 @@ function mpTimerStart() {
 	}, 1000);
 }
 function mpTimerClear() {
-	if (_mpTimer) { clearInterval(_mpTimer); _mpTimer = null; }
+	if (_mpTimer) { clearInterval(_mpTimer); _mpTimer = null}
 	const el = document.getElementById('mp-timer');
 	if (el) el.textContent = '';
 }
@@ -9801,7 +9796,7 @@ function mpTimerUpdate() {
 	el.style.color = _mpTimerSec <= 10 ? '#ff2d78' : '#d4c090';
 	}
 }
-function mpTimerResetSkips() { _mpTimerSkips = 0; }
+function mpTimerResetSkips() { _mpTimerSkips = 0}
 function mpUpdatePlayers() {
 	const el = document.getElementById('mp-players-list');
 	if (!el) return;
@@ -9912,7 +9907,7 @@ function mpReceive(data, sid) {
 	case 'pos':	  mpRxChangePos(data); break;
 	case 'flip':	 mpRxFlip(data); break;
 	case 'phase':	break; // informational only
-	case 'surrender': if (!duel.gameOver) { duelLog('Opponent surrendered!'); endDuelResult('win'); } break;
+	case 'surrender': if (!duel.gameOver) { duelLog('Opponent surrendered!'); endDuelResult('win')} break;
 	}
 }
 function mpRxDraw() {
@@ -9978,7 +9973,7 @@ function mpRxSpell(d) {
 			let best = -1, bestA = -1;
 			for (let i = 0; i < 5; i++) {
 				const m = duel.player.monsters[i];
-				if (m && m.faceUp) { const a = m.card.atk + m.atkMod; if (a > bestA) { bestA = a; best = i; } }
+				if (m && m.faceUp) { const a = m.card.atk + m.atkMod; if (a > bestA) { bestA = a; best = i} }
 				}
 			if (best >= 0) destroyMonster('player', best);
 			} break;
@@ -10021,7 +10016,7 @@ function mpRxFieldSpell(d) {
 function mpRxAtkDeclare(d) {
 	const atkFC = duel.ai.monsters[d.from];
 	const defFC = duel.player.monsters[d.to];
-	if (!atkFC || !defFC) { mpSend({ type: 'atk-res', ok: false }); return; }
+	if (!atkFC || !defFC) { mpSend({ type: 'atk-res', ok: false }); return}
 	if (!defFC.faceUp) defFC.faceUp = true;
 	const atkATK = getFieldATK(atkFC, 'ai');
 	const defPos = defFC.position;
@@ -10053,12 +10048,12 @@ function mpRxAtkDeclare(d) {
 	renderDuel();
 }
 function mpRxAtkResult(d) {
-	if (!d.ok) { duel.uiState = 'idle'; renderDuel(); return; }
+	if (!d.ok) { duel.uiState = 'idle'; renderDuel(); return}
 	if (d.defCid > 0) {
 	const defFC = duel.ai.monsters[d.to];
 	if (defFC && !defFC.faceUp) {
 		const rc = CARDS.find(c => c.id === d.defCid);
-		if (rc) { defFC.card = rc; defFC.faceUp = true; }
+		if (rc) { defFC.card = rc; defFC.faceUp = true}
 		}
 	}
 	const atkFC = duel.player.monsters[d.from];
@@ -10070,13 +10065,13 @@ function mpRxAtkResult(d) {
 	if (d.pDmg > 0) takeDamage('ai', d.pDmg);
 	if (d.aDmg > 0) takeDamage('player', d.aDmg);
 	duelLog(atkName + ' attacks ' + defName + '!');
-	if (atkFC) { atkFC.attacks = (atkFC.attacks || 0) + 1; if (atkFC.attacks >= atkFC.maxAttacks) atkFC.canAttack = false; }
+	if (atkFC) { atkFC.attacks = (atkFC.attacks || 0) + 1; if (atkFC.attacks >= atkFC.maxAttacks) atkFC.canAttack = false}
 	duel.uiState = 'idle';
 	renderDuel();
 }
 function mpRxDirDeclare(d) {
 	const atkFC = duel.ai.monsters[d.from];
-	if (!atkFC) { mpSend({ type: 'dir-res', ok: false }); return; }
+	if (!atkFC) { mpSend({ type: 'dir-res', ok: false }); return}
 	const dmg = getFieldATK(atkFC, 'ai');
 	duelLog("Opponent's " + atkFC.card.name + ' attacks directly! (-' + dmg + ' LP)');
 	mpSend({ type: 'dir-res', ok: true, from: d.from, dmg: dmg });
@@ -10084,12 +10079,12 @@ function mpRxDirDeclare(d) {
 	renderDuel();
 }
 function mpRxDirResult(d) {
-	if (!d.ok) { duel.uiState = 'idle'; renderDuel(); return; }
+	if (!d.ok) { duel.uiState = 'idle'; renderDuel(); return}
 	const atkFC = duel.player.monsters[d.from];
 	const name = atkFC ? atkFC.card.name : 'Monster';
 	duelLog(name + ' attacks directly! (-' + d.dmg + ' LP)');
 	takeDamage('ai', d.dmg);
-	if (atkFC) { atkFC.attacks = (atkFC.attacks || 0) + 1; if (atkFC.attacks >= atkFC.maxAttacks) atkFC.canAttack = false; }
+	if (atkFC) { atkFC.attacks = (atkFC.attacks || 0) + 1; if (atkFC.attacks >= atkFC.maxAttacks) atkFC.canAttack = false}
 	duel.uiState = 'idle';
 	renderDuel();
 }
@@ -10113,20 +10108,20 @@ function mpRxEndTurn() {
 }
 function mpRxChangePos(d) {
 	const m = duel.ai.monsters[d.zi];
-	if (m) { m.position = d.pos; duelLog('Opponent changes monster position.'); renderDuel(); }
+	if (m) { m.position = d.pos; duelLog('Opponent changes monster position.'); renderDuel()}
 }
 function mpRxFlip(d) {
 	const c = CARDS.find(x => x.id === d.cid);
 	if (!c) return;
 	const m = duel.ai.monsters[d.zi];
-	if (m) { m.card = c; m.faceUp = true; m.position = 'atk'; duelLog('Opponent flip summons ' + c.name + '!'); renderDuel(); }
+	if (m) { m.card = c; m.faceUp = true; m.position = 'atk'; duelLog('Opponent flip summons ' + c.name + '!'); renderDuel()}
 }
 const _mpOrigEndTurn = endTurn;
 endTurn = function() {
 	if (duel && duel.isMultiplayer) {
 	mpTimerClear();
 	mpTimerResetSkips();
-	duel.player.monsters.forEach(m => { if (m) { m.atkMod = 0; m.defMod = 0; m.canChangePos = true; m.effectUsed = false; } });
+	duel.player.monsters.forEach(m => { if (m) { m.atkMod = 0; m.defMod = 0; m.canChangePos = true; m.effectUsed = false} });
 	while (duel.player.hand.length > 6) {
 		const d = duel.player.hand.pop();
 		duel.player.graveyard.push(d);
