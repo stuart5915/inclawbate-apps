@@ -1,0 +1,3474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inclawbator — 1-Click Token Launch on Base</title>
+    <meta name="description" content="Inclawbator: launch tokens, build apps, and earn on Base. 100% fee routing to CLAWS holders. Deploy apps to your own slug and list in the app store.">
+    <meta property="og:title" content="Inclawbator — Build, Launch, and Earn on Base">
+    <meta property="og:description" content="Launch tokens, build apps, charge users and agents. 100% fees to CLAWS holders.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://inclawbate.app/inclawbator">
+    <meta property="og:image" content="https://www.inclawbate.app/api/inclawbate/og?page=inclawbator">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@inclawbate">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦞</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script>if(new URLSearchParams(window.location.search).get('embed')==='1')document.documentElement.classList.add('is-embed');</script>
+    <style>body{opacity:0} html.is-embed body{opacity:1}</style>
+    <link rel="stylesheet" href="/styles/core.css">
+    <link rel="stylesheet" href="/styles/components.css">
+    <style>
+        /* ══════════════════════════════════════
+           INCLAWBATOR — TOKEN LAUNCHPAD
+           ══════════════════════════════════════ */
+
+        /* Embed mode: hide everything, then show only the drawer */
+        html.is-embed .nav,
+        html.is-embed .footer { display: none !important; }
+        html.is-embed .incubator-page > * { display: none !important; }
+        html.is-embed .incubator-page > .tool-drawer { display: block !important; }
+        html.is-embed .incubator-page {
+            padding: 0 !important;
+            max-width: 100% !important;
+        }
+        html.is-embed, html.is-embed body { background: transparent !important; margin: 0; padding: 0; }
+        html.is-embed .tool-drawer {
+            background: none !important;
+            position: static !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
+            display: block !important;
+        }
+        html.is-embed .tool-drawer-inner {
+            max-width: 100% !important;
+            width: 100% !important;
+            max-height: 100vh !important;
+            overflow-y: auto !important;
+            background: var(--bg-card) !important;
+            border: 1px solid var(--border-subtle) !important;
+            border-radius: var(--radius-xl) !important;
+            padding: var(--space-xl) !important;
+            box-sizing: border-box !important;
+        }
+        html.is-embed .drawer-close-btn { display: none !important; }
+        html.is-embed .form-group { margin-bottom: var(--space-md) !important; }
+        html.is-embed .drawer-title { margin-bottom: var(--space-md) !important; }
+
+        .incubator-page {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: calc(var(--nav-height) + var(--space-xl)) var(--space-lg) var(--space-2xl);
+            overflow-x: hidden;
+        }
+
+        /* ── Hero ── */
+        .hero {
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            margin: 0 0 var(--space-3xl);
+            border-radius: var(--radius-lg, 16px);
+        }
+        .hero-artwork {
+            width: 100%;
+            display: block;
+        }
+        .hero-artwork img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: var(--radius-lg, 16px);
+        }
+        .hero-text {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: var(--space-3xl) var(--space-xl) var(--space-xl);
+            background: linear-gradient(
+                to top,
+                rgba(5, 5, 12, 0.95) 0%,
+                rgba(5, 5, 12, 0.85) 40%,
+                rgba(5, 5, 12, 0.4) 75%,
+                transparent 100%
+            );
+            border-radius: 0 0 var(--radius-lg, 16px) var(--radius-lg, 16px);
+        }
+        .hero-desc {
+            font-family: var(--font-body);
+            font-size: 0.92rem;
+            color: rgba(255, 255, 255, 0.88);
+            max-width: 580px;
+            margin: 0 auto var(--space-lg);
+            line-height: 1.65;
+        }
+        .hero-badge {
+            display: inline-block;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--seafoam-300);
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid hsla(172, 30%, 56%, 0.3);
+            padding: 6px 16px;
+            border-radius: var(--radius-full);
+            margin-bottom: var(--space-md);
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-on-accent);
+            background: var(--accent-gradient);
+            padding: 14px 32px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-glow);
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
+        }
+        .hero-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow-lg);
+        }
+        .wallet-info {
+            display: none;
+            align-items: center;
+            gap: var(--space-sm);
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: var(--seafoam-300);
+            background: var(--green-dim);
+            border: 1px solid hsla(172, 30%, 56%, 0.2);
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+        }
+        .wallet-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--seafoam-400);
+        }
+
+        /* ── Quick Tools Grid ── */
+        .tools-quick {
+            margin-bottom: var(--space-3xl);
+        }
+        .tools-quick-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-md);
+        }
+        .tool-card-v2 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            padding: 20px 12px 16px;
+            background: var(--bg-card);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            text-align: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .tool-card-v2:hover {
+            transform: translateY(-3px);
+            border-color: var(--lobster-400);
+            box-shadow: 0 6px 24px -4px hsla(9, 52%, 56%, 0.18);
+        }
+        .tool-card-v2.active {
+            border-color: var(--lobster-400);
+            background: hsla(9, 52%, 56%, 0.06);
+            box-shadow: 0 0 0 3px hsla(9, 52%, 56%, 0.12);
+        }
+        .tqc-icon {
+            font-size: 1.6rem;
+            line-height: 1;
+        }
+        .tqc-label {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.88rem;
+            color: var(--text-primary);
+        }
+        .tqc-hint {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            color: var(--text-dim);
+            letter-spacing: 0.02em;
+        }
+        @media (max-width: 700px) {
+            .tools-quick-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .tool-card-v2 {
+                padding: 16px 8px 12px;
+            }
+            .tqc-icon { font-size: 1.3rem; }
+            .tqc-label { font-size: 0.78rem; }
+            .tqc-hint { font-size: 0.6rem; }
+        }
+        @media (max-width: 400px) {
+            .tools-quick-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ── Flywheel ── */
+        @property --fw-angle {
+            syntax: '<angle>';
+            initial-value: 0deg;
+            inherits: false;
+        }
+
+        .flywheel {
+            text-align: center;
+            margin-bottom: var(--space-3xl);
+            position: relative;
+            overflow: visible;
+        }
+        .flywheel-bg-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 620px;
+            height: 620px;
+            transform: translate(-50%, -40%);
+            background: radial-gradient(circle, hsla(9, 52%, 56%, 0.05) 0%, hsla(172, 30%, 56%, 0.025) 40%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+            filter: blur(60px);
+        }
+
+        .flywheel-ring {
+            display: grid;
+            grid-template-columns: 1fr 52px 1fr;
+            grid-template-rows: auto 52px auto;
+            max-width: 720px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ── Nodes ── */
+        .flywheel-node {
+            position: relative;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: 28px 20px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        /* Rotating border glow */
+        .flywheel-node::before {
+            content: '';
+            position: absolute;
+            inset: -1px;
+            border-radius: var(--radius-xl);
+            padding: 1px;
+            background: conic-gradient(from var(--fw-angle), transparent 25%, var(--node-color) 50%, transparent 75%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: fw-spin 4s linear infinite;
+            opacity: 0.35;
+            transition: opacity 0.3s;
+        }
+        /* Inner ambient glow */
+        .flywheel-node::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: 15%;
+            right: 15%;
+            height: 50%;
+            background: radial-gradient(ellipse, var(--node-glow) 0%, transparent 70%);
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        .flywheel-node:hover { transform: translateY(-3px); box-shadow: 0 8px 36px -8px var(--node-glow); }
+        .flywheel-node:hover::before { opacity: 0.85; }
+
+        @keyframes fw-spin { to { --fw-angle: 360deg; } }
+
+        /* Node colors & grid placement */
+        .flywheel-node-1 { --node-color: var(--lobster-400); --node-glow: hsla(9, 52%, 56%, 0.25); grid-column: 1; grid-row: 1; }
+        .flywheel-node-2 { --node-color: hsl(38, 65%, 55%); --node-glow: hsla(38, 65%, 55%, 0.25); grid-column: 3; grid-row: 1; }
+        .flywheel-node-3 { --node-color: var(--seafoam-400); --node-glow: hsla(172, 32%, 48%, 0.25); grid-column: 3; grid-row: 3; }
+        .flywheel-node-4 { --node-color: hsl(265, 45%, 62%); --node-glow: hsla(265, 45%, 62%, 0.25); grid-column: 1; grid-row: 3; }
+
+        .flywheel-node-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.72rem;
+            color: #fff;
+            background: var(--node-color);
+            margin-bottom: var(--space-sm);
+            position: relative;
+            z-index: 1;
+        }
+        .flywheel-node-icon { font-size: 1.6rem; line-height: 1; margin-bottom: 6px; position: relative; z-index: 1; }
+        .flywheel-node-title { font-family: var(--font-display); font-weight: 800; font-size: 1.05rem; color: var(--text-primary); margin-bottom: 4px; position: relative; z-index: 1; }
+        .flywheel-node-desc { font-family: var(--font-body); font-size: 0.8rem; color: var(--text-secondary); line-height: 1.55; position: relative; z-index: 1; }
+
+        /* ── Connection arrows ── */
+        .fw-conn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fw-conn svg { overflow: visible; }
+        .fw-flow-line {
+            stroke-dasharray: 6 8;
+            animation: fw-dash 1.2s linear infinite;
+        }
+        @keyframes fw-dash { to { stroke-dashoffset: -28; } }
+        .fw-conn polygon { animation: fw-arrow-pulse 2.5s ease-in-out infinite; }
+        @keyframes fw-arrow-pulse { 0%, 100% { opacity: 0.55; } 50% { opacity: 1; } }
+
+        /* ── Center hub ── */
+        .flywheel-center {
+            grid-column: 2;
+            grid-row: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+        }
+        .flywheel-center-hub {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 24px hsla(9, 52%, 56%, 0.1), 0 0 48px hsla(172, 32%, 48%, 0.06);
+        }
+        .flywheel-center-hub::before {
+            content: '';
+            position: absolute;
+            inset: -7px;
+            border-radius: 50%;
+            border: 1.5px dashed hsla(9, 52%, 56%, 0.25);
+            animation: fw-ring 14s linear infinite;
+        }
+        .flywheel-center-hub::after {
+            content: '';
+            position: absolute;
+            inset: -16px;
+            border-radius: 50%;
+            background: radial-gradient(circle, hsla(9, 52%, 56%, 0.08), transparent 70%);
+            animation: fw-pulse 3s ease-in-out infinite;
+        }
+        @keyframes fw-ring { to { transform: rotate(360deg); } }
+        @keyframes fw-pulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.35); opacity: 1; } }
+        .flywheel-center-icon { font-size: 1.15rem; position: relative; z-index: 1; }
+
+        /* ── Tagline ── */
+        .flywheel-tagline {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-top: var(--space-xl);
+            letter-spacing: 0.02em;
+        }
+        .flywheel-tagline span { color: var(--lobster-300); }
+
+        @media (max-width: 700px) {
+            .flywheel-ring { grid-template-columns: 1fr 36px 1fr; grid-template-rows: auto 36px auto; }
+            .flywheel-node { padding: 20px 14px; }
+            .flywheel-center-hub { width: 36px; height: 36px; }
+            .flywheel-center-icon { font-size: 0.9rem; }
+            .flywheel-bg-glow { width: 360px; height: 360px; }
+        }
+
+        /* ── Section headings ── */
+        .section {
+            margin-bottom: var(--space-4xl);
+        }
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: var(--space-sm);
+        }
+        .section-title {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xl);
+        }
+
+        /* ══════════════════════════════════════
+           TOOL DRAWER
+           ══════════════════════════════════════ */
+
+        .tool-drawer {
+            position: fixed;
+            inset: 0;
+            background: hsla(0,0%,0%,0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .tool-drawer.open { opacity: 1; pointer-events: auto; }
+        .tool-drawer-inner {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            max-width: 520px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .drawer-close-btn {
+            position: absolute; top: 16px; right: 16px;
+            background: none; border: none; color: var(--text-dim);
+            font-size: 1.5rem; cursor: pointer; line-height: 1;
+        }
+        .drawer-close-btn:hover { color: var(--text-primary); }
+        .drawer-content { display: none; }
+        .drawer-content.active { display: block; }
+        .drawer-title {
+            font-family: var(--font-display);
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xl);
+        }
+        .drawer-info {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--seafoam-300);
+            background: var(--green-dim);
+            border: 1px solid hsla(172, 30%, 56%, 0.15);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+            line-height: 1.6;
+        }
+
+        /* ── Form Elements ── */
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+        .form-label {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        .form-hint {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-bottom: var(--space-xs);
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: border-color var(--transition-base);
+            box-sizing: border-box;
+        }
+        .form-input:focus {
+            border-color: var(--lobster-400);
+        }
+        .form-input::placeholder {
+            color: var(--text-dim);
+        }
+        textarea.form-input {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+
+        /* Slider */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        .slider-container input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            border-radius: var(--radius-full);
+            background: var(--bg-elevated);
+            outline: none;
+        }
+        .slider-container input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-gradient);
+            cursor: pointer;
+            border: 2px solid var(--bg-dark);
+        }
+        .slider-display {
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--lobster-300);
+            white-space: nowrap;
+            min-width: 120px;
+            text-align: right;
+        }
+
+        /* Deploy button */
+        .deploy-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--text-on-accent);
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            box-shadow: var(--shadow-glow);
+            transition: transform var(--transition-base), box-shadow var(--transition-base), opacity var(--transition-base);
+        }
+        .deploy-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow-lg);
+        }
+        .deploy-btn:disabled, .deploy-btn.deploying {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ── Chain Selector ── */
+        .chain-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: var(--space-md);
+        }
+        .chain-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 16px;
+            min-height: 48px;
+            border-radius: var(--radius-lg, 12px);
+            border: 2px solid var(--border-subtle);
+            background: var(--bg-elevated);
+            color: var(--text-secondary);
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s, color 0.2s, box-shadow 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .chain-btn:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            background: rgba(99, 102, 241, 0.06);
+        }
+        .chain-btn.selected {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .chain-btn svg {
+            flex-shrink: 0;
+        }
+
+        /* ── Allocation Tiers ── */
+        .advanced-section {
+            margin-top: var(--space-md);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+        .advanced-toggle {
+            width: 100%;
+            background: var(--bg-elevated);
+            border: none;
+            padding: 12px 16px;
+            text-align: left;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-family: var(--font-body);
+        }
+        .advanced-toggle:hover {
+            background: var(--bg-surface);
+        }
+        .advanced-arrow {
+            font-size: 0.7rem;
+            color: var(--text-dim);
+            transition: transform 0.2s;
+        }
+        .advanced-body {
+            padding: 12px 16px 16px;
+            border-top: 1px solid var(--border-subtle);
+        }
+        .advanced-section.open .advanced-arrow {
+            transform: rotate(180deg);
+        }
+        .airdrop-entry {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .allocation-section {
+            margin-top: var(--space-md);
+            margin-bottom: var(--space-md);
+        }
+        .allocation-section .form-label {
+            margin-bottom: var(--space-sm);
+        }
+        .allocation-tiers {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .allocation-tier {
+            flex: 1;
+            min-width: 60px;
+            min-height: 44px;
+            padding: 12px 8px;
+            text-align: center;
+            background: var(--bg-elevated);
+            border: 1.5px solid var(--border-subtle);
+            border-radius: var(--radius-lg, 12px);
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .allocation-tier:hover {
+            border-color: var(--border-default);
+            transform: translateY(-1px);
+        }
+        .allocation-tier.selected {
+            border-color: var(--lobster-400);
+            background: hsla(9, 52%, 56%, 0.08);
+            box-shadow: 0 0 0 3px hsla(9, 52%, 56%, 0.1);
+        }
+        .allocation-tier-pct {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+        .allocation-tier-cost {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-dim);
+            margin-top: 2px;
+        }
+        .allocation-tier.selected .allocation-tier-pct {
+            color: var(--lobster-400);
+        }
+        .allocation-balance {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-top: var(--space-sm);
+        }
+        .allocation-balance .insufficient {
+            color: var(--lobster-400);
+        }
+        .allocation-warning {
+            display: none;
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            color: var(--lobster-400);
+            margin-top: 6px;
+            padding: 8px 12px;
+            background: hsla(9, 52%, 56%, 0.06);
+            border: 1px solid hsla(9, 52%, 56%, 0.15);
+            border-radius: var(--radius-md);
+        }
+        .allocation-warning.visible {
+            display: block;
+        }
+        .allocation-lockup-note {
+            font-size: 0.8rem;
+            color: hsl(40, 70%, 55%);
+            margin-top: 8px;
+            padding: 8px 12px;
+            background: hsla(40, 70%, 55%, 0.06);
+            border: 1px solid hsla(40, 70%, 55%, 0.15);
+            border-radius: var(--radius-md);
+            line-height: 1.45;
+        }
+
+        /* ── Incubation Tier Cards ── */
+        .inc-tier-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: var(--space-md);
+        }
+        .inc-tier-card {
+            padding: 16px 14px;
+            border: 2px solid var(--border-default);
+            border-radius: var(--radius-lg, 12px);
+            cursor: pointer;
+            text-align: center;
+            background: transparent;
+            color: inherit;
+            font-family: inherit;
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.15s;
+            -webkit-tap-highlight-color: transparent;
+            min-height: 48px;
+        }
+        .inc-tier-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-1px);
+        }
+        .inc-tier-card.selected {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.08);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .inc-tier-name {
+            display: block;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .inc-tier-desc {
+            display: block;
+            font-family: var(--font-body);
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            line-height: 1.4;
+        }
+
+        /* ── Mobile drawer refinements ── */
+        @media (max-width: 520px) {
+            .tool-drawer-inner {
+                width: 96%;
+                max-height: 90vh;
+                padding: var(--space-lg);
+            }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .chain-selector {
+                flex-wrap: wrap;
+            }
+            .chain-btn {
+                min-width: calc(50% - 4px);
+                flex: 1 1 calc(50% - 4px);
+            }
+            .allocation-tiers {
+                gap: 6px;
+            }
+            .allocation-tier {
+                min-width: 50px;
+            }
+            .inc-tier-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Success state */
+        .success-card {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid hsla(172, 30%, 56%, 0.3);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            text-align: center;
+            margin-bottom: var(--space-xl);
+        }
+        .success-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+        }
+        .success-title {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+        }
+        .success-subtitle {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xl);
+        }
+        .success-detail {
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-sm);
+            text-align: left;
+        }
+        .success-detail-label {
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            margin-bottom: 4px;
+        }
+        .success-detail-value {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: var(--seafoam-300);
+            word-break: break-all;
+        }
+        .success-detail-value a {
+            color: var(--lobster-300);
+            text-decoration: none;
+        }
+        .success-detail-value a:hover {
+            text-decoration: underline;
+        }
+
+        /* ── Feature cards (accordion content) ── */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+        }
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            transition: border-color var(--transition-base), box-shadow var(--transition-base);
+        }
+        .feature-card:hover {
+            border-color: var(--border-default);
+            box-shadow: var(--shadow-md);
+        }
+        .feature-icon { font-size: 1.5rem; margin-bottom: var(--space-sm); }
+        .feature-name {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        .feature-desc {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ── Steps (accordion content) ── */
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-sm);
+        }
+        .step {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            text-align: center;
+        }
+        .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px; height: 28px;
+            border-radius: var(--radius-full);
+            background: var(--accent-glow);
+            border: 1px solid var(--lobster-400);
+            color: var(--lobster-300);
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-bottom: var(--space-sm);
+        }
+        .step-title {
+            font-family: var(--font-display);
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        .step-desc {
+            font-family: var(--font-body);
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+
+        /* ── Audience (accordion content) ── */
+        .audience-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-md);
+        }
+        .audience-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            text-align: center;
+        }
+        .audience-icon { font-size: 2rem; margin-bottom: var(--space-sm); }
+        .audience-label {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        .audience-desc {
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* ── Live Projects Section ── */
+        .live-projects-section {
+            margin-bottom: var(--space-3xl);
+        }
+        .live-projects-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-lg);
+            flex-wrap: wrap;
+        }
+        .live-projects-header h2 {
+            font-family: var(--font-heading);
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0;
+            white-space: nowrap;
+        }
+        .lp-filters {
+            display: flex;
+            gap: 6px;
+            margin-left: auto;
+        }
+        .lp-filter-tab {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md, 8px);
+            padding: 6px 14px;
+            font-family: var(--font-body);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .lp-filter-tab:hover {
+            color: var(--text-secondary);
+            border-color: var(--border-default);
+        }
+        .lp-filter-tab.active {
+            background: var(--accent-primary, #6366f1);
+            border-color: var(--accent-primary, #6366f1);
+            color: #fff;
+        }
+        .lp-sort {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md, 8px);
+            padding: 6px 12px;
+            font-family: var(--font-body);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            appearance: auto;
+        }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-md);
+        }
+        .projects-loading {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: var(--space-2xl);
+            color: var(--text-dim);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+        }
+        .projects-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: var(--space-2xl);
+            color: var(--text-dim);
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+        }
+        .project-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg, 16px);
+            padding: var(--space-lg);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            animation: lpCardIn 0.35s ease both;
+        }
+        .project-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            border-color: var(--border-default);
+        }
+        @keyframes lpCardIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .project-card-head {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-sm);
+        }
+        .project-card-logo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .project-card-logo-placeholder {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1rem;
+            color: #fff;
+            flex-shrink: 0;
+        }
+        .project-card-name {
+            font-family: var(--font-heading);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        .project-card-symbol {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-dim);
+        }
+        .project-card-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: var(--space-sm);
+        }
+        .project-card-badges span {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .lp-tier-incubated   { background: rgba(99,102,241,0.15); color: #818cf8; }
+        .lp-tier-permissionless { background: rgba(34,197,94,0.15); color: #4ade80; }
+        .lp-tier-ecosystem   { background: rgba(251,191,36,0.15); color: #fbbf24; }
+        .lp-tier-partner     { background: rgba(236,72,153,0.15); color: #f472b6; }
+        .lp-badge-staking    { background: rgba(45,212,191,0.15); color: #2dd4bf; }
+        .lp-badge-agent      { background: rgba(139,92,246,0.15); color: #a78bfa; }
+        .project-card-mcap {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            margin-top: var(--space-xs);
+        }
+        @media (max-width: 600px) {
+            .live-projects-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .lp-filters {
+                margin-left: 0;
+            }
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── The Split (accordion content) ── */
+        .split-visual {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+            text-align: center;
+        }
+        .split-bar-container { max-width: 480px; margin: 0 auto var(--space-lg); }
+        .split-bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            margin-bottom: var(--space-xs);
+        }
+        .split-bar {
+            height: 12px;
+            border-radius: var(--radius-full);
+            background: var(--bg-elevated);
+            overflow: hidden;
+        }
+        .split-bar-fill {
+            height: 100%;
+            border-radius: var(--radius-full);
+            background: var(--accent-gradient);
+            width: 60%;
+            transition: width 0.6s var(--ease-smooth);
+        }
+        .split-range {
+            font-family: var(--font-mono);
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--lobster-300);
+            margin-bottom: var(--space-sm);
+        }
+        .split-note {
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            max-width: 440px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        .split-callout {
+            display: inline-block;
+            margin-top: var(--space-lg);
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--seafoam-300);
+            background: var(--green-dim);
+            border: 1px solid hsla(172, 30%, 56%, 0.15);
+            padding: 8px 18px;
+            border-radius: var(--radius-md);
+        }
+
+        /* ── Admin Panel ── */
+        .admin-panel {
+            display: none;
+            background: var(--bg-card);
+            border: 1px solid hsla(0, 60%, 50%, 0.3);
+            border-radius: var(--radius-xl);
+            padding: var(--space-2xl);
+        }
+        .admin-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--lobster-300);
+            margin-bottom: var(--space-lg);
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: var(--space-xl);
+        }
+        .admin-table th, .admin-table td {
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .admin-table th {
+            font-weight: 700;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            font-size: 0.65rem;
+        }
+        .admin-table td {
+            color: var(--text-secondary);
+        }
+        .admin-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: var(--space-md);
+            align-items: end;
+        }
+        .admin-input {
+            width: 100%;
+            padding: 10px 14px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            outline: none;
+            box-sizing: border-box;
+        }
+        .admin-input:focus { border-color: var(--lobster-400); }
+        .admin-btn {
+            padding: 10px 24px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-on-accent);
+            background: var(--accent-gradient);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .admin-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* ── Admin Review Cards ── */
+        .admin-review-section { margin-bottom: var(--space-xl); }
+        .admin-pending-list { display: flex; flex-direction: column; gap: var(--space-md); }
+        .admin-pending-card {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+        .admin-pending-card .pending-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: var(--space-sm);
+        }
+        .admin-pending-card .pending-name {
+            font-family: var(--font-display); font-weight: 800; font-size: 1rem; color: var(--text-primary);
+        }
+        .admin-pending-card .pending-tier {
+            font-family: var(--font-mono); font-size: 0.7rem; text-transform: uppercase;
+            padding: 3px 8px; border-radius: var(--radius-sm); background: var(--bg-card); color: var(--text-dim);
+        }
+        .admin-pending-card .pending-meta {
+            font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-dim);
+            margin-bottom: var(--space-sm); line-height: 1.6;
+        }
+        .admin-pending-card .pending-desc {
+            font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;
+            margin-bottom: var(--space-md);
+        }
+        .admin-pending-actions {
+            display: flex; gap: var(--space-sm); align-items: center;
+        }
+        .admin-pending-actions .btn-approve {
+            padding: 8px 20px; font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
+            color: #fff; background: var(--seafoam-500); border: none; border-radius: var(--radius-md); cursor: pointer;
+        }
+        .admin-pending-actions .btn-reject {
+            padding: 8px 20px; font-family: var(--font-display); font-weight: 700; font-size: 0.8rem;
+            color: #fff; background: hsl(0, 60%, 45%); border: none; border-radius: var(--radius-md); cursor: pointer;
+        }
+        .admin-pending-actions .btn-approve:hover { opacity: 0.85; }
+        .admin-pending-actions .btn-reject:hover { opacity: 0.85; }
+
+        /* ── Launch Another ── */
+        .launch-another-btn {
+            margin-top: var(--space-xl);
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-default);
+        }
+        .launch-another-btn:hover {
+            border-color: var(--lobster-400);
+        }
+
+        /* ── Toast ── */
+        .toast-container {
+            position: fixed;
+            top: calc(var(--nav-height) + var(--space-md));
+            right: var(--space-md);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+        }
+        .incubator-toast {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: 12px 18px;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transform: translateX(20px);
+            transition: opacity 0.3s, transform 0.3s;
+        }
+        .incubator-toast.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .incubator-toast.hiding {
+            opacity: 0;
+            transform: translateX(20px);
+        }
+        .incubator-toast--error { border-color: hsla(0, 60%, 50%, 0.4); }
+        .incubator-toast--success { border-color: hsla(172, 60%, 50%, 0.4); }
+
+        /* ── Agent Toggle ── */
+        .agent-toggle {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            cursor: pointer;
+            user-select: none;
+        }
+        .agent-toggle input[type="checkbox"] {
+            width: 18px; height: 18px;
+            accent-color: var(--lobster-400);
+            cursor: pointer;
+        }
+        .agent-toggle-label {
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .agent-toggle-hint {
+            font-family: var(--font-body);
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-left: 28px;
+        }
+        .agent-options {
+            display: none;
+            margin-top: var(--space-md);
+            padding: var(--space-lg);
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+        }
+        .agent-options.visible { display: block; }
+        .agent-options .form-group { margin-bottom: var(--space-md); }
+        .agent-options .form-group:last-child { margin-bottom: 0; }
+        .agent-select {
+            width: 100%;
+            padding: 10px 14px;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: var(--text-primary);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            outline: none;
+            box-sizing: border-box;
+        }
+        .agent-select:focus { border-color: var(--lobster-400); }
+
+        /* ── Agent dot on cards ── */
+        .agent-dot {
+            display: inline-block;
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            vertical-align: middle;
+            margin-left: 4px;
+        }
+
+        /* ── CTA ── */
+        .cta-section {
+            text-align: center;
+            padding: var(--space-3xl) 0;
+        }
+        .cta-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
+        }
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-on-accent);
+            background: var(--accent-gradient);
+            padding: 14px 32px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            box-shadow: var(--shadow-glow);
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
+        }
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow-lg);
+        }
+
+        /* ── Partner Token Preview ── */
+        .partner-token-preview {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+            min-height: 52px;
+        }
+        .partner-token-preview .token-icon {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            background: var(--border-subtle);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem; color: var(--text-dim);
+            flex-shrink: 0;
+        }
+        .partner-token-preview .token-info { flex: 1; }
+        .partner-token-preview .token-name-display {
+            font-weight: 700; font-size: 0.9rem; color: var(--text-primary);
+        }
+        .partner-token-preview .token-symbol-display {
+            font-size: 0.78rem; color: var(--text-dim);
+        }
+        .partner-token-preview.hidden { display: none; }
+
+        /* ── Deploy Fee Badge ── */
+        .deploy-fee-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 8px 14px;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-lg);
+        }
+        .deploy-fee-badge strong { color: var(--text-primary); }
+
+        /* ══════════════════════════════════════
+           LEARN MORE ACCORDION
+           ══════════════════════════════════════ */
+
+        .learn-accordion {
+            margin-bottom: var(--space-4xl);
+        }
+        .learn-accordion-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: var(--space-lg) var(--space-xl);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            transition: border-color var(--transition-base);
+            user-select: none;
+        }
+        .learn-accordion-header:hover {
+            border-color: var(--border-default);
+        }
+        .learn-accordion-header h2 {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .learn-accordion-arrow {
+            font-size: 1rem;
+            color: var(--text-dim);
+            transition: transform 0.3s ease;
+        }
+        .learn-accordion.open .learn-accordion-arrow {
+            transform: rotate(180deg);
+        }
+        .learn-accordion.open .learn-accordion-header {
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            border-bottom-color: transparent;
+        }
+        .learn-accordion-body {
+            display: none;
+            padding: var(--space-xl);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-top: none;
+            border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+        }
+        .learn-accordion.open .learn-accordion-body {
+            display: block;
+        }
+        .learn-accordion-body .section {
+            margin-bottom: var(--space-2xl);
+        }
+        .learn-accordion-body .section:last-child {
+            margin-bottom: 0;
+        }
+
+        /* ── Hide drawers & success cards in normal (non-embed) view ── */
+        .tool-drawer { display: none; }
+        .success-card { display: none; }
+
+        /* ══════════════════════════════════════
+           THE JOURNEY — Vertical Timeline
+           ══════════════════════════════════════ */
+        .journey-section {
+            margin-bottom: var(--space-4xl);
+        }
+        .journey-timeline {
+            position: relative;
+            padding-left: 56px;
+        }
+        .journey-timeline::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--lobster-400), var(--seafoam-400));
+            opacity: 0.3;
+        }
+        .journey-step {
+            position: relative;
+            margin-bottom: var(--space-xl);
+        }
+        .journey-step:last-child { margin-bottom: 0; }
+        .journey-step-num {
+            position: absolute;
+            left: -56px;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-elevated);
+            border: 2px solid var(--lobster-400);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--lobster-300);
+            z-index: 1;
+        }
+        .journey-step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .journey-step-card:hover {
+            border-color: var(--border-default);
+            box-shadow: var(--shadow-md);
+        }
+        .journey-step-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        .journey-step-desc {
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            margin-bottom: var(--space-md);
+        }
+        .journey-step-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            min-height: 40px;
+            font-size: 0.85rem;
+            color: var(--lobster-300);
+            text-decoration: none;
+            padding: 8px 18px;
+            border: 1px solid hsla(9, 52%, 56%, 0.3);
+            border-radius: var(--radius-md);
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .journey-step-cta:hover {
+            background: hsla(9, 52%, 56%, 0.08);
+            border-color: var(--lobster-400);
+        }
+
+        /* ══════════════════════════════════════
+           MARKETING GUIDE
+           ══════════════════════════════════════ */
+        .marketing-guide {
+            margin-bottom: var(--space-4xl);
+        }
+        .marketing-subsection {
+            margin-bottom: var(--space-2xl);
+        }
+        .marketing-subsection:last-child { margin-bottom: 0; }
+        .marketing-subtitle {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
+        }
+        .promo-steps {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-md);
+        }
+        .promo-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-lg);
+        }
+        .promo-step-num {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--lobster-300);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: var(--space-xs);
+        }
+        .promo-step-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+        .promo-step-desc {
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+        }
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--space-sm);
+        }
+        .platform-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: var(--space-md) var(--space-sm);
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+        .platform-card:hover {
+            border-color: var(--border-default);
+        }
+        .platform-icon {
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+        }
+        .platform-name {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.82rem;
+            color: var(--text-primary);
+        }
+        .tips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .tips-list li {
+            position: relative;
+            padding: 10px 0 10px 28px;
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.55;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .tips-list li:last-child { border-bottom: none; }
+        .tips-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 16px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--lobster-400);
+            opacity: 0.6;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 700px) {
+            .tool-grid { grid-template-columns: 1fr; }
+            .features-grid { grid-template-columns: 1fr; }
+            .steps { grid-template-columns: repeat(2, 1fr); }
+            .audience-grid { grid-template-columns: 1fr; }
+            .form-row { grid-template-columns: 1fr; }
+            .admin-row { grid-template-columns: 1fr; }
+            .reward-deposit-form { flex-direction: column; }
+            .promo-steps { grid-template-columns: 1fr; }
+            .platform-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 480px) {
+            .steps { grid-template-columns: 1fr; }
+        }
+
+        /* ── Coming Soon Gate ── */
+        .coming-soon-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: var(--bg-dark, #0a0a0f);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: var(--space-2xl);
+        }
+        .coming-soon-overlay .cs-icon { font-size: 4rem; margin-bottom: var(--space-lg); }
+        .coming-soon-overlay .cs-title {
+            font-family: var(--font-display);
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: var(--text-primary);
+            margin-bottom: var(--space-md);
+        }
+        .coming-soon-overlay .cs-subtitle {
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--text-secondary);
+            max-width: 420px;
+            line-height: 1.6;
+            margin-bottom: var(--space-xl);
+        }
+        .coming-soon-overlay .cs-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--text-on-accent);
+            background: var(--accent-gradient);
+            border-radius: var(--radius-lg);
+            text-decoration: none;
+        }
+        .coming-soon-overlay .cs-link:hover { opacity: 0.9; }
+        .coming-soon-overlay.hidden { display: none; }
+
+        /* Pool deploy prompt (shown when pool auto-deploy fails during token launch) */
+        .pool-deploy-prompt-overlay {
+            position: fixed;
+            inset: 0;
+            background: hsla(240, 20%, 3%, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-xl);
+            animation: fadeIn 0.2s ease;
+        }
+        .pool-deploy-prompt {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 420px;
+            padding: var(--space-2xl);
+            text-align: center;
+            box-shadow: 0 16px 48px hsla(240, 10%, 3%, 0.7);
+        }
+        .pool-deploy-prompt-icon {
+            font-size: 2.5rem;
+            margin-bottom: var(--space-md);
+        }
+        .pool-deploy-prompt h3 {
+            font-family: var(--font-display);
+            font-size: 1.15rem;
+            font-weight: 800;
+            margin-bottom: var(--space-sm);
+        }
+        .pool-deploy-prompt p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: var(--space-md);
+        }
+        .pool-deploy-prompt-actions {
+            display: flex;
+            gap: var(--space-sm);
+            justify-content: center;
+            margin-top: var(--space-lg);
+        }
+        .pool-deploy-prompt-go {
+            padding: 10px 24px;
+            background: var(--accent-gradient);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        .pool-deploy-prompt-go:hover { opacity: 0.85; }
+        .pool-deploy-prompt-dismiss {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-family: var(--font-body);
+            font-size: 0.88rem;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        /* ── Disperse Tool ── */
+        .disperse-token-select {
+            width: 100%;
+            padding: 12px 16px;
+            background-color: var(--bg-input, rgba(255,255,255,0.04));
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 16px;
+        }
+        .disperse-token-select option {
+            background: #1a1a2e;
+            color: #fff;
+        }
+        .disperse-custom-addr {
+            display: none;
+            margin-top: var(--space-sm);
+        }
+        .disperse-custom-addr.visible { display: block; }
+        .disperse-amount-wrap {
+            position: relative;
+        }
+        .disperse-amount-wrap .form-input {
+            padding-right: 80px;
+        }
+        .disperse-amount-badge {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            background: rgba(255,255,255,0.06);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+        }
+        .disperse-balance {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            margin-top: 4px;
+        }
+        .disperse-recipients-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-sm);
+        }
+        .disperse-even-split {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+        .disperse-even-split input[type="checkbox"] {
+            accent-color: hsl(188, 50%, 48%);
+        }
+        .disperse-recipient-row {
+            display: grid;
+            grid-template-columns: 1fr 100px 32px;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .disperse-recipient-row .form-input {
+            margin: 0;
+        }
+        .disperse-pct-input {
+            width: 100%;
+            padding: 10px 8px;
+            background: var(--bg-input, rgba(255,255,255,0.04));
+            border: 1px solid var(--border-default);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+        .disperse-remove-btn {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid var(--border-default);
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+        }
+        .disperse-remove-btn:hover {
+            border-color: hsl(0, 60%, 50%);
+            color: hsl(0, 60%, 60%);
+            background: hsla(0, 60%, 50%, 0.1);
+        }
+        .disperse-add-row-btn {
+            width: 100%;
+            padding: 10px;
+            border: 1.5px dashed hsla(188, 50%, 48%, 0.35);
+            border-radius: var(--radius-md);
+            background: transparent;
+            color: hsl(188, 50%, 48%);
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-top: 4px;
+        }
+        .disperse-add-row-btn:hover {
+            border-color: hsl(188, 50%, 48%);
+            background: hsla(188, 50%, 48%, 0.06);
+        }
+        .disperse-preview {
+            display: none;
+            background: var(--bg-elevated, rgba(255,255,255,0.03));
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-top: var(--space-md);
+        }
+        .disperse-preview.visible { display: block; }
+        .disperse-preview-title {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+            margin-bottom: var(--space-sm);
+        }
+        .disperse-preview-rate {
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            color: hsl(188, 50%, 58%);
+            margin-bottom: var(--space-md);
+        }
+        .disperse-preview-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+        }
+        .disperse-preview-row:last-child { border-bottom: none; }
+        .disperse-preview-addr { color: var(--text-secondary); }
+        .disperse-preview-amt { color: var(--text-primary); font-weight: 600; }
+        .disperse-steps {
+            display: none;
+            margin-top: var(--space-lg);
+        }
+        .disperse-steps.visible { display: block; }
+        .disperse-step-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+        .disperse-step-item.active { color: hsl(188, 50%, 58%); }
+        .disperse-step-item.done { color: var(--seafoam-400); }
+        .disperse-step-item.error { color: hsl(0, 60%, 60%); }
+        .disperse-step-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid var(--border-default);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            flex-shrink: 0;
+        }
+        .disperse-step-item.active .disperse-step-icon {
+            border-color: hsl(188, 50%, 48%);
+            animation: disperse-pulse 1.2s ease-in-out infinite;
+        }
+        .disperse-step-item.done .disperse-step-icon {
+            border-color: var(--seafoam-400);
+            background: var(--seafoam-400);
+            color: #fff;
+        }
+        .disperse-step-item.error .disperse-step-icon {
+            border-color: hsl(0, 60%, 50%);
+            background: hsl(0, 60%, 50%);
+            color: #fff;
+        }
+        @keyframes disperse-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .disperse-btn-row {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+        .disperse-btn-row .deploy-btn { flex: 1; }
+
+        /* ══════════════════════════════════════
+           POWER THE INCLAWBATOR — COMPUTE NODES
+           ══════════════════════════════════════ */
+
+        .compute-section {
+            margin-bottom: var(--space-4xl);
+        }
+        .compute-section .section-desc {
+            font-family: var(--font-body);
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+            max-width: 640px;
+            margin: 0 auto var(--space-xl);
+            text-align: center;
+        }
+
+        /* Live network stats bar */
+        .compute-stats-bar {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-lg);
+            flex-wrap: wrap;
+            margin-bottom: var(--space-2xl);
+            padding: var(--space-md) var(--space-lg);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-full);
+        }
+        .compute-stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+        }
+        .compute-stat-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--seafoam-400);
+            animation: stat-pulse 2s ease-in-out infinite;
+        }
+        .compute-stat-value {
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        @keyframes stat-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
+        /* How it works steps */
+        .compute-how {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-md);
+            margin-bottom: var(--space-2xl);
+        }
+        .compute-step {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl) var(--space-lg);
+            text-align: center;
+            position: relative;
+        }
+        .compute-step-num {
+            font-family: var(--font-mono);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--lobster-400);
+            margin-bottom: var(--space-sm);
+        }
+        .compute-step-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+        .compute-step-desc {
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Job types grid */
+        .compute-jobs-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: var(--space-md);
+        }
+        .compute-jobs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--space-sm);
+            margin-bottom: var(--space-2xl);
+        }
+        .compute-job {
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+            padding: var(--space-md) var(--space-lg);
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+        }
+        .compute-job-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .compute-job-info {
+            flex: 1;
+            min-width: 0;
+        }
+        .compute-job-name {
+            font-family: var(--font-display);
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .compute-job-desc {
+            font-family: var(--font-body);
+            font-size: 0.72rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+        }
+        .compute-job-badge {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: var(--radius-full);
+            flex-shrink: 0;
+        }
+        .badge-claws {
+            color: var(--lobster-400);
+            background: hsla(9, 52%, 56%, 0.1);
+            border: 1px solid hsla(9, 52%, 56%, 0.2);
+        }
+        .badge-usd {
+            color: var(--seafoam-400);
+            background: hsla(172, 30%, 56%, 0.1);
+            border: 1px solid hsla(172, 30%, 56%, 0.2);
+        }
+
+        /* Earnings table */
+        .compute-earnings {
+            margin-bottom: var(--space-2xl);
+        }
+        .compute-earnings-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: var(--space-md);
+        }
+        .compute-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: var(--font-body);
+            font-size: 0.82rem;
+        }
+        .compute-table th {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-dim);
+            text-align: left;
+            padding: var(--space-sm) var(--space-md);
+            border-bottom: 1px solid var(--border-subtle);
+        }
+        .compute-table td {
+            padding: var(--space-sm) var(--space-md);
+            color: var(--text-secondary);
+            border-bottom: 1px solid hsla(0,0%,100%,0.04);
+        }
+        .compute-table tr:last-child td { border-bottom: none; }
+        .compute-table .earn-highlight {
+            color: var(--seafoam-300);
+            font-weight: 600;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+        }
+
+        /* CTA row */
+        .compute-cta-row {
+            display: flex;
+            gap: var(--space-md);
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .compute-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.92rem;
+            color: var(--text-on-accent);
+            background: var(--accent-gradient);
+            padding: 12px 28px;
+            border-radius: var(--radius-full);
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--shadow-glow);
+            transition: transform var(--transition-base), box-shadow var(--transition-base);
+        }
+        .compute-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow-lg);
+        }
+        .compute-cta-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            box-shadow: none;
+            border: 1px solid var(--border-default);
+        }
+        .compute-cta-secondary:hover {
+            box-shadow: 0 4px 16px hsla(0,0%,0%,0.3);
+        }
+
+        /* Responsive */
+        @media (max-width: 700px) {
+            .compute-how { grid-template-columns: 1fr; }
+            .compute-jobs { grid-template-columns: 1fr; }
+            .compute-stats-bar {
+                border-radius: var(--radius-lg);
+                gap: var(--space-sm);
+            }
+            .compute-stat { font-size: 0.7rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+
+<div id="toastContainer" class="toast-container"></div>
+
+<!-- Nav -->
+<nav class="nav">
+    <a href="/" class="nav-brand">
+        <span class="nav-logo">inclawbate &#129438;</span>
+    </a>
+    <div class="nav-links">
+        <a href="/inclawbator" class="nav-link nav-link-featured">Inclawbator</a>
+        <a href="/claws" class="nav-link">$CLAWS</a>
+        <div class="nav-group">
+            <a href="#" class="nav-link" onclick="return false">Explore</a>
+            <div class="nav-group-menu">
+                <a href="/build">Build</a>
+                <a href="/inclawbations#drops">Drops</a>
+                <a href="/inclawbations#builds">Community Builds</a>
+                <a href="/inclawbations#incubations">Incubations</a>
+                <a href="/apps">Apps</a>
+                <a href="/tokens">Tokens</a>
+                <a href="/nfts">NFTs</a>
+                <a href="/stake">Staking</a>
+                <a href="/tools">Tools</a>
+
+            </div>
+        </div>
+        <a href="/dashboard" class="nav-link">Dashboard</a>
+        <a href="/blog" class="nav-link">Blog</a>
+    </div>
+</nav>
+
+<div class="incubator-page">
+
+    <!-- ═══ Hero ═══ -->
+    <section class="hero">
+        <div class="hero-artwork">
+            <img src="/inclawbate/assets/hero-banner.jpg" alt="Inclawbator — Build, Launch, and Earn on Base">
+        </div>
+        <div class="hero-text">
+            <div class="hero-badge">Live on Base</div>
+            <p class="hero-desc">
+                From idea to launched project. This guide walks you through everything &mdash;
+                token launch, staking, app building, and promotion. Follow the steps below to go live.
+            </p>
+            <div class="hero-actions">
+                <a href="#tools-quick" class="hero-cta" style="text-decoration:none">
+                    Start Building &darr;
+                </a>
+                <button id="walletConnectBtn" class="hero-cta" style="background:var(--bg-elevated);color:var(--text-primary);box-shadow:none;border:1px solid var(--border-default);font-size:0.88rem;padding:12px 24px;">
+                    Connect Wallet
+                </button>
+                <div id="walletInfo" class="wallet-info">
+                    <span class="wallet-dot"></span>
+                    <span class="wallet-addr"></span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ Quick Tools Grid ═══ -->
+    <section class="tools-quick section" id="tools-quick">
+        <p class="section-label">Tools</p>
+        <h2 class="section-title">What do you want to do?</h2>
+        <div class="tools-quick-grid">
+            <button class="tool-card-v2" data-tool="launch">
+                <span class="tqc-icon">&#128640;</span>
+                <span class="tqc-label">Launch Token</span>
+                <span class="tqc-hint">Base &middot; Solana &middot; Cardano</span>
+            </button>
+            <button class="tool-card-v2" data-tool="pool">
+                <span class="tqc-icon">&#128184;</span>
+                <span class="tqc-label">Stake Pool</span>
+                <span class="tqc-hint">Free &mdash; just gas</span>
+            </button>
+            <button class="tool-card-v2" data-tool="incubate">
+                <span class="tqc-icon">&#129438;</span>
+                <span class="tqc-label">Incubation</span>
+                <span class="tqc-hint">Dev &amp; marketing help</span>
+            </button>
+            <button class="tool-card-v2" data-tool="agent">
+                <span class="tqc-icon">&#129302;</span>
+                <span class="tqc-label">AI Agent</span>
+                <span class="tqc-hint">Auto-post on X</span>
+            </button>
+            <button class="tool-card-v2" data-tool="disperse">
+                <span class="tqc-icon">&#128176;</span>
+                <span class="tqc-label">Disperse</span>
+                <span class="tqc-hint">Swap &amp; multi-send</span>
+            </button>
+            <a href="/build" class="tool-card-v2" data-tool="build" style="text-decoration:none">
+                <span class="tqc-icon">&#128736;</span>
+                <span class="tqc-label">Build App</span>
+                <span class="tqc-hint">AI app builder</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ═══ Tool Drawer ═══ -->
+    <div id="toolDrawer" class="tool-drawer">
+      <div class="tool-drawer-inner">
+        <button class="drawer-close-btn" id="drawerCloseBtn">&times;</button>
+
+        <!-- ── Launch Token ── -->
+        <div id="drawerLaunch" class="drawer-content">
+            <h3 class="drawer-title">&#128640; Launch Token</h3>
+            <div class="chain-selector" id="chainSelector">
+                <button class="chain-btn selected" data-chain="base" onclick="window.selectChain('base')">
+                    <svg width="18" height="18" viewBox="0 0 111 111" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M54.921 110.034C85.359 110.034 110.034 85.402 110.034 55.017C110.034 24.6319 85.359 0 54.921 0C26.0432 0 2.35281 22.1714 0 50.3923H72.8467V59.6416H0C2.35281 87.8625 26.0432 110.034 54.921 110.034Z" fill="currentColor"/></svg>
+                    Base
+                </button>
+                <button class="chain-btn" data-chain="solana" onclick="window.selectChain('solana')">
+                    <svg width="18" height="18" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21.9 93.4c.7-.7 1.6-1.1 2.6-1.1h97.7c1.6 0 2.5 2 1.3 3.1L106.1 113c-.7.7-1.6 1.1-2.6 1.1H5.8c-1.6 0-2.5-2-1.3-3.1L21.9 93.4z" fill="currentColor"/><path d="M21.9 15c.7-.7 1.6-1.1 2.6-1.1h97.7c1.6 0 2.5 2 1.3 3.1L106.1 34.6c-.7.7-1.6 1.1-2.6 1.1H5.8c-1.6 0-2.5-2-1.3-3.1L21.9 15z" fill="currentColor"/><path d="M106.1 54c-.7-.7-1.6-1.1-2.6-1.1H5.8c-1.6 0-2.5 2-1.3 3.1L21.9 73.6c.7.7 1.6 1.1 2.6 1.1h97.7c1.6 0 2.5-2 1.3-3.1L106.1 54z" fill="currentColor"/></svg>
+                    Solana
+                </button>
+                <button class="chain-btn" data-chain="cardano" onclick="window.selectChain('cardano')">
+                    <svg width="18" height="18" viewBox="0 0 375 346" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="187.5" cy="173" r="30" fill="currentColor"/><circle cx="187.5" cy="65" r="12" fill="currentColor"/><circle cx="187.5" cy="281" r="12" fill="currentColor"/><circle cx="93" cy="119" r="12" fill="currentColor"/><circle cx="282" cy="227" r="12" fill="currentColor"/><circle cx="93" cy="227" r="12" fill="currentColor"/><circle cx="282" cy="119" r="12" fill="currentColor"/><circle cx="140" cy="85" r="8" fill="currentColor"/><circle cx="235" cy="261" r="8" fill="currentColor"/><circle cx="75" cy="173" r="8" fill="currentColor"/><circle cx="300" cy="173" r="8" fill="currentColor"/><circle cx="140" cy="261" r="8" fill="currentColor"/><circle cx="235" cy="85" r="8" fill="currentColor"/></svg>
+                    Cardano
+                </button>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="tokenName">Token Name</label>
+                    <input id="tokenName" class="form-input" type="text" placeholder="e.g. MoonCat" maxlength="32">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="tokenSymbol">Symbol</label>
+                    <input id="tokenSymbol" class="form-input" type="text" placeholder="e.g. MCAT" maxlength="10" style="text-transform: uppercase">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="launchDesc">Description</label>
+                <textarea id="launchDesc" class="form-input" placeholder="What is this token about?" maxlength="280"></textarea>
+            </div>
+            <div class="form-group" id="imageUrlGroup">
+                <label class="form-label" for="launchImageUrl">Token Image URL (optional)</label>
+                <input id="launchImageUrl" class="form-input" type="url" placeholder="https://example.com/logo.png">
+                <div style="font-size:0.8rem;color:var(--text-dim);margin-top:4px">Logo/image for your token. Leave blank for default Inclawbate logo.</div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="launchWebsite">Website URL (optional)</label>
+                <input id="launchWebsite" class="form-input" type="url" placeholder="https://yourproject.com">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="launchXHandle">X Handle (optional)</label>
+                    <input id="launchXHandle" class="form-input" type="text" placeholder="@yourproject" maxlength="32">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="launchTelegram">Telegram (optional)</label>
+                    <input id="launchTelegram" class="form-input" type="url" placeholder="https://t.me/yourgroup">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="launchFarcaster">Farcaster (optional)</label>
+                <input id="launchFarcaster" class="form-input" type="url" placeholder="https://warpcast.com/yourproject">
+            </div>
+
+            <!-- Fee Configuration (optional) — Base only -->
+            <div class="advanced-section" id="feeConfigSection" data-chain="base">
+                <button type="button" class="advanced-toggle" onclick="toggleAdvanced('feeConfigBody')">
+                    Fee Configuration <span style="font-weight:400;color:var(--text-dim)">(optional)</span>
+                    <span class="advanced-arrow">&#9660;</span>
+                </button>
+                <div id="feeConfigBody" class="advanced-body" style="display:none">
+                    <div class="form-group">
+                        <label class="form-label">Fee Type</label>
+                        <div style="display:flex;gap:8px;margin-top:4px">
+                            <button type="button" class="allocation-tier" data-fee="static" onclick="window.selectFeeType('static')"><span class="allocation-tier-pct">Static</span></button>
+                            <button type="button" class="allocation-tier selected" data-fee="dynamic" onclick="window.selectFeeType('dynamic')"><span class="allocation-tier-pct">Dynamic 3%</span></button>
+                        </div>
+                    </div>
+                    <div class="form-group" id="feeTierGroup" style="display:none">
+                        <label class="form-label">Fee Tier</label>
+                        <div style="display:flex;gap:8px;margin-top:4px">
+                            <button type="button" class="allocation-tier" data-feepct="1" onclick="window.selectFeeTier(1)"><span class="allocation-tier-pct">1%</span></button>
+                            <button type="button" class="allocation-tier" data-feepct="2" onclick="window.selectFeeTier(2)"><span class="allocation-tier-pct">2%</span></button>
+                            <button type="button" class="allocation-tier selected" data-feepct="3" onclick="window.selectFeeTier(3)"><span class="allocation-tier-pct">3%</span></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="sniperTaxDuration">Sniper Tax Duration (seconds)</label>
+                        <input id="sniperTaxDuration" class="form-input" type="number" min="0" max="300" value="15" style="font-family:var(--font-mono)">
+                        <div style="font-size:0.8rem;color:var(--text-dim);margin-top:4px">Time for sniper tax to decay from 80% to 5%. Default: 15 seconds.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Reward Recipients (optional) — Base only -->
+            <div class="advanced-section" id="rewardRecipientsSection" data-chain="base">
+                <button type="button" class="advanced-toggle" onclick="toggleAdvanced('rewardRecipientsBody')">
+                    LP Fee Split <span style="font-weight:400;color:var(--text-dim)">(optional)</span>
+                    <span class="advanced-arrow">&#9660;</span>
+                </button>
+                <div id="rewardRecipientsBody" class="advanced-body" style="display:none">
+                    <div class="form-group">
+                        <label class="form-label">Reward Token</label>
+                        <div style="display:flex;gap:8px;margin-top:4px">
+                            <button type="button" class="allocation-tier selected" data-rwdtoken="weth" onclick="window.selectRewardToken('weth')"><span class="allocation-tier-pct">WETH</span></button>
+                            <button type="button" class="allocation-tier" data-rwdtoken="token" onclick="window.selectRewardToken('token')"><span class="allocation-tier-pct">$Your Token</span></button>
+                            <button type="button" class="allocation-tier" data-rwdtoken="both" onclick="window.selectRewardToken('both')"><span class="allocation-tier-pct">Both</span></button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Recipients <span style="font-weight:400;color:var(--text-dim)">(must total 100%)</span></label>
+                        <div style="font-size:0.8rem;color:var(--text-dim);margin-bottom:8px">Every swap has a 1% LP fee. Split it however you want &mdash; Inclawbate's share can be lowered or removed entirely.</div>
+                        <div id="rewardRecipientEntries">
+                            <div class="reward-entry" style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+                                <div style="flex:3;display:flex;flex-direction:column;gap:2px">
+                                    <span style="font-size:0.72rem;color:var(--text-dim);font-weight:600;">YOU (creator)</span>
+                                    <input class="form-input reward-addr" type="text" placeholder="Your wallet (auto-filled)" style="font-family:var(--font-mono);font-size:0.82rem" id="rewardRecipient1Addr">
+                                </div>
+                                <input class="form-input reward-pct" type="number" min="0" max="100" value="80" style="font-family:var(--font-mono);width:70px;flex:0 0 70px">
+                                <span style="color:var(--text-dim);font-size:0.9rem;flex:0 0 16px">%</span>
+                            </div>
+                            <div class="reward-entry" style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+                                <div style="flex:3;display:flex;flex-direction:column;gap:2px">
+                                    <span style="font-size:0.72rem;color:var(--text-dim);font-weight:600;">INCLAWBATE (optional)</span>
+                                    <input class="form-input reward-addr" type="text" value="0x91B5C0D07859CFeAfEB67d9694121CD741F049bd" style="font-family:var(--font-mono);font-size:0.82rem;color:var(--text-dim)" readonly>
+                                </div>
+                                <input class="form-input reward-pct" type="number" min="0" max="100" value="20" style="font-family:var(--font-mono);width:70px;flex:0 0 70px">
+                                <span style="color:var(--text-dim);font-size:0.9rem;flex:0 0 16px">%</span>
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+                            <button type="button" onclick="addRewardRecipient()" style="background:none;border:1px dashed var(--border-subtle);color:var(--text-secondary);padding:6px 12px;border-radius:var(--radius-md);font-size:0.82rem;cursor:pointer">+ Add Recipient</button>
+                            <span style="font-size:0.82rem;color:var(--text-dim)" id="rewardTotalLabel">Total: 100%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Creator Vault (optional) — Base only -->
+            <div class="advanced-section" id="creatorVaultSection" data-chain="base">
+                <button type="button" class="advanced-toggle" onclick="toggleAdvanced('creatorVaultBody')">
+                    Creator Vault <span style="font-weight:400;color:var(--text-dim)">(optional)</span>
+                    <span class="advanced-arrow">&#9660;</span>
+                </button>
+                <div id="creatorVaultBody" class="advanced-body" style="display:none">
+                    <div class="form-group">
+                        <label class="form-label" for="vaultPct">Vault Percentage</label>
+                        <div style="display:flex;align-items:center;gap:8px">
+                            <input id="vaultPct" class="form-input" type="number" min="0" max="100" value="0" style="font-family:var(--font-mono);width:80px">
+                            <span style="color:var(--text-secondary);font-size:0.9rem">%</span>
+                        </div>
+                        <div style="font-size:0.8rem;color:var(--text-dim);margin-top:4px">% of supply locked in creator vault.</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="vaultRecipient">Vault Recipient Address</label>
+                        <input id="vaultRecipient" class="form-input" type="text" placeholder="0x..." style="font-family:var(--font-mono);font-size:0.85rem">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="vaultLockup">Lockup (days)</label>
+                            <input id="vaultLockup" class="form-input" type="number" min="0" value="0" style="font-family:var(--font-mono)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="vaultVesting">Vesting (days)</label>
+                            <input id="vaultVesting" class="form-input" type="number" min="0" value="0" style="font-family:var(--font-mono)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Airdrop (optional) — replaces old allocation buttons -->
+            <div class="advanced-section" id="airdropSection" data-chain="base">
+                <button type="button" class="advanced-toggle" onclick="toggleAdvanced('airdropBody')">
+                    Airdrop <span style="font-weight:400;color:var(--text-dim)">(optional)</span>
+                    <span class="advanced-arrow">&#9660;</span>
+                </button>
+                <div id="airdropBody" class="advanced-body" style="display:none">
+                    <div class="allocation-section" id="allocationSection">
+                        <label class="form-label">Allocation %</label>
+                        <div class="allocation-tiers" style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap">
+                            <button type="button" class="allocation-tier selected" data-pct="0" onclick="window.selectAllocationTier(0)"><span class="allocation-tier-pct">0%</span></button>
+                            <button type="button" class="allocation-tier" data-pct="1" onclick="window.selectAllocationTier(1)"><span class="allocation-tier-pct">1%</span></button>
+                            <button type="button" class="allocation-tier" data-pct="2" onclick="window.selectAllocationTier(2)"><span class="allocation-tier-pct">2%</span></button>
+                            <button type="button" class="allocation-tier" data-pct="5" onclick="window.selectAllocationTier(5)"><span class="allocation-tier-pct">5%</span></button>
+                            <button type="button" class="allocation-tier" data-pct="10" onclick="window.selectAllocationTier(10)"><span class="allocation-tier-pct">10%</span></button>
+                        </div>
+                    </div>
+                    <div class="form-row" style="margin-top:12px">
+                        <div class="form-group">
+                            <label class="form-label" for="airdropLockup">Lockup (days)</label>
+                            <input id="airdropLockup" class="form-input" type="number" min="0" value="7" style="font-family:var(--font-mono)">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="airdropVesting">Vesting (days)</label>
+                            <input id="airdropVesting" class="form-input" type="number" min="0" value="0" style="font-family:var(--font-mono)">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top:8px">
+                        <label class="form-label">Airdrop Entries <span style="font-weight:400;color:var(--text-dim)">(optional — defaults to your wallet)</span></label>
+                        <div id="airdropEntries">
+                            <div class="airdrop-entry" style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+                                <input class="form-input airdrop-addr" type="text" placeholder="0x... wallet address" style="font-family:var(--font-mono);font-size:0.82rem;flex:3">
+                                <input class="form-input airdrop-pct" type="number" min="0" max="100" placeholder="%" style="font-family:var(--font-mono);width:70px;flex:0 0 70px">
+                            </div>
+                        </div>
+                        <button type="button" onclick="addAirdropEntry()" style="background:none;border:1px dashed var(--border-subtle);color:var(--text-secondary);padding:6px 12px;border-radius:var(--radius-md);font-size:0.82rem;cursor:pointer;width:100%;margin-top:4px">+ Add Recipient</button>
+                    </div>
+                    <div id="allocationLockupNote" style="display:none;margin-top:10px;padding:10px 14px;background:var(--bg-elevated);border:1px solid var(--border-subtle);border-radius:var(--radius-md);font-size:0.82rem;color:var(--text-secondary);line-height:1.5">
+                        &#128274; Tokens are locked on-chain for the specified lockup period. After lockup, claim from your <a href="/dashboard" target="_top" style="color:var(--lobster-400)">Dashboard</a>.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dev Buy -->
+            <div class="form-group" id="devBuyGroup">
+                <label class="form-label" for="devBuyAmount">Dev Buy <span id="devBuyUnit">(ETH)</span></label>
+                <input id="devBuyAmount" class="form-input" type="number" step="0.01" min="0" placeholder="0.00" style="font-family:var(--font-mono)">
+                <div style="font-size:0.8rem;color:var(--text-dim);margin-top:4px" id="devBuyHint">Buy your own token at launch with ETH. Leave blank to skip.</div>
+            </div>
+            <div class="drawer-info" style="margin-top:var(--space-md)" id="feeStructureInfo">
+                <strong>Fee Structure</strong><br>
+                <span id="feeStructureBase">
+                    Every buy &amp; sell has a <strong>1% fee</strong> split between you and the Inclawbate ecosystem:<br>
+                    <span style="display:inline-block;margin-top:6px">
+                        &#128176; <strong>80%</strong> &rarr; You (claimable from your dashboard)<br>
+                        &#127793; <strong>20%</strong> &rarr; inclawbate.base.eth (grows the CLAWS LP)
+                    </span><br>
+                    <span style="color:var(--text-dim);font-size:0.85em;margin-top:4px;display:inline-block">Powered by <a href="https://www.clanker.world" target="_blank" rel="noopener" style="color:var(--seafoam-300)">Clanker</a> &mdash; 0.2% protocol fee on top, total cost to traders: 1.2% per swap.</span>
+                </span>
+                <span id="feeStructureSolana" style="display:none">
+                    Trading fees are split between you and the Inclawbate ecosystem via <strong>Bags</strong>:<br>
+                    <span style="display:inline-block;margin-top:6px">
+                        &#128176; <strong>80%</strong> &rarr; You (claimable on Bags)<br>
+                        &#127793; <strong>20%</strong> &rarr; Inclawbate treasury
+                    </span><br>
+                    <span style="color:var(--text-dim);font-size:0.85em;margin-top:4px;display:inline-block">Powered by <a href="https://bags.fm" target="_blank" rel="noopener" style="color:#00d18c">Bags</a> &mdash; Meteora liquidity pool created automatically.</span>
+                </span>
+                <span id="feeStructureCardano" style="display:none">
+                    Trading fees are earned through <strong>Minswap</strong> LP positions:<br>
+                    <span style="display:inline-block;margin-top:6px">
+                        &#128176; <strong>80%</strong> &rarr; You (LP rewards)<br>
+                        &#127793; <strong>20%</strong> &rarr; Inclawbate treasury
+                    </span><br>
+                    <span style="color:var(--text-dim);font-size:0.85em;margin-top:4px;display:inline-block">Powered by <a href="https://minswap.org" target="_blank" rel="noopener" style="color:#4a84ff">Minswap</a> DEX on Cardano. ADA/TOKEN liquidity pool created at launch.</span>
+                </span>
+            </div>
+            <button id="deployLaunchBtn" class="deploy-btn">Deploy Token</button>
+        </div>
+
+        <!-- ── Create Stake Pool ── -->
+        <div id="drawerPool" class="drawer-content">
+            <h3 class="drawer-title">&#x1F4B8; Create Stake Pool</h3>
+            <div id="poolTokenLoading" class="drawer-info" style="text-align:center;color:var(--text-dim);">Loading your tokens...</div>
+            <div id="poolNoTokens" class="drawer-info hidden" style="text-align:center;">
+                <p style="margin-bottom:var(--space-md);color:var(--text-secondary);">You haven't launched a token yet. You can enter any token address below.</p>
+            </div>
+            <div id="poolTokenForm">
+                <div class="form-group">
+                    <label class="form-label" for="poolTokenSelect">Select Your Token</label>
+                    <select id="poolTokenSelect" class="form-input" style="cursor:pointer;">
+                        <option value="">Choose a token...</option>
+                        <option value="custom">Enter token address manually</option>
+                    </select>
+                </div>
+                <div id="poolCustomAddr" class="form-group" style="display:none;">
+                    <label class="form-label" for="poolCustomToken">Token Contract Address</label>
+                    <input id="poolCustomToken" class="form-input" type="text" placeholder="0x... (any ERC-20 on Base)" maxlength="42">
+                </div>
+                <div id="partnerTokenPreview" class="partner-token-preview hidden">
+                    <div class="token-icon" id="partnerTokenIcon">?</div>
+                    <div class="token-info">
+                        <div class="token-name-display" id="partnerTokenName">--</div>
+                        <div class="token-symbol-display" id="partnerTokenSymbol">--</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="poolDesc">Description (optional)</label>
+                    <textarea id="poolDesc" class="form-input" placeholder="About this staking pool..." maxlength="280"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="poolRewardAmount">Fund with CLAWS Rewards (optional)</label>
+                    <input id="poolRewardAmount" class="form-input" type="number" placeholder="0" min="0" step="any">
+                    <div style="font-size:0.78rem;color:var(--text-dim);margin-top:4px;">CLAWS tokens to deposit as initial staking rewards. Requires a separate approval transaction.</div>
+                </div>
+                <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.82rem;color:var(--text-secondary);">
+                        <input type="checkbox" id="poolAutoStake" style="width:16px;height:16px;accent-color:var(--lobster-400);">
+                        Auto-stake my tokens after pool deploys
+                    </label>
+                </div>
+                <div id="poolAutoStakeAmount" class="form-group" style="display:none;">
+                    <label class="form-label" for="poolStakeAmount">Amount to Stake</label>
+                    <input id="poolStakeAmount" class="form-input" type="number" placeholder="0" min="0" step="any">
+                    <div style="font-size:0.78rem;color:var(--text-dim);margin-top:4px;">Your tokens to stake immediately. Requires token approval.</div>
+                </div>
+                <div class="deploy-fee-badge">
+                    Free &mdash; just pay gas
+                </div>
+                <button id="deployPoolBtn" class="deploy-btn">Deploy Pool</button>
+            </div>
+        </div>
+
+        <!-- ── Request Incubation ── -->
+        <div id="drawerIncubate" class="drawer-content">
+            <h3 class="drawer-title">&#129438; Request Incubation</h3>
+            <div class="drawer-info">
+                No token needed yet. Tell us about your project and we'll help you launch. Free staking, marketing support, and AI agent included.
+            </div>
+            <div class="form-group">
+                <label class="form-label">Choose your tier</label>
+                <div id="incTierCards" class="inc-tier-grid">
+                    <button class="inc-tier-card selected" data-tier="incubation" onclick="window.IncApp.selectTier('incubation')">
+                        <span class="inc-tier-name">Incubation</span>
+                        <span class="inc-tier-desc">One-time build &mdash; app, fix, or custom feature. We'll quote after review.</span>
+                    </button>
+                    <button class="inc-tier-card" data-tier="super" onclick="window.IncApp.selectTier('super')">
+                        <span class="inc-tier-name">Super Incubation</span>
+                        <span class="inc-tier-desc">Ongoing dev partnership &mdash; continuous updates, new features, dedicated support.</span>
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="incProjectName">Project Name</label>
+                <input id="incProjectName" class="form-input" type="text" placeholder="e.g. My Token Project" maxlength="32">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="incVision">Description / Vision</label>
+                <textarea id="incVision" class="form-input" placeholder="What is your project about?" maxlength="500"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="incContactMethod">Preferred Contact</label>
+                    <select id="incContactMethod" class="form-input">
+                        <option value="telegram">Telegram</option>
+                        <option value="x_dms">X DMs</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="incContactHandle">Handle / Link</label>
+                    <input id="incContactHandle" class="form-input" type="text" placeholder="@yourhandle">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="incLogoUrl">Logo URL (optional)</label>
+                <input id="incLogoUrl" class="form-input" type="url" placeholder="https://...logo.png">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="incHelpNeeded">What do you need help with?</label>
+                <p class="form-hint">Token launch, tokenomics design, marketing, development, community building, etc.</p>
+                <textarea id="incHelpNeeded" class="form-input" placeholder="Describe what support you're looking for..." maxlength="1000" style="min-height:120px"></textarea>
+            </div>
+            <button id="submitIncubationBtn" class="deploy-btn">Submit Application</button>
+        </div>
+
+        <!-- ── Launch AI Agent ── -->
+        <div id="drawerAgent" class="drawer-content">
+            <h3 class="drawer-title">&#129302; Launch AI Agent</h3>
+            <div class="drawer-info">
+                Select an app from the Inclawbate ecosystem and attach an AI agent that posts on X. Starts with 10 free credits (1 per post). Anyone can feed more.
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="agentAppSelect">Select App</label>
+                <p class="form-hint">Choose which app the agent will promote</p>
+                <select id="agentAppSelect" class="agent-select">
+                    <option value="">Loading apps...</option>
+                </select>
+            </div>
+            <div id="agentAppPreview" class="partner-token-preview hidden">
+                <div class="token-icon" id="agentAppIcon">?</div>
+                <div class="token-info">
+                    <div class="token-name-display" id="agentAppName">--</div>
+                    <div class="token-symbol-display" id="agentAppDesc">--</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="agentPersona">Agent Personality (optional)</label>
+                <p class="form-hint">Guide the AI's voice. e.g. "Aggressive degen energy" or "Calm and technical"</p>
+                <textarea id="agentPersona" class="form-input" placeholder="e.g. Bullish and meme-heavy, loves crab puns" maxlength="280"></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="agentPostsPerDay">Posts per Day</label>
+                <select id="agentPostsPerDay" class="agent-select">
+                    <option value="1">1 per day</option>
+                    <option value="2">2 per day</option>
+                    <option value="4" selected>4 per day</option>
+                    <option value="6">6 per day</option>
+                    <option value="8">8 per day</option>
+                    <option value="12">12 per day</option>
+                    <option value="24">Every hour</option>
+                    <option value="48">Every 30 min</option>
+                    <option value="96">Every 15 min</option>
+                </select>
+            </div>
+            <button id="deployAgentBtn" class="deploy-btn">Launch Agent</button>
+        </div>
+
+        <!-- ── Disperse ── -->
+        <div id="drawerDisperse" class="drawer-content">
+            <h3 class="drawer-title">&#128184; Disperse</h3>
+            <div class="drawer-info">
+                Swap one token into another and distribute to multiple wallets. Uses <a href="https://0x.org" target="_blank" rel="noopener" style="color:hsl(188,50%,58%)">0x</a> for swaps and <a href="https://disperse.app" target="_blank" rel="noopener" style="color:hsl(188,50%,58%)">Disperse.app</a> for multi-send.
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" style="flex:1">
+                    <label class="form-label">Input Token (what you send)</label>
+                    <select id="disperseInputSelect" class="disperse-token-select">
+                        <option value="ETH">ETH</option>
+                        <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
+                        <option value="0x7ca47B141639B893C6782823C0b219f872056379">CLAWS</option>
+                        <option value="0xB0b6e0E9da530f68D713cC03a813B506205aC808">INCLAWNCH</option>
+                        <option value="custom">Custom Address</option>
+                    </select>
+                    <div id="disperseInputCustom" class="disperse-custom-addr">
+                        <input class="form-input" type="text" id="disperseInputAddr" placeholder="0x... token address">
+                    </div>
+                </div>
+                <div class="form-group" style="flex:1">
+                    <label class="form-label">Output Token (what recipients get)</label>
+                    <select id="disperseOutputSelect" class="disperse-token-select">
+                        <option value="ETH">ETH</option>
+                        <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
+                        <option value="0x7ca47B141639B893C6782823C0b219f872056379">CLAWS</option>
+                        <option value="0xB0b6e0E9da530f68D713cC03a813B506205aC808">INCLAWNCH</option>
+                        <option value="custom">Custom Address</option>
+                    </select>
+                    <div id="disperseOutputCustom" class="disperse-custom-addr">
+                        <input class="form-input" type="text" id="disperseOutputAddr" placeholder="0x... token address">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Amount</label>
+                <div class="disperse-amount-wrap">
+                    <input class="form-input" type="number" id="disperseAmount" placeholder="0.0" step="any" min="0">
+                    <span class="disperse-amount-badge" id="disperseAmountBadge">ETH</span>
+                </div>
+                <div class="disperse-balance" id="disperseBalance"></div>
+            </div>
+
+            <div class="form-group">
+                <div class="disperse-recipients-header">
+                    <label class="form-label" style="margin:0">Recipients</label>
+                    <label class="disperse-even-split">
+                        <input type="checkbox" id="disperseEvenSplit" checked> Even split
+                    </label>
+                </div>
+                <div id="disperseRecipientList"></div>
+                <div style="display:flex;gap:8px;margin-top:4px">
+                    <button type="button" class="disperse-add-row-btn" id="disperseAddRow" style="margin-top:0">+ Add Recipient</button>
+                    <button type="button" class="disperse-add-row-btn" id="disperseAngelAirdrop" style="margin-top:0;border-color:hsla(270,60%,55%,0.35);color:hsl(270,60%,72%)" title="Load all Angel NFT holder wallets as recipients">&#128124; Angel Holders</button>
+                </div>
+            </div>
+
+            <div class="disperse-preview" id="dispersePreview">
+                <div class="disperse-preview-title">Preview</div>
+                <div class="disperse-preview-rate" id="disperseRate"></div>
+                <div id="disperseBreakdown"></div>
+            </div>
+
+            <div class="disperse-steps" id="disperseSteps"></div>
+
+            <div class="disperse-btn-row">
+                <button id="disperseQuoteBtn" class="deploy-btn" style="background:hsl(188,50%,38%)">Get Quote</button>
+                <button id="disperseExecBtn" class="deploy-btn" style="display:none">Execute Disperse</button>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Success States ═══ -->
+
+    <!-- Success: Token Deployed -->
+    <div id="successStep" class="success-card">
+        <div class="success-icon">&#129438;</div>
+        <h3 class="success-title">Token Deployed!</h3>
+        <p class="success-subtitle" id="successSubtitle">Your token is live on Base. Here are the details:</p>
+        <div class="success-detail">
+            <div class="success-detail-label">Token Address</div>
+            <div class="success-detail-value deployed-address">&mdash;</div>
+        </div>
+        <div class="success-detail">
+            <div class="success-detail-label">Deploy Transaction</div>
+            <div class="success-detail-value">
+                <a class="deploy-tx-link" href="#" target="_blank" rel="noopener">View on BaseScan</a>
+            </div>
+        </div>
+        <div class="success-detail">
+            <div class="success-detail-label">Project ID</div>
+            <div class="success-detail-value project-id">&mdash;</div>
+        </div>
+        <div class="success-detail" id="stakingSuccessNote">
+            <div class="success-detail-label">Staking</div>
+            <div class="success-detail-value">Staking pool will be deployed shortly. Check back on the Stake page.</div>
+        </div>
+        <div id="burnSuccessNote" class="success-detail" style="display:none">
+            <div class="success-detail-label">Dev Allocation</div>
+            <div class="success-detail-value">
+                <span id="burnSuccessText"></span><br>
+                <a id="burnTxLink" href="#" target="_blank" rel="noopener" style="color:var(--seafoam-300)">View burn tx on BaseScan</a><br>
+                <span style="color:var(--text-dim);font-size:0.85em">&#128274; 7-day on-chain lockup &mdash; claim from your <a href="/dashboard" target="_top" style="color:var(--lobster-400)">Dashboard</a> after unlock</span>
+            </div>
+        </div>
+        <div id="agentSuccessNote" class="success-detail" style="display:none">
+            <div class="success-detail-label">AI Agent</div>
+            <div class="success-detail-value">Your AI agent is live! 10 free credits loaded. First post within 30 minutes.</div>
+        </div>
+        <button class="deploy-btn launch-another-btn" onclick="resetForm()">Launch Another</button>
+    </div>
+
+    <!-- Success: Incubation Application Submitted -->
+    <div id="incubatedSuccessStep" class="success-card">
+        <div class="success-icon">&#128232;</div>
+        <h3 class="success-title">Application Submitted!</h3>
+        <p class="success-subtitle">We've received your project details. Here's what happens next:</p>
+        <div class="success-detail">
+            <div class="success-detail-label">Project ID</div>
+            <div class="success-detail-value incubated-project-id">&mdash;</div>
+        </div>
+        <div class="success-detail">
+            <div class="success-detail-label">Status</div>
+            <div class="success-detail-value">Pending Review</div>
+        </div>
+        <div class="success-detail">
+            <div class="success-detail-label">Next Steps</div>
+            <div class="success-detail-value" style="color:var(--text-secondary);font-family:var(--font-body);font-size:0.85rem;line-height:1.6">
+                We'll review your application and reach out via X or Telegram. If approved, we'll deploy your token and staking pool at no cost. AI agent will activate once live.
+            </div>
+        </div>
+        <button class="deploy-btn launch-another-btn" onclick="resetForm()">Launch Another</button>
+    </div>
+
+    <!-- Success: Partner Staking Pool Deployed -->
+    <div id="partnerSuccessStep" class="success-card">
+        <div class="success-icon">&#129309;</div>
+        <h3 class="success-title">Staking Deployed!</h3>
+        <p class="success-subtitle">Your partner staking pool is live on Base.</p>
+        <div class="success-detail">
+            <div class="success-detail-label">Staking Pool</div>
+            <div class="success-detail-value partner-staking-addr">&mdash;</div>
+        </div>
+        <div class="success-detail">
+            <div class="success-detail-label">Project ID</div>
+            <div class="success-detail-value partner-project-id">&mdash;</div>
+        </div>
+        <div id="partnerAgentSuccessNote" class="success-detail" style="display:none">
+            <div class="success-detail-label">AI Agent</div>
+            <div class="success-detail-value">Your AI agent is live! 10 free credits loaded.</div>
+        </div>
+        <button class="deploy-btn launch-another-btn" onclick="resetForm()">Launch Another</button>
+    </div>
+
+    <!-- ═══ The Journey ═══ -->
+    <section class="journey-section section" id="journey">
+        <p class="section-label">The Journey</p>
+        <h2 class="section-title">Six steps to a live project</h2>
+
+        <div class="journey-timeline">
+            <div class="journey-step">
+                <div class="journey-step-num">1</div>
+                <div class="journey-step-card">
+                    <div class="journey-step-title">Come up with an idea</div>
+                    <p class="journey-step-desc">
+                        What kind of project do you want to build? A meme coin, a community token, a utility project?
+                        Think about what makes it unique and who it's for. Browse existing projects on the
+                        <a href="/tokens" style="color:var(--seafoam-300)">Tokens</a> page for inspiration.
+                    </p>
+                </div>
+            </div>
+
+            <div class="journey-step">
+                <div class="journey-step-num">2</div>
+                <div class="journey-step-card">
+                    <div class="journey-step-title">Launch your token</div>
+                    <p class="journey-step-desc">
+                        Deploy on Base via Clanker or on Solana via Bags &mdash; one click, no code.
+                        Every buy &amp; sell has a 1% fee: 80% goes to you, 20% grows the CLAWS LP.
+                        Your token is live and trading instantly.
+                    </p>
+                    <a href="javascript:void(0)" onclick="openToolDrawer('launch')" class="journey-step-cta">Launch Token &rarr;</a>
+                </div>
+            </div>
+
+            <div class="journey-step">
+                <div class="journey-step-num">3</div>
+                <div class="journey-step-card">
+                    <div class="journey-step-title">Create a staking pool</div>
+                    <p class="journey-step-desc">
+                        Give your holders a reason to hold. Staking pools auto-distribute CLAWS rewards to stakers &mdash;
+                        passive income from day one. Deploying a pool is free (just gas).
+                    </p>
+                    <a href="javascript:void(0)" onclick="openToolDrawer('pool')" class="journey-step-cta">Create Stake Pool &rarr;</a>
+                </div>
+            </div>
+
+            <div class="journey-step">
+                <div class="journey-step-num">4</div>
+                <div class="journey-step-card">
+                    <div class="journey-step-title">Build an app</div>
+                    <p class="journey-step-desc">
+                        Use the AI app builder to create a web app for your project &mdash; no code required.
+                        Publish to your own inclawbate.app/slug and list it in the app store.
+                        Charge users, agents, or both.
+                    </p>
+                    <a href="/build" class="journey-step-cta">Open App Builder &rarr;</a>
+                </div>
+            </div>
+
+            <div class="journey-step">
+                <div class="journey-step-num">5</div>
+                <div class="journey-step-card">
+                    <div class="journey-step-title">Register your project</div>
+                    <p class="journey-step-desc">
+                        Get your project officially listed in the Inclawbate ecosystem. Attract stakers,
+                        get discovered by users, and unlock incubation support &mdash; marketing help,
+                        development, and an AI agent.
+                    </p>
+                    <a href="javascript:void(0)" onclick="openToolDrawer('incubate')" class="journey-step-cta">Request Incubation &rarr;</a>
+                </div>
+            </div>
+
+            <div class="journey-step">
+                <div class="journey-step-num">6</div>
+                <div class="journey-step-card">
+                    <div class="journey-step-title">Market &amp; promote</div>
+                    <p class="journey-step-desc">
+                        A great project needs visibility. Write your pitch, create visuals, build a community,
+                        and post consistently. Read the marketing guide below for a full playbook.
+                    </p>
+                    <a href="#marketing-guide" class="journey-step-cta">Read Marketing Guide &darr;</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ Flywheel ═══ -->
+    <section class="flywheel">
+        <div class="flywheel-bg-glow"></div>
+        <p class="section-label">The Flywheel</p>
+        <h2 class="section-title">Every piece feeds the next</h2>
+
+        <div class="flywheel-ring">
+            <!-- Row 1 -->
+            <div class="flywheel-node flywheel-node-1">
+                <div class="flywheel-node-num">1</div>
+                <div class="flywheel-node-icon">🚀</div>
+                <div class="flywheel-node-title">Launch Token</div>
+                <div class="flywheel-node-desc">Deploy on Base with auto-LP. Every swap generates fees for your community.</div>
+            </div>
+
+            <div class="fw-conn">
+                <svg width="52" height="20" viewBox="0 0 52 20" fill="none">
+                    <line x1="4" y1="10" x2="36" y2="10" stroke="hsl(9,52%,56%)" stroke-width="2" stroke-linecap="round" class="fw-flow-line"/>
+                    <polygon points="36,4 48,10 36,16" fill="hsl(9,52%,56%)"/>
+                </svg>
+            </div>
+
+            <div class="flywheel-node flywheel-node-2">
+                <div class="flywheel-node-num">2</div>
+                <div class="flywheel-node-icon">💰</div>
+                <div class="flywheel-node-title">Stake &amp; Earn</div>
+                <div class="flywheel-node-desc">Holders stake tokens and earn CLAWS from every transaction. Passive income, on autopilot.</div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="fw-conn">
+                <svg width="20" height="52" viewBox="0 0 20 52" fill="none">
+                    <line x1="10" y1="48" x2="10" y2="16" stroke="hsl(265,45%,62%)" stroke-width="2" stroke-linecap="round" class="fw-flow-line"/>
+                    <polygon points="4,16 10,4 16,16" fill="hsl(265,45%,62%)"/>
+                </svg>
+            </div>
+
+            <div class="flywheel-center">
+                <div class="flywheel-center-hub">
+                    <span class="flywheel-center-icon">🦞</span>
+                </div>
+            </div>
+
+            <div class="fw-conn">
+                <svg width="20" height="52" viewBox="0 0 20 52" fill="none">
+                    <line x1="10" y1="4" x2="10" y2="36" stroke="hsl(38,65%,55%)" stroke-width="2" stroke-linecap="round" class="fw-flow-line"/>
+                    <polygon points="4,36 10,48 16,36" fill="hsl(38,65%,55%)"/>
+                </svg>
+            </div>
+
+            <!-- Row 3 -->
+            <div class="flywheel-node flywheel-node-4">
+                <div class="flywheel-node-num">4</div>
+                <div class="flywheel-node-icon">📣</div>
+                <div class="flywheel-node-title">Promote</div>
+                <div class="flywheel-node-desc">AI agents and marketing amplify reach. More users means more swaps and fees.</div>
+            </div>
+
+            <div class="fw-conn">
+                <svg width="52" height="20" viewBox="0 0 52 20" fill="none">
+                    <line x1="48" y1="10" x2="16" y2="10" stroke="hsl(172,32%,48%)" stroke-width="2" stroke-linecap="round" class="fw-flow-line"/>
+                    <polygon points="16,4 4,10 16,16" fill="hsl(172,32%,48%)"/>
+                </svg>
+            </div>
+
+            <div class="flywheel-node flywheel-node-3">
+                <div class="flywheel-node-num">3</div>
+                <div class="flywheel-node-icon">🛠️</div>
+                <div class="flywheel-node-title">Build App</div>
+                <div class="flywheel-node-desc">Create with AI, publish to your slug. Charge users and agents &mdash; keep the revenue.</div>
+            </div>
+        </div>
+
+        <p class="flywheel-tagline">Swap fees <span>&rarr;</span> Staker rewards <span>&rarr;</span> App revenue <span>&rarr;</span> Community growth <span>&rarr;</span> &infin;</p>
+    </section>
+
+    <!-- ═══ The Split ═══ -->
+    <div class="section">
+        <p class="section-label">The Split</p>
+        <h2 class="section-title">Simple, fixed, transparent</h2>
+        <div class="split-visual">
+            <div class="split-range">80 / 20</div>
+            <p class="split-note">
+                Every 1% swap fee is split automatically: 80% to the token creator, 20% to inclawbate.base.eth.
+                Clanker adds a 0.2% protocol fee on top &mdash; total cost to traders is 1.2%.
+            </p>
+            <div class="split-bar-container">
+                <div class="split-bar-label">
+                    <span>Creator (80%)</span>
+                    <span>Inclawbate (20%)</span>
+                </div>
+                <div class="split-bar">
+                    <div class="split-bar-fill" style="width:80%"></div>
+                </div>
+            </div>
+            <div class="split-callout">
+                No setup. No config. Fees accrue automatically &mdash; claim from your dashboard.
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══ Marketing Guide ═══ -->
+    <section class="marketing-guide section" id="marketing-guide">
+        <p class="section-label">Marketing Guide</p>
+        <h2 class="section-title">How to promote your project</h2>
+
+        <!-- Part A: How to Promote -->
+        <div class="marketing-subsection">
+            <h3 class="marketing-subtitle">The Playbook</h3>
+            <div class="promo-steps">
+                <div class="promo-step">
+                    <div class="promo-step-num">Step 1</div>
+                    <div class="promo-step-title">Write your pitch</div>
+                    <p class="promo-step-desc">One sentence that explains what your project is and why someone should care. Lead with the benefit.</p>
+                </div>
+                <div class="promo-step">
+                    <div class="promo-step-num">Step 2</div>
+                    <div class="promo-step-title">Create visuals</div>
+                    <p class="promo-step-desc">Logo, banner, memes. People scroll fast &mdash; eye-catching visuals stop the thumb. Use AI tools to generate them.</p>
+                </div>
+                <div class="promo-step">
+                    <div class="promo-step-num">Step 3</div>
+                    <div class="promo-step-title">Build a community</div>
+                    <p class="promo-step-desc">Create a Telegram or Discord. Even 10 engaged people beats 1,000 lurkers. Make it a place people want to hang out.</p>
+                </div>
+                <div class="promo-step">
+                    <div class="promo-step-num">Step 4</div>
+                    <div class="promo-step-title">Post schedule</div>
+                    <p class="promo-step-desc">Launch day: announce everywhere. Week 1: daily updates. Ongoing: 2-3 posts per day, mix content types.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part B: Where to Post -->
+        <div class="marketing-subsection">
+            <h3 class="marketing-subtitle">Where to Post</h3>
+            <div class="platform-grid">
+                <div class="platform-card">
+                    <div class="platform-icon">&#120143;</div>
+                    <div class="platform-name">X / Twitter</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">&#9993;</div>
+                    <div class="platform-name">Telegram</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">&#127760;</div>
+                    <div class="platform-name">Farcaster</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">&#128172;</div>
+                    <div class="platform-name">Reddit</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">&#128490;</div>
+                    <div class="platform-name">Discord</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">&#128200;</div>
+                    <div class="platform-name">DexScreener</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">&#129689;</div>
+                    <div class="platform-name">CoinGecko</div>
+                </div>
+                <div class="platform-card">
+                    <div class="platform-icon">&#128736;</div>
+                    <div class="platform-name">DEXTools</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Part C: Tips -->
+        <div class="marketing-subsection">
+            <h3 class="marketing-subtitle">Tips</h3>
+            <ul class="tips-list">
+                <li>Post consistently &mdash; 2-3 times daily minimum. Algorithms reward frequency.</li>
+                <li>Engage, don't shill. Reply to others, join conversations, add value before you promote.</li>
+                <li>Build in public. Share progress, milestones, numbers. Transparency builds trust.</li>
+                <li>Use your AI agent. Launch one from the Tools page to auto-post on X and keep momentum.</li>
+                <li>Reward your community. Airdrops, shoutouts, roles &mdash; make holders feel like owners.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- ═══ For Everyone ═══ -->
+    <div class="section">
+        <p class="section-label">For Everyone</p>
+        <h2 class="section-title">Built for builders of every kind</h2>
+        <div class="audience-grid">
+            <div class="audience-card">
+                <div class="audience-icon">&#129489;</div>
+                <div class="audience-label">Human Builders</div>
+                <p class="audience-desc">Launch a community token, meme coin, or project token without writing a single line of code.</p>
+            </div>
+            <div class="audience-card">
+                <div class="audience-icon">&#129302;</div>
+                <div class="audience-label">AI Agents</div>
+                <p class="audience-desc">Agents can programmatically launch and manage tokens through the Inclawbate API. Fully autonomous.</p>
+            </div>
+            <div class="audience-card">
+                <div class="audience-icon">&#127793;</div>
+                <div class="audience-label">Incubated Projects</div>
+                <p class="audience-desc">Get listed in the ecosystem, attract stakers, and let your token's fee structure do the marketing.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ═══ Power the Inclawbator ═══ -->
+    <section class="compute-section section" id="compute">
+        <p class="section-label">Power the Inclawbator</p>
+        <h2 class="section-title">Your GPU earns while you sleep</h2>
+        <p class="section-desc">
+            Got a PC with a GPU sitting idle? Run an Inclawbator node &mdash; one install that routes your hardware across
+            Inclawbate jobs and external compute markets. Your GPU is never idle, and you&rsquo;re always earning.
+        </p>
+
+        <!-- Live stats -->
+        <div class="compute-stats-bar">
+            <div class="compute-stat">
+                <div class="compute-stat-dot"></div>
+                <span><span class="compute-stat-value" id="compute-nodes">0</span> nodes online</span>
+            </div>
+            <div class="compute-stat">
+                <span><span class="compute-stat-value" id="compute-jobs-today">0</span> jobs today</span>
+            </div>
+            <div class="compute-stat">
+                <span><span class="compute-stat-value" id="compute-claws-earned">0</span> CLAWS earned today</span>
+            </div>
+        </div>
+
+        <!-- How it works -->
+        <div class="compute-how">
+            <div class="compute-step">
+                <div class="compute-step-num">Step 1</div>
+                <div class="compute-step-title">Install the node</div>
+                <p class="compute-step-desc">One command. Docker pulls the image, detects your GPU, and connects you to the network.</p>
+            </div>
+            <div class="compute-step">
+                <div class="compute-step-num">Step 2</div>
+                <div class="compute-step-title">Jobs route to you</div>
+                <p class="compute-step-desc">Inclawbate jobs get priority. When idle, your GPU picks up paid work from external compute markets automatically.</p>
+            </div>
+            <div class="compute-step">
+                <div class="compute-step-num">Step 3</div>
+                <div class="compute-step-title">Earn CLAWS + USD</div>
+                <p class="compute-step-desc">Inclawbate jobs pay CLAWS. External jobs pay real USD. Your GPU is always working, always earning.</p>
+            </div>
+        </div>
+
+        <!-- What your node does -->
+        <div class="compute-jobs-title">What your node runs</div>
+        <div class="compute-jobs">
+            <div class="compute-job">
+                <div class="compute-job-icon">&#127912;</div>
+                <div class="compute-job-info">
+                    <div class="compute-job-name">Image Generation</div>
+                    <div class="compute-job-desc">FLUX &amp; Stable Diffusion for apps, agents, content</div>
+                </div>
+                <span class="compute-job-badge badge-claws">CLAWS</span>
+            </div>
+            <div class="compute-job">
+                <div class="compute-job-icon">&#128172;</div>
+                <div class="compute-job-info">
+                    <div class="compute-job-name">AI Inference</div>
+                    <div class="compute-job-desc">Llama, Mistral &mdash; open source models for the ecosystem</div>
+                </div>
+                <span class="compute-job-badge badge-claws">CLAWS</span>
+            </div>
+            <div class="compute-job">
+                <div class="compute-job-icon">&#127909;</div>
+                <div class="compute-job-info">
+                    <div class="compute-job-name">Media Processing</div>
+                    <div class="compute-job-desc">Video, audio, transcription for platform apps</div>
+                </div>
+                <span class="compute-job-badge badge-claws">CLAWS</span>
+            </div>
+            <div class="compute-job">
+                <div class="compute-job-icon">&#128176;</div>
+                <div class="compute-job-info">
+                    <div class="compute-job-name">External Markets</div>
+                    <div class="compute-job-desc">Salad, Vast.ai, io.net &mdash; when Inclawbate queue is empty</div>
+                </div>
+                <span class="compute-job-badge badge-usd">USD</span>
+            </div>
+        </div>
+
+        <!-- Estimated earnings -->
+        <div class="compute-earnings">
+            <div class="compute-earnings-title">Estimated monthly earnings</div>
+            <table class="compute-table">
+                <thead>
+                    <tr>
+                        <th>GPU</th>
+                        <th>External (USD)</th>
+                        <th>Inclawbate (CLAWS)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>RTX 3060</td>
+                        <td class="earn-highlight">$30 &ndash; $60/mo</td>
+                        <td>+ CLAWS rewards</td>
+                    </tr>
+                    <tr>
+                        <td>RTX 3080</td>
+                        <td class="earn-highlight">$60 &ndash; $120/mo</td>
+                        <td>+ CLAWS rewards</td>
+                    </tr>
+                    <tr>
+                        <td>RTX 4070</td>
+                        <td class="earn-highlight">$70 &ndash; $140/mo</td>
+                        <td>+ CLAWS rewards</td>
+                    </tr>
+                    <tr>
+                        <td>RTX 4090</td>
+                        <td class="earn-highlight">$150 &ndash; $300/mo</td>
+                        <td>+ CLAWS rewards</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- CTA -->
+        <div class="compute-cta-row">
+            <a href="#" class="compute-cta" onclick="return false;">
+                Set Up Your Node <span>&rarr;</span>
+            </a>
+            <a href="https://t.me/inclawbate" target="_blank" rel="noopener" class="compute-cta compute-cta-secondary">
+                Join Waitlist <span>&rarr;</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ═══ CTA ═══ -->
+    <section class="cta-section">
+        <h2 class="cta-title">Ready to build?</h2>
+        <div style="display:flex; gap:var(--space-md); justify-content:center; flex-wrap:wrap;">
+            <a href="/tools" class="cta-btn">
+                Open Tools <span>&rarr;</span>
+            </a>
+            <a href="/build" class="cta-btn" style="background:var(--bg-elevated);color:var(--text-primary);box-shadow:none;border:1px solid var(--border-default);">
+                Build an App <span>&rarr;</span>
+            </a>
+        </div>
+    </section>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <p class="footer-text">inclawbate &mdash; we incubate anything for anyone.</p>
+        <div class="footer-links">
+            <a href="/state" class="footer-link">State</a>
+            <a href="/docs" class="footer-link">Docs</a>
+            <a href="/whitepaper" class="footer-link">Whitepaper</a>
+            <a href="https://t.me/inclawbate" target="_blank" rel="noopener" class="footer-link">Telegram</a>
+            <a href="https://x.com/inclawbate" target="_blank" rel="noopener" class="footer-link">X</a>
+        </div>
+    </div>
+</footer>
+
+<script src="/js/wallet-bundle.js"></script>
+<script src="/js/privy-bundle.js"></script>
+<script src="/js/nav-auth.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+<script src="https://unpkg.com/@solana/web3.js@1.95.3/lib/index.iife.min.js"></script>
+<script src="/js/inclawbator-app.js"></script>
+
+</body>
+</html>
