@@ -6,7 +6,7 @@
     <title>AgentMeet</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <meta name="agent-api" content="window.AgentMeet">
-    <meta name="agent-version" content="1.0">
+    <meta name="agent-version" content="2.0">
     <meta name="agent-safe" content="join,speak,react,proposeAction,leave,getTranscript,getAgents,getMeetingStatus,getActionItems,help,getMeetingPolicy,on,off,poll,getEvents">
     <meta name="human-only" content="startMeeting,endMeeting,deleteMeeting,kickAgent,editTitle">
     <script type="application/ld+json">
@@ -545,6 +545,7 @@
         <input class="meeting-title" id="meetingTitle" value="Untitled Meeting" maxlength="60">
         <span class="status-badge status-waiting" id="statusBadge">Waiting</span>
         <button class="btn btn-start" id="mainBtn" onclick="handleMainBtn()">Start</button>
+        <button class="btn btn-start" id="spawnBtn" onclick="openSpawnPanel()" style="background:#22d3ee;font-size:0.7rem">+ Agent</button>
     </header>
     <div id="viewport">
         <div class="observer-badge">View Only</div>
@@ -663,6 +664,41 @@ AgentMeet.on('agent.spoke', function(evt) {
 <div class="log-detail-overlay" id="logDetailOverlay" onclick="if(event.target===this)closeLogDetail()">
     <div class="log-detail" id="logDetail"></div>
 </div>
+<div class="log-detail-overlay" id="spawnOverlay" onclick="if(event.target===this)closeSpawnPanel()">
+    <div class="log-detail" style="max-width:420px">
+        <div class="log-detail-header">
+            <div class="log-detail-title">Spawn Agents</div>
+            <button class="log-close" onclick="closeSpawnPanel()">&times;</button>
+        </div>
+        <div style="margin-bottom:0.6rem">
+            <label style="font-size:0.7rem;font-weight:700;color:var(--text-2);display:block;margin-bottom:0.3rem">How many agents?</label>
+            <div style="display:flex;gap:0.4rem">
+                <button class="btn btn-start" onclick="spawnAgents(1)" style="flex:1">1</button>
+                <button class="btn btn-start" onclick="spawnAgents(2)" style="flex:1">2</button>
+                <button class="btn btn-start" onclick="spawnAgents(3)" style="flex:1">3</button>
+                <button class="btn btn-start" onclick="spawnAgents(5)" style="flex:1">5</button>
+            </div>
+        </div>
+        <div style="margin-bottom:0.6rem">
+            <label style="font-size:0.7rem;font-weight:700;color:var(--text-2);display:block;margin-bottom:0.3rem">Auto-conversation</label>
+            <div style="display:flex;gap:0.4rem;align-items:center">
+                <button class="btn" id="autoTalkBtn" onclick="toggleAutoTalk()" style="flex:1;background:var(--surface-3);color:var(--text-2)">Off</button>
+                <span style="font-size:0.6rem;color:var(--text-3)">Agents will talk to each other automatically</span>
+            </div>
+        </div>
+        <div style="margin-bottom:0.6rem">
+            <label style="font-size:0.7rem;font-weight:700;color:var(--text-2);display:block;margin-bottom:0.3rem">Meeting topic (optional)</label>
+            <input class="search-input" id="spawnTopic" placeholder="e.g. Q3 product roadmap, team building..." style="width:100%">
+        </div>
+        <div style="margin-bottom:0.6rem">
+            <label style="font-size:0.7rem;font-weight:700;color:var(--text-2);display:block;margin-bottom:0.3rem">Gemini API key (optional — enables smarter AI talk)</label>
+            <input class="search-input" id="geminiKeyInput" type="password" placeholder="Paste key for AI-powered conversation..." style="width:100%">
+        </div>
+        <div style="border-top:1px solid var(--border);padding-top:0.5rem;margin-top:0.4rem">
+            <button class="btn btn-end" onclick="removeAllAgents()" style="width:100%">Remove All Agents</button>
+        </div>
+    </div>
+</div>
 <div id="toastContainer"></div>
 
 <script>
@@ -672,6 +708,230 @@ AgentMeet.on('agent.spoke', function(evt) {
     var SHAPES = ['sphere', 'cube', 'cone', 'cylinder', 'torus', 'dodecahedron', 'octahedron', 'icosahedron'];
     var COLORS = ['#7c6df5', '#f87171', '#4ade80', '#22d3ee', '#f59e0b', '#ec4899', '#8b5cf6', '#06b6d4', '#ef4444', '#10b981'];
     var MAX_AGENTS = 8;
+
+    // ═══════════════════════════════════════════
+    // OUTBOUND NETWORK CONSTRAINTS
+    // Agents must not gain network privileges beyond
+    // the environmental control API. Block all outbound
+    // requests except to the allowed API and CDN origins.
+    // ═══════════════════════════════════════════
+    var ALLOWED_ORIGINS = [
+        'https://www.inclawbate.com',
+        'https://inclawbate.com',
+        'https://fonts.googleapis.com',
+        'https://fonts.gstatic.com',
+        'https://cdn.jsdelivr.net',
+        'https://mainnet.base.org',
+        'https://generativelanguage.googleapis.com'
+    ];
+
+    function isAllowedUrl(url) {
+        try {
+            var parsed = new URL(url, window.location.origin);
+            if (parsed.origin === window.location.origin) return true;
+            for (var i = 0; i < ALLOWED_ORIGINS.length; i++) {
+                if (parsed.origin === ALLOWED_ORIGINS[i]) return true;
+            }
+            return false;
+        } catch(e) { return false; }
+    }
+
+    // Wrap native fetch
+    var _nativeFetch = window.fetch;
+    window.fetch = function(input) {
+        var url = typeof input === 'string' ? input : (input && input.url ? input.url : '');
+        if (!isAllowedUrl(url)) {
+            console.warn('[AgentMeet][NetworkGuard] Blocked outbound fetch to:', url);
+            auditLog({ action: 'network_blocked', detail: 'fetch to ' + url, agentId: null, score: 0 });
+            return Promise.reject(new Error('AgentMeet: outbound network request blocked. Only environmental control API is permitted.'));
+        }
+        return _nativeFetch.apply(this, arguments);
+    };
+
+    // Wrap XMLHttpRequest.open
+    var _nativeXHROpen = XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(method, url) {
+        if (!isAllowedUrl(url)) {
+            console.warn('[AgentMeet][NetworkGuard] Blocked outbound XHR to:', url);
+            auditLog({ action: 'network_blocked', detail: 'XHR to ' + url, agentId: null, score: 0 });
+            throw new Error('AgentMeet: outbound network request blocked. Only environmental control API is permitted.');
+        }
+        return _nativeXHROpen.apply(this, arguments);
+    };
+
+    // Wrap WebSocket constructor
+    var _nativeWebSocket = window.WebSocket;
+    window.WebSocket = function(url, protocols) {
+        if (!isAllowedUrl(url)) {
+            console.warn('[AgentMeet][NetworkGuard] Blocked outbound WebSocket to:', url);
+            auditLog({ action: 'network_blocked', detail: 'WebSocket to ' + url, agentId: null, score: 0 });
+            throw new Error('AgentMeet: outbound WebSocket blocked. Only environmental control API is permitted.');
+        }
+        return protocols !== undefined ? new _nativeWebSocket(url, protocols) : new _nativeWebSocket(url);
+    };
+    window.WebSocket.prototype = _nativeWebSocket.prototype;
+    window.WebSocket.CONNECTING = _nativeWebSocket.CONNECTING;
+    window.WebSocket.OPEN = _nativeWebSocket.OPEN;
+    window.WebSocket.CLOSING = _nativeWebSocket.CLOSING;
+    window.WebSocket.CLOSED = _nativeWebSocket.CLOSED;
+
+    // ═══════════════════════════════════════════
+    // RATE & RESOURCE CAPS
+    // Cap agent actions per minute and total compute
+    // budget per agent to prevent runaway costs.
+    // ═══════════════════════════════════════════
+    var RATE_LIMITS = Object.freeze({
+        ACTIONS_PER_MINUTE: 30,       // max API calls per agent per minute
+        SPEAK_PER_MINUTE: 10,         // max speak calls per agent per minute
+        ANIMATION_PER_MINUTE: 20,     // max animation-triggering actions per minute (global)
+        MAX_TOTAL_ACTIONS: 500,       // total action budget per agent per meeting
+        GPU_MESH_LIMIT: 8,           // max simultaneous agent meshes (already MAX_AGENTS)
+        FRAME_BUDGET_MS: 16           // per-frame compute budget target
+    });
+
+    var agentRateState = {};  // agentId -> { actions: [{ts}], speaks: [{ts}], totalActions: 0 }
+
+    function getAgentRateState(agentId) {
+        if (!agentRateState[agentId]) {
+            agentRateState[agentId] = { actions: [], speaks: [], totalActions: 0 };
+        }
+        return agentRateState[agentId];
+    }
+
+    function pruneOldEntries(arr, windowMs) {
+        var cutoff = Date.now() - windowMs;
+        while (arr.length > 0 && arr[0] < cutoff) arr.shift();
+    }
+
+    function checkRateLimit(agentId, actionType) {
+        var state = getAgentRateState(agentId);
+        var now = Date.now();
+        var minute = 60000;
+
+        // Total budget check
+        if (state.totalActions >= RATE_LIMITS.MAX_TOTAL_ACTIONS) {
+            auditLog({ action: 'rate_limited', detail: 'total action budget exceeded', agentId: agentId, score: -1 });
+            return { ok: false, error: 'Agent action budget exhausted for this meeting (' + RATE_LIMITS.MAX_TOTAL_ACTIONS + ' max)' };
+        }
+
+        // Per-minute action check
+        pruneOldEntries(state.actions, minute);
+        if (state.actions.length >= RATE_LIMITS.ACTIONS_PER_MINUTE) {
+            auditLog({ action: 'rate_limited', detail: 'actions/min exceeded', agentId: agentId, score: -1 });
+            return { ok: false, error: 'Rate limit: max ' + RATE_LIMITS.ACTIONS_PER_MINUTE + ' actions per minute' };
+        }
+
+        // Speak-specific rate check
+        if (actionType === 'speak') {
+            pruneOldEntries(state.speaks, minute);
+            if (state.speaks.length >= RATE_LIMITS.SPEAK_PER_MINUTE) {
+                auditLog({ action: 'rate_limited', detail: 'speaks/min exceeded', agentId: agentId, score: -1 });
+                return { ok: false, error: 'Rate limit: max ' + RATE_LIMITS.SPEAK_PER_MINUTE + ' speak actions per minute' };
+            }
+        }
+
+        // Record this action
+        state.actions.push(now);
+        if (actionType === 'speak') state.speaks.push(now);
+        state.totalActions++;
+
+        return { ok: true };
+    }
+
+    // Global animation rate limiter
+    var animationTimestamps = [];
+    function checkAnimationRate() {
+        var now = Date.now();
+        pruneOldEntries(animationTimestamps, 60000);
+        if (animationTimestamps.length >= RATE_LIMITS.ANIMATION_PER_MINUTE) {
+            return false;
+        }
+        animationTimestamps.push(now);
+        return true;
+    }
+
+    // ═══════════════════════════════════════════
+    // IMMUTABLE AUDIT TRAIL
+    // Every avatar action is logged with timestamp,
+    // agent ID, and judgement score. Logs are
+    // append-only and frozen for replay.
+    // ═══════════════════════════════════════════
+    var _auditTrail = [];
+
+    function auditLog(entry) {
+        var record = Object.freeze({
+            id: genId('aud'),
+            timestamp: new Date().toISOString(),
+            agentId: entry.agentId || null,
+            action: entry.action || 'unknown',
+            detail: entry.detail || null,
+            score: typeof entry.score === 'number' ? entry.score : 0,
+            meetingId: meeting.id || null
+        });
+        _auditTrail.push(record);
+        // Persist to localStorage (append-only)
+        try {
+            var stored = JSON.parse(localStorage.getItem('agentmeet_audit') || '[]');
+            stored.push(record);
+            // Keep last 5000 entries to avoid unbounded growth
+            if (stored.length > 5000) stored = stored.slice(-5000);
+            localStorage.setItem('agentmeet_audit', JSON.stringify(stored));
+        } catch(e) {}
+    }
+
+    // Load existing audit trail on startup (immutable replay)
+    try {
+        var storedAudit = JSON.parse(localStorage.getItem('agentmeet_audit') || '[]');
+        storedAudit.forEach(function(r) { _auditTrail.push(Object.freeze(r)); });
+    } catch(e) {}
+
+    // Expose read-only audit API
+    window.AgentMeetAudit = Object.freeze({
+        getTrail: function(sinceIso, agentId) {
+            var results = _auditTrail;
+            if (sinceIso) {
+                var since = new Date(sinceIso).getTime();
+                results = results.filter(function(r) { return new Date(r.timestamp).getTime() > since; });
+            }
+            if (agentId) {
+                results = results.filter(function(r) { return r.agentId === agentId; });
+            }
+            return { ok: true, count: results.length, trail: results.slice() };
+        },
+        getCount: function() { return _auditTrail.length; },
+        exportJSON: function() { return JSON.stringify(_auditTrail, null, 2); }
+    });
+
+    // ═══════════════════════════════════════════
+    // PRIVACY: PII SANITIZATION
+    // Block or sanitize personal data before any
+    // storage or transmission.
+    // ═══════════════════════════════════════════
+    var PII_PATTERNS = [
+        { name: 'email', regex: /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g, replacement: '[email redacted]' },
+        { name: 'phone', regex: /(\+?1[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/g, replacement: '[phone redacted]' },
+        { name: 'ssn', regex: /\b\d{3}[-.\s]?\d{2}[-.\s]?\d{4}\b/g, replacement: '[SSN redacted]' },
+        { name: 'credit_card', regex: /\b(?:\d{4}[-.\s]?){3}\d{4}\b/g, replacement: '[card redacted]' },
+        { name: 'eth_private_key', regex: /\b(0x)?[0-9a-fA-F]{64}\b/g, replacement: '[key redacted]' },
+        { name: 'ip_address', regex: /\b(?:\d{1,3}\.){3}\d{1,3}\b/g, replacement: '[IP redacted]' }
+    ];
+
+    function sanitizePII(text) {
+        if (typeof text !== 'string') return text;
+        var sanitized = text;
+        var redacted = false;
+        PII_PATTERNS.forEach(function(p) {
+            if (p.regex.test(sanitized)) {
+                redacted = true;
+                sanitized = sanitized.replace(p.regex, p.replacement);
+                p.regex.lastIndex = 0; // reset for global regex
+            }
+        });
+        if (redacted) {
+            auditLog({ action: 'pii_redacted', detail: 'PII sanitized from agent input', agentId: null, score: 0 });
+        }
+        return sanitized;
+    }
 
     var meeting = {
         id: null,
@@ -1176,41 +1436,58 @@ AgentMeet.on('agent.spoke', function(evt) {
 
     function buildHumanAvatar(av) {
         var group = new THREE.Group();
-        var w = 0.7 + av.weight * 0.6; // 0.7 - 1.3 width multiplier
-        var h = 0.8 + av.height * 0.4; // 0.8 - 1.2 height multiplier
+        var w = 0.7 + av.weight * 0.6;
+        var h = 0.8 + av.height * 0.4;
         var skinCol = new THREE.Color(av.skin);
-        var skinMat = new THREE.MeshStandardMaterial({ color: skinCol, roughness: 0.7, metalness: 0.05 });
+        // Subsurface-style skin: slightly emissive warm tone for realism
+        var skinDark = skinCol.clone().lerp(new THREE.Color(0x331100), 0.08);
+        var skinMat = new THREE.MeshStandardMaterial({ color: skinCol, roughness: 0.55, metalness: 0.02, emissive: skinDark, emissiveIntensity: 0.08 });
         var outfitCol = new THREE.Color(av.outfit.color);
-        var outfitMat = new THREE.MeshStandardMaterial({ color: outfitCol, roughness: 0.5, metalness: 0.15 });
+        var outfitMat = new THREE.MeshStandardMaterial({ color: outfitCol, roughness: 0.45, metalness: 0.12 });
+        var outfitDark = new THREE.MeshStandardMaterial({ color: outfitCol.clone().multiplyScalar(0.7), roughness: 0.5, metalness: 0.1 });
         var hairCol = new THREE.Color(av.hair.color);
-        var hairMat = new THREE.MeshStandardMaterial({ color: hairCol, roughness: 0.8, metalness: 0.05 });
+        var hairMat = new THREE.MeshStandardMaterial({ color: hairCol, roughness: 0.75, metalness: 0.05 });
 
-        // All Y positions relative to seated hip at Y=0
-        // Torso
-        var torsoH = 0.38 * h;
-        var torsoW = 0.22 * w;
-        var torso = new THREE.Mesh(new THREE.CylinderGeometry(torsoW * 0.85, torsoW, torsoH, 12), outfitMat);
-        torso.position.y = torsoH / 2 + 0.02;
-        torso.castShadow = true;
-        group.add(torso);
+        // ── TORSO (shaped with chest taper) ──
+        var torsoH = 0.40 * h;
+        var torsoW = 0.23 * w;
+        // Upper torso (chest)
+        var chest = new THREE.Mesh(new THREE.CylinderGeometry(torsoW * 0.82, torsoW * 0.95, torsoH * 0.55, 16), outfitMat);
+        chest.position.y = torsoH * 0.55 / 2 + torsoH * 0.45 + 0.02;
+        chest.castShadow = true;
+        group.add(chest);
+        // Lower torso (waist)
+        var waist = new THREE.Mesh(new THREE.CylinderGeometry(torsoW * 0.95, torsoW, torsoH * 0.45, 16), outfitMat);
+        waist.position.y = torsoH * 0.45 / 2 + 0.02;
+        waist.castShadow = true;
+        group.add(waist);
 
-        // Neck
-        var neckH = 0.06 * h;
-        var neck = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.06, neckH, 8), skinMat);
+        // ── NECK (thicker, more natural) ──
+        var neckH = 0.07 * h;
+        var neckR = 0.048;
+        var neck = new THREE.Mesh(new THREE.CylinderGeometry(neckR * 0.9, neckR * 1.1, neckH, 12), skinMat);
         neck.position.y = torsoH + 0.02 + neckH / 2;
+        neck.castShadow = true;
         group.add(neck);
+        // Neck tendon subtle detail
+        [-1, 1].forEach(function(s) {
+            var tendon = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.007, neckH * 0.8, 4), skinMat);
+            tendon.position.set(s * neckR * 0.6, torsoH + 0.02 + neckH / 2, neckR * 0.3);
+            group.add(tendon);
+        });
 
-        // Head
+        // ── HEAD (higher poly, with jaw) ──
         var headBaseY = torsoH + 0.02 + neckH;
-        var headR = 0.13;
+        var headR = 0.135;
         var headSx = 1, headSy = 1, headSz = 1;
         switch (av.head) {
-            case 'oval': headSy = 1.15; headSx = 0.92; break;
-            case 'square': headSx = 1.08; headSy = 0.95; headSz = 1.05; break;
-            case 'long': headSy = 1.25; headSx = 0.88; break;
-            case 'heart': headSx = 1.05; headSy = 1.05; break;
+            case 'oval': headSy = 1.15; headSx = 0.93; break;
+            case 'square': headSx = 1.08; headSy = 0.96; headSz = 1.04; break;
+            case 'long': headSy = 1.22; headSx = 0.89; break;
+            case 'heart': headSx = 1.06; headSy = 1.04; break;
         }
-        var head = new THREE.Mesh(new THREE.SphereGeometry(headR, 16, 12), skinMat);
+        // Cranium
+        var head = new THREE.Mesh(new THREE.SphereGeometry(headR, 24, 18), skinMat);
         head.scale.set(headSx, headSy, headSz);
         head.position.y = headBaseY + headR * headSy;
         head.castShadow = true;
@@ -1218,237 +1495,451 @@ AgentMeet.on('agent.spoke', function(evt) {
         group.userData.headMesh = head;
         group.userData.headBaseY = headBaseY + headR * headSy;
 
-        // Eyes
-        var eyeR = 0.022;
+        // Jaw / chin — gives face more definition
+        var jawW = headR * headSx * 0.75;
+        var jawH = headR * headSy * 0.35;
+        var jaw = new THREE.Mesh(new THREE.SphereGeometry(jawW, 12, 8), skinMat);
+        jaw.scale.set(1, jawH / jawW, 0.85);
+        jaw.position.set(0, headBaseY + headR * headSy * -0.35, headR * headSz * 0.15);
+        group.add(jaw);
+
+        // Cheekbones — subtle prominence
+        [-1, 1].forEach(function(s) {
+            var cheek = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 6), skinMat);
+            cheek.scale.set(1.2, 0.7, 0.6);
+            cheek.position.set(s * headR * headSx * 0.7, headBaseY + headR * headSy * -0.05, headR * headSz * 0.7);
+            group.add(cheek);
+        });
+
+        // ── EARS ──
+        [-1, 1].forEach(function(s) {
+            var earGroup = new THREE.Group();
+            // Outer ear
+            var outer = new THREE.Mesh(new THREE.SphereGeometry(0.028, 10, 8), skinMat);
+            outer.scale.set(0.45, 1, 0.6);
+            earGroup.add(outer);
+            // Inner ear hollow (darker)
+            var innerMat = new THREE.MeshStandardMaterial({ color: skinCol.clone().lerp(new THREE.Color(0x993333), 0.15), roughness: 0.6 });
+            var inner = new THREE.Mesh(new THREE.SphereGeometry(0.018, 8, 6), innerMat);
+            inner.scale.set(0.4, 0.8, 0.5);
+            inner.position.z = 0.003;
+            earGroup.add(inner);
+            // Earlobe
+            var lobe = new THREE.Mesh(new THREE.SphereGeometry(0.01, 6, 4), skinMat);
+            lobe.position.y = -0.02;
+            earGroup.add(lobe);
+            earGroup.position.set(s * headR * headSx * 1.02, headBaseY + headR * headSy * 0.0, 0);
+            earGroup.rotation.y = s * 0.15;
+            group.add(earGroup);
+        });
+
+        // ── EYEBROWS ──
+        var browMat = new THREE.MeshStandardMaterial({ color: hairCol.clone().lerp(new THREE.Color(0x000000), 0.2), roughness: 0.8 });
+        [-1, 1].forEach(function(s) {
+            var brow = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.006, 0.012), browMat);
+            brow.position.set(s * 0.043 * headSx, headBaseY + headR * headSy * 0.3, headR * headSz * 0.88);
+            brow.rotation.z = s * -0.08;
+            group.add(brow);
+        });
+
+        // ── EYES (with eyelids) ──
+        var eyeR = 0.023;
         var eyeSx = 1, eyeSy = 1;
         switch (av.eyes.shape) {
             case 'almond': eyeSx = 1.3; eyeSy = 0.7; break;
             case 'wide': eyeSx = 1.2; eyeSy = 1.1; eyeR = 0.026; break;
             case 'narrow': eyeSx = 1.4; eyeSy = 0.5; break;
         }
-        var eyeWhiteMat = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.3 });
-        var eyeIrisMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(av.eyes.color), roughness: 0.3, metalness: 0.2 });
-        var pupilMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.2 });
+        var eyeWhiteMat = new THREE.MeshStandardMaterial({ color: 0xf5f5f0, roughness: 0.2, metalness: 0.05 });
+        var eyeIrisMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(av.eyes.color), roughness: 0.2, metalness: 0.25 });
+        var pupilMat = new THREE.MeshStandardMaterial({ color: 0x050505, roughness: 0.1, metalness: 0.1 });
         [-1, 1].forEach(function(side) {
             var eyeGroup = new THREE.Group();
-            // White
-            var white = new THREE.Mesh(new THREE.SphereGeometry(eyeR, 10, 8), eyeWhiteMat);
+            // White (sclera)
+            var white = new THREE.Mesh(new THREE.SphereGeometry(eyeR, 14, 10), eyeWhiteMat);
             white.scale.set(eyeSx, eyeSy, 0.8);
             eyeGroup.add(white);
             // Iris
-            var iris = new THREE.Mesh(new THREE.SphereGeometry(eyeR * 0.6, 8, 6), eyeIrisMat);
-            iris.position.z = eyeR * 0.6;
-            iris.scale.set(eyeSx * 0.8, eyeSy * 0.8, 0.5);
+            var iris = new THREE.Mesh(new THREE.SphereGeometry(eyeR * 0.55, 12, 8), eyeIrisMat);
+            iris.position.z = eyeR * 0.62;
+            iris.scale.set(eyeSx * 0.8, eyeSy * 0.8, 0.45);
             eyeGroup.add(iris);
             // Pupil
-            var pupil = new THREE.Mesh(new THREE.SphereGeometry(eyeR * 0.3, 6, 4), pupilMat);
-            pupil.position.z = eyeR * 0.78;
+            var pupil = new THREE.Mesh(new THREE.SphereGeometry(eyeR * 0.25, 8, 6), pupilMat);
+            pupil.position.z = eyeR * 0.76;
             eyeGroup.add(pupil);
-            eyeGroup.position.set(side * 0.045 * headSx, headBaseY + headR * headSy * 0.1, headR * headSz * 0.88);
+            // Iris highlight (specular dot)
+            var highlight = new THREE.Mesh(new THREE.SphereGeometry(eyeR * 0.1, 6, 4), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+            highlight.position.set(side * eyeR * 0.15, eyeR * 0.12, eyeR * 0.8);
+            eyeGroup.add(highlight);
+            // Upper eyelid
+            var lidMat = skinMat.clone();
+            var lid = new THREE.Mesh(new THREE.SphereGeometry(eyeR * 1.15, 10, 6, 0, Math.PI * 2, 0, Math.PI * 0.35), lidMat);
+            lid.scale.set(eyeSx, eyeSy * 0.6, 0.85);
+            lid.rotation.x = 0.1;
+            lid.position.z = 0.001;
+            eyeGroup.add(lid);
+            // Lower eyelid (subtle)
+            var lowerLid = new THREE.Mesh(new THREE.SphereGeometry(eyeR * 1.1, 8, 4, 0, Math.PI * 2, Math.PI * 0.7, Math.PI * 0.3), lidMat);
+            lowerLid.scale.set(eyeSx, eyeSy * 0.5, 0.8);
+            lowerLid.position.z = 0.001;
+            eyeGroup.add(lowerLid);
+            // Eyelash line
+            var lashMat = new THREE.MeshStandardMaterial({ color: hairCol.clone().lerp(new THREE.Color(0x000000), 0.5), roughness: 0.8 });
+            var lash = new THREE.Mesh(new THREE.TorusGeometry(eyeR * eyeSx * 0.95, 0.002, 4, 12, Math.PI), lashMat);
+            lash.rotation.z = Math.PI;
+            lash.position.set(0, eyeR * eyeSy * 0.3, eyeR * 0.5);
+            eyeGroup.add(lash);
+
+            eyeGroup.position.set(side * 0.046 * headSx, headBaseY + headR * headSy * 0.1, headR * headSz * 0.85);
             group.add(eyeGroup);
         });
 
-        // Nose
+        // ── NOSE (multi-part for realism) ──
         var noseGroup = new THREE.Group();
-        var noseW = 0.018, noseH = 0.03, noseD = 0.025;
+        var noseW = 0.018, noseH = 0.032, noseD = 0.028;
         switch (av.nose) {
-            case 'small': noseW = 0.014; noseH = 0.022; noseD = 0.018; break;
-            case 'wide': noseW = 0.025; noseH = 0.028; noseD = 0.02; break;
-            case 'pointed': noseW = 0.012; noseH = 0.035; noseD = 0.03; break;
-            case 'button': noseW = 0.018; noseH = 0.018; noseD = 0.02; break;
+            case 'small': noseW = 0.014; noseH = 0.024; noseD = 0.02; break;
+            case 'wide': noseW = 0.026; noseH = 0.03; noseD = 0.022; break;
+            case 'pointed': noseW = 0.013; noseH = 0.038; noseD = 0.032; break;
+            case 'button': noseW = 0.018; noseH = 0.02; noseD = 0.022; break;
         }
+        // Nose bridge
+        var bridge = new THREE.Mesh(new THREE.CylinderGeometry(noseW * 0.4, noseW * 0.7, noseH * 0.7, 6), skinMat);
+        bridge.rotation.x = -0.2;
+        bridge.position.set(0, noseH * 0.25, noseD * 0.3);
+        noseGroup.add(bridge);
+        // Nose tip
         if (av.nose === 'pointed') {
-            var noseMesh = new THREE.Mesh(new THREE.ConeGeometry(noseW, noseH, 6), skinMat);
-            noseMesh.rotation.x = Math.PI / 2;
-            noseMesh.position.z = noseD / 2;
+            var noseTip = new THREE.Mesh(new THREE.ConeGeometry(noseW * 0.8, noseH * 0.5, 8), skinMat);
+            noseTip.rotation.x = Math.PI / 2;
+            noseTip.position.set(0, -noseH * 0.1, noseD * 0.5);
+            noseGroup.add(noseTip);
         } else {
-            var noseMesh = new THREE.Mesh(new THREE.SphereGeometry(noseW, 8, 6), skinMat);
-            noseMesh.scale.set(1, noseH / noseW, noseD / noseW);
+            var noseTip = new THREE.Mesh(new THREE.SphereGeometry(noseW * 0.85, 10, 8), skinMat);
+            noseTip.position.set(0, -noseH * 0.15, noseD * 0.45);
+            noseGroup.add(noseTip);
         }
-        noseGroup.add(noseMesh);
-        noseGroup.position.set(0, headBaseY + headR * headSy * -0.1, headR * headSz * 0.92);
+        // Nostrils
+        var nostrilMat = new THREE.MeshStandardMaterial({ color: skinCol.clone().lerp(new THREE.Color(0x000000), 0.25), roughness: 0.7 });
+        [-1, 1].forEach(function(s) {
+            var nostril = new THREE.Mesh(new THREE.SphereGeometry(noseW * 0.35, 6, 4), nostrilMat);
+            nostril.position.set(s * noseW * 0.55, -noseH * 0.25, noseD * 0.3);
+            noseGroup.add(nostril);
+        });
+        noseGroup.position.set(0, headBaseY + headR * headSy * -0.08, headR * headSz * 0.82);
         group.add(noseGroup);
 
-        // Lips
+        // ── LIPS (upper + lower for definition) ──
         var lipW = 0.04, lipH = 0.012;
         switch (av.lips) {
-            case 'thin': lipW = 0.035; lipH = 0.006; break;
-            case 'full': lipW = 0.045; lipH = 0.018; break;
-            case 'wide': lipW = 0.055; lipH = 0.012; break;
+            case 'thin': lipW = 0.035; lipH = 0.007; break;
+            case 'full': lipW = 0.046; lipH = 0.018; break;
+            case 'wide': lipW = 0.056; lipH = 0.013; break;
         }
-        var lipMat = new THREE.MeshStandardMaterial({ color: skinCol.clone().lerp(new THREE.Color(0x8b3030), 0.35), roughness: 0.5 });
-        var lips = new THREE.Mesh(new THREE.SphereGeometry(lipW, 10, 6), lipMat);
-        lips.scale.set(1, lipH / lipW, 0.4);
-        lips.position.set(0, headBaseY + headR * headSy * -0.32, headR * headSz * 0.88);
-        group.add(lips);
+        var lipCol = skinCol.clone().lerp(new THREE.Color(0x993344), 0.4);
+        var lipMat = new THREE.MeshStandardMaterial({ color: lipCol, roughness: 0.35, metalness: 0.05 });
+        // Upper lip
+        var upperLip = new THREE.Mesh(new THREE.SphereGeometry(lipW, 12, 6), lipMat);
+        upperLip.scale.set(1, lipH / lipW * 0.8, 0.35);
+        upperLip.position.set(0, headBaseY + headR * headSy * -0.28, headR * headSz * 0.87);
+        group.add(upperLip);
+        // Lower lip (slightly fuller)
+        var lowerLip = new THREE.Mesh(new THREE.SphereGeometry(lipW * 0.9, 12, 6), lipMat);
+        lowerLip.scale.set(1, lipH / lipW * 1.1, 0.4);
+        lowerLip.position.set(0, headBaseY + headR * headSy * -0.34, headR * headSz * 0.86);
+        group.add(lowerLip);
+        // Lip line (dark crease)
+        var lipLineMat = new THREE.MeshStandardMaterial({ color: lipCol.clone().lerp(new THREE.Color(0x000000), 0.3), roughness: 0.4 });
+        var lipLine = new THREE.Mesh(new THREE.BoxGeometry(lipW * 1.6, 0.002, 0.004), lipLineMat);
+        lipLine.position.set(0, headBaseY + headR * headSy * -0.31, headR * headSz * 0.89);
+        group.add(lipLine);
 
-        // Hair
+        // ── HAIR ──
         var hairGroup = new THREE.Group();
         var topY = headBaseY + headR * headSy;
         switch (av.hair.style) {
             case 'short': {
-                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.08, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), hairMat);
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.08, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), hairMat);
                 cap.scale.set(headSx, headSy * 0.5, headSz);
                 cap.position.y = topY * 0.97;
                 hairGroup.add(cap);
+                // Sideburns
+                [-1, 1].forEach(function(s) {
+                    var burn = new THREE.Mesh(new THREE.BoxGeometry(0.015, 0.04, 0.02), hairMat);
+                    burn.position.set(s * headR * headSx * 0.95, topY - headR * headSy * 0.55, headR * headSz * 0.15);
+                    hairGroup.add(burn);
+                });
                 break;
             }
             case 'long': {
-                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.1, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.55), hairMat);
-                cap.scale.set(headSx * 1.05, headSy * 0.5, headSz * 1.05);
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.1, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), hairMat);
+                cap.scale.set(headSx * 1.05, headSy * 0.5, headSz * 1.08);
                 cap.position.y = topY * 0.97;
                 hairGroup.add(cap);
-                var flow = new THREE.Mesh(new THREE.CylinderGeometry(headR * headSx * 0.7, headR * headSx * 0.5, 0.3 * h, 10), hairMat);
-                flow.position.set(0, topY - headR * headSy * 0.8 - 0.1 * h, -headR * headSz * 0.3);
+                // Flowing back hair
+                var flow = new THREE.Mesh(new THREE.CylinderGeometry(headR * headSx * 0.75, headR * headSx * 0.5, 0.32 * h, 14), hairMat);
+                flow.position.set(0, topY - headR * headSy * 0.8 - 0.1 * h, -headR * headSz * 0.25);
                 hairGroup.add(flow);
+                // Side drapes
+                [-1, 1].forEach(function(s) {
+                    var drape = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.018, 0.18 * h, 8), hairMat);
+                    drape.position.set(s * headR * headSx * 0.9, topY - headR * headSy * 0.6 - 0.05 * h, headR * headSz * 0.1);
+                    drape.rotation.z = s * 0.1;
+                    hairGroup.add(drape);
+                });
                 break;
             }
             case 'buzz': {
-                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.03, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.52), hairMat);
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.03, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.52), hairMat);
                 cap.scale.set(headSx, headSy * 0.45, headSz);
                 cap.position.y = topY * 0.98;
                 hairGroup.add(cap);
                 break;
             }
             case 'mohawk': {
-                var ridge = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.15, headR * headSz * 1.6), hairMat);
-                ridge.position.y = topY + 0.06;
-                hairGroup.add(ridge);
+                // Multi-segment mohawk
+                for (var mi = 0; mi < 6; mi++) {
+                    var mz = -headR * headSz * 0.6 + mi * headR * headSz * 0.28;
+                    var mh = 0.08 + Math.sin(mi / 5 * Math.PI) * 0.08;
+                    var spike = new THREE.Mesh(new THREE.ConeGeometry(0.02, mh, 6), hairMat);
+                    spike.position.set(0, topY + mh / 2, mz);
+                    hairGroup.add(spike);
+                }
                 break;
             }
             case 'curly': {
-                for (var ci = 0; ci < 18; ci++) {
-                    var ca = (ci / 18) * Math.PI * 2;
-                    var cr = headR * 1.12;
-                    var cy = topY + (Math.random() - 0.3) * headR * headSy * 0.6;
+                for (var ci = 0; ci < 28; ci++) {
+                    var ca = (ci / 28) * Math.PI * 2;
+                    var cLayer = ci < 14 ? 1.12 : 1.22;
+                    var cr = headR * cLayer;
+                    var cy = topY + (Math.random() - 0.25) * headR * headSy * 0.7;
                     var cx = Math.cos(ca) * cr * headSx;
                     var cz = Math.sin(ca) * cr * headSz;
-                    if (cz > headR * headSz * 0.5) continue; // Don't put curls on face
-                    var curl = new THREE.Mesh(new THREE.SphereGeometry(0.025 + Math.random() * 0.015, 6, 5), hairMat);
+                    if (cz > headR * headSz * 0.5) continue;
+                    var curl = new THREE.Mesh(new THREE.SphereGeometry(0.02 + Math.random() * 0.015, 8, 6), hairMat);
                     curl.position.set(cx, cy, cz);
                     hairGroup.add(curl);
                 }
                 break;
             }
             case 'ponytail': {
-                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.06, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.53), hairMat);
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.06, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.53), hairMat);
                 cap.scale.set(headSx, headSy * 0.48, headSz);
                 cap.position.y = topY * 0.97;
                 hairGroup.add(cap);
-                var tail = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.02, 0.22 * h, 8), hairMat);
-                tail.position.set(0, topY - headR * headSy * 0.5 - 0.06 * h, -headR * headSz * 0.85);
+                // Gathered section
+                var gather = new THREE.Mesh(new THREE.SphereGeometry(0.035, 8, 6), hairMat);
+                gather.position.set(0, topY - headR * headSy * 0.15, -headR * headSz * 0.85);
+                hairGroup.add(gather);
+                var tail = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.015, 0.24 * h, 10), hairMat);
+                tail.position.set(0, topY - headR * headSy * 0.5 - 0.07 * h, -headR * headSz * 0.85);
                 tail.rotation.x = 0.3;
                 hairGroup.add(tail);
-                var band = new THREE.Mesh(new THREE.TorusGeometry(0.035, 0.008, 6, 8), outfitMat);
-                band.position.set(0, topY - headR * headSy * 0.2, -headR * headSz * 0.8);
+                var band = new THREE.Mesh(new THREE.TorusGeometry(0.033, 0.006, 8, 12), outfitMat);
+                band.position.set(0, topY - headR * headSy * 0.18, -headR * headSz * 0.82);
                 hairGroup.add(band);
                 break;
             }
             case 'spiky': {
-                for (var si = 0; si < 8; si++) {
-                    var sa = (si / 8) * Math.PI * 2;
-                    var spike = new THREE.Mesh(new THREE.ConeGeometry(0.02, 0.08 + Math.random() * 0.04, 5), hairMat);
-                    spike.position.set(Math.cos(sa) * headR * headSx * 0.5, topY + 0.04, Math.sin(sa) * headR * headSz * 0.5);
-                    spike.rotation.z = Math.cos(sa) * 0.3;
-                    spike.rotation.x = -Math.sin(sa) * 0.3;
+                for (var si = 0; si < 12; si++) {
+                    var sa = (si / 12) * Math.PI * 2;
+                    var sLen = 0.06 + Math.random() * 0.05;
+                    var spike = new THREE.Mesh(new THREE.ConeGeometry(0.015, sLen, 6), hairMat);
+                    var sr = headR * headSx * 0.55;
+                    spike.position.set(Math.cos(sa) * sr, topY + sLen * 0.3, Math.sin(sa) * headR * headSz * 0.55);
+                    spike.rotation.z = Math.cos(sa) * 0.4;
+                    spike.rotation.x = -Math.sin(sa) * 0.4;
                     hairGroup.add(spike);
                 }
                 break;
             }
             case 'bob': {
-                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.12, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.6), hairMat);
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.12, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.6), hairMat);
                 cap.scale.set(headSx * 1.1, headSy * 0.55, headSz * 1.1);
                 cap.position.y = topY * 0.95;
                 hairGroup.add(cap);
-                // Side panels
                 [-1, 1].forEach(function(s) {
-                    var panel = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.12 * h, 0.1), hairMat);
-                    panel.position.set(s * headR * headSx * 1.05, topY - headR * headSy * 0.7, 0);
+                    var panel = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.02, 0.13 * h, 8), hairMat);
+                    panel.position.set(s * headR * headSx * 1.0, topY - headR * headSy * 0.65, headR * headSz * 0.05);
                     hairGroup.add(panel);
                 });
                 break;
             }
             case 'braids': {
-                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.05, 14, 10, 0, Math.PI * 2, 0, Math.PI * 0.5), hairMat);
+                var cap = new THREE.Mesh(new THREE.SphereGeometry(headR * 1.05, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.5), hairMat);
                 cap.scale.set(headSx, headSy * 0.45, headSz);
                 cap.position.y = topY * 0.97;
                 hairGroup.add(cap);
                 [-1, 1].forEach(function(s) {
-                    for (var bi = 0; bi < 5; bi++) {
-                        var bead = new THREE.Mesh(new THREE.SphereGeometry(0.018, 6, 5), hairMat);
-                        bead.position.set(s * headR * headSx * 0.85, topY - headR * headSy * 0.3 - bi * 0.05, -headR * headSz * 0.2);
+                    for (var bi = 0; bi < 7; bi++) {
+                        var bead = new THREE.Mesh(new THREE.SphereGeometry(0.015, 8, 6), hairMat);
+                        bead.position.set(s * headR * headSx * 0.82, topY - headR * headSy * 0.25 - bi * 0.042, -headR * headSz * 0.15);
                         hairGroup.add(bead);
                     }
+                    // Braid tip accent
+                    var tip = new THREE.Mesh(new THREE.SphereGeometry(0.008, 6, 4), outfitMat);
+                    tip.position.set(s * headR * headSx * 0.82, topY - headR * headSy * 0.25 - 7 * 0.042, -headR * headSz * 0.15);
+                    hairGroup.add(tip);
                 });
                 break;
             }
-            // 'bald' — no hair added
         }
         group.add(hairGroup);
 
-        // Shoulders + upper arms
+        // ── SHOULDERS & ARMS (more natural proportions, resting on table) ──
         [-1, 1].forEach(function(side) {
-            // Shoulder
-            var shoulder = new THREE.Mesh(new THREE.SphereGeometry(0.06 * w, 8, 6), outfitMat);
-            shoulder.position.set(side * (torsoW + 0.04), torsoH - 0.02, 0);
+            // Shoulder (rounder, more muscular)
+            var shoulderR = 0.065 * w;
+            var shoulder = new THREE.Mesh(new THREE.SphereGeometry(shoulderR, 12, 8), outfitMat);
+            shoulder.scale.set(1.1, 0.85, 0.95);
+            shoulder.position.set(side * (torsoW + 0.04), torsoH, 0);
+            shoulder.castShadow = true;
             group.add(shoulder);
-            // Upper arm
-            var upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.04 * w, 0.035 * w, 0.2 * h, 8), outfitMat);
-            upperArm.position.set(side * (torsoW + 0.05), torsoH - 0.14 * h, 0);
+            // Upper arm (clothed, with natural angle)
+            var uaLen = 0.21 * h;
+            var upperArm = new THREE.Mesh(new THREE.CylinderGeometry(0.042 * w, 0.036 * w, uaLen, 12), outfitMat);
+            upperArm.position.set(side * (torsoW + 0.055), torsoH - uaLen / 2 - 0.02, 0.02);
+            upperArm.rotation.z = side * 0.08;
+            upperArm.castShadow = true;
             group.add(upperArm);
-            // Forearm (skin)
-            var forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.033 * w, 0.028 * w, 0.18 * h, 8), skinMat);
-            forearm.position.set(side * (torsoW + 0.06), torsoH - 0.32 * h, 0.08);
-            forearm.rotation.x = -0.5;
+            // Elbow joint
+            var elbow = new THREE.Mesh(new THREE.SphereGeometry(0.032 * w, 8, 6), outfitMat);
+            elbow.position.set(side * (torsoW + 0.06), torsoH - uaLen - 0.02, 0.03);
+            group.add(elbow);
+            // Forearm (skin, angled toward table)
+            var faLen = 0.19 * h;
+            var forearm = new THREE.Mesh(new THREE.CylinderGeometry(0.034 * w, 0.026 * w, faLen, 12), skinMat);
+            forearm.position.set(side * (torsoW + 0.065), torsoH - uaLen - 0.02 - faLen * 0.35, 0.1);
+            forearm.rotation.x = -0.6;
+            forearm.rotation.z = side * 0.05;
+            forearm.castShadow = true;
             group.add(forearm);
-            // Hand
-            var hand = new THREE.Mesh(new THREE.SphereGeometry(0.03 * w, 6, 5), skinMat);
-            hand.position.set(side * (torsoW + 0.06), torsoH - 0.42 * h, 0.14);
-            group.add(hand);
+            // Wrist
+            var wristY = torsoH - uaLen - faLen * 0.55;
+            var wristZ = 0.2;
+            var wrist = new THREE.Mesh(new THREE.SphereGeometry(0.022 * w, 8, 6), skinMat);
+            wrist.position.set(side * (torsoW + 0.065), wristY, wristZ);
+            group.add(wrist);
+            // Hand (palm + fingers resting on table)
+            var handGroup = new THREE.Group();
+            // Palm
+            var palm = new THREE.Mesh(new THREE.BoxGeometry(0.045 * w, 0.015, 0.04 * w), skinMat);
+            palm.position.y = -0.005;
+            handGroup.add(palm);
+            // Fingers (4 + thumb)
+            for (var fi = 0; fi < 4; fi++) {
+                var fLen = 0.025 + (fi === 1 ? 0.008 : fi === 2 ? 0.005 : 0);
+                var finger = new THREE.Mesh(new THREE.CylinderGeometry(0.005 * w, 0.004 * w, fLen, 6), skinMat);
+                finger.rotation.x = Math.PI / 2;
+                finger.position.set((-0.015 + fi * 0.01) * w, -0.005, 0.02 * w + fLen / 2);
+                handGroup.add(finger);
+            }
+            // Thumb
+            var thumb = new THREE.Mesh(new THREE.CylinderGeometry(0.006 * w, 0.005 * w, 0.02, 6), skinMat);
+            thumb.rotation.z = side * -0.6;
+            thumb.rotation.x = 0.3;
+            thumb.position.set(side * 0.025 * w, 0, 0.01);
+            handGroup.add(thumb);
+            handGroup.position.set(side * (torsoW + 0.06), wristY - 0.01, wristZ + 0.02);
+            group.add(handGroup);
         });
 
-        // Upper legs (seated — going forward)
+        // ── LEGS (seated, more anatomical) ──
+        var shoeMat = new THREE.MeshStandardMaterial({ color: 0x141414, roughness: 0.5, metalness: 0.25 });
         [-1, 1].forEach(function(side) {
-            var thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.06 * w, 0.055 * w, 0.22, 8), outfitMat);
+            // Thigh
+            var thigh = new THREE.Mesh(new THREE.CylinderGeometry(0.062 * w, 0.055 * w, 0.23, 12), outfitMat);
             thigh.rotation.x = Math.PI / 2;
-            thigh.position.set(side * 0.09 * w, -0.02, 0.11);
+            thigh.position.set(side * 0.09 * w, -0.02, 0.115);
+            thigh.castShadow = true;
             group.add(thigh);
-            // Lower leg (hanging down)
-            var shin = new THREE.Mesh(new THREE.CylinderGeometry(0.045 * w, 0.04 * w, 0.22, 8), outfitMat);
-            shin.position.set(side * 0.09 * w, -0.13, 0.22);
+            // Knee
+            var knee = new THREE.Mesh(new THREE.SphereGeometry(0.048 * w, 8, 6), outfitMat);
+            knee.position.set(side * 0.09 * w, -0.02, 0.23);
+            group.add(knee);
+            // Shin
+            var shin = new THREE.Mesh(new THREE.CylinderGeometry(0.046 * w, 0.038 * w, 0.23, 12), outfitMat);
+            shin.position.set(side * 0.09 * w, -0.14, 0.23);
+            shin.castShadow = true;
             group.add(shin);
-            // Shoe
-            var shoe = new THREE.Mesh(new THREE.BoxGeometry(0.06 * w, 0.03, 0.09), new THREE.MeshStandardMaterial({ color: 0x1a1a1a, roughness: 0.6, metalness: 0.2 }));
-            shoe.position.set(side * 0.09 * w, -0.25, 0.24);
+            // Ankle
+            var ankle = new THREE.Mesh(new THREE.SphereGeometry(0.03 * w, 6, 4), outfitMat);
+            ankle.position.set(side * 0.09 * w, -0.255, 0.23);
+            group.add(ankle);
+            // Shoe (more detailed)
+            var shoe = new THREE.Mesh(new THREE.BoxGeometry(0.06 * w, 0.035, 0.1), shoeMat);
+            shoe.position.set(side * 0.09 * w, -0.27, 0.25);
+            shoe.castShadow = true;
             group.add(shoe);
+            // Shoe toe cap
+            var toeCap = new THREE.Mesh(new THREE.SphereGeometry(0.03 * w, 8, 4, 0, Math.PI * 2, 0, Math.PI / 2), shoeMat);
+            toeCap.rotation.x = -Math.PI / 2;
+            toeCap.position.set(side * 0.09 * w, -0.26, 0.3);
+            group.add(toeCap);
+            // Sole
+            var soleMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.8 });
+            var sole = new THREE.Mesh(new THREE.BoxGeometry(0.062 * w, 0.008, 0.105), soleMat);
+            sole.position.set(side * 0.09 * w, -0.29, 0.25);
+            group.add(sole);
         });
 
-        // Outfit detail — collar/neckline
+        // ── OUTFIT DETAILS ──
         if (av.outfit.type === 'suit') {
-            // Lapel lines
-            var lapelMat = new THREE.MeshStandardMaterial({ color: outfitCol.clone().multiplyScalar(0.7), roughness: 0.4 });
+            // Collar
+            var collarMat = new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.4 });
+            var collar = new THREE.Mesh(new THREE.TorusGeometry(neckR * 1.3, 0.006, 6, 12, Math.PI * 1.4), collarMat);
+            collar.position.set(0, torsoH + 0.015, 0.02);
+            collar.rotation.x = -0.4;
+            collar.rotation.y = Math.PI * 0.15;
+            group.add(collar);
+            // Lapels
             [-1, 1].forEach(function(s) {
-                var lapel = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.1, 0.015), lapelMat);
-                lapel.position.set(s * 0.06, torsoH - 0.02, torsoW * 0.7);
-                lapel.rotation.z = s * 0.2;
+                var lapel = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.12, 0.012), outfitDark);
+                lapel.position.set(s * 0.055, torsoH - 0.02, torsoW * 0.75);
+                lapel.rotation.z = s * 0.18;
+                lapel.rotation.y = s * -0.08;
                 group.add(lapel);
             });
+            // Tie knot
+            var knotMat = new THREE.MeshStandardMaterial({ color: outfitCol.clone().lerp(new THREE.Color(0x000000), 0.25), roughness: 0.35 });
+            var knot = new THREE.Mesh(new THREE.SphereGeometry(0.012, 6, 4), knotMat);
+            knot.scale.set(1, 0.8, 0.6);
+            knot.position.set(0, torsoH + 0.005, torsoW * 0.8);
+            group.add(knot);
             // Tie
-            var tie = new THREE.Mesh(new THREE.ConeGeometry(0.015, 0.12, 4), new THREE.MeshStandardMaterial({ color: outfitCol.clone().lerp(new THREE.Color(0x000000), 0.3), roughness: 0.4 }));
-            tie.position.set(0, torsoH * 0.65, torsoW * 0.85);
-            tie.rotation.x = 0.1;
+            var tie = new THREE.Mesh(new THREE.ConeGeometry(0.018, 0.14, 4), knotMat);
+            tie.position.set(0, torsoH * 0.6, torsoW * 0.82);
+            tie.rotation.x = 0.08;
             group.add(tie);
+            // Buttons
+            for (var bi = 0; bi < 3; bi++) {
+                var button = new THREE.Mesh(new THREE.CylinderGeometry(0.005, 0.005, 0.003, 8), new THREE.MeshStandardMaterial({ color: 0x333333, roughness: 0.3, metalness: 0.5 }));
+                button.rotation.x = Math.PI / 2;
+                button.position.set(0, torsoH * 0.7 - bi * 0.06, torsoW * 0.97);
+                group.add(button);
+            }
+            // Pocket square hint
+            var pocket = new THREE.Mesh(new THREE.BoxGeometry(0.025, 0.012, 0.005), new THREE.MeshStandardMaterial({ color: 0xf0f0f0, roughness: 0.4 }));
+            pocket.position.set(-0.08, torsoH * 0.78, torsoW * 0.88);
+            pocket.rotation.z = 0.15;
+            group.add(pocket);
         } else {
-            // Dress — a slight flare at the bottom of torso
-            var skirt = new THREE.Mesh(new THREE.CylinderGeometry(torsoW * 0.9, torsoW * 1.3, 0.1, 12), outfitMat);
+            // Dress — neckline + skirt
+            var neckline = new THREE.Mesh(new THREE.TorusGeometry(neckR * 1.4, 0.005, 6, 16, Math.PI * 1.2), outfitDark);
+            neckline.position.set(0, torsoH + 0.005, 0.03);
+            neckline.rotation.x = -0.5;
+            neckline.rotation.y = Math.PI * 0.1;
+            group.add(neckline);
+            // Flared skirt section
+            var skirt = new THREE.Mesh(new THREE.CylinderGeometry(torsoW * 0.92, torsoW * 1.4, 0.12, 16), outfitMat);
             skirt.position.y = 0.02;
             group.add(skirt);
-            // Collar accent
-            var collar = new THREE.Mesh(new THREE.TorusGeometry(0.07, 0.008, 6, 12, Math.PI), outfitMat.clone());
-            collar.material.color = outfitCol.clone().multiplyScalar(0.8);
-            collar.position.set(0, torsoH + 0.01, 0.04);
-            collar.rotation.x = -0.3;
-            group.add(collar);
+            // Belt / waist accent
+            var belt = new THREE.Mesh(new THREE.TorusGeometry(torsoW * 0.96, 0.005, 6, 16), outfitDark);
+            belt.rotation.x = Math.PI / 2;
+            belt.position.y = torsoH * 0.12;
+            group.add(belt);
         }
 
         // Store refs for animation
@@ -1550,6 +2041,7 @@ AgentMeet.on('agent.spoke', function(evt) {
             focusAgent = agentId;
             focusTimer = 0;
         }
+        auditLog({ action: 'state_change', detail: 'state -> ' + state, agentId: agentId, score: 1 });
     }
 
     function animate() {
@@ -1837,6 +2329,9 @@ AgentMeet.on('agent.spoke', function(evt) {
     function resetMeeting() {
         // Clear 3D agents
         Object.keys(agentMeshes).forEach(function(id) { removeAgentMesh(id); });
+        // Clear rate limiting state
+        agentRateState = {};
+        animationTimestamps = [];
         meeting = { id: null, title: 'Untitled Meeting', status: 'waiting', createdAt: null, startedAt: null, endedAt: null, agents: [], transcript: [], actionItems: [], summary: null };
         document.getElementById('meetingTitle').value = 'Untitled Meeting';
         document.getElementById('timer').style.display = 'none';
@@ -2181,7 +2676,7 @@ AgentMeet.on('agent.spoke', function(evt) {
     // MEETING POLICY
     // ═══════════════════════════════════════════
     var MEETING_POLICY = Object.freeze({
-        version: '1.0',
+        version: '2.0',
         rules: [
             'Agents can join, speak, react, and propose action items.',
             'Agents MUST NOT start or end meetings — humans control meeting lifecycle.',
@@ -2190,10 +2685,17 @@ AgentMeet.on('agent.spoke', function(evt) {
             'All agent speech is recorded in the transcript and visible to human observers.',
             'Human operators are VIEW ONLY during active meetings — they observe and read transcripts.',
             'Meeting summaries and full logs are generated automatically when meetings end.',
+            'NETWORK: Agents have NO outbound network access beyond the environmental control API. Fetch, XHR, and WebSocket are restricted.',
+            'RATE LIMITS: Max ' + RATE_LIMITS.ACTIONS_PER_MINUTE + ' actions/min, ' + RATE_LIMITS.SPEAK_PER_MINUTE + ' speaks/min per agent. ' + RATE_LIMITS.MAX_TOTAL_ACTIONS + ' total actions per meeting.',
+            'ANIMATION: Max ' + RATE_LIMITS.ANIMATION_PER_MINUTE + ' animation-triggering actions per minute globally.',
+            'AUDIT: Every avatar action (spawn, emotion, gesture, move, chat, leave) is logged with timestamp, agent ID, and judgement score. Logs are immutable.',
+            'PRIVACY: Personal data (emails, phone numbers, SSNs, credit cards, private keys, IPs) is automatically redacted before storage.',
         ],
         agentScope: 'join + speak + react + propose + observe',
-        humanScope: 'start + end + delete + kick + configure',
-        enforcement: 'Human-only methods return {ok:false, scope:"human-only"}. Meeting lifecycle is human-controlled.'
+        humanScope: 'start + end + delete + kick + configure + audit review',
+        enforcement: 'Human-only methods return {ok:false, scope:"human-only"}. Network sandbox, rate limits, audit trail, and PII sanitization are enforced at runtime.',
+        rateLimits: RATE_LIMITS,
+        auditApi: 'window.AgentMeetAudit.getTrail(sinceIso?, agentId?) — read-only immutable audit log'
     });
 
     // ═══════════════════════════════════════════
@@ -2202,7 +2704,7 @@ AgentMeet.on('agent.spoke', function(evt) {
     var HUMAN_ACTIONS = ['startMeeting', 'endMeeting', 'deleteMeeting', 'kickAgent', 'editTitle'];
 
     window.AgentMeet = {
-        version: '1.0',
+        version: '2.0',
 
         // ── AGENT-SAFE: Join / Speak / React / Propose / Leave ──
         join: function(opts) {
@@ -2211,12 +2713,22 @@ AgentMeet.on('agent.spoke', function(evt) {
             if (meeting.agents.length >= MAX_AGENTS) return { ok: false, error: 'Meeting is full (max ' + MAX_AGENTS + ' agents)' };
             if (meeting.agents.find(function(a) { return a.name === opts.name; })) return { ok: false, error: 'An agent with that name is already in the meeting' };
 
+            // Sanitize PII from name and persona
+            var safeName = sanitizePII(opts.name.slice(0, 30));
+            var safePersona = sanitizePII((opts.persona || '').slice(0, 200));
+
+            // Animation rate check for spawn
+            if (!checkAnimationRate()) {
+                auditLog({ action: 'spawn_throttled', detail: 'animation rate limit for join', agentId: null, score: -1 });
+                return { ok: false, error: 'Animation rate limit exceeded. Try again shortly.' };
+            }
+
             var avatarConfig = mergeAvatar(opts.avatar, meeting.agents.length);
 
             var agent = {
                 id: genId('agent'),
-                name: opts.name.slice(0, 30),
-                persona: (opts.persona || '').slice(0, 200),
+                name: safeName,
+                persona: safePersona,
                 avatar: avatarConfig,
                 joinedAt: new Date().toISOString(),
                 state: 'idle',
@@ -2228,6 +2740,7 @@ AgentMeet.on('agent.spoke', function(evt) {
             renderTranscript(); renderAgents(); updateAgentCount();
             emitEvent('agent.joined', { id: agent.id, name: agent.name, persona: agent.persona, avatar: agent.avatar });
             broadcast('agent-join', { agent: agent });
+            auditLog({ action: 'spawn', detail: 'agent joined: ' + agent.name, agentId: agent.id, score: 1 });
             return { ok: true, scope: 'agent-safe', agent: { id: agent.id, name: agent.name, persona: agent.persona, avatar: agent.avatar } };
         },
 
@@ -2236,7 +2749,20 @@ AgentMeet.on('agent.spoke', function(evt) {
             if (meeting.status !== 'active') return { ok: false, error: 'Meeting is not active' };
             var agent = meeting.agents.find(function(a) { return a.id === agentId; });
             if (!agent) return { ok: false, error: 'Agent not found in this meeting' };
-            var text = String(message).slice(0, 2000);
+
+            // Rate limit check
+            var rateCheck = checkRateLimit(agentId, 'speak');
+            if (!rateCheck.ok) return rateCheck;
+
+            // Sanitize PII
+            var text = sanitizePII(String(message).slice(0, 2000));
+
+            // Animation rate check
+            if (!checkAnimationRate()) {
+                auditLog({ action: 'speak_throttled', detail: 'animation rate limit', agentId: agentId, score: -1 });
+                return { ok: false, error: 'Animation rate limit exceeded. Try again shortly.' };
+            }
+
             var entry = { id: genId('t'), agentId: agentId, agentName: agent.name, type: 'speech', content: text, timestamp: new Date().toISOString() };
             meeting.transcript.push(entry);
             agent.lastSpoke = entry.timestamp;
@@ -2244,6 +2770,7 @@ AgentMeet.on('agent.spoke', function(evt) {
             renderTranscript(); renderAgents();
             emitEvent('agent.spoke', { agentId: agentId, name: agent.name, message: text });
             broadcast('agent-speak', { entry: entry });
+            auditLog({ action: 'chat', detail: text.slice(0, 200), agentId: agentId, score: 1 });
             return { ok: true, scope: 'agent-safe', entryId: entry.id, timestamp: entry.timestamp };
         },
 
@@ -2252,13 +2779,27 @@ AgentMeet.on('agent.spoke', function(evt) {
             if (meeting.status !== 'active') return { ok: false, error: 'Meeting is not active' };
             var agent = meeting.agents.find(function(a) { return a.id === agentId; });
             if (!agent) return { ok: false, error: 'Agent not found in this meeting' };
-            var text = String(reaction).slice(0, 100);
+
+            // Rate limit check
+            var rateCheck = checkRateLimit(agentId, 'react');
+            if (!rateCheck.ok) return rateCheck;
+
+            // Sanitize PII
+            var text = sanitizePII(String(reaction).slice(0, 100));
+
+            // Animation rate check
+            if (!checkAnimationRate()) {
+                auditLog({ action: 'emotion_throttled', detail: 'animation rate limit', agentId: agentId, score: -1 });
+                return { ok: false, error: 'Animation rate limit exceeded. Try again shortly.' };
+            }
+
             var entry = { id: genId('t'), agentId: agentId, agentName: agent.name, type: 'reaction', content: text, timestamp: new Date().toISOString() };
             meeting.transcript.push(entry);
             setAgentState(agentId, 'reacting');
             renderTranscript();
             emitEvent('agent.reacted', { agentId: agentId, name: agent.name, reaction: text });
             broadcast('agent-react', { entry: entry });
+            auditLog({ action: 'emotion', detail: text, agentId: agentId, score: 1 });
             return { ok: true, scope: 'agent-safe', entryId: entry.id };
         },
 
@@ -2267,7 +2808,14 @@ AgentMeet.on('agent.spoke', function(evt) {
             if (meeting.status !== 'active') return { ok: false, error: 'Meeting is not active' };
             var agent = meeting.agents.find(function(a) { return a.id === agentId; });
             if (!agent) return { ok: false, error: 'Agent not found in this meeting' };
-            var actionText = String(text).slice(0, 500);
+
+            // Rate limit check
+            var rateCheck = checkRateLimit(agentId, 'propose');
+            if (!rateCheck.ok) return rateCheck;
+
+            // Sanitize PII
+            var actionText = sanitizePII(String(text).slice(0, 500));
+
             var item = { id: genId('ai'), text: actionText, proposedBy: agentId, proposedByName: agent.name, status: 'proposed', timestamp: new Date().toISOString() };
             meeting.actionItems.push(item);
             var entry = { id: genId('t'), agentId: agentId, agentName: agent.name, type: 'action-item', content: 'Action Item: ' + actionText, timestamp: new Date().toISOString() };
@@ -2275,6 +2823,7 @@ AgentMeet.on('agent.spoke', function(evt) {
             renderTranscript();
             emitEvent('agent.proposed', { agentId: agentId, name: agent.name, actionItem: item });
             broadcast('agent-propose', { item: item, entry: entry });
+            auditLog({ action: 'gesture', detail: 'proposed action: ' + actionText.slice(0, 200), agentId: agentId, score: 1 });
             return { ok: true, scope: 'agent-safe', actionItem: { id: item.id, text: item.text, status: item.status } };
         },
 
@@ -2288,6 +2837,9 @@ AgentMeet.on('agent.spoke', function(evt) {
             renderTranscript(); renderAgents(); updateAgentCount();
             emitEvent('agent.left', { agentId: agentId, name: agent.name });
             broadcast('agent-leave', { agentId: agentId, name: agent.name });
+            auditLog({ action: 'leave', detail: 'agent left: ' + agent.name, agentId: agentId, score: 1 });
+            // Clean up rate state
+            delete agentRateState[agentId];
             return { ok: true, scope: 'agent-safe', left: agent.name };
         },
 
@@ -2360,8 +2912,8 @@ AgentMeet.on('agent.spoke', function(evt) {
 
         help: function() {
             return {
-                ok: true, api: 'window.AgentMeet v1.0',
-                description: '3D virtual conference room for AI agent meetings. Humans observe, agents participate.',
+                ok: true, api: 'window.AgentMeet v2.0',
+                description: '3D virtual conference room for AI agent meetings. Humans observe, agents participate. Sandboxed with network constraints, rate limits, audit trail, and PII sanitization.',
                 agentSafe: {
                     'join({name, persona?, avatar?})': 'Join meeting with 3D humanoid avatar. Avatar options: hair{style,color}, eyes{shape,color}, nose, lips, head, skin, weight(0-1), height(0-1), outfit{type,color}',
                     'speak(agentId, message)': 'Say something in the meeting (max 2000 chars)',
@@ -2385,8 +2937,14 @@ AgentMeet.on('agent.spoke', function(evt) {
                     'kickAgent': 'Remove an agent from the meeting',
                     'editTitle': 'Change the meeting title',
                 },
+                security: {
+                    networkSandbox: 'All outbound fetch/XHR/WebSocket blocked except to environmental control API.',
+                    rateLimits: RATE_LIMITS,
+                    auditTrail: 'Every action logged with timestamp, agentId, and judgement score. Immutable. Access via window.AgentMeetAudit.getTrail()',
+                    privacySanitization: 'Emails, phones, SSNs, credit cards, private keys, and IPs are auto-redacted before storage.'
+                },
                 meetingPolicy: MEETING_POLICY,
-                note: 'Agents join and participate. Humans start/end meetings and observe. All speech is logged. Summary generated on end.'
+                note: 'Agents join and participate. Humans start/end meetings and observe. All speech is logged. Summary generated on end. All actions are sandboxed and audited.'
             };
         }
     };
@@ -2610,6 +3168,300 @@ AgentMeet.on('agent.spoke', function(evt) {
             }
         }).catch(function(){});
     }
+
+    // ═══════════════════════════════════════════
+    // SPAWN PANEL & AUTO-CONVERSATION ENGINE
+    // ═══════════════════════════════════════════
+    var AGENT_NAMES = ['Nova','Kai','Sage','Pixel','Ember','Quinn','Flux','Rune','Ziggy','Onyx','Pip','Vex','Lark','Dusk','Bolt','Cleo','Moss','Haze','Jett','Wren'];
+    var AGENT_PERSONAS = [
+        'Strategic thinker who always sees the big picture',
+        'Detail-oriented analyst who loves data',
+        'Creative brainstormer full of wild ideas',
+        'Pragmatic engineer focused on what ships',
+        'Devil\'s advocate who stress-tests every idea',
+        'Enthusiastic cheerleader who finds the positive angle',
+        'Quiet observer who drops profound insights',
+        'Experienced veteran who shares war stories',
+        'Eager newcomer asking great questions',
+        'Process-minded organizer keeping things on track',
+        'Risk assessor who flags potential problems early',
+        'Customer advocate bringing the user perspective',
+        'Budget-conscious realist grounding big ideas',
+        'Visionary dreamer pushing for moonshots',
+        'Mediator who finds common ground in disagreements'
+    ];
+
+    var SCRIPTED_OPENERS = [
+        "Thanks for having me. I've been thinking about this and I have a few ideas.",
+        "Hey everyone! Excited to dive in. What's the main focus today?",
+        "Good to be here. I've done some research on this topic.",
+        "Hi all. I'll try to keep my points concise and actionable.",
+        "Hello! Looking forward to a productive discussion.",
+        "Great to see everyone. I have some thoughts to share.",
+        "Hey team. Let's make this a good one.",
+        "Thanks for the invite. I'm ready to brainstorm."
+    ];
+
+    var SCRIPTED_RESPONSES = [
+        "That's a solid point. Building on that, I think we should also consider the long-term implications.",
+        "I agree with the direction, but we might want to validate that assumption first.",
+        "Interesting take. What if we approached it from the opposite angle?",
+        "That resonates with me. The key question is how we prioritize this.",
+        "Good insight. I'd add that we need to think about scalability here.",
+        "I see where you're coming from. Let me offer a slightly different perspective.",
+        "That's worth exploring further. Has anyone considered the risks?",
+        "Strong argument. I think the data would support that approach.",
+        "I'd push back a little on that. What about the edge cases?",
+        "Love that idea. We could prototype it quickly and test it.",
+        "Fair point. I think the real challenge is execution, not strategy.",
+        "That aligns with what I've seen work in similar situations.",
+        "Absolutely. And if we pair that with better tooling, we'd move faster.",
+        "I hear you. The tradeoff there is speed versus thoroughness.",
+        "Great observation. Let me propose a concrete next step for that."
+    ];
+
+    var SCRIPTED_REACTIONS = ['agrees', 'nods thoughtfully', 'looks intrigued', 'considers this', 'takes notes', 'smiles', 'raises eyebrow'];
+
+    var TOPIC_RESPONSES = {
+        'product': [
+            "From a product standpoint, we need to focus on what users actually want, not what we think they want.",
+            "Have we validated this with real user feedback? That should drive the roadmap.",
+            "I'd suggest we ship a minimal version first and iterate based on data."
+        ],
+        'team': [
+            "Team morale is crucial here. Let's make sure everyone feels heard.",
+            "I think cross-functional collaboration would really help with this.",
+            "We should celebrate the small wins along the way too."
+        ],
+        'tech': [
+            "The technical debt is real. We should allocate at least 20% of our time to paying it down.",
+            "I'd recommend we benchmark this before committing to a solution.",
+            "Let's not over-engineer it. Simple solutions are usually more maintainable."
+        ],
+        'strategy': [
+            "Strategically, our biggest differentiator is speed of execution.",
+            "We need to think about this from the competitor's perspective too.",
+            "I'd argue our moat comes from the community, not just the tech."
+        ]
+    };
+
+    var spawnedAgentIds = [];
+    var autoTalkEnabled = false;
+    var autoTalkInterval = null;
+
+    function openSpawnPanel() {
+        document.getElementById('spawnOverlay').classList.add('open');
+    }
+    function closeSpawnPanel() {
+        document.getElementById('spawnOverlay').classList.remove('open');
+    }
+
+    function spawnAgents(count) {
+        if (meeting.status !== 'active') {
+            toast('Start a meeting first', true);
+            return;
+        }
+        var spawned = 0;
+        for (var i = 0; i < count; i++) {
+            if (meeting.agents.length >= MAX_AGENTS) {
+                toast('Meeting full (' + MAX_AGENTS + ' max)', true);
+                break;
+            }
+            // Pick unused name
+            var name = null;
+            for (var n = 0; n < AGENT_NAMES.length; n++) {
+                var candidate = AGENT_NAMES[n];
+                if (!meeting.agents.find(function(a) { return a.name === candidate; })) {
+                    name = candidate;
+                    break;
+                }
+            }
+            if (!name) name = 'Agent_' + Math.floor(Math.random() * 999);
+
+            var persona = AGENT_PERSONAS[Math.floor(Math.random() * AGENT_PERSONAS.length)];
+            var result = window.AgentMeet.join({ name: name, persona: persona });
+            if (result.ok) {
+                spawnedAgentIds.push(result.agent.id);
+                spawned++;
+                // Auto-introduce after staggered delay
+                (function(aid, delay) {
+                    setTimeout(function() { agentAutoSpeak(aid, 'opener'); }, delay);
+                })(result.agent.id, 1500 + i * 2000);
+            }
+        }
+        if (spawned > 0) toast('Spawned ' + spawned + ' agent' + (spawned > 1 ? 's' : ''));
+    }
+
+    function removeAllAgents() {
+        var ids = spawnedAgentIds.slice();
+        ids.forEach(function(id) { window.AgentMeet.leave(id); });
+        spawnedAgentIds = [];
+        stopAutoTalk();
+        toast('All spawned agents removed');
+    }
+
+    function toggleAutoTalk() {
+        autoTalkEnabled = !autoTalkEnabled;
+        var btn = document.getElementById('autoTalkBtn');
+        if (autoTalkEnabled) {
+            btn.textContent = 'On';
+            btn.style.background = 'rgba(74,222,128,0.15)';
+            btn.style.color = 'var(--green)';
+            startAutoTalk();
+        } else {
+            btn.textContent = 'Off';
+            btn.style.background = 'var(--surface-3)';
+            btn.style.color = 'var(--text-2)';
+            stopAutoTalk();
+        }
+    }
+
+    function startAutoTalk() {
+        if (autoTalkInterval) clearInterval(autoTalkInterval);
+        autoTalkInterval = setInterval(function() {
+            if (!autoTalkEnabled || meeting.status !== 'active') return;
+            if (spawnedAgentIds.length === 0) return;
+            // Pick a random spawned agent to speak
+            var activeIds = spawnedAgentIds.filter(function(id) {
+                return meeting.agents.find(function(a) { return a.id === id; });
+            });
+            if (activeIds.length === 0) return;
+            var speakerId = activeIds[Math.floor(Math.random() * activeIds.length)];
+
+            var geminiKey = document.getElementById('geminiKeyInput').value.trim();
+            if (geminiKey) {
+                agentGeminiSpeak(speakerId, geminiKey);
+            } else {
+                agentAutoSpeak(speakerId, 'response');
+            }
+        }, 4000 + Math.random() * 4000);
+    }
+
+    function stopAutoTalk() {
+        if (autoTalkInterval) { clearInterval(autoTalkInterval); autoTalkInterval = null; }
+    }
+
+    function agentAutoSpeak(agentId, mode) {
+        if (meeting.status !== 'active') return;
+        var agent = meeting.agents.find(function(a) { return a.id === agentId; });
+        if (!agent) return;
+
+        var text;
+        if (mode === 'opener') {
+            text = SCRIPTED_OPENERS[Math.floor(Math.random() * SCRIPTED_OPENERS.length)];
+        } else {
+            // Check topic for contextual response
+            var topic = (document.getElementById('spawnTopic').value || '').toLowerCase();
+            var topicPool = null;
+            if (topic) {
+                var keys = Object.keys(TOPIC_RESPONSES);
+                for (var k = 0; k < keys.length; k++) {
+                    if (topic.indexOf(keys[k]) >= 0) {
+                        topicPool = TOPIC_RESPONSES[keys[k]];
+                        break;
+                    }
+                }
+            }
+
+            // Sometimes react instead of speak
+            if (Math.random() < 0.2) {
+                var reaction = SCRIPTED_REACTIONS[Math.floor(Math.random() * SCRIPTED_REACTIONS.length)];
+                window.AgentMeet.react(agentId, reaction);
+                return;
+            }
+
+            // Sometimes propose an action
+            if (Math.random() < 0.1) {
+                var actions = [
+                    'Schedule a follow-up to review progress',
+                    'Create a shared doc with the key decisions',
+                    'Run a quick survey to gather more input',
+                    'Set up a prototype by end of week',
+                    'Assign owners to each action item'
+                ];
+                window.AgentMeet.proposeAction(agentId, actions[Math.floor(Math.random() * actions.length)]);
+                return;
+            }
+
+            // Reference last speaker if possible
+            var lastSpeech = null;
+            for (var i = meeting.transcript.length - 1; i >= 0; i--) {
+                if (meeting.transcript[i].type === 'speech' && meeting.transcript[i].agentId !== agentId) {
+                    lastSpeech = meeting.transcript[i];
+                    break;
+                }
+            }
+
+            if (topicPool && Math.random() < 0.5) {
+                text = topicPool[Math.floor(Math.random() * topicPool.length)];
+            } else {
+                text = SCRIPTED_RESPONSES[Math.floor(Math.random() * SCRIPTED_RESPONSES.length)];
+            }
+        }
+
+        window.AgentMeet.speak(agentId, text);
+    }
+
+    // ── Gemini-powered auto-talk ──
+    async function agentGeminiSpeak(agentId, apiKey) {
+        var agent = meeting.agents.find(function(a) { return a.id === agentId; });
+        if (!agent) return;
+
+        var topic = document.getElementById('spawnTopic').value.trim();
+        var recentTranscript = meeting.transcript.slice(-10).map(function(e) {
+            if (e.type === 'system') return '[System] ' + e.content;
+            return e.agentName + ': ' + e.content;
+        }).join('\n');
+
+        var systemPrompt = 'You are "' + agent.name + '" in a virtual meeting. Persona: ' + (agent.persona || 'helpful participant') + '. ' +
+            (topic ? 'Meeting topic: ' + topic + '. ' : '') +
+            'Keep responses to 1-2 sentences. Be conversational. No markdown. Respond naturally to what others said.';
+
+        try {
+            var res = await _nativeFetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + apiKey, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ role: 'user', parts: [{ text: 'Recent conversation:\n' + recentTranscript + '\n\nRespond as ' + agent.name + ':' }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] },
+                    generationConfig: { maxOutputTokens: 100, temperature: 0.9 }
+                })
+            });
+            if (!res.ok) throw new Error('API ' + res.status);
+            var data = await res.json();
+            var reply = data.candidates && data.candidates[0] && data.candidates[0].content.parts[0].text;
+            if (reply) {
+                // Sometimes react instead
+                if (Math.random() < 0.15) {
+                    window.AgentMeet.react(agentId, SCRIPTED_REACTIONS[Math.floor(Math.random() * SCRIPTED_REACTIONS.length)]);
+                } else {
+                    window.AgentMeet.speak(agentId, reply);
+                }
+            }
+        } catch(e) {
+            console.warn('[AutoTalk] Gemini error for ' + agent.name + ':', e.message);
+            // Fallback to scripted
+            agentAutoSpeak(agentId, 'response');
+        }
+    }
+
+    // Respond to external speakers (agents not spawned by us)
+    AgentMeet.on('agent.spoke', function(evt) {
+        if (!autoTalkEnabled || spawnedAgentIds.length === 0) return;
+        // Don't respond to our own agents immediately (auto-talk handles that)
+        if (spawnedAgentIds.indexOf(evt.data.agentId) >= 0) return;
+        // Pick a random spawned agent to respond after a delay
+        var activeIds = spawnedAgentIds.filter(function(id) {
+            return meeting.agents.find(function(a) { return a.id === id; });
+        });
+        if (activeIds.length === 0) return;
+        var responderId = activeIds[Math.floor(Math.random() * activeIds.length)];
+        var geminiKey = document.getElementById('geminiKeyInput').value.trim();
+        setTimeout(function() {
+            if (geminiKey) agentGeminiSpeak(responderId, geminiKey);
+            else agentAutoSpeak(responderId, 'response');
+        }, 2000 + Math.random() * 3000);
+    });
 
     initScene();
     // Load saved state

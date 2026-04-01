@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thrifts</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --bg: #06060b;
+            --surface: #0f0f16;
+            --card: #14141e;
+            --border: #1e1e2e;
+            --text: #e2e8f0;
+            --muted: #8b8fa3;
+            --accent: #c8a96e;
+            --accent2: #a67c52;
+            --accent-glow: rgba(200, 169, 110, 0.15);
+            --green: #4ade80;
+            --red: #f87171;
+            --radius: 12px;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+        h1, h2, h3, .brand { font-family: 'Playfair Display', serif; }
+
+        /* Header */
+        .header {
+            padding: 16px 20px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(6,6,11,0.92);
+            backdrop-filter: blur(16px);
+        }
+        .brand {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--accent);
+            letter-spacing: -0.5px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .brand svg { width: 28px; height: 28px; }
+        .header-actions { display: flex; gap: 8px; }
+        .icon-btn {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--card); border: 1px solid var(--border);
+            color: var(--muted); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .icon-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+        /* Tab Content */
+        .tab-content { display: none; padding: 16px 20px; }
+        .tab-content.active { display: block; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: rgba(6,6,11,0.95);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border);
+            display: flex; z-index: 100;
+            padding-bottom: env(safe-area-inset-bottom, 0);
+        }
+        .nav-item {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; gap: 3px;
+            padding: 10px 4px 8px;
+            color: var(--muted); cursor: pointer;
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            transition: color 0.2s; border: none; background: none;
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-item svg { width: 22px; height: 22px; }
+        .nav-badge {
+            position: absolute; top: 4px; right: calc(50% - 18px);
+            background: var(--accent); color: var(--bg);
+            font-size: 9px; font-weight: 900;
+            width: 16px; height: 16px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Scan Tab */
+        .scan-hero {
+            text-align: center;
+            padding: 32px 0 24px;
+        }
+        .scan-hero h2 {
+            font-size: 28px;
+            color: var(--accent);
+            margin-bottom: 6px;
+        }
+        .scan-hero p { color: var(--muted); font-size: 14px; }
+        .camera-zone {
+            position: relative;
+            width: 100%; aspect-ratio: 4/3;
+            background: var(--card);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; margin-bottom: 16px;
+        }
+        .camera-zone.has-photo { border-style: solid; border-color: var(--accent); }
+        .camera-zone video, .camera-zone img {
+            width: 100%; height: 100%; object-fit: cover;
+            position: absolute; top: 0; left: 0;
+        }
+        .camera-placeholder {
+            display: flex; flex-direction: column;
+            align-items: center; gap: 12px; color: var(--muted);
+        }
+        .camera-placeholder svg { width: 48px; height: 48px; opacity: 0.5; }
+        .camera-actions {
+            display: flex; gap: 10px; margin-bottom: 20px;
+        }
+        .cam-btn {
+            flex: 1; padding: 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--card);
+            color: var(--text);
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700; font-size: 13px;
+            cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 6px;
+            transition: all 0.2s;
+        }
+        .cam-btn:hover { border-color: var(--accent); color: var(--accent); }
+        .cam-btn.primary {
+            background: var(--accent); color: var(--bg);
+            border-color: var(--accent);
+        }
+        .cam-btn.primary:hover { background: var(--accent2); }
+
+        /* Form Fields */
+        .field { margin-bottom: 14px; }
+        .field label {
+            display: block; font-size: 11px;
+            font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.8px; color: var(--muted);
+            margin-bottom: 6px;
+        }
+        .field input, .field select, .field textarea {
+            width: 100%; padding: 12px 14px;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text);
+            font-family: 'Nunito', sans-serif;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .field input:focus, .field select:focus, .field textarea:focus {
+            outline: none; border-color: var(--accent);
+        }
+        .field textarea { resize: vertical; min-height: 80px; }
+        .field select { appearance: none; cursor: pointer; }
+        .field-row { display: flex; gap: 10px; }
+        .field-row .field { flex: 1; }
+
+        /* Tags */
+        .tag-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .tag {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            font-size: 12px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .tag.active, .tag:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--accent-glow);
+        }
+
+        /* Lookup Results */
+        .lookup-section {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--border);
+        }
+        .lookup-section.show { display: block; }
+        .lookup-section h3 {
+            font-size: 18px; margin-bottom: 14px; color: var(--accent);
+        }
+        .market-links {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            margin-bottom: 16px;
+        }
+        .market-link {
+            padding: 14px;
+            border-radius: var(--radius);
+            background: var(--card);
+            border: 1px solid var(--border);
+            text-decoration: none; color: var(--text);
+            display: flex; flex-direction: column; gap: 4px;
+            transition: all 0.2s;
+        }
+        .market-link:hover { border-color: var(--accent); transform: translateY(-2px); }
+        .market-link .ml-name { font-weight: 800; font-size: 13px; }
+        .market-link .ml-sub { font-size: 11px; color: var(--muted); }
+
+        /* Value Estimate */
+        .value-card {
+            background: linear-gradient(135deg, rgba(200,169,110,0.1), rgba(166,124,82,0.05));
+            border: 1px solid rgba(200,169,110,0.3);
+            border-radius: var(--radius);
+            padding: 20px; text-align: center;
+            margin-bottom: 16px;
+        }
+        .value-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }
+        .value-card .range {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px; font-weight: 900;
+            color: var(--accent);
+        }
+        .value-card .note { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+        }
+        .card:hover { border-color: rgba(200,169,110,0.3); }
+        .card-img {
+            width: 100%; aspect-ratio: 16/10;
+            object-fit: cover; background: var(--surface);
+        }
+        .card-body { padding: 14px; }
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 16px; font-weight: 700;
+            margin-bottom: 4px;
+        }
+        .card-meta { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+        .card-price {
+            font-weight: 900; color: var(--accent);
+            font-size: 18px;
+        }
+        .card-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+        .card-tag {
+            padding: 2px 8px; border-radius: 10px;
+            background: var(--accent-glow);
+            color: var(--accent); font-size: 10px; font-weight: 700;
+        }
+        .card-actions {
+            display: flex; gap: 8px; margin-top: 12px;
+            padding-top: 12px; border-top: 1px solid var(--border);
+        }
+        .card-actions button {
+            flex: 1; padding: 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text);
+            font-family: 'Nunito', sans-serif;
+            font-weight: 700; font-size: 12px;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .card-actions button:hover {
+            border-color: var(--accent); color: var(--accent);
+        }
+        .card-actions button.sell-btn {
+            background: var(--accent); color: var(--bg);
+            border-color: var(--accent);
+        }
+
+        /* Grid */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        /* Market */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .section-header h2 { font-size: 22px; }
+        .filter-bar {
+            display: flex; gap: 8px; overflow-x: auto;
+            padding-bottom: 8px; margin-bottom: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+        .filter-btn {
+            white-space: nowrap;
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--muted);
+            font-family: 'Nunito', sans-serif;
+            font-size: 12px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s;
+        }
+        .filter-btn.active {
+            border-color: var(--accent);
+            background: var(--accent-glow);
+            color: var(--accent);
+        }
+
+        /* Listing Detail / Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 200;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+        .modal {
+            width: 100%; max-width: 500px;
+            max-height: 90vh;
+            background: var(--surface);
+            border-radius: 20px 20px 0 0;
+            overflow-y: auto;
+            padding: 20px;
+            animation: slideUp 0.3s ease;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .modal-handle {
+            width: 40px; height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 0 auto 16px;
+        }
+        .modal h2 { font-size: 22px; margin-bottom: 16px; }
+        .modal-close {
+            position: absolute; top: 16px; right: 16px;
+            background: none; border: none;
+            color: var(--muted); cursor: pointer; font-size: 24px;
+        }
+
+        /* Empty States */
+        .empty-state {
+            text-align: center; padding: 60px 20px;
+            color: var(--muted);
+        }
+        .empty-state svg { width: 64px; height: 64px; opacity: 0.3; margin-bottom: 16px; }
+        .empty-state h3 { font-size: 18px; margin-bottom: 8px; color: var(--text); }
+        .empty-state p { font-size: 13px; line-height: 1.6; }
+
+        /* Full-width button */
+        .btn-full {
+            width: 100%; padding: 14px;
+            border-radius: var(--radius);
+            border: none;
+            background: var(--accent);
+            color: var(--bg);
+            font-family: 'Nunito', sans-serif;
+            font-weight: 800; font-size: 15px;
+            cursor: pointer; transition: all 0.2s;
+            display: flex; align-items: center;
+            justify-content: center; gap: 8px;
+        }
+        .btn-full:hover { background: var(--accent2); }
+        .btn-full.outline {
+            background: transparent;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+        .btn-full:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 90px;
+            left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--card);
+            border: 1px solid var(--accent);
+            color: var(--text);
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            font-weight: 700; font-size: 13px;
+            z-index: 300;
+            opacity: 0; transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Divider */
+        .divider {
+            display: flex; align-items: center; gap: 12px;
+            margin: 20px 0; color: var(--muted);
+            font-size: 11px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .divider::before, .divider::after {
+            content: ''; flex: 1; height: 1px;
+            background: var(--border);
+        }
+
+        /* Hipster decorative elements */
+        .stamp {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px;
+            border: 2px solid var(--accent);
+            border-radius: 4px;
+            font-size: 10px; font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--accent);
+            transform: rotate(-2deg);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+        /* Buyer form */
+        .buyer-form { margin-top: 16px; }
+        .buyer-form .field { margin-bottom: 12px; }
+
+        /* Profile section */
+        .profile-stat {
+            text-align: center; padding: 16px;
+            background: var(--card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+        .profile-stat .num {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px; font-weight: 900;
+            color: var(--accent);
+        }
+        .profile-stat .lbl {
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px; color: var(--muted);
+            margin-top: 2px;
+        }
+
+        /* Listing image gallery */
+        .listing-img {
+            width: 100%; aspect-ratio: 4/3;
+            object-fit: cover;
+            border-radius: var(--radius);
+            background: var(--card);
+            margin-bottom: 16px;
+        }
+        .listing-info { margin-bottom: 16px; }
+        .listing-info .price {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px; font-weight: 900;
+            color: var(--accent); margin-bottom: 4px;
+        }
+        .listing-info .title { font-size: 18px; font-weight: 800; margin-bottom: 4px; }
+        .listing-info .desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+        .seller-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px; background: var(--card);
+            border-radius: var(--radius); margin-bottom: 16px;
+        }
+        .seller-avatar {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: var(--accent-glow);
+            display: flex; align-items: center; justify-content: center;
+            color: var(--accent); font-weight: 900; font-size: 14px;
+        }
+        .seller-name { font-weight: 700; font-size: 13px; }
+        .seller-addr { font-size: 11px; color: var(--muted); font-family: monospace; }
+
+        /* Purchase flow steps */
+        .step-indicator {
+            display: flex; gap: 8px; margin-bottom: 20px;
+        }
+        .step-dot {
+            flex: 1; height: 3px;
+            background: var(--border); border-radius: 2px;
+        }
+        .step-dot.active { background: var(--accent); }
+        .step-dot.done { background: var(--green); }
+
+        .order-summary {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px; margin-bottom: 16px;
+        }
+        .order-row {
+            display: flex; justify-content: space-between;
+            padding: 6px 0; font-size: 13px;
+        }
+        .order-row.total {
+            border-top: 1px solid var(--border);
+            padding-top: 10px; margin-top: 4px;
+            font-weight: 800; font-size: 15px;
+            color: var(--accent);
+        }
+
+        @media (min-width: 600px) {
+            .tab-content { max-width: 540px; margin: 0 auto; }
+            .header { justify-content: center; gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+    <div class="brand">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Thrifts
+    </div>
+    <div class="header-actions">
+        <button class="icon-btn" onclick="showNotifications()" title="Notifications">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+        </button>
+    </div>
+</header>
+
+<!-- SCAN TAB -->
+<div id="tab-scan" class="tab-content active">
+    <div class="scan-hero">
+        <h2>Identify & Value</h2>
+        <p>Snap a photo, enter details, and discover what it's worth</p>
+    </div>
+
+    <div class="camera-zone" id="cameraZone" onclick="openCamera()">
+        <div class="camera-placeholder" id="cameraPlaceholder">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            <span style="font-weight:700;font-size:13px">Tap to scan item</span>
+        </div>
+        <video id="cameraVideo" autoplay playsinline style="display:none"></video>
+        <img id="capturedPhoto" style="display:none">
+    </div>
+
+    <div class="camera-actions">
+        <button class="cam-btn" onclick="openCamera()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Camera
+        </button>
+        <button class="cam-btn" onclick="uploadPhoto()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload
+        </button>
+        <button class="cam-btn primary" id="captureBtn" onclick="capturePhoto()" style="display:none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3" fill="currentColor"/></svg>
+            Capture
+        </button>
+    </div>
+    <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
+
+    <div class="divider">Item Details</div>
+
+    <div class="field">
+        <label>Item Name / Description</label>
+        <input type="text" id="itemName" placeholder="e.g. Pyrex mixing bowl, vintage Levi's jacket">
+    </div>
+    <div class="field-row">
+        <div class="field">
+            <label>Brand / Maker</label>
+            <input type="text" id="itemBrand" placeholder="e.g. Pyrex, Levi's">
+        </div>
+        <div class="field">
+            <label>Serial / Model #</label>
+            <input type="text" id="itemSerial" placeholder="Optional">
+        </div>
+    </div>
+    <div class="field">
+        <label>Category</label>
+        <select id="itemCategory">
+            <option value="">Select category...</option>
+            <option value="clothing">Clothing & Accessories</option>
+            <option value="furniture">Furniture</option>
+            <option value="electronics">Electronics</option>
+            <option value="kitchenware">Kitchenware & Home</option>
+            <option value="art">Art & Decor</option>
+            <option value="jewelry">Jewelry & Watches</option>
+            <option value="books">Books & Media</option>
+            <option value="toys">Toys & Games</option>
+            <option value="sports">Sports & Outdoors</option>
+            <option value="vintage">Vintage & Antiques</option>
+            <option value="other">Other</option>
+        </select>
+    </div>
+    <div class="field-row">
+        <div class="field">
+            <label>Condition</label>
+            <select id="itemCondition">
+                <option value="mint">Mint / NWT</option>
+                <option value="excellent">Excellent</option>
+                <option value="good" selected>Good</option>
+                <option value="fair">Fair</option>
+                <option value="poor">Poor / For Parts</option>
+            </select>
+        </div>
+        <div class="field">
+            <label>Era / Year</label>
+            <input type="text" id="itemEra" placeholder="e.g. 1970s">
+        </div>
+    </div>
+
+    <label style="display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;color:var(--muted);margin-bottom:8px">Markers Found</label>
+    <div class="tag-row" id="markerTags">
+        <span class="tag" data-tag="makers-mark" onclick="toggleTag(this)">Maker's Mark</span>
+        <span class="tag" data-tag="serial-number" onclick="toggleTag(this)">Serial Number</span>
+        <span class="tag" data-tag="patent-date" onclick="toggleTag(this)">Patent Date</span>
+        <span class="tag" data-tag="country-origin" onclick="toggleTag(this)">Country of Origin</span>
+        <span class="tag" data-tag="signature" onclick="toggleTag(this)">Signature</span>
+        <span class="tag" data-tag="label-tag" onclick="toggleTag(this)">Label/Tag</span>
+        <span class="tag" data-tag="hallmark" onclick="toggleTag(this)">Hallmark</span>
+        <span class="tag" data-tag="upc-barcode" onclick="toggleTag(this)">UPC/Barcode</span>
+    </div>
+
+    <div style="display:flex;gap:10px">
+        <button class="btn-full" onclick="lookupItem()" style="flex:1">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Text Search
+        </button>
+        <button class="btn-full" onclick="visualSearch()" style="flex:1;background:#4285f4">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            Photo Search
+        </button>
+    </div>
+
+    <!-- Lookup Results -->
+    <div class="lookup-section" id="lookupResults">
+        <h3>Estimated Value</h3>
+        <div class="value-card">
+            <div class="label">Market Range</div>
+            <div class="range" id="valueRange">$15 — $45</div>
+            <div class="note">Based on recent listings in similar condition</div>
+        </div>
+
+        <div id="visualResultsSection" style="display:none;margin-bottom:20px">
+            <h3 style="margin-bottom:12px">Visual Match</h3>
+            <div id="visualResults" style="margin-bottom:12px"></div>
+        </div>
+
+        <h3 style="margin-bottom:12px">Search Marketplaces</h3>
+        <div class="market-links" id="marketLinks"></div>
+
+        <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn-full outline" onclick="saveToFinds()" style="flex:1">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+                Save Find
+            </button>
+            <button class="btn-full" onclick="listForSale()" style="flex:1">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+                List for Sale
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- FINDS TAB -->
+<div id="tab-finds" class="tab-content">
+    <div class="section-header">
+        <h2>My Finds</h2>
+        <span class="stamp" id="findCount">0 Items</span>
+    </div>
+    <div id="findsList">
+        <div class="empty-state" id="findsEmpty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+            <h3>No finds yet</h3>
+            <p>Scan items in the Identify tab to start building your collection of finds.</p>
+        </div>
+    </div>
+</div>
+
+<!-- MARKET TAB -->
+<div id="tab-market" class="tab-content">
+    <div class="section-header">
+        <h2>Marketplace</h2>
+        <button class="cam-btn primary" onclick="switchTab('scan')" style="flex:none;padding:8px 16px">
+            + List Item
+        </button>
+    </div>
+    <div class="filter-bar" id="marketFilters">
+        <button class="filter-btn active" data-filter="all" onclick="filterMarket('all', this)">All</button>
+        <button class="filter-btn" data-filter="clothing" onclick="filterMarket('clothing', this)">Clothing</button>
+        <button class="filter-btn" data-filter="furniture" onclick="filterMarket('furniture', this)">Furniture</button>
+        <button class="filter-btn" data-filter="electronics" onclick="filterMarket('electronics', this)">Electronics</button>
+        <button class="filter-btn" data-filter="kitchenware" onclick="filterMarket('kitchenware', this)">Home</button>
+        <button class="filter-btn" data-filter="vintage" onclick="filterMarket('vintage', this)">Vintage</button>
+        <button class="filter-btn" data-filter="jewelry" onclick="filterMarket('jewelry', this)">Jewelry</button>
+        <button class="filter-btn" data-filter="art" onclick="filterMarket('art', this)">Art</button>
+    </div>
+    <div id="marketList">
+        <div class="empty-state" id="marketEmpty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+            <h3>Marketplace is empty</h3>
+            <p>Be the first to list an item! Scan something and tap "List for Sale" to get started.</p>
+        </div>
+    </div>
+</div>
+
+<!-- PROFILE TAB -->
+<div id="tab-profile" class="tab-content">
+    <div style="text-align:center;padding:24px 0 20px">
+        <div style="width:72px;height:72px;border-radius:50%;background:var(--accent-glow);border:2px solid var(--accent);display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </div>
+        <h2 id="profileName" style="font-size:22px;margin-bottom:2px">Thrifter</h2>
+        <p id="profileWallet" style="font-size:11px;color:var(--muted);font-family:monospace">Not connected</p>
+    </div>
+
+    <div class="grid-2" style="gap:10px;margin-bottom:20px">
+        <div class="profile-stat"><div class="num" id="statFinds">0</div><div class="lbl">Finds</div></div>
+        <div class="profile-stat"><div class="num" id="statListings">0</div><div class="lbl">Listings</div></div>
+        <div class="profile-stat"><div class="num" id="statPurchased">0</div><div class="lbl">Purchased</div></div>
+        <div class="profile-stat"><div class="num" id="statSpent">0</div><div class="lbl">CLAWS Spent</div></div>
+    </div>
+
+    <div class="field">
+        <label>Display Name</label>
+        <input type="text" id="displayName" placeholder="Your thrifter name" onchange="saveProfile()">
+    </div>
+
+    <div class="divider">Purchase History</div>
+    <div id="purchaseHistory">
+        <div class="empty-state" style="padding:30px 20px">
+            <p>No purchases yet.</p>
+        </div>
+    </div>
+
+    <div class="divider">Notifications</div>
+    <div id="notificationList">
+        <div class="empty-state" style="padding:30px 20px">
+            <p>No notifications.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+    <button class="nav-item active" data-tab="scan" onclick="switchTab('scan')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        Identify
+    </button>
+    <button class="nav-item" data-tab="finds" onclick="switchTab('finds')" style="position:relative">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+        Finds
+    </button>
+    <button class="nav-item" data-tab="market" onclick="switchTab('market')" style="position:relative">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+        Market
+    </button>
+    <button class="nav-item" data-tab="profile" onclick="switchTab('profile')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        Profile
+    </button>
+</nav>
+
+<!-- Listing Detail Modal -->
+<div class="modal-overlay" id="listingModal">
+    <div class="modal" id="listingModalContent"></div>
+</div>
+
+<!-- Sell Form Modal -->
+<div class="modal-overlay" id="sellModal">
+    <div class="modal">
+        <div class="modal-handle"></div>
+        <h2>List for Sale</h2>
+        <div id="sellPreview" style="margin-bottom:16px"></div>
+        <div class="field">
+            <label>Asking Price (CLAWS)</label>
+            <input type="number" id="sellPrice" placeholder="e.g. 100" min="1">
+        </div>
+        <div class="field">
+            <label>Description</label>
+            <textarea id="sellDescription" placeholder="Tell buyers about this item — condition, history, why it's special..."></textarea>
+        </div>
+        <div class="field">
+            <label>Shipping From (City, State)</label>
+            <input type="text" id="sellLocation" placeholder="e.g. Portland, OR">
+        </div>
+        <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn-full outline" onclick="closeSellModal()" style="flex:1">Cancel</button>
+            <button class="btn-full" onclick="confirmListing()" style="flex:1">List Item</button>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+    // ========== STATE ==========
+    let state = {
+        finds: [],
+        listings: [],
+        purchases: [],
+        notifications: [],
+        profile: { name: 'Thrifter', wallet: null },
+        stats: { finds: 0, listings: 0, sold: 0, purchased: 0, spent: 0 }
+    };
+    let currentPhoto = null;
+    let currentStream = null;
+    let pendingSellItem = null;
+    let currentMarketFilter = 'all';
+
+    // Generate a stable anonymous ID so users can manage their own listings without a wallet
+    function getAnonId() {
+        let id = localStorage.getItem('thrifts_anon_id');
+        if (!id) { id = 'anon_' + Date.now().toString(36) + Math.random().toString(36).slice(2,8); localStorage.setItem('thrifts_anon_id', id); }
+        return id;
+    }
+    function getSellerId() {
+        return state.profile.wallet || getAnonId();
+    }
+
+    // ========== PERSISTENCE ==========
+    const STORAGE_KEY = 'thrifts_data';
+
+    function saveState() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch(e) {}
+        // Also persist to AppDB if available
+        if (window.AppDB) {
+            window.AppDB.set(STORAGE_KEY, state).catch(() => {});
+        }
+    }
+
+    async function loadState() {
+        // Try AppDB first, fall back to localStorage
+        let data = null;
+        if (window.AppDB) {
+            try { data = await window.AppDB.get(STORAGE_KEY); } catch(e) {}
+        }
+        if (!data) {
+            try { data = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+        }
+        if (data) {
+            state = { ...state, ...data };
+        }
+        // Load global marketplace
+        if (window.AppDB) {
+            try {
+                const globalListings = await window.AppDB.getGlobal('thrifts_market');
+                if (globalListings) state.listings = globalListings;
+            } catch(e) {}
+        }
+
+        // Read wallet
+        const w = getWallet();
+        if (w) {
+            state.profile.wallet = w;
+        }
+    }
+
+    function getWallet() {
+        try {
+            const match = document.cookie.match(/inclawbate_token=([^;]+)/);
+            if (!match) return null;
+            const payload = JSON.parse(atob(decodeURIComponent(match[1]).split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+            return payload.wallet_address || null;
+        } catch { return null; }
+    }
+
+    async function saveMarketplace() {
+        if (window.AppDB) {
+            try { await window.AppDB.setGlobal('thrifts_market', state.listings); } catch(e) {}
+        }
+    }
+
+    // ========== NAVIGATION ==========
+    function switchTab(tab) {
+        // Stop camera when leaving scan tab
+        stopCamera();
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        document.querySelector(`.nav-item[data-tab="${tab}"]`).classList.add('active');
+
+        if (tab === 'finds') renderFinds();
+        if (tab === 'market') renderMarket();
+        if (tab === 'profile') renderProfile();
+    }
+
+    // ========== CAMERA ==========
+    async function openCamera() {
+        const video = document.getElementById('cameraVideo');
+        const placeholder = document.getElementById('cameraPlaceholder');
+        const capturedPhoto = document.getElementById('capturedPhoto');
+        const captureBtn = document.getElementById('captureBtn');
+        const zone = document.getElementById('cameraZone');
+
+        // Stop any existing stream
+        if (currentStream) {
+            currentStream.getTracks().forEach(t => t.stop());
+        }
+
+        try {
+            currentStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 960 } }
+            });
+            video.srcObject = currentStream;
+            video.style.display = 'block';
+            capturedPhoto.style.display = 'none';
+            placeholder.style.display = 'none';
+            captureBtn.style.display = 'flex';
+            zone.classList.remove('has-photo');
+        } catch(e) {
+            toast('Camera not available — try uploading a photo');
+        }
+    }
+
+    function capturePhoto() {
+        const video = document.getElementById('cameraVideo');
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
+        showCapturedPhoto(dataUrl);
+    }
+
+    function uploadPhoto() {
+        document.getElementById('fileInput').click();
+    }
+
+    function handleFileSelect(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (ev) => showCapturedPhoto(ev.target.result);
+        reader.readAsDataURL(file);
+        // Reset so selecting the same file again triggers onchange
+        e.target.value = '';
+    }
+
+    // Compress photo to stay under storage limits (~60KB target)
+    function compressPhoto(dataUrl, maxWidth = 600, quality = 0.6) {
+        return new Promise(resolve => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let w = img.width, h = img.height;
+                if (w > maxWidth) { h = Math.round(h * maxWidth / w); w = maxWidth; }
+                canvas.width = w; canvas.height = h;
+                canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+                resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = () => resolve(dataUrl);
+            img.src = dataUrl;
+        });
+    }
+
+    async function showCapturedPhoto(dataUrl) {
+        // Keep full-res for display/visual search, compress for storage
+        currentPhoto = dataUrl;
+        const video = document.getElementById('cameraVideo');
+        const capturedPhoto = document.getElementById('capturedPhoto');
+        const placeholder = document.getElementById('cameraPlaceholder');
+        const captureBtn = document.getElementById('captureBtn');
+        const zone = document.getElementById('cameraZone');
+
+        stopCamera();
+        video.style.display = 'none';
+        capturedPhoto.src = dataUrl;
+        capturedPhoto.style.display = 'block';
+        placeholder.style.display = 'none';
+        captureBtn.style.display = 'none';
+        zone.classList.add('has-photo');
+        toast('Photo captured!');
+    }
+
+    function stopCamera() {
+        if (currentStream) {
+            currentStream.getTracks().forEach(t => t.stop());
+            currentStream = null;
+        }
+    }
+
+    // ========== TAGS ==========
+    function toggleTag(el) {
+        el.classList.toggle('active');
+    }
+    function getActiveTags() {
+        return [...document.querySelectorAll('#markerTags .tag.active')].map(t => t.dataset.tag);
+    }
+
+    // ========== LOOKUP ==========
+    // ========== VISUAL SEARCH ==========
+    function dataURLtoBlob(dataUrl) {
+        const parts = dataUrl.split(',');
+        const mime = parts[0].match(/:(.*?);/)[1];
+        const binary = atob(parts[1]);
+        const arr = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) arr[i] = binary.charCodeAt(i);
+        return new Blob([arr], { type: mime });
+    }
+
+    function visualSearch() {
+        if (!currentPhoto) {
+            toast('Take or upload a photo first');
+            return;
+        }
+
+        const blob = dataURLtoBlob(currentPhoto);
+        let submitted = false;
+
+        // Try DataTransfer approach (Chrome, Firefox, Safari 14.1+)
+        try {
+            const w = window.open('', '_blank');
+            if (!w) { toast('Allow popups to use photo search'); return; }
+            w.document.write('<!DOCTYPE html><html><head><title>Searching...</title>' +
+                '<style>body{background:#06060b;color:#e2e8f0;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}' +
+                '.spin{width:40px;height:40px;border:3px solid #1e1e2e;border-top-color:#c8a96e;border-radius:50%;animation:s 0.8s linear infinite}' +
+                '@keyframes s{to{transform:rotate(360deg)}}</style></head>' +
+                '<body><div style="text-align:center"><div class="spin" style="margin:0 auto 16px"></div><p>Opening Google Lens...</p></div></body></html>');
+
+            const dt = new w.DataTransfer();
+            dt.items.add(new w.File([blob], 'thrifts-scan.jpg', { type: 'image/jpeg' }));
+            const form = w.document.createElement('form');
+            form.method = 'POST';
+            form.enctype = 'multipart/form-data';
+            form.action = 'https://lens.google.com/v3/upload?hl=en';
+            const input = w.document.createElement('input');
+            input.type = 'file'; input.name = 'encoded_image';
+            input.files = dt.files; input.style.display = 'none';
+            form.appendChild(input);
+            w.document.body.appendChild(form);
+            form.submit();
+            submitted = true;
+        } catch(e) {
+            // Fallback: download photo + open Google Lens manually
+            downloadScanPhoto(null);
+            window.open('https://lens.google.com/', '_blank');
+            toast('Photo saved — upload it to Google Lens');
+            submitted = true;
+        }
+
+        // Show results section
+        document.getElementById('lookupResults').classList.add('show');
+        document.getElementById('visualResultsSection').style.display = 'block';
+        const vrEl = document.getElementById('visualResults');
+        vrEl.innerHTML = '';
+
+        const card = document.createElement('div');
+        card.className = 'value-card';
+        card.style.textAlign = 'left';
+
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:12px;margin-bottom:10px';
+        const thumb = document.createElement('img');
+        thumb.src = sanitizeDataUrl(currentPhoto);
+        thumb.style.cssText = 'width:50px;height:50px;object-fit:cover;border-radius:8px';
+        const info = document.createElement('div');
+        info.innerHTML = '<div style="font-weight:800;font-size:14px;color:var(--text)">Photo sent to Google Lens</div><div style="font-size:12px;color:var(--muted)">Results opened in new tab</div>';
+        row.append(thumb, info);
+        card.appendChild(row);
+
+        const links = document.createElement('div');
+        links.className = 'market-links';
+        links.style.margin = '0';
+        links.innerHTML = '<a class="market-link" href="#" onclick="reSearchLens(event)"><span class="ml-name">Google Lens</span><span class="ml-sub">Re-search photo</span></a>' +
+            '<a class="market-link" href="#" onclick="downloadScanPhoto(event)"><span class="ml-name">Save Photo</span><span class="ml-sub">Download for manual search</span></a>';
+        card.appendChild(links);
+        vrEl.appendChild(card);
+
+        if (submitted) toast('Google Lens opened in new tab');
+    }
+
+    function reSearchLens(e) {
+        e.preventDefault();
+        visualSearch();
+    }
+
+    function downloadScanPhoto(e) {
+        e.preventDefault();
+        if (!currentPhoto) return;
+        const a = document.createElement('a');
+        a.href = currentPhoto;
+        a.download = 'thrifts-scan-' + Date.now() + '.jpg';
+        a.click();
+        toast('Photo saved — upload to any visual search');
+    }
+
+    function lookupItem() {
+        const name = document.getElementById('itemName').value.trim();
+        const brand = document.getElementById('itemBrand').value.trim();
+        const serial = document.getElementById('itemSerial').value.trim();
+        const category = document.getElementById('itemCategory').value;
+        const condition = document.getElementById('itemCondition').value;
+        const era = document.getElementById('itemEra').value.trim();
+
+        if (!name && !brand) {
+            if (currentPhoto) {
+                toast('No text entered — launching photo search');
+                visualSearch();
+                return;
+            }
+            toast('Enter item details or take a photo');
+            return;
+        }
+
+        const query = [brand, name, serial, era].filter(Boolean).join(' ');
+        const encoded = encodeURIComponent(query);
+
+        // Generate value estimate based on category/condition
+        const baseValues = {
+            clothing: [8, 120], furniture: [15, 500], electronics: [10, 300],
+            kitchenware: [5, 80], art: [20, 800], jewelry: [15, 2000],
+            books: [3, 50], toys: [5, 200], sports: [10, 150],
+            vintage: [20, 500], other: [5, 100], '': [10, 200]
+        };
+        const condMult = { mint: 1.5, excellent: 1.2, good: 1, fair: 0.7, poor: 0.4 };
+        const [lo, hi] = baseValues[category] || baseValues[''];
+        const mult = condMult[condition] || 1;
+        const eraMult = era && parseInt(era) < 1980 ? 1.4 : era && parseInt(era) < 2000 ? 1.1 : 1;
+        const low = Math.round(lo * mult * eraMult);
+        const high = Math.round(hi * mult * eraMult);
+        document.getElementById('valueRange').textContent = `$${low} — $${high}`;
+
+        // Build marketplace search links
+        const markets = [
+            { name: 'eBay', sub: 'Auction & Buy Now', url: `https://www.ebay.com/sch/i.html?_nkw=${encoded}` },
+            { name: 'Mercari', sub: 'Buy & Sell', url: `https://www.mercari.com/search/?keyword=${encoded}` },
+            { name: 'Poshmark', sub: 'Fashion & Home', url: `https://poshmark.com/search?query=${encoded}` },
+            { name: 'Etsy', sub: 'Vintage & Handmade', url: `https://www.etsy.com/search?q=${encoded}` },
+            { name: 'Depop', sub: 'Streetwear & Vintage', url: `https://www.depop.com/search/?q=${encoded}` },
+            { name: 'Facebook', sub: 'Marketplace', url: `https://www.facebook.com/marketplace/search/?query=${encoded}` },
+            { name: 'Craigslist', sub: 'Local Listings', url: `https://www.craigslist.org/search/sss?query=${encoded}` },
+            { name: 'Google', sub: 'Shopping', url: `https://www.google.com/search?tbm=shop&q=${encoded}` },
+        ];
+        const linksEl = document.getElementById('marketLinks');
+        linksEl.innerHTML = markets.map(m => `
+            <a class="market-link" href="${m.url}" target="_blank" rel="noopener">
+                <span class="ml-name">${m.name}</span>
+                <span class="ml-sub">${m.sub}</span>
+            </a>
+        `).join('');
+
+        document.getElementById('lookupResults').classList.add('show');
+        document.getElementById('lookupResults').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // ========== SAVE FIND ==========
+    async function saveToFinds() {
+        const item = await gatherCurrentItem();
+        if (!item.name && !item.brand) { toast('Enter item details first'); return; }
+        item.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        item.savedAt = new Date().toISOString();
+        state.finds.unshift(item);
+        state.stats.finds = state.finds.length;
+        saveState();
+        toast('Saved to your finds!');
+    }
+
+    async function gatherCurrentItem() {
+        // Compress photo for storage to stay under localStorage/AppDB limits
+        const photo = currentPhoto ? await compressPhoto(currentPhoto) : null;
+        return {
+            name: document.getElementById('itemName').value.trim(),
+            brand: document.getElementById('itemBrand').value.trim(),
+            serial: document.getElementById('itemSerial').value.trim(),
+            category: document.getElementById('itemCategory').value,
+            condition: document.getElementById('itemCondition').value,
+            era: document.getElementById('itemEra').value.trim(),
+            tags: getActiveTags(),
+            photo,
+            valueRange: document.getElementById('valueRange')?.textContent || ''
+        };
+    }
+
+    // ========== FINDS RENDERING ==========
+    function renderFinds() {
+        const container = document.getElementById('findsList');
+        document.getElementById('findCount').textContent = state.finds.length + ' Item' + (state.finds.length !== 1 ? 's' : '');
+
+        // Rebuild: empty state + cards, so the empty div is never destroyed
+        const emptyHtml = `<div class="empty-state" id="findsEmpty" style="${state.finds.length > 0 ? 'display:none' : ''}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+            <h3>No finds yet</h3>
+            <p>Scan items in the Identify tab to start building your collection of finds.</p>
+        </div>`;
+
+        const cardsHtml = state.finds.map(item => {
+            const photoAttr = item.photo ? ` src="${sanitizeDataUrl(item.photo)}"` : '';
+            return `<div class="card">
+                ${item.photo ? `<img class="card-img"${photoAttr} alt="${esc(item.name)}">` : ''}
+                <div class="card-body">
+                    <div class="card-title">${esc(item.name || 'Unnamed Item')}</div>
+                    <div class="card-meta">${esc(item.brand || '')} ${item.era ? '· ' + esc(item.era) : ''} · ${conditionLabel(item.condition)}</div>
+                    ${item.valueRange ? `<div class="card-price">${esc(item.valueRange)}</div>` : ''}
+                    <div class="card-tags">
+                        ${item.category ? `<span class="card-tag">${esc(item.category)}</span>` : ''}
+                        ${(item.tags || []).map(t => `<span class="card-tag">${esc(t)}</span>`).join('')}
+                    </div>
+                    <div class="card-actions">
+                        <button onclick="deleteFind('${item.id}')">Remove</button>
+                        <button onclick="relookup('${item.id}')">Re-Lookup</button>
+                        <button class="sell-btn" onclick="listFindForSale('${item.id}')">Sell</button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
+        container.innerHTML = emptyHtml + cardsHtml;
+    }
+
+    function deleteFind(id) {
+        state.finds = state.finds.filter(f => f.id !== id);
+        state.stats.finds = state.finds.length;
+        saveState();
+        renderFinds();
+        toast('Removed from finds');
+    }
+
+    function relookup(id) {
+        const item = state.finds.find(f => f.id === id);
+        if (!item) return;
+        document.getElementById('itemName').value = item.name || '';
+        document.getElementById('itemBrand').value = item.brand || '';
+        document.getElementById('itemSerial').value = item.serial || '';
+        document.getElementById('itemCategory').value = item.category || '';
+        document.getElementById('itemCondition').value = item.condition || 'good';
+        document.getElementById('itemEra').value = item.era || '';
+        if (item.photo) showCapturedPhoto(item.photo);
+        switchTab('scan');
+        setTimeout(() => lookupItem(), 200);
+    }
+
+    // ========== SELL FLOW ==========
+    async function listForSale() {
+        const item = await gatherCurrentItem();
+        if (!item.name) { toast('Enter item details first'); return; }
+        pendingSellItem = item;
+        openSellModal(item);
+    }
+
+    function listFindForSale(id) {
+        const item = state.finds.find(f => f.id === id);
+        if (!item) return;
+        pendingSellItem = { ...item };
+        openSellModal(item);
+    }
+
+    function openSellModal(item) {
+        document.getElementById('sellPreview').innerHTML = `
+            <div style="display:flex;gap:12px;align-items:center">
+                ${item.photo ? `<img src="${sanitizeDataUrl(item.photo)}" style="width:60px;height:60px;object-fit:cover;border-radius:8px">` : ''}
+                <div>
+                    <div style="font-weight:800">${esc(item.name || 'Unnamed Item')}</div>
+                    <div style="font-size:12px;color:var(--muted)">${esc(item.brand || '')} · ${conditionLabel(item.condition)}</div>
+                </div>
+            </div>
+        `;
+        document.getElementById('sellModal').classList.add('open');
+    }
+
+    function closeSellModal() {
+        document.getElementById('sellModal').classList.remove('open');
+        pendingSellItem = null;
+    }
+
+    async function confirmListing() {
+        const price = parseInt(document.getElementById('sellPrice').value);
+        if (!price || price < 1) { toast('Enter a valid price'); return; }
+        const desc = document.getElementById('sellDescription').value.trim();
+        const location = document.getElementById('sellLocation').value.trim();
+
+        const listing = {
+            ...pendingSellItem,
+            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+            price,
+            description: desc,
+            location,
+            seller: getSellerId(),
+            sellerName: state.profile.name || 'Thrifter',
+            listedAt: new Date().toISOString(),
+            status: 'active'
+        };
+
+        state.listings.unshift(listing);
+        state.stats.listings++;
+        saveState();
+        await saveMarketplace();
+        closeSellModal();
+        toast('Listed on the marketplace!');
+        document.getElementById('sellPrice').value = '';
+        document.getElementById('sellDescription').value = '';
+        document.getElementById('sellLocation').value = '';
+    }
+
+    // ========== MARKETPLACE ==========
+    function renderMarket() {
+        const container = document.getElementById('marketList');
+        let items = state.listings.filter(l => l.status === 'active');
+        if (currentMarketFilter !== 'all') {
+            items = items.filter(l => l.category === currentMarketFilter);
+        }
+
+        const emptyHtml = `<div class="empty-state" style="${items.length > 0 ? 'display:none' : ''}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+            <h3>Marketplace is empty</h3>
+            <p>Be the first to list an item! Scan something and tap "List for Sale" to get started.</p>
+        </div>`;
+
+        const cardsHtml = items.map(item => {
+            const photoAttr = item.photo ? ` src="${sanitizeDataUrl(item.photo)}"` : '';
+            return `<div class="card" onclick="openListing('${item.id}')" style="cursor:pointer">
+                ${item.photo ? `<img class="card-img"${photoAttr} alt="${esc(item.name)}">` : ''}
+                <div class="card-body">
+                    <div style="display:flex;justify-content:space-between;align-items:start">
+                        <div>
+                            <div class="card-title">${esc(item.name || 'Unnamed Item')}</div>
+                            <div class="card-meta">${esc(item.brand || '')} · ${conditionLabel(item.condition)} ${item.location ? '· ' + esc(item.location) : ''}</div>
+                        </div>
+                        <div class="card-price">${esc(String(item.price))} <span style="font-size:11px;font-weight:600">CLAWS</span></div>
+                    </div>
+                    <div class="card-tags">
+                        ${item.category ? `<span class="card-tag">${esc(item.category)}</span>` : ''}
+                        ${item.era ? `<span class="card-tag">${esc(item.era)}</span>` : ''}
+                    </div>
+                    <div style="margin-top:8px;font-size:11px;color:var(--muted)">
+                        Listed by ${esc(item.sellerName || 'Anonymous')} · ${timeAgo(item.listedAt)}
+                    </div>
+                </div>
+            </div>`;
+        }).join('');
+
+        container.innerHTML = emptyHtml + cardsHtml;
+    }
+
+    function filterMarket(filter, btn) {
+        currentMarketFilter = filter;
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderMarket();
+    }
+
+    function openListing(id) {
+        const item = state.listings.find(l => l.id === id);
+        if (!item) return;
+        const isMine = item.seller === getSellerId();
+        const modal = document.getElementById('listingModalContent');
+        modal.innerHTML = `
+            <div class="modal-handle"></div>
+            ${item.photo ? `<img class="listing-img" src="${sanitizeDataUrl(item.photo)}" alt="${esc(item.name)}">` : ''}
+            <div class="listing-info">
+                <div class="price">${esc(String(item.price))} CLAWS</div>
+                <div class="title">${esc(item.name || 'Unnamed Item')}</div>
+                <div class="desc">${esc(item.description || 'No description provided.')}</div>
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+                ${item.brand ? `<span class="card-tag">${esc(item.brand)}</span>` : ''}
+                ${item.category ? `<span class="card-tag">${esc(item.category)}</span>` : ''}
+                <span class="card-tag">${conditionLabel(item.condition)}</span>
+                ${item.era ? `<span class="card-tag">${esc(item.era)}</span>` : ''}
+                ${item.location ? `<span class="card-tag">Ships from ${esc(item.location)}</span>` : ''}
+            </div>
+            <div class="seller-row">
+                <div class="seller-avatar">${(item.sellerName || 'T')[0].toUpperCase()}</div>
+                <div>
+                    <div class="seller-name">${esc(item.sellerName || 'Anonymous')}</div>
+                    <div class="seller-addr">${item.seller && item.seller.startsWith('0x') ? item.seller.slice(0,6) + '...' + item.seller.slice(-4) : 'Local seller'}</div>
+                </div>
+            </div>
+            ${isMine ? `
+                <button class="btn-full" style="background:var(--red);margin-bottom:10px" onclick="removeListing('${item.id}')">Remove Listing</button>
+            ` : `
+                <div id="buyFlow_${item.id}">
+                    <button class="btn-full" onclick="startBuy('${item.id}')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        Buy for ${item.price} CLAWS
+                    </button>
+                </div>
+            `}
+            <button class="btn-full outline" onclick="closeListingModal()" style="margin-top:8px">Close</button>
+        `;
+        document.getElementById('listingModal').classList.add('open');
+    }
+
+    function closeListingModal() {
+        document.getElementById('listingModal').classList.remove('open');
+    }
+
+    async function removeListing(id) {
+        state.listings = state.listings.filter(l => l.id !== id);
+        state.stats.listings = Math.max(0, state.stats.listings - 1);
+        saveState();
+        await saveMarketplace();
+        closeListingModal();
+        renderMarket();
+        toast('Listing removed');
+    }
+
+    // ========== BUY FLOW ==========
+    function startBuy(id) {
+        const item = state.listings.find(l => l.id === id);
+        if (!item) return;
+        const container = document.getElementById('buyFlow_' + id);
+        container.innerHTML = `
+            <div class="step-indicator">
+                <div class="step-dot active"></div>
+                <div class="step-dot"></div>
+                <div class="step-dot"></div>
+            </div>
+            <h3 style="font-family:'Playfair Display',serif;margin-bottom:12px">Shipping Details</h3>
+            <div class="buyer-form">
+                <div class="field">
+                    <label>Full Name</label>
+                    <input type="text" id="buyerName_${id}" placeholder="Your full name">
+                </div>
+                <div class="field">
+                    <label>Street Address</label>
+                    <input type="text" id="buyerAddr_${id}" placeholder="123 Main St, Apt 4">
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>City</label>
+                        <input type="text" id="buyerCity_${id}" placeholder="City">
+                    </div>
+                    <div class="field">
+                        <label>State</label>
+                        <input type="text" id="buyerState_${id}" placeholder="State">
+                    </div>
+                </div>
+                <div class="field-row">
+                    <div class="field">
+                        <label>ZIP Code</label>
+                        <input type="text" id="buyerZip_${id}" placeholder="ZIP">
+                    </div>
+                    <div class="field">
+                        <label>Country</label>
+                        <input type="text" id="buyerCountry_${id}" placeholder="US" value="US">
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Email (for tracking)</label>
+                    <input type="email" id="buyerEmail_${id}" placeholder="you@email.com">
+                </div>
+            </div>
+            <button class="btn-full" onclick="confirmBuy('${id}')">Continue to Payment</button>
+        `;
+    }
+
+    // Store pending shipping data in memory instead of serializing into onclick
+    let pendingShipping = {};
+
+    async function confirmBuy(id) {
+        const item = state.listings.find(l => l.id === id);
+        if (!item) return;
+
+        const name = document.getElementById('buyerName_' + id)?.value.trim();
+        const addr = document.getElementById('buyerAddr_' + id)?.value.trim();
+        const city = document.getElementById('buyerCity_' + id)?.value.trim();
+        const st = document.getElementById('buyerState_' + id)?.value.trim();
+        const zip = document.getElementById('buyerZip_' + id)?.value.trim();
+        const country = document.getElementById('buyerCountry_' + id)?.value.trim();
+        const email = document.getElementById('buyerEmail_' + id)?.value.trim();
+
+        if (!name || !addr || !city || !st || !zip) {
+            toast('Please fill in all shipping fields');
+            return;
+        }
+
+        pendingShipping[id] = { name, addr, city, state: st, zip, country, email };
+
+        const container = document.getElementById('buyFlow_' + id);
+        container.innerHTML = `
+            <div class="step-indicator">
+                <div class="step-dot done"></div>
+                <div class="step-dot active"></div>
+                <div class="step-dot"></div>
+            </div>
+            <h3 style="font-family:'Playfair Display',serif;margin-bottom:12px">Order Summary</h3>
+            <div class="order-summary">
+                <div class="order-row"><span>${esc(item.name)}</span><span>${esc(String(item.price))} CLAWS</span></div>
+                <div class="order-row"><span>Shipping</span><span>Included</span></div>
+                <div class="order-row total"><span>Total</span><span>${esc(String(item.price))} CLAWS</span></div>
+            </div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:12px">
+                Shipping to: ${esc(name)}, ${esc(addr)}, ${esc(city)}, ${esc(st)} ${esc(zip)}
+            </div>
+            <button class="btn-full" onclick="executePay('${item.id}')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                Pay ${esc(String(item.price))} CLAWS
+            </button>
+        `;
+    }
+
+    async function executePay(id) {
+        const item = state.listings.find(l => l.id === id);
+        if (!item) return;
+        const shipping = pendingShipping[id];
+        if (!shipping) { toast('Shipping data lost — please try again'); startBuy(id); return; }
+
+        const container = document.getElementById('buyFlow_' + id);
+
+        // Try CLAWS payment
+        if (window.CLAWS) {
+            try {
+                container.innerHTML = `
+                    <div class="step-indicator">
+                        <div class="step-dot done"></div>
+                        <div class="step-dot done"></div>
+                        <div class="step-dot active"></div>
+                    </div>
+                    <div style="text-align:center;padding:20px">
+                        <p style="font-weight:700;margin-bottom:8px">Waiting for wallet confirmation...</p>
+                        <p style="font-size:12px;color:var(--muted)">Approve the transaction in your wallet</p>
+                    </div>
+                `;
+                const txHash = await window.CLAWS.pay(item.price, item.seller);
+                completePurchase(id, shipping, txHash);
+            } catch(e) {
+                container.innerHTML = `
+                    <div style="text-align:center;padding:20px">
+                        <p style="color:var(--red);font-weight:700;margin-bottom:8px">Payment failed</p>
+                        <p style="font-size:12px;color:var(--muted)">${esc(e.message || 'Transaction was rejected')}</p>
+                        <button class="btn-full outline" onclick="startBuy('${id}')" style="margin-top:12px">Try Again</button>
+                    </div>
+                `;
+            }
+        } else {
+            // Dev mode — simulate payment
+            completePurchase(id, shipping, 'dev_' + Date.now().toString(36));
+        }
+    }
+
+    function completePurchase(id, shipping, txHash) {
+        const item = state.listings.find(l => l.id === id);
+        if (!item) return;
+
+        // Mark as sold
+        item.status = 'sold';
+        item.buyer = getSellerId();
+        item.buyerShipping = shipping;
+        item.txHash = txHash;
+        item.soldAt = new Date().toISOString();
+
+        // Add to purchases
+        state.purchases.unshift({
+            listingId: id,
+            item: { ...item },
+            shipping,
+            txHash,
+            purchasedAt: new Date().toISOString()
+        });
+        state.stats.spent += item.price;
+        state.stats.purchased = (state.stats.purchased || 0) + 1;
+
+        // Add notification for seller
+        state.notifications.unshift({
+            id: Date.now().toString(36),
+            type: 'sale',
+            message: `Your "${item.name}" sold for ${item.price} CLAWS!`,
+            time: new Date().toISOString(),
+            read: false
+        });
+
+        saveState();
+        saveMarketplace();
+
+        const container = document.getElementById('buyFlow_' + id);
+        container.innerHTML = `
+            <div class="step-indicator">
+                <div class="step-dot done"></div>
+                <div class="step-dot done"></div>
+                <div class="step-dot done"></div>
+            </div>
+            <div style="text-align:center;padding:20px">
+                <div style="font-size:48px;margin-bottom:12px">&#10003;</div>
+                <h3 style="font-family:'Playfair Display',serif;color:var(--green);margin-bottom:8px">Purchase Complete!</h3>
+                <p style="font-size:12px;color:var(--muted);margin-bottom:8px">
+                    The seller has been notified and will ship to your address.
+                </p>
+                <p style="font-size:11px;color:var(--muted);font-family:monospace">
+                    TX: ${txHash.slice(0, 12)}...
+                </p>
+            </div>
+        `;
+        toast('Purchase complete!');
+    }
+
+    // ========== PROFILE ==========
+    function renderProfile() {
+        document.getElementById('profileName').textContent = state.profile.name || 'Thrifter';
+        document.getElementById('displayName').value = state.profile.name || '';
+        document.getElementById('profileWallet').textContent = state.profile.wallet
+            ? state.profile.wallet.slice(0,6) + '...' + state.profile.wallet.slice(-4)
+            : 'Not connected';
+        document.getElementById('statFinds').textContent = state.stats.finds;
+        document.getElementById('statListings').textContent = state.stats.listings;
+        document.getElementById('statPurchased').textContent = state.stats.purchased || 0;
+        document.getElementById('statSpent').textContent = state.stats.spent;
+
+        // Purchase history
+        const ph = document.getElementById('purchaseHistory');
+        if (state.purchases.length > 0) {
+            ph.innerHTML = state.purchases.map(p => `
+                <div class="card" style="margin-bottom:8px">
+                    <div class="card-body" style="padding:12px">
+                        <div style="display:flex;justify-content:space-between;align-items:center">
+                            <div>
+                                <div style="font-weight:800;font-size:14px">${esc(p.item.name)}</div>
+                                <div style="font-size:11px;color:var(--muted)">${timeAgo(p.purchasedAt)}</div>
+                            </div>
+                            <div style="font-weight:900;color:var(--accent)">${p.item.price} CLAWS</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Notifications
+        const nl = document.getElementById('notificationList');
+        if (state.notifications.length > 0) {
+            nl.innerHTML = state.notifications.map(n => `
+                <div class="card" style="margin-bottom:8px;${!n.read ? 'border-color:var(--accent)' : ''}">
+                    <div class="card-body" style="padding:12px">
+                        <div style="font-size:13px;${!n.read ? 'font-weight:800' : ''}">${esc(n.message)}</div>
+                        <div style="font-size:11px;color:var(--muted);margin-top:4px">${timeAgo(n.time)}</div>
+                    </div>
+                </div>
+            `).join('');
+            // Mark all as read
+            state.notifications.forEach(n => n.read = true);
+            saveState();
+        }
+    }
+
+    function saveProfile() {
+        state.profile.name = document.getElementById('displayName').value.trim() || 'Thrifter';
+        saveState();
+        toast('Profile saved');
+    }
+
+    function showNotifications() {
+        switchTab('profile');
+    }
+
+    // ========== UTILITIES ==========
+    function esc(s) {
+        const d = document.createElement('div');
+        d.textContent = s || '';
+        return d.innerHTML;
+    }
+
+    // Sanitize data URLs to prevent XSS via img src injection
+    function sanitizeDataUrl(url) {
+        if (!url) return '';
+        // Only allow data:image/* URLs or valid http(s) URLs
+        if (/^data:image\/[a-zA-Z+]+;base64,/.test(url)) return url;
+        if (/^https?:\/\//.test(url)) return esc(url);
+        return '';
+    }
+
+    function conditionLabel(c) {
+        const labels = { mint: 'Mint', excellent: 'Excellent', good: 'Good', fair: 'Fair', poor: 'Poor' };
+        return labels[c] || 'Good';
+    }
+
+    function timeAgo(iso) {
+        if (!iso) return '';
+        const diff = Date.now() - new Date(iso).getTime();
+        const mins = Math.floor(diff / 60000);
+        if (mins < 1) return 'just now';
+        if (mins < 60) return mins + 'm ago';
+        const hrs = Math.floor(mins / 60);
+        if (hrs < 24) return hrs + 'h ago';
+        const days = Math.floor(hrs / 24);
+        if (days < 30) return days + 'd ago';
+        return Math.floor(days / 30) + 'mo ago';
+    }
+
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2500);
+    }
+
+    // ========== INIT ==========
+    (async function init() {
+        await loadState();
+        renderFinds();
+        renderMarket();
+        renderProfile();
+
+        // Close modals on overlay click
+        document.getElementById('listingModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeListingModal();
+        });
+        document.getElementById('sellModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeSellModal();
+        });
+    })();
+</script>
+</body>
+</html>

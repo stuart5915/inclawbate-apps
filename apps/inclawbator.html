@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inclawbator</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ═══ DESIGN TOKENS ═══ */
+:root {
+    --bg: #06060b;
+    --surface: #0a0a11;
+    --elevated: #101018;
+    --card: #15151e;
+    --card-hover: #1b1b26;
+    --border-s: hsl(240,4%,16%);
+    --border: hsl(240,3%,22%);
+    --border-b: hsl(240,2%,30%);
+    --accent: hsl(9,52%,56%);
+    --accent-light: hsl(11,48%,78%);
+    --accent-mid: hsl(10,46%,66%);
+    --accent-dark: hsl(8,48%,46%);
+    --accent-glow: hsla(9,60%,54%,0.18);
+    --accent-soft: hsla(9,52%,56%,0.1);
+    --accent-grad: linear-gradient(135deg, hsl(9,52%,56%), hsl(18,60%,62%));
+    --seafoam: hsl(172,32%,48%);
+    --seafoam-soft: hsla(172,32%,48%,0.1);
+    --sand: hsl(30,30%,54%);
+    --sand-soft: hsla(30,30%,54%,0.1);
+    --blue: hsl(210,28%,54%);
+    --red: hsl(0,68%,56%);
+    --green: hsl(152,50%,50%);
+    --green-soft: hsla(152,50%,50%,0.1);
+    --text: hsl(12,8%,92%);
+    --text2: hsl(12,4%,58%);
+    --text3: hsl(12,2%,42%);
+    --title-grad: linear-gradient(135deg, #f0ece6 0%, #d4a574 40%, #c75b3f 65%, #e8b4a0 100%);
+    --font: 'Nunito', system-ui, sans-serif;
+    --mono: 'JetBrains Mono', 'Courier New', monospace;
+    --r: 14px;
+    --r-sm: 10px;
+    --r-xs: 6px;
+    --r-full: 50px;
+    --nav-h: 60px;
+    --ease: cubic-bezier(0.16,1,0.3,1);
+}
+
+/* ═══ ANIMATIONS ═══ */
+@keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+@keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+@keyframes dotBounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+@keyframes gradShift { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+
+/* ═══ RESET ═══ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;}
+body{background:radial-gradient(ellipse at 20% 10%,hsla(9,40%,20%,0.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,hsla(172,30%,30%,0.04) 0%,transparent 40%),var(--bg);}
+a{color:var(--accent);text-decoration:none;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+::selection{background:hsla(9,52%,56%,0.25);color:#fff;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:hsla(9,52%,56%,0.15);border-radius:3px;}
+
+/* ═══ HEADER ═══ */
+.hdr{position:sticky;top:0;z-index:100;height:var(--nav-h);display:flex;align-items:center;padding:0 24px;background:rgba(6,6,11,0.8);backdrop-filter:blur(20px) saturate(1.6);border-bottom:1px solid var(--border-s);}
+.hdr-logo{display:flex;align-items:center;gap:10px;font-weight:900;font-size:18px;letter-spacing:-0.03em;user-select:none;}
+.hdr-logo span{background:var(--title-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hdr-spacer{flex:1;}
+.hdr-actions{display:flex;align-items:center;gap:12px;}
+.hdr-link{font-size:13px;font-weight:700;color:var(--text3);transition:color 0.2s;}
+.hdr-link:hover{color:var(--text);}
+
+/* Mode Toggle */
+.mode-sw{display:flex;background:var(--elevated);border:1px solid var(--border-s);border-radius:var(--r-full);padding:3px;position:relative;}
+.ms-btn{padding:7px 20px;border:none;background:none;color:var(--text3);font-size:12px;font-weight:700;border-radius:var(--r-full);position:relative;z-index:2;transition:color 0.3s;}
+.ms-btn.on{color:var(--text);}
+.ms-ind{position:absolute;top:3px;left:3px;height:calc(100% - 6px);width:calc(50% - 3px);background:var(--accent-grad);border-radius:var(--r-full);transition:transform 0.35s var(--ease);z-index:1;}
+.ms-ind.right{transform:translateX(100%);}
+
+/* Wallet Button */
+.wall-btn{padding:8px 18px;border:1px solid var(--border);border-radius:var(--r-full);background:transparent;color:var(--text2);font-size:12px;font-weight:700;transition:all 0.2s;}
+.wall-btn:hover{border-color:var(--accent);color:var(--text);background:var(--accent-soft);}
+.wall-btn.on{border-color:var(--seafoam);color:var(--seafoam);background:var(--seafoam-soft);}
+.wall-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--seafoam);margin-right:6px;}
+
+/* ═══ MODES ═══ */
+.mode{display:none;}
+.mode.on{display:flex;flex-direction:column;animation:fadeIn 0.3s ease;}
+.hidden{display:none!important;}
+
+/* ═══ SIMPLE MODE ═══ */
+.simple{height:calc(100vh - var(--nav-h));flex-direction:column;overflow:hidden;}
+.simple-landing{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 24px 0;padding-top:calc(15vh - 40px);text-align:center;animation:fadeUp 0.5s var(--ease);}
+.landing-title{font-size:clamp(22px,3vw,30px);font-weight:900;letter-spacing:-0.04em;background:var(--title-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px;line-height:1.15;}
+.landing-sub{font-size:13px;color:var(--text2);font-weight:600;margin-bottom:20px;}
+
+/* Preset Cards */
+.preset-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:620px;width:100%;}
+.preset-card{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 10px;background:rgba(21,21,30,0.35);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r-sm);cursor:pointer;text-align:center;transition:all 0.25s var(--ease);position:relative;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.04);}
+.preset-card::after{content:'';position:absolute;inset:-1px;border-radius:var(--r);padding:1px;background:var(--accent-grad);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+.preset-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,0.1);box-shadow:0 8px 32px rgba(0,0,0,0.3),0 0 40px var(--accent-glow),inset 0 1px 0 rgba(255,255,255,0.08);}
+.preset-card:hover::after{opacity:0.7;}
+.preset-card:active{transform:scale(0.97);}
+.pc-icon{width:32px;height:32px;border-radius:var(--r-xs);background:var(--accent-soft);display:grid;place-items:center;flex-shrink:0;color:var(--accent);transition:background 0.2s;}
+.preset-card:hover .pc-icon{background:hsla(9,52%,56%,0.18);}
+.pc-text{min-width:0;}
+.pc-title{font-size:12px;font-weight:800;margin-bottom:1px;}
+.pc-sub{font-size:10px;color:var(--text3);font-weight:600;line-height:1.3;}
+
+/* Simple Chat */
+.simple-chat{flex:1;display:flex;flex-direction:column;max-width:680px;width:100%;margin:0 auto;padding:0 24px;}
+.simple-back{display:flex;align-items:center;gap:6px;background:none;border:none;color:var(--text3);font-size:13px;font-weight:700;padding:16px 0;transition:color 0.2s;}
+.simple-back:hover{color:var(--text);}
+
+/* Simple Embed (for dashboard/council direct views) */
+.simple-embed{flex:1;max-width:900px;width:100%;margin:0 auto;padding:16px 24px;display:flex;flex-direction:column;}
+.simple-embed iframe{flex:1;border:none;border-radius:var(--r);min-height:calc(100vh - var(--nav-h) - 80px);}
+
+/* Council Form (simple mode) */
+.council-form{max-width:520px;width:100%;margin:40px auto;padding:0 24px;animation:fadeUp 0.4s var(--ease);}
+.council-title{font-size:24px;font-weight:900;margin-bottom:6px;}
+.council-sub{font-size:14px;color:var(--text2);margin-bottom:28px;line-height:1.6;}
+/* Dash Nav */
+.dash-nav{display:flex;gap:4px;padding:8px;flex-wrap:wrap;border-bottom:1px solid var(--border-s);flex-shrink:0;}
+.dash-nav-btn{padding:6px 12px;border:1px solid var(--border-s);border-radius:var(--r-full);background:var(--card);color:var(--text2);font-size:10px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.dash-nav-btn:hover{border-color:var(--accent);color:var(--text);background:var(--accent-soft);}
+
+/* Council Nav */
+.council-nav{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.council-nav-btn{padding:8px 16px;border:1px solid var(--border-s);border-radius:var(--r-full);background:var(--card);color:var(--text2);font-size:11px;font-weight:700;cursor:pointer;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+.council-nav-btn:hover{border-color:var(--accent);color:var(--text);background:var(--accent-soft);}
+.council-tg{border-color:hsl(200,60%,40%);color:hsl(200,60%,60%);}
+.council-tg:hover{background:hsla(200,60%,40%,0.1);color:hsl(200,60%,70%);}
+
+.council-success{text-align:center;padding:40px 0;animation:fadeUp 0.3s var(--ease);}
+.council-check{font-size:48px;margin-bottom:12px;}
+.council-info{margin-top:32px;display:flex;flex-direction:column;align-items:center;gap:10px;}
+.ci-info-text{font-size:12px;color:var(--text2);font-weight:600;text-align:center;line-height:1.5;}
+.ci-info-text strong{color:var(--text);}
+.ci-info-text .ci-icon{margin-right:4px;}
+.ci-card{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;background:var(--card);border:1px solid var(--border-s);border-radius:var(--r-sm);transition:border-color 0.2s;margin-top:4px;}
+.ci-card:hover{border-color:var(--border);}
+.ci-icon{font-size:16px;flex-shrink:0;}
+.ci-text{font-size:12px;color:var(--text2);font-weight:600;line-height:1.5;}
+.ci-text strong{color:var(--text);display:block;font-size:13px;margin-bottom:1px;}
+
+/* ═══ ADVANCED MODE ═══ */
+.advanced{height:calc(100vh - var(--nav-h));}
+.split{display:flex;height:100%;overflow:hidden;}
+.split-left{width:25%;min-width:140px;display:flex;flex-direction:column;border-right:1px solid var(--border-s);background:rgba(6,6,11,0.4);}
+.split-right{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+
+/* Tabs */
+.atab-row{display:flex;gap:0;padding:0;border-bottom:1px solid var(--border-s);flex-shrink:0;flex-wrap:nowrap;}
+.atab{flex:1;padding:6px 2px;border:none;background:none;color:var(--text3);font-size:9px;font-weight:700;position:relative;transition:color 0.2s;border-bottom:2px solid transparent;margin-bottom:-1px;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.atab:hover{color:var(--text2);}
+.atab.on{color:var(--text);border-bottom-color:var(--accent);}
+.tab-arrow{font-size:7px;margin-left:2px;display:inline-block;transition:transform 0.25s var(--ease);}
+.atab.open .tab-arrow{transform:rotate(180deg);}
+
+/* Sub-categories */
+.subcat-row{display:flex;gap:4px;padding:6px 6px;flex-shrink:0;flex-wrap:wrap;}
+.subcat-btn{padding:4px 8px;border:1px solid var(--border-s);border-radius:var(--r-full);background:transparent;color:var(--text3);font-size:9px;font-weight:700;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:3px;}
+.subcat-arrow{font-size:7px;transition:transform 0.25s var(--ease);display:inline-block;}
+.subcat-btn.on .subcat-arrow{transform:rotate(180deg);}
+.pill-row.collapsed{display:none;}
+.subcat-btn:hover{border-color:var(--border);color:var(--text2);}
+.subcat-btn.on{background:var(--accent-grad);color:#fff;border-color:transparent;}
+
+/* Pills */
+.pill-row{display:flex;gap:3px;padding:0 6px 8px;overflow-x:auto;scrollbar-width:none;flex-shrink:0;flex-wrap:wrap;}
+.pill-row::-webkit-scrollbar{display:none;}
+.pill{padding:3px 7px;border:1px solid var(--border-s);border-radius:var(--r-full);background:rgba(21,21,30,0.5);color:var(--text2);font-size:9px;font-weight:600;cursor:pointer;transition:all 0.15s;white-space:nowrap;flex-shrink:0;}
+.pill:hover{border-color:var(--accent);color:var(--text);background:var(--accent-soft);}
+
+/* Tooltips */
+[data-tip]{position:relative;}
+[data-tip]:hover::before{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);padding:6px 10px;background:rgba(10,10,17,0.95);border:1px solid var(--border);border-radius:var(--r-xs);color:var(--text);font-size:10px;font-weight:600;white-space:nowrap;max-width:220px;white-space:normal;line-height:1.4;z-index:999;pointer-events:none;animation:fadeIn 0.15s ease;box-shadow:0 4px 16px rgba(0,0,0,0.4);}
+[data-tip]:hover::after{content:'';position:absolute;bottom:calc(100% + 2px);left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:rgba(10,10,17,0.95);z-index:999;pointer-events:none;}
+
+/* Build mode bar */
+.build-bar{display:flex;align-items:center;gap:4px;padding:4px 6px;background:var(--elevated);border-top:1px solid var(--border-s);flex-shrink:0;flex-wrap:wrap;}
+.build-bar select{padding:4px 6px;background:var(--card);border:1px solid var(--border-s);border-radius:var(--r-xs);color:var(--text);font-size:9px;font-weight:600;flex:1;}
+.build-bar select:focus{outline:none;border-color:var(--accent);}
+
+/* Context Panels */
+.ctx-panel{display:none;flex:1;overflow-y:auto;padding:24px;}
+.ctx-panel.on{display:flex;flex-direction:column;}
+.ctx-title{font-size:16px;font-weight:800;margin-bottom:16px;}
+.ctx-sub{font-size:13px;color:var(--text2);margin-bottom:20px;line-height:1.6;}
+
+/* Launch Grid */
+/* Build Ideas Ticker (mobile) */
+.build-ideas-mobile{display:none;}
+.build-desktop-only{display:block;}
+.ideas-label{font-size:11px;color:var(--text3);font-weight:700;text-align:center;margin-bottom:2px;}
+.ideas-ticker{display:flex;flex-direction:column;align-items:center;min-height:28px;justify-content:center;}
+.idea-phrase{font-size:13px;font-weight:700;color:var(--text);text-align:center;opacity:0;transform:translateY(8px);animation:ideaFade 1.8s ease forwards;line-height:1.4;}
+@keyframes ideaFade{0%{opacity:0;transform:translateY(8px)}12%{opacity:1;transform:translateY(0)}82%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-8px)}}
+.mob-build-preview{margin-top:8px;flex:1;min-height:0;}
+.mob-build-preview iframe{width:100%;height:100%;border:none;border-radius:var(--r-sm);background:var(--surface);}
+
+.launch-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.launch-card{padding:20px;background:var(--card);border:1px solid var(--border-s);border-radius:var(--r);cursor:pointer;transition:all 0.2s;}
+.launch-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2);}
+.lc-icon{font-size:24px;margin-bottom:8px;}
+.lc-title{font-size:13px;font-weight:800;margin-bottom:2px;}
+.lc-sub{font-size:10px;color:var(--text3);font-weight:600;}
+
+/* Build Preview */
+.build-preview{flex:1;display:flex;flex-direction:column;}
+.build-preview iframe{flex:1;border:none;border-radius:var(--r-sm);background:var(--surface);min-height:300px;}
+.build-actions{display:flex;gap:8px;padding:12px 0 0;}
+
+/* ═══ DEFI PANEL ═══ */
+.defi-connect{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;}
+.defi-connect-icon{font-size:48px;margin-bottom:16px;opacity:0.6;}
+.defi-connect h3{font-size:20px;font-weight:800;margin-bottom:8px;}
+.defi-connect p{font-size:13px;color:var(--text2);margin-bottom:24px;max-width:300px;}
+
+/* Portfolio */
+.portfolio-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.portfolio-total{font-size:28px;font-weight:900;letter-spacing:-0.03em;}
+.portfolio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px;}
+.port-card{padding:16px;background:var(--card);border:1px solid var(--border-s);border-radius:var(--r-sm);text-align:center;transition:border-color 0.2s;}
+.port-card:hover{border-color:var(--border);}
+.port-token{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;}
+.port-val{font-size:18px;font-weight:900;}
+.port-usd{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* Swap UI */
+.swap-section{margin-bottom:24px;}
+.swap-box{padding:16px;background:var(--card);border:1px solid var(--border-s);border-radius:var(--r);margin-bottom:4px;position:relative;}
+.swap-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;margin-bottom:8px;}
+.swap-row{display:flex;align-items:center;gap:10px;}
+.swap-input{flex:1;background:none;border:none;color:var(--text);font-size:22px;font-weight:800;outline:none;min-width:0;}
+.swap-input::placeholder{color:var(--text3);}
+.swap-select{padding:8px 12px;background:var(--elevated);border:1px solid var(--border-s);border-radius:var(--r-full);color:var(--text);font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;cursor:pointer;transition:border-color 0.2s;flex-shrink:0;}
+.swap-select:hover{border-color:var(--border);}
+.swap-max{padding:4px 10px;border:none;border-radius:var(--r-xs);background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:800;transition:background 0.2s;}
+.swap-max:hover{background:hsla(9,52%,56%,0.2);}
+.swap-flip{position:absolute;left:50%;bottom:-18px;transform:translateX(-50%);z-index:5;width:36px;height:36px;border-radius:50%;border:3px solid var(--bg);background:var(--elevated);color:var(--text2);font-size:14px;display:grid;place-items:center;cursor:pointer;transition:all 0.2s;}
+.swap-flip:hover{background:var(--card);color:var(--text);}
+.swap-rate{font-size:11px;color:var(--text3);padding:8px 0;text-align:center;}
+
+/* Staking */
+.stake-card{padding:20px;background:var(--card);border:1px solid var(--border-s);border-radius:var(--r);margin-bottom:16px;}
+.stake-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.stake-label{font-size:11px;font-weight:600;color:var(--text3);}
+.stake-val{font-size:16px;font-weight:800;}
+.stake-actions{display:flex;gap:8px;}
+
+/* Protocol Cards */
+.proto-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+.proto-card{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border:1px solid var(--border-s);border-radius:var(--r-sm);transition:border-color 0.2s;}
+.proto-card:hover{border-color:var(--border);}
+.proto-icon{width:36px;height:36px;border-radius:10px;background:var(--elevated);display:grid;place-items:center;font-size:16px;flex-shrink:0;}
+.proto-info{flex:1;min-width:0;}
+.proto-name{font-size:13px;font-weight:800;}
+.proto-detail{font-size:10px;color:var(--text3);margin-top:1px;}
+.proto-apy{font-size:16px;font-weight:900;color:var(--seafoam);flex-shrink:0;}
+
+/* Strategy Cards */
+.strat-grid{display:flex;flex-direction:column;gap:10px;}
+.strat-card{padding:18px;background:var(--card);border:1px solid var(--border-s);border-radius:var(--r);cursor:pointer;transition:all 0.2s;}
+.strat-card:hover{border-color:var(--accent);transform:translateY(-2px);}
+.strat-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.strat-name{font-size:14px;font-weight:800;}
+.strat-apy{font-size:14px;font-weight:900;color:var(--seafoam);}
+.strat-risk{display:flex;gap:3px;margin-bottom:8px;}
+.strat-dot{width:8px;height:8px;border-radius:50%;background:var(--border);}
+.strat-dot.on{background:var(--accent);}
+.strat-desc{font-size:11px;color:var(--text3);line-height:1.5;}
+
+/* ═══ CHAT ═══ */
+.chat-msgs{flex:1;overflow-y:auto;padding:6px;display:flex;flex-direction:column;gap:6px;}
+.chat-msg{display:flex;gap:4px;max-width:95%;animation:fadeUp 0.25s var(--ease);}
+.chat-msg.user{align-self:flex-end;flex-direction:row-reverse;}
+.chat-avatar{width:20px;height:20px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-size:10px;flex-shrink:0;border:1px solid var(--border-s);}
+.chat-msg.user .chat-avatar{background:var(--accent-soft);border-color:hsla(9,52%,56%,0.15);}
+.chat-bubble{padding:6px 8px;border-radius:var(--r-sm);font-size:10px;font-weight:600;line-height:1.5;word-break:break-word;}
+.chat-msg.bot .chat-bubble{background:var(--card);border:1px solid var(--border-s);color:var(--text);}
+.chat-msg.user .chat-bubble{background:var(--accent-grad);color:#fff;border:none;}
+.chat-bubble strong{font-weight:800;}
+.chat-bubble code{font-family:var(--mono);background:rgba(255,255,255,0.06);padding:1px 3px;border-radius:3px;font-size:9px;}
+.chat-bubble a{color:var(--accent-light);text-decoration:underline;}
+.chat-msg.user .chat-bubble a{color:rgba(255,255,255,0.85);}
+
+/* Typing Indicator */
+.typing{display:flex;gap:4px;padding:12px 16px;}
+.typing-dot{width:6px;height:6px;border-radius:50%;background:var(--text3);animation:dotBounce 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:0.15s;}
+.typing-dot:nth-child(3){animation-delay:0.3s;}
+
+/* Suggestions */
+.chat-sugg{display:flex;flex-wrap:wrap;gap:6px;padding:4px 16px 8px;}
+.sugg-pill{padding:7px 14px;border:1px solid var(--border-s);border-radius:var(--r-full);background:rgba(21,21,30,0.5);color:var(--text2);font-size:11px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+.sugg-pill:hover{border-color:var(--accent);color:var(--text);background:var(--accent-soft);}
+
+/* TX Card */
+.tx-card{padding:16px;background:var(--card);border:1px solid var(--border-s);border-radius:var(--r);margin-top:8px;}
+.tx-card-title{font-size:12px;font-weight:800;margin-bottom:8px;}
+.tx-card-detail{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:12px;word-break:break-all;}
+.tx-card-btns{display:flex;gap:8px;}
+
+/* Chat Input Bar */
+.chat-bar{display:flex;align-items:flex-end;gap:4px;padding:6px;border-top:1px solid var(--border-s);flex-shrink:0;background:rgba(6,6,11,0.6);backdrop-filter:blur(12px);}
+.chat-bar textarea{flex:1;padding:12px 12px;background:var(--elevated);border:1px solid var(--border-s);border-radius:var(--r);color:var(--text);font-size:10px;font-weight:600;transition:border-color 0.2s;min-width:0;min-height:46px;max-height:140px;resize:none;overflow-y:auto;line-height:1.5;font-family:var(--font);word-wrap:break-word;}
+.chat-bar textarea:focus{outline:none;border-color:hsla(9,52%,56%,0.4);box-shadow:0 0 0 2px var(--accent-glow);}
+.chat-bar textarea::placeholder{color:var(--text3);}
+.ctx-toggle-adv{display:none;width:46px;height:46px;border-radius:50%;border:1px solid var(--border-s);background:var(--card);color:var(--text2);place-items:center;flex-shrink:0;transition:all 0.2s;cursor:pointer;}
+.ctx-toggle-adv:hover{border-color:var(--accent);color:var(--text);}
+.send-btn{width:46px;height:46px;border-radius:50%;border:none;background:var(--accent-grad);color:#fff;font-size:11px;display:grid;place-items:center;flex-shrink:0;transition:all 0.2s;box-shadow:0 2px 12px var(--accent-glow);}
+.send-btn:hover{transform:scale(1.05);box-shadow:0 4px 20px hsla(9,60%,54%,0.3);}
+.send-btn:active{transform:scale(0.95);}
+.send-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+
+/* Simple bar (centered, floating) */
+.simple-bar{flex:1;display:flex;align-items:flex-start;justify-content:center;padding:5vh 24px 0;background:none;border-top:none;z-index:50;width:100%;}
+.simple-bar-inner{max-width:620px;width:100%;display:flex;gap:10px;}
+.simple-bar-inner input{flex:1;padding:24px 22px;font-size:14px;border-radius:var(--r);background:rgba(16,16,24,0.45);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,0.06);min-height:96px;box-shadow:0 4px 24px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.04);}
+.simple-bar-inner input:focus{border-color:rgba(255,255,255,0.12);box-shadow:0 0 0 3px var(--accent-glow),0 4px 24px rgba(0,0,0,0.3),inset 0 1px 0 rgba(255,255,255,0.06);}
+.simple-bar-inner .send-btn{width:96px;height:96px;border-radius:var(--r);font-size:18px;background:rgba(21,21,30,0.4);backdrop-filter:blur(16px) saturate(1.4);-webkit-backdrop-filter:blur(16px) saturate(1.4);border:1px solid rgba(255,255,255,0.06);box-shadow:0 4px 24px rgba(0,0,0,0.2),inset 0 1px 0 rgba(255,255,255,0.04);}
+
+/* ═══ FORM ELEMENTS ═══ */
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;}
+.field input,.field select,.field textarea{width:100%;padding:12px 16px;background:var(--elevated);border:1px solid var(--border-s);border-radius:var(--r-sm);color:var(--text);font-size:14px;font-weight:600;transition:all 0.2s;resize:vertical;}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:hsla(9,52%,56%,0.4);box-shadow:0 0 0 3px var(--accent-glow);}
+.field textarea{min-height:120px;line-height:1.6;}
+
+/* Buttons */
+.btn{padding:12px 24px;border:none;border-radius:var(--r-sm);font-size:14px;font-weight:800;transition:all 0.15s;display:inline-flex;align-items:center;justify-content:center;gap:8px;}
+.btn:active{transform:scale(0.97);}
+.btn-primary{background:var(--accent-grad);color:#fff;box-shadow:0 2px 12px var(--accent-glow);}
+.btn-primary:hover{box-shadow:0 4px 20px hsla(9,60%,54%,0.3);}
+.btn-outline{background:transparent;color:var(--text2);border:1px solid var(--border);}
+.btn-outline:hover{border-color:var(--accent);color:var(--text);}
+.btn-sm{padding:8px 16px;font-size:12px;border-radius:var(--r-xs);}
+.btn-block{width:100%;}
+.btn-seafoam{background:var(--seafoam);color:#fff;}
+
+/* ═══ TOAST ═══ */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:500;padding:12px 24px;border-radius:var(--r-sm);background:var(--card);border:1px solid var(--border);font-size:13px;font-weight:700;box-shadow:0 16px 48px rgba(0,0,0,0.5);animation:fadeUp 0.2s var(--ease);white-space:nowrap;}
+
+/* ═══ MOBILE BOTTOM BAR ═══ */
+.mob-bar{position:fixed;bottom:0;left:0;right:0;z-index:80;display:flex;align-items:center;gap:8px;padding:10px 16px calc(10px + env(safe-area-inset-bottom));background:rgba(6,6,11,0.9);backdrop-filter:blur(16px);border-top:1px solid var(--border-s);}
+.mob-bar input{flex:1;padding:10px 14px;background:var(--elevated);border:1px solid var(--border-s);border-radius:var(--r-full);color:var(--text);font-size:13px;font-weight:600;}
+.mob-bar input:focus{outline:none;border-color:hsla(9,52%,56%,0.3);}
+.ctx-toggle{width:38px;height:38px;border-radius:var(--r-sm);border:1px solid var(--border-s);background:var(--elevated);color:var(--text2);font-size:14px;display:grid;place-items:center;}
+
+/* Mobile Context Overlay */
+.mob-ctx{position:fixed;inset:0;z-index:90;background:rgba(6,6,11,0.7);backdrop-filter:blur(8px);}
+.mob-ctx.on{display:flex;align-items:flex-end;}
+.mob-ctx-sheet{background:var(--surface);border-radius:20px 20px 0 0;width:100%;max-height:70vh;overflow-y:auto;padding:8px 20px 40px;animation:slideUp 0.3s var(--ease);}
+.mob-ctx-handle{width:40px;height:4px;border-radius:2px;background:var(--text3);margin:12px auto 20px;opacity:0.3;}
+
+/* ═══ SECTION LABEL ═══ */
+.sec-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px;}
+
+/* ═══ RESPONSIVE ═══ */
+
+/* Small mobile */
+@media(max-width:480px){
+    .preset-grid{grid-template-columns:repeat(2,1fr);max-width:340px;gap:6px;}
+    .preset-card{padding:10px 8px;gap:4px;}
+    .pc-icon{width:26px;height:26px;}
+    .pc-title{font-size:11px;}
+    .pc-sub{display:none;}
+    .landing-title{font-size:20px;}
+    .landing-sub{font-size:11px;margin-bottom:14px;}
+    .hdr{padding:0 10px;height:44px;}
+    .hdr-logo{font-size:14px;gap:6px;}
+    .hdr-link{display:none;}
+    .ms-btn{padding:4px 10px;font-size:9px;}
+    .mode-sw{padding:2px;}
+    .wall-btn{padding:5px 10px;font-size:10px;}
+    .simple-bar{padding:10px 12px 16px;}
+    .simple-bar-inner input{padding:16px 16px;font-size:13px;min-height:60px;}
+    .simple-bar-inner .send-btn{width:60px;height:60px;font-size:14px;}
+    .simple-bar-inner{gap:6px;}
+    .chat-bubble{padding:8px 12px;font-size:12px;}
+    .chat-avatar{width:22px;height:22px;font-size:11px;}
+    .chat-msgs{padding:10px;}
+    .chat-bar input{padding:8px 12px;font-size:12px;}
+    .send-btn{width:34px;height:34px;}
+    .atab{padding:7px 10px;font-size:11px;}
+    .subcat-row{padding:8px 10px;gap:4px;}
+    .subcat-btn{padding:5px 9px;font-size:9px;}
+    .pill-row{padding:0 10px 8px;}
+    .pill{padding:4px 8px;font-size:9px;}
+    .ctx-panel{padding:12px;}
+    .ctx-title{font-size:13px;}
+    .portfolio-total{font-size:20px;}
+    .portfolio-grid{grid-template-columns:1fr 1fr 1fr;gap:6px;}
+    .port-card{padding:10px;}
+    .port-val{font-size:13px;}
+    .swap-input{font-size:16px;}
+    .swap-box{padding:10px;}
+    .stake-card{padding:12px;}
+    .strat-card{padding:12px;}
+    .council-form{padding:0 12px;}
+    .council-title{font-size:18px;}
+    .field input,.field textarea{padding:8px 12px;font-size:12px;}
+    .field textarea{min-height:80px;}
+    .btn{padding:8px 16px;font-size:12px;}
+    .toast{font-size:11px;padding:8px 14px;bottom:12px;}
+}
+
+/* Standard mobile */
+@media(max-width:768px){
+    .split{flex-direction:column;}
+    .split-left{width:100%;min-width:0;border-right:none;border-bottom:1px solid var(--border-s);height:40vh;max-height:none;}
+    .split-left .build-bar{display:none!important;}
+    .subcat-row,.pill-row{flex-wrap:wrap;padding:4px 6px;max-height:60px;overflow-y:auto;}
+    .split-right{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+    .split-right .ctx-panel{display:none;flex:1;flex-direction:column;}
+    .split-right .ctx-panel.on{display:flex!important;flex-direction:column;flex:1;}
+    .split-right #buildDefault{flex:1;display:flex;flex-direction:column;}
+    .build-desktop-only{display:none!important;}
+    .build-ideas-mobile{display:flex!important;flex-direction:column;flex:1;min-height:0;padding:8px;}
+    .simple-chat{padding:0 14px;}
+    .simple-embed{padding:10px 14px;}
+    .council-info{gap:8px;}
+    .defi-connect{padding:20px;}
+    .defi-connect h3{font-size:16px;}
+    .defi-connect-icon{font-size:36px;margin-bottom:10px;}
+    .swap-section{margin-bottom:16px;}
+    .proto-card{padding:12px;}
+    .mob-bar{display:none!important;}
+    .advanced .split-left>.chat-bar{position:sticky;bottom:0;}
+    .advanced .chat-bar .ctx-toggle-adv{display:inline-grid;}
+}
+
+/* Tablet */
+@media(min-width:769px) and (max-width:1024px){
+    .split-left{width:25%;min-width:120px;}
+    .launch-grid{grid-template-columns:1fr 1fr;}
+}
+
+/* Desktop */
+@media(min-width:1025px){
+    .hdr{padding:0 28px;}
+    .split-left{width:25%;min-width:140px;}
+    .split-right{overflow-y:auto;}
+    .ctx-panel{padding:20px 28px;}
+    .launch-grid{grid-template-columns:1fr 1fr 1fr;gap:10px;}
+    .launch-card{padding:16px;}
+    .atab{padding:10px 18px;font-size:13px;}
+    .subcat-btn{padding:7px 14px;font-size:11px;}
+    .pill{padding:6px 14px;font-size:11px;}
+    .chat-msg{max-width:85%;}
+    .build-preview iframe{min-height:400px;}
+}
+
+/* Wide desktop */
+@media(min-width:1440px){
+    .hdr{padding:0 40px;}
+    .split-left{width:25%;min-width:160px;}
+    .ctx-panel{padding:24px 36px;}
+    .launch-grid{gap:12px;}
+    .launch-card{padding:18px;}
+    .landing-title{font-size:34px;}
+    .preset-grid{max-width:660px;gap:10px;}
+    .preset-card{padding:16px 12px;}
+    .pc-icon{width:36px;height:36px;}
+    .pc-title{font-size:13px;}
+    .simple-bar-inner{max-width:660px;}
+    .simple-bar-inner input{min-height:100px;font-size:15px;padding:26px 24px;}
+    .simple-bar-inner .send-btn{width:100px;height:100px;font-size:20px;}
+    .chat-msgs{padding:24px 28px;}
+    .chat-bubble{font-size:15px;padding:16px 20px;}
+    .portfolio-grid{gap:16px;}
+    .port-card{padding:24px;}
+    .port-val{font-size:22px;}
+    .build-preview iframe{min-height:600px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header class="hdr">
+    <div class="hdr-logo">🦀 <span>Inclawbator</span></div>
+    <div class="hdr-spacer"></div>
+    <div class="mode-sw">
+        <button class="ms-btn on" data-tip="Clean chatbox with quick-start presets" onclick="setMode('simple')">Simple</button>
+        <button class="ms-btn" data-tip="Full split-pane with all tabs and features" onclick="setMode('advanced')">Advanced</button>
+        <div class="ms-ind"></div>
+    </div>
+    <div class="hdr-spacer"></div>
+    <div class="hdr-actions">
+        <a href="/inclawbator/docs" class="hdr-link" data-tip="View API docs and guides">Docs</a>
+        <button class="wall-btn" id="walletBtn" data-tip="Connect your crypto wallet to use DeFi features" onclick="connectWallet()">Connect</button>
+    </div>
+</header>
+
+<!-- ═══ SIMPLE MODE ═══ -->
+<main class="mode simple on" id="simpleMode">
+    <!-- Landing -->
+    <div id="simpleLanding" class="simple-landing">
+        <h1 class="landing-title">What are you building?</h1>
+        <p class="landing-sub">Pick a starting point or describe your idea</p>
+        <div class="preset-grid" id="presetGrid"></div>
+    </div>
+
+    <!-- Chat view -->
+    <div id="simpleChat" class="simple-chat hidden">
+        <button class="simple-back" onclick="backToLanding()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5m7-7l-7 7 7 7"/></svg> Back
+        </button>
+        <div class="chat-msgs" id="simpleMsgs"></div>
+        <div class="chat-sugg" id="simpleSugg"></div>
+    </div>
+
+    <!-- Dashboard embed (direct) -->
+    <div id="simpleDash" class="simple-embed hidden">
+        <button class="simple-back" onclick="backToLanding()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5m7-7l-7 7 7 7"/></svg> Back
+        </button>
+        <iframe src="/dashboard?embed=1"></iframe>
+    </div>
+
+    <!-- Council form (direct) -->
+    <div id="simpleCouncil" class="council-form hidden">
+        <button class="simple-back" onclick="backToLanding()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 12H5m7-7l-7 7 7 7"/></svg> Back
+        </button>
+        <h2 class="council-title">Talk to the Council</h2>
+        <p class="council-sub">Your message goes straight to our Telegram. A real human will reach out.</p>
+        <div id="councilFormSimple">
+            <div class="field"><label>What do you need help with?</label><textarea id="councilDescSimple" placeholder="Describe your project, idea, or question..."></textarea></div>
+            <div class="field"><label>Your contact</label><input id="councilContactSimple" placeholder="@telegram or @x handle"></div>
+            <button class="btn btn-primary btn-block" onclick="sendCouncil('simple')">Send to Council</button>
+        </div>
+        <div id="councilSuccessSimple" class="council-success hidden">
+            <div class="council-check">✓</div>
+            <h3>Sent!</h3>
+            <p style="color:var(--text2);margin-top:8px;font-size:13px;">We'll reach out on the handle you provided.</p>
+            <button class="btn btn-outline" style="margin-top:20px;" onclick="resetCouncilForm('simple')">Send another</button>
+        </div>
+        <div class="council-info">
+            <div class="ci-info-text"><span class="ci-icon">🚀</span><strong>Get incubated</strong> — Token launch, staking, landing page, marketing</div>
+            <div class="ci-info-text"><span class="ci-icon">🤝</span><strong>Join the Council</strong> — Contribute, earn CLAWS, help govern treasury</div>
+            <a href="https://t.me/inclawbate" target="_blank" class="ci-card" style="text-decoration:none;"><span class="ci-icon">💬</span><div class="ci-text"><strong>Join the community</strong>Meet the builders on Telegram</div></a>
+        </div>
+    </div>
+
+    <!-- Fixed input bar -->
+    <div class="chat-bar simple-bar" id="simpleBar">
+        <div class="simple-bar-inner">
+            <input id="simpleInput" placeholder="Or just ask me anything..." maxlength="500" autocomplete="off">
+            <button class="send-btn" id="simpleSend" onclick="sendSimple()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+            </button>
+        </div>
+    </div>
+</main>
+
+<!-- ═══ ADVANCED MODE ═══ -->
+<main class="mode advanced" id="advancedMode">
+    <div class="split">
+        <!-- Left: Chat Column -->
+        <div class="split-left">
+            <div class="atab-row" id="tabRow"></div>
+            <div class="subcat-row" id="subcatRow"></div>
+            <div class="pill-row" id="pillRow"></div>
+            <div class="chat-msgs" id="advMsgs"></div>
+            <div class="chat-sugg" id="advSugg"></div>
+            <div class="build-bar hidden" id="buildBar">
+                <select id="modelPicker"></select>
+                <span style="font-size:10px;color:var(--text3);">Model</span>
+            </div>
+            <div class="chat-bar">
+                <textarea id="advInput" placeholder="Ask me anything..." maxlength="500" rows="2"></textarea>
+                <button class="send-btn" id="advSend" onclick="sendAdv()">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+                </button>
+                <button class="ctx-toggle-adv" onclick="toggleMobileCtx()">
+                    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Right: Context Panels -->
+        <div class="split-right">
+            <!-- Build Panel -->
+            <div class="ctx-panel on" id="panelBuild">
+                <div id="buildDefault">
+                    <div class="build-desktop-only">
+                        <div class="ctx-title">Launch & Deploy</div>
+                        <div class="ctx-sub">Deploy smart contracts, tokens, and apps directly from the Inclawbator.</div>
+                        <div class="launch-grid" id="launchGrid"></div>
+                    </div>
+                    <div class="build-ideas-mobile">
+                        <div class="ideas-label">Try asking the Inclawbator to...</div>
+                        <div class="ideas-ticker" id="ideasTicker"></div>
+                        <div class="mob-build-preview" id="mobBuildPreview">
+                            <iframe id="mobPreviewFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+                        </div>
+                    </div>
+                </div>
+                <div id="buildPreview" class="build-preview hidden">
+                    <iframe id="previewFrame" sandbox="allow-scripts allow-same-origin"></iframe>
+                    <div class="build-actions">
+                        <button class="btn btn-primary btn-sm" onclick="publishApp()">Publish</button>
+                        <button class="btn btn-outline btn-sm" onclick="exitBuildMode()">Exit Editing</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DeFi Panel -->
+            <div class="ctx-panel" id="panelDefi">
+                <div id="defiConnect" class="defi-connect">
+                    <div class="defi-connect-icon">🦀</div>
+                    <h3>DeFi Dashboard</h3>
+                    <p>Connect your wallet to view balances, swap tokens, stake, and manage positions.</p>
+                    <button class="btn btn-primary" onclick="connectWallet()">Connect Wallet</button>
+                </div>
+                <div id="defiDash" class="hidden"></div>
+            </div>
+
+            <!-- Dashboard Panel -->
+            <div class="ctx-panel" id="panelDashboard" style="padding:0;">
+                <iframe id="dashFrame" src="/dashboard?embed=1" style="width:100%;height:100%;border:none;"></iframe>
+            </div>
+
+            <!-- Council Panel -->
+            <div class="ctx-panel" id="panelCouncil">
+                <div class="ctx-title">Talk to the Council</div>
+                <div class="ctx-sub">Your message goes straight to our Telegram. A real human will reach out.</div>
+                <div id="councilFormAdv">
+                    <div class="field"><label>What do you need help with?</label><textarea id="councilDescAdv" placeholder="Describe your project, idea, or question..."></textarea></div>
+                    <div class="field"><label>Your contact</label><input id="councilContactAdv" placeholder="@telegram or @x handle"></div>
+                    <button class="btn btn-primary btn-block" onclick="sendCouncil('adv')">Send to Council</button>
+                </div>
+                <div id="councilSuccessAdv" class="council-success hidden">
+                    <div class="council-check">✓</div>
+                    <h3>Sent!</h3>
+                    <p style="color:var(--text2);margin-top:8px;font-size:13px;">We'll reach out on the handle you provided.</p>
+                    <button class="btn btn-outline" style="margin-top:20px;" onclick="resetCouncilForm('adv')">Send another</button>
+                </div>
+                <div class="council-info" style="margin-top:24px;">
+                    <div class="ci-info-text"><span class="ci-icon">🚀</span><strong>Get incubated</strong> — Token launch, staking, landing page, marketing</div>
+                    <div class="ci-info-text"><span class="ci-icon">🤝</span><strong>Join the Council</strong> — Contribute, earn CLAWS, help govern treasury</div>
+                    <a href="https://t.me/inclawbate" target="_blank" class="ci-card" style="text-decoration:none;"><span class="ci-icon">💬</span><div class="ci-text"><strong>Join the community</strong>Meet the builders on Telegram</div></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- ═══ MOBILE BAR (Advanced) ═══ -->
+<div class="mob-bar hidden" id="mobileBar">
+    <input id="mobInput" placeholder="Ask me anything..." maxlength="500" autocomplete="off">
+    <button class="send-btn" onclick="sendMobile()" style="width:36px;height:36px;">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4z"/></svg>
+    </button>
+    <button class="ctx-toggle" onclick="toggleMobileCtx()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+    </button>
+</div>
+
+<!-- Mobile Context Overlay -->
+<div class="mob-ctx hidden" id="mobileCtx" onclick="if(event.target===this)toggleMobileCtx()">
+    <div class="mob-ctx-sheet">
+        <div class="mob-ctx-handle"></div>
+        <div id="mobCtxContent"></div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast hidden" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════
+   INCLAWBATOR — Agent-powered builder, trader, deployer
+   ═══════════════════════════════════════════════════════ */
+
+// ═══ CONSTANTS ═══
+const API={
+    chat:'/api/inclawbate/agent-chat',
+    studio:'/api/studio/chat',
+    publish:'/api/publish-site',
+    serve:'/api/serve-site',
+    hire:'/api/inclawbate/hire-request',
+    council:'/api/inclawbate/council-request',
+    balances:'/api/inclawbate/wallet-balances',
+    rpc:'https://mainnet.base.org'
+};
+
+const CONTRACTS={
+    CLAWS:'0x7ca47B141639B893C6782823C0b219f872056379',
+    USDC:'0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913',
+    WETH:'0x4200000000000000000000000000000000000006',
+    STAKING:'0x551d9dCd8B49893b9D0E1CA41a128ec202845F40',
+    ROUTER:'0x2626664c2603336E57B271c5C0b26F421741e481',
+    QUOTER:'0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a'
+};
+
+const TOKENS=[
+    {sym:'ETH',addr:CONTRACTS.WETH,dec:18,native:true},
+    {sym:'USDC',addr:CONTRACTS.USDC,dec:6},
+    {sym:'CLAWS',addr:CONTRACTS.CLAWS,dec:18},
+];
+
+const PRESETS=[
+    {id:'build',icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>',title:'Build an App',sub:'Describe it and I\'ll code it',msg:'I want to build an app',tab:'build',tip:'AI builds your app from a description — HTML, CSS, JS all generated for you'},
+    {id:'launch',icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>',title:'Launch a Token',sub:'Deploy on Base in minutes',msg:'I want to launch a token',tab:'build',subcat:'launch',tip:'Deploy your own ERC-20 token on Base chain with custom supply and tokenomics'},
+    {id:'defi',icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M2 12h20"/><circle cx="12" cy="12" r="10"/></svg>',title:'DeFi Tools',sub:'Swap, stake, lend, earn',msg:'Show me DeFi options',tab:'defi',tip:'Access decentralized finance — swap tokens, stake for yield, lend and borrow'},
+    {id:'dashboard',icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',title:'My Dashboard',sub:'Manage apps and tokens',direct:'dashboard',tip:'View and manage your published apps, tokens, and account settings'},
+    {id:'council',icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>',title:'Talk to Council',sub:'Get human help from the team',direct:'council',tip:'Hire the Inclawbate dev team for custom work or get expert guidance'},
+    {id:'other',icon:'<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01z"/></svg>',title:'Something Else',sub:'Just tell me what you need',focus:true,tip:'Ask anything — the AI assistant will figure out how to help'},
+];
+
+const SUBCATS={
+    build:[
+        {id:'app',label:'Build App',tip:'Create a new app with AI from scratch',pills:[
+            {t:'Build me an app',tip:'Start from a blank canvas — describe what you want'},
+            {t:'Portfolio tracker',tip:'Track your crypto holdings and performance'},
+            {t:'Staking dashboard',tip:'Monitor staked tokens, rewards, and APY'},
+            {t:'Landing page',tip:'Create a marketing page for your project'},
+            {t:'NFT gallery',tip:'Showcase an NFT collection with metadata'},
+            {t:'Token-gated page',tip:'Content only accessible to token holders'},
+            {t:'Voting tool',tip:'On-chain or off-chain polls and governance'},
+            {t:'Leaderboard',tip:'Rank users by score, holdings, or activity'},
+            {t:'Analytics dashboard',tip:'Charts and metrics for on-chain data'},
+        ]},
+        {id:'launch',label:'Launch / Deploy',tip:'Deploy smart contracts to Base chain',pills:[
+            {t:'Launch a token',tip:'Create and deploy a new ERC-20 token'},
+            {t:'Meme coin',tip:'Quick meme token with custom name and supply'},
+            {t:'Deploy staking',tip:'Set up a staking contract for your token'},
+            {t:'Airdrop tokens',tip:'Distribute tokens to a list of wallets'},
+            {t:'Deploy ERC-20',tip:'Standard ERC-20 with advanced settings'},
+            {t:'Deploy NFT',tip:'Launch an ERC-721 NFT collection'},
+            {t:'Payment splitter',tip:'Auto-split incoming payments between wallets'},
+        ]},
+        {id:'manage',label:'Manage',tip:'Manage your existing apps and deployments',pills:[
+            {t:'My apps',tip:'View and edit your published apps'},
+            {t:'Health check',tip:'Check if your apps and contracts are running'},
+            {t:'Marketing agent',tip:'AI-powered promotion for your project'},
+            {t:'Token analytics',tip:'Volume, holders, and price data for your token'},
+            {t:'Update my app',tip:'Edit and redeploy an existing app'},
+        ]},
+    ],
+    defi:[
+        {id:'trade',label:'Trade',tip:'Buy, sell, and swap tokens on Base',pills:[
+            {t:'Swap tokens',tip:'Instant token swap via Uniswap'},
+            {t:'Limit order',tip:'Set a price target and execute when reached'},
+            {t:'DCA setup',tip:'Dollar-cost average into a token over time'},
+            {t:'Perps',tip:'Trade perpetual futures with leverage'},
+            {t:'Disperse tokens',tip:'Send tokens to multiple wallets in one tx'},
+        ]},
+        {id:'earn',label:'Earn',tip:'Earn yield on your crypto holdings',pills:[
+            {t:'Stake CLAWS',tip:'Stake CLAWS tokens to earn rewards'},
+            {t:'Liquid staking',tip:'Stake ETH and get a liquid receipt token'},
+            {t:'LP farming',tip:'Provide liquidity and earn trading fees'},
+            {t:'Auto-compound',tip:'Automatically reinvest yield for compound growth'},
+            {t:'Best APY',tip:'Find the highest yields across protocols'},
+        ]},
+        {id:'lend',label:'Lend & Borrow',tip:'Lend assets for interest or borrow against collateral',pills:[
+            {t:'Lend USDC',tip:'Deposit USDC to earn lending interest'},
+            {t:'Borrow against ETH',tip:'Use ETH as collateral to borrow stablecoins'},
+            {t:'Compare protocols',tip:'Side-by-side rates across Moonwell, Aave, Compound'},
+            {t:'Leverage loop',tip:'Recursive borrow-lend to amplify yield'},
+        ]},
+        {id:'strategies',label:'Strategies',tip:'Pre-built DeFi strategies by risk level',pills:[
+            {t:'Conservative (~4%)',tip:'Low-risk stablecoin lending, predictable returns'},
+            {t:'Balanced (5-8%)',tip:'ETH staking + lending for moderate yield'},
+            {t:'Aggressive (15%+)',tip:'LP farming and leverage loops, higher risk'},
+            {t:'My positions',tip:'View all your active DeFi positions'},
+            {t:'Claim rewards',tip:'Collect pending rewards from all protocols'},
+        ]},
+    ],
+    dashboard:[
+        {id:'sections',label:'Dashboard',tip:'Ask about your dashboard',pills:[
+            {t:'Show me my portfolio',tip:'View your token holdings and balances'},
+            {t:'Show me my apps',tip:'View and manage your published apps'},
+            {t:'What tokens do I hold?',tip:'Your token holdings and prices'},
+            {t:'Show recent activity',tip:'Recent transactions and actions'},
+            {t:'Open my settings',tip:'Account and wallet settings'},
+        ]},
+    ],
+    council:[
+        {id:'actions',label:'Quick Actions',tip:'Jump to council features',pills:[
+            {t:'Send a Message',tip:'Open the form to send a message to the council',action:'councilForm'},
+            {t:'Join Telegram',tip:'Join the Inclawbate community on Telegram',action:'telegram'},
+        ]},
+    ],
+};
+
+const MODELS=[
+    {id:'gemini-flash',label:'Gemini Flash',tag:'Free',tip:'Google\'s fast model — great for quick iterations'},
+    {id:'llama-70b',label:'Llama 70B',tag:'Free',tip:'Meta\'s open-source model — solid for general coding'},
+    {id:'kimi',label:'Kimi',tag:'Free',tip:'Moonshot\'s model — good with long context'},
+    {id:'haiku',label:'Haiku',tag:'~500 CLAWS',tip:'Anthropic\'s fastest paid model — quick and capable'},
+    {id:'sonnet',label:'Sonnet',tag:'~2,500 CLAWS',tip:'Anthropic\'s balanced model — great quality and speed'},
+    {id:'opus',label:'Opus',tag:'~5,000 CLAWS',tip:'Anthropic\'s most powerful model — best code quality'},
+];
+
+const LAUNCH_CARDS=[
+    {title:'Launch Token',sub:'ERC-20 with custom tokenomics',icon:'🚀',msg:'I want to launch a new token',tip:'Deploy a new ERC-20 token with custom name, symbol, and supply on Base'},
+    {title:'Deploy Staking',sub:'Reward holders with staking',icon:'🔒',msg:'I want to deploy a staking contract',tip:'Create a staking contract so holders earn rewards for locking tokens'},
+    {title:'Airdrop Tokens',sub:'Distribute to holders',icon:'🪂',msg:'I want to airdrop tokens',tip:'Send tokens to multiple wallets in a single batch transaction'},
+    {title:'Custom ERC-20',sub:'Advanced token features',icon:'⚙️',msg:'I want to deploy a custom ERC-20',tip:'ERC-20 with advanced features like taxes, max wallet, and burn mechanics'},
+    {title:'NFT Collection',sub:'ERC-721 with metadata',icon:'🎨',msg:'I want to deploy an NFT collection',tip:'Launch an ERC-721 collection with metadata, minting, and reveal'},
+    {title:'Payment Splitter',sub:'Split revenue automatically',icon:'💸',msg:'I want to set up a payment splitter',tip:'Smart contract that auto-splits incoming ETH/tokens between wallets'},
+];
+
+const STRAT_CARDS=[
+    {name:'Conservative',apy:'~4%',risk:1,desc:'Lend stablecoins on Moonwell or Aave. Low risk, predictable yield.',protos:'Moonwell, Aave, Compound',tip:'Best for preserving capital — deposit stablecoins and earn steady interest'},
+    {name:'Balanced',apy:'5-8%',risk:2,desc:'Stake ETH via Lido/Coinbase + lend the receipt token. Moderate risk.',protos:'Lido, Coinbase, Moonwell',tip:'Mix of ETH staking and lending — moderate risk with better returns'},
+    {name:'Aggressive',apy:'15%+',risk:3,desc:'LP farming on Aerodrome + leveraged lending loops. Higher risk.',protos:'Aerodrome, Aave, Uniswap',tip:'Highest yields through LP farming and leverage — risk of impermanent loss'},
+];
+
+const LENDING_PROTOS=[
+    {name:'Moonwell',icon:'🌙',apy:'4.2%',detail:'USDC on Base'},
+    {name:'Aave v3',icon:'👻',apy:'3.8%',detail:'USDC on Base'},
+    {name:'Compound',icon:'🏦',apy:'3.5%',detail:'USDC on Base'},
+];
+
+// ═══ STATE ═══
+const S={
+    mode:localStorage.getItem('inclaw_mode')||'simple',
+    tab:'build',
+    tabOpen:false,
+    subcat:null,
+    msgs:[],
+    sessionId:'web_'+Date.now()+'_'+Math.random().toString(36).slice(2,8),
+    wallet:null,
+    provider:null,
+    building:false,
+    buildSlug:'',
+    buildCode:'',
+    model:'gemini-flash',
+    pendingTx:null,
+    sending:false,
+    balances:null,
+    councilReqId:null,
+    simpleView:'landing', // landing | chat | dashboard | council
+    swapFrom:0, // index in TOKENS
+    swapTo:2,
+};
+
+// ═══ INIT ═══
+function init(){
+    renderPresets();
+    renderTabs();
+    renderSubcats();
+    renderPills();
+    renderLaunchGrid();
+    renderModelPicker();
+    addBotMsg("Hey! I'm the **Inclawbator** — I can build apps, launch tokens, manage your DeFi, deploy staking, and more. What do you need?");
+    setMode(S.mode);
+    tryAutoConnect();
+    bindKeys();
+    checkMobile();
+    if(window.innerWidth<=768)startIdeasTicker();
+    window.addEventListener('resize',()=>{checkMobile();if(window.innerWidth<=768&&S.tab==='build')startIdeasTicker();else stopIdeasTicker();});
+}
+
+// ═══ RENDER HELPERS ═══
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
+function $(id){return document.getElementById(id);}
+function fmtAddr(a){return a?a.slice(0,6)+'...'+a.slice(-4):'';}
+function fmtUSD(n){if(!n&&n!==0)return'—';if(n>=1e9)return'$'+(n/1e9).toFixed(2)+'B';if(n>=1e6)return'$'+(n/1e6).toFixed(2)+'M';if(n>=1e3)return'$'+(n/1e3).toFixed(2)+'K';return'$'+Number(n).toFixed(2);}
+function fmtBal(n,d=4){if(!n&&n!==0)return'0';return Number(n).toLocaleString(undefined,{maximumFractionDigits:d});}
+function mdToHTML(text){
+    if(!text)return'';
+    return esc(text)
+        .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+        .replace(/`(.+?)`/g,'<code>$1</code>')
+        .replace(/\[([^\]]+)\]\(([^)]+)\)/g,'<a href="$2" target="_blank">$1</a>')
+        .replace(/\n/g,'<br>');
+}
+
+function toast(msg){
+    const t=$('toast');
+    t.textContent=msg;
+    t.classList.remove('hidden');
+    clearTimeout(t._t);
+    t._t=setTimeout(()=>t.classList.add('hidden'),2500);
+}
+
+// ═══ MODE SWITCHING ═══
+function setMode(mode){
+    S.mode=mode;
+    localStorage.setItem('inclaw_mode',mode);
+    $('simpleMode').classList.toggle('on',mode==='simple');
+    $('advancedMode').classList.toggle('on',mode==='advanced');
+    $('simpleMode').classList.toggle('mode',true);
+    $('advancedMode').classList.toggle('mode',true);
+    document.querySelectorAll('.ms-btn').forEach(b=>b.classList.toggle('on',b.textContent.toLowerCase()===mode));
+    document.querySelector('.ms-ind').classList.toggle('right',mode==='advanced');
+    syncChat();
+    checkMobile();
+}
+
+// ═══ SIMPLE MODE ═══
+function renderPresets(){
+    const g=$('presetGrid');
+    g.innerHTML=PRESETS.map(p=>`<div class="preset-card" data-tip="${esc(p.tip)}" onclick="selectPreset('${p.id}')"><div class="pc-icon">${p.icon}</div><div class="pc-text"><div class="pc-title">${p.title}</div><div class="pc-sub">${p.sub}</div></div></div>`).join('');
+}
+
+function selectPreset(id){
+    const p=PRESETS.find(x=>x.id===id);
+    if(!p)return;
+    if(p.direct==='dashboard'){
+        showSimpleView('dashboard');
+        return;
+    }
+    if(p.direct==='council'){
+        showSimpleView('council');
+        return;
+    }
+    if(p.focus){
+        $('simpleInput').focus();
+        return;
+    }
+    showSimpleView('chat');
+    if(p.msg)sendMessage(p.msg);
+}
+
+function showSimpleView(view){
+    S.simpleView=view;
+    $('simpleLanding').classList.toggle('hidden',view!=='landing');
+    $('simpleChat').classList.toggle('hidden',view!=='chat');
+    $('simpleDash').classList.toggle('hidden',view!=='dashboard');
+    $('simpleCouncil').classList.toggle('hidden',view!=='council');
+    $('simpleBar').classList.toggle('hidden',view==='dashboard'||view==='council');
+    if(view==='chat')scrollChat('simpleMsgs');
+}
+
+function backToLanding(){showSimpleView('landing');}
+
+function sendSimple(){
+    const inp=$('simpleInput');
+    const txt=inp.value.trim();
+    if(!txt)return;
+    inp.value='';
+    if(S.simpleView==='landing')showSimpleView('chat');
+    sendMessage(txt);
+}
+
+// ═══ ADVANCED MODE ═══
+function renderTabs(){
+    const tabs=['build','defi','dashboard','council'];
+    const labels={build:'Build',defi:'DeFi',dashboard:'Dash',council:'Council'};
+    const tabTips={build:'Build apps and deploy contracts with AI',defi:'Swap, stake, lend, and earn yield',dashboard:'View your apps, tokens, and settings',council:'Hire the team or get expert help'};
+    $('tabRow').innerHTML=tabs.map(t=>`<button class="atab${t===S.tab?' on':''}" data-tab="${t}" data-tip="${tabTips[t]}" onclick="switchTab('${t}')">${labels[t]}<span class="tab-arrow">▼</span></button>`).join('');
+    // Start with subcats/pills hidden
+    $('subcatRow').classList.add('hidden');
+    $('pillRow').classList.add('hidden');
+}
+
+function switchTab(tab){
+    const toggling=S.tab===tab;
+    if(toggling){
+        // Toggle dropdown open/closed
+        S.tabOpen=!S.tabOpen;
+    } else {
+        S.tab=tab;
+        S.tabOpen=true;
+    }
+    S.subcat=null;
+    document.querySelectorAll('.atab').forEach(b=>{
+        b.classList.toggle('on',b.dataset.tab===tab);
+        b.classList.toggle('open',b.dataset.tab===tab&&S.tabOpen);
+    });
+    document.querySelectorAll('.ctx-panel').forEach(p=>p.classList.toggle('on',p.id==='panel'+cap(tab)));
+    if(S.tabOpen&&SUBCATS[tab]){
+        renderSubcats();
+        $('subcatRow').classList.remove('hidden');
+    } else {
+        $('subcatRow').classList.add('hidden');
+    }
+    $('pillRow').innerHTML='';
+    $('pillRow').classList.add('hidden');
+    $('buildBar').classList.toggle('hidden',tab!=='build'||!S.building);
+    if(tab==='defi')renderDefiPanel();
+}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+
+function renderSubcats(){
+    const cats=SUBCATS[S.tab];
+    if(!cats){$('subcatRow').innerHTML='';return;}
+    $('subcatRow').innerHTML=cats.map(c=>`<button class="subcat-btn${c.id===S.subcat?' on':''}" data-tip="${esc(c.tip)}" onclick="switchSubcat('${c.id}')">${c.label}<span class="subcat-arrow">▼</span></button>`).join('');
+}
+
+function switchSubcat(id){
+    if(S.subcat===id){
+        S.subcat=null;
+        $('pillRow').classList.add('hidden');
+        renderSubcats();
+        return;
+    }
+    S.subcat=id;
+    renderSubcats();
+    renderPills();
+    $('pillRow').classList.remove('hidden');
+    $('pillRow').classList.remove('collapsed');
+    if(S.tab==='build'){
+        $('buildDefault').classList.toggle('hidden',S.building);
+        $('buildPreview').classList.toggle('hidden',!S.building);
+    }
+}
+
+function renderPills(){
+    const cats=SUBCATS[S.tab];
+    if(!cats){$('pillRow').innerHTML='';return;}
+    const cat=cats.find(c=>c.id===S.subcat);
+    if(!cat){$('pillRow').innerHTML='';return;}
+    $('pillRow').innerHTML=cat.pills.map(p=>`<button class="pill" data-tip="${esc(p.tip)}" data-action="${p.action||''}" onclick="clickPill(this)">${esc(p.t)}</button>`).join('');
+}
+
+function clickPill(el){
+    const action=el.dataset.action;
+    if(action==='councilForm'){
+        councilJump('form');
+    } else if(action==='telegram'){
+        window.open('https://t.me/inclawbate','_blank');
+    } else {
+        sendMessage(el.textContent);
+    }
+    if(window.innerWidth<=768){
+        S.subcat=null;
+        S.tabOpen=false;
+        $('subcatRow').classList.add('hidden');
+        $('pillRow').classList.add('hidden');
+        document.querySelectorAll('.atab').forEach(b=>b.classList.remove('open'));
+        renderSubcats();
+        const ctx=$('mobileCtx');
+        if(ctx&&ctx.classList.contains('on')){toggleMobileCtx();}
+    }
+}
+
+function renderLaunchGrid(){
+    $('launchGrid').innerHTML=LAUNCH_CARDS.map(c=>`<div class="launch-card" data-tip="${esc(c.tip)}" onclick="sendMessage('${esc(c.msg)}')"><div class="lc-icon">${c.icon}</div><div class="lc-title">${c.title}</div><div class="lc-sub">${c.sub}</div></div>`).join('');
+}
+
+function renderModelPicker(){
+    $('modelPicker').innerHTML=MODELS.map(m=>`<option value="${m.id}">${m.label} (${m.tag})</option>`).join('');
+}
+
+// ═══ CHAT SYSTEM ═══
+function addBotMsg(text,suggestions){
+    S.msgs.push({role:'assistant',content:text,suggestions:suggestions||[],ts:Date.now()});
+    syncChat();
+}
+function addUserMsg(text){
+    S.msgs.push({role:'user',content:text,ts:Date.now()});
+    syncChat();
+}
+
+function syncChat(){
+    const targets=S.mode==='simple'?[{msgs:'simpleMsgs',sugg:'simpleSugg'}]:[{msgs:'advMsgs',sugg:'advSugg'}];
+    targets.forEach(({msgs:mId,sugg:sId})=>{
+        const container=$(mId);
+        if(!container)return;
+        container.innerHTML=S.msgs.map(m=>{
+            const cls=m.role==='user'?'user':'bot';
+            const av=m.role==='user'?'👤':'🦀';
+            let html=`<div class="chat-msg ${cls}"><div class="chat-avatar">${av}</div><div class="chat-bubble">${mdToHTML(m.content)}</div></div>`;
+            return html;
+        }).join('');
+        if(S.sending){
+            container.innerHTML+=`<div class="chat-msg bot"><div class="chat-avatar">🦀</div><div class="chat-bubble"><div class="typing"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div></div>`;
+        }
+        scrollChat(mId);
+
+        const sc=$(sId);
+        if(!sc)return;
+        const lastBot=[...S.msgs].reverse().find(m=>m.role==='assistant');
+        if(lastBot&&lastBot.suggestions&&lastBot.suggestions.length){
+            sc.innerHTML=lastBot.suggestions.map(s=>`<button class="sugg-pill" onclick="clickPill(this)">${esc(s)}</button>`).join('');
+        }else{
+            sc.innerHTML='';
+        }
+    });
+}
+
+function scrollChat(id){
+    const el=$(id);
+    if(el)setTimeout(()=>el.scrollTop=el.scrollHeight,50);
+}
+
+async function sendMessage(text){
+    if(S.sending||!text.trim())return;
+    addUserMsg(text.trim());
+    S.sending=true;
+    syncChat();
+
+    // Check for pending TX confirmation
+    if(S.pendingTx&&/^(yes|confirm|do it|go ahead|sign|approve|ok|yep|yeah|sure|send it|execute)$/i.test(text.trim())){
+        await executeTx(S.pendingTx);
+        S.pendingTx=null;
+        S.sending=false;
+        syncChat();
+        return;
+    }
+
+    // Build mode uses studio API
+    if(S.building&&S.tab==='build'){
+        await sendBuildMsg(text.trim());
+        return;
+    }
+
+    try{
+        const history=S.msgs.slice(-10).map(m=>({role:m.role,content:m.content}));
+        const res=await fetch(API.chat,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({message:text.trim(),session_id:S.sessionId,wallet:S.wallet||'',client_history:history})
+        });
+        const data=await res.json();
+        S.sending=false;
+
+        if(data.session_id)S.sessionId=data.session_id;
+
+        const suggs=data.suggestions||[];
+        addBotMsg(data.reply||'Something went wrong. Try again.',suggs);
+
+        // Handle app_url (enter build mode)
+        if(data.app_url){
+            enterBuildMode(data.app_url);
+        }
+
+        // Handle tx_data
+        if(data.tx_data){
+            S.pendingTx=data.tx_data;
+            // The reply should mention confirming
+        }
+
+    }catch(e){
+        S.sending=false;
+        addBotMsg("Couldn't reach the server. Please try again.");
+        console.error('Chat error:',e);
+    }
+}
+
+function sendAdv(){
+    const inp=$('advInput');
+    const txt=inp.value.trim();
+    if(!txt)return;
+    inp.value='';
+    sendMessage(txt);
+}
+
+function sendMobile(){
+    const inp=$('mobInput');
+    const txt=inp.value.trim();
+    if(!txt)return;
+    inp.value='';
+    sendMessage(txt);
+}
+
+// ═══ BUILD MODE (SSE) ═══
+async function sendBuildMsg(text){
+    try{
+        const res=await fetch(API.studio,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                message:text,
+                model:$('modelPicker').value,
+                current_code:S.buildCode,
+                session_id:S.sessionId
+            })
+        });
+
+        if(!res.body){
+            S.sending=false;
+            addBotMsg("Streaming not supported in this browser. Try a different one.");
+            return;
+        }
+
+        const reader=res.body.getReader();
+        const decoder=new TextDecoder();
+        let buffer='',reply='',code='';
+
+        while(true){
+            const{done,value}=await reader.read();
+            if(done)break;
+            buffer+=decoder.decode(value,{stream:true});
+
+            const lines=buffer.split('\n');
+            buffer=lines.pop();
+
+            for(const line of lines){
+                if(!line.startsWith('data: '))continue;
+                try{
+                    const d=JSON.parse(line.slice(6));
+                    if(d.type==='delta'){
+                        if(d.text)reply+=d.text;
+                        if(d.code)code+=d.code;
+                    }
+                    if(d.type==='session'&&d.session_id)S.sessionId=d.session_id;
+                }catch{}
+            }
+        }
+
+        S.sending=false;
+
+        if(code){
+            // Clean code (strip markdown fences)
+            code=code.replace(/^```html?\n?/i,'').replace(/\n?```$/,'');
+            const htmlStart=code.indexOf('<!DOCTYPE');
+            if(htmlStart>0)code=code.slice(htmlStart);
+            else if(htmlStart<0){
+                const ht=code.indexOf('<html');
+                if(ht>0)code=code.slice(ht);
+            }
+            S.buildCode=code;
+            updatePreview(code);
+        }
+
+        const suggs=S.building?['Change the design','Add features','Looks good!','Exit editing']:[];
+        addBotMsg(reply||'Done! Check the preview on the right.',suggs);
+
+    }catch(e){
+        S.sending=false;
+        addBotMsg("Build error. Try again.");
+        console.error('Build SSE error:',e);
+    }
+}
+
+function enterBuildMode(url){
+    const slug=url.split('/s/')[1]||url.split('/').pop();
+    S.building=true;
+    S.buildSlug=slug;
+    $('buildBar').classList.remove('hidden');
+    $('buildDefault').classList.add('hidden');
+    $('buildPreview').classList.remove('hidden');
+
+    // Fetch current code
+    fetch(API.serve+'?slug='+encodeURIComponent(slug)+'&raw=1')
+        .then(r=>r.text())
+        .then(code=>{
+            S.buildCode=code;
+            updatePreview(code);
+        }).catch(()=>{});
+
+    if(S.mode==='advanced')switchTab('build');
+}
+
+function exitBuildMode(){
+    S.building=false;
+    S.buildSlug='';
+    S.buildCode='';
+    $('buildBar').classList.add('hidden');
+    $('buildDefault').classList.remove('hidden');
+    $('buildPreview').classList.add('hidden');
+}
+
+function updatePreview(code){
+    const f=$('previewFrame');
+    if(f)f.srcdoc=code;
+    const mf=$('mobPreviewFrame');
+    if(mf)mf.srcdoc=code;
+}
+
+async function publishApp(){
+    if(!S.buildCode||!S.buildSlug){toast('Nothing to publish');return;}
+    try{
+        const res=await fetch(API.publish,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({slug:S.buildSlug,code:S.buildCode,source:'inclawbator',update:true,creator_wallet:S.wallet||''})
+        });
+        const data=await res.json();
+        toast('Published!');
+        addBotMsg(`Published! Your app is live at [inclawbate.app/s/${S.buildSlug}](https://inclawbate.app/s/${S.buildSlug})`,['Change the design','Add features','Exit editing']);
+    }catch(e){
+        toast('Publish failed');
+        console.error(e);
+    }
+}
+
+// ═══ WALLET ═══
+async function connectWallet(){
+    // Try WalletKit first (on inclawbate.com)
+    if(window.WalletKit){
+        try{
+            if(!WalletKit.isConnected())await WalletKit.open();
+            const addr=WalletKit.getAddress();
+            if(addr)return setWallet(addr);
+        }catch{}
+    }
+
+    // Try window.ethereum
+    if(window.ethereum){
+        try{
+            const accts=await window.ethereum.request({method:'eth_requestAccounts'});
+            if(accts&&accts[0]){
+                await switchToBase();
+                return setWallet(accts[0]);
+            }
+        }catch(e){
+            if(e.code===4001)return toast('Wallet connection rejected');
+        }
+    }
+
+    // Cookie fallback
+    const fromCookie=getWalletFromCookie();
+    if(fromCookie)return setWallet(fromCookie);
+
+    toast('No wallet found. Install MetaMask or use inclawbate.com');
+}
+
+function setWallet(addr){
+    S.wallet=addr;
+    const btn=$('walletBtn');
+    btn.innerHTML=`<span class="wall-dot"></span>${fmtAddr(addr)}`;
+    btn.classList.add('on');
+    renderDefiPanel();
+    fetchBalances();
+}
+
+function getWalletFromCookie(){
+    try{
+        const m=document.cookie.match(/inclawbate_token=([^;]+)/);
+        if(!m)return null;
+        const payload=JSON.parse(atob(decodeURIComponent(m[1]).split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+        return payload.wallet_address||null;
+    }catch{return null;}
+}
+
+async function switchToBase(){
+    if(!window.ethereum)return;
+    try{
+        await window.ethereum.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x2105'}]});
+    }catch(e){
+        if(e.code===4902){
+            await window.ethereum.request({method:'wallet_addEthereumChain',params:[{chainId:'0x2105',chainName:'Base',rpcUrls:['https://mainnet.base.org'],nativeCurrency:{name:'ETH',symbol:'ETH',decimals:18},blockExplorerUrls:['https://basescan.org']}]});
+        }
+    }
+}
+
+async function tryAutoConnect(){
+    const fromCookie=getWalletFromCookie();
+    if(fromCookie){setWallet(fromCookie);return;}
+    if(window.WalletKit&&WalletKit.isConnected()){
+        const addr=WalletKit.getAddress();
+        if(addr)setWallet(addr);
+    }else if(window.ethereum){
+        try{
+            const accts=await window.ethereum.request({method:'eth_accounts'});
+            if(accts&&accts[0])setWallet(accts[0]);
+        }catch{}
+    }
+}
+
+// ═══ DEFI PANEL ═══
+async function fetchBalances(){
+    if(!S.wallet)return;
+    try{
+        const res=await fetch(API.balances+'?wallet='+S.wallet);
+        S.balances=await res.json();
+        renderDefiPanel();
+    }catch{
+        // Fallback: direct RPC
+        try{
+            const[eth,usdc,claws]=await Promise.all([
+                rpcCall('eth_getBalance',[S.wallet,'latest']),
+                rpcTokenBal(CONTRACTS.USDC,S.wallet),
+                rpcTokenBal(CONTRACTS.CLAWS,S.wallet),
+            ]);
+            S.balances={
+                eth:{balance:Number(BigInt(eth||'0x0'))/1e18,usd:0},
+                usdc:{balance:Number(BigInt(usdc||'0x0'))/1e6,usd:0},
+                claws:{balance:Number(BigInt(claws||'0x0'))/1e18,usd:0},
+                total:0
+            };
+            renderDefiPanel();
+        }catch(e){console.error('Balance fetch failed:',e);}
+    }
+}
+
+async function rpcCall(method,params){
+    const res=await fetch(API.rpc,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})});
+    const j=await res.json();
+    return j.result;
+}
+
+async function rpcTokenBal(token,wallet){
+    const data='0x70a08231'+wallet.slice(2).toLowerCase().padStart(64,'0');
+    return rpcCall('eth_call',[{to:token,data},'latest']);
+}
+
+function renderDefiPanel(){
+    if(!S.wallet){
+        $('defiConnect').classList.remove('hidden');
+        $('defiDash').classList.add('hidden');
+        return;
+    }
+    $('defiConnect').classList.add('hidden');
+    $('defiDash').classList.remove('hidden');
+
+    const b=S.balances||{eth:{balance:0,usd:0},usdc:{balance:0,usd:0},claws:{balance:0,usd:0},total:0};
+    const staking=b.staking||{staked:0,earned:0};
+
+    $('defiDash').innerHTML=`
+        <div class="portfolio-hdr">
+            <div><div class="sec-label">Portfolio</div><div class="portfolio-total">${fmtUSD(b.total)}</div></div>
+            <button class="btn btn-outline btn-sm" onclick="fetchBalances()">Refresh</button>
+        </div>
+        <div class="portfolio-grid">
+            <div class="port-card"><div class="port-token">ETH</div><div class="port-val">${fmtBal(b.eth?.balance)}</div><div class="port-usd">${fmtUSD(b.eth?.usd)}</div></div>
+            <div class="port-card"><div class="port-token">USDC</div><div class="port-val">${fmtBal(b.usdc?.balance,2)}</div><div class="port-usd">${fmtUSD(b.usdc?.usd)}</div></div>
+            <div class="port-card"><div class="port-token">CLAWS</div><div class="port-val">${fmtBal(b.claws?.balance,0)}</div><div class="port-usd">${fmtUSD(b.claws?.usd)}</div></div>
+        </div>
+
+        <div class="sec-label">Swap</div>
+        <div class="swap-section">
+            <div class="swap-box">
+                <div class="swap-label">You pay</div>
+                <div class="swap-row">
+                    <input class="swap-input" id="swapAmt" type="text" inputmode="decimal" placeholder="0" oninput="getQuote()">
+                    <button class="swap-max" onclick="setMaxSwap()">MAX</button>
+                    <select class="swap-select" id="swapFrom" onchange="S.swapFrom=this.selectedIndex;getQuote()">${TOKENS.map((t,i)=>`<option${i===S.swapFrom?' selected':''}>${t.sym}</option>`).join('')}</select>
+                </div>
+                <button class="swap-flip" onclick="flipSwap()">↕</button>
+            </div>
+            <div class="swap-box">
+                <div class="swap-label">You receive</div>
+                <div class="swap-row">
+                    <input class="swap-input" id="swapOut" type="text" placeholder="0" readonly>
+                    <select class="swap-select" id="swapTo" onchange="S.swapTo=this.selectedIndex;getQuote()">${TOKENS.map((t,i)=>`<option${i===S.swapTo?' selected':''}>${t.sym}</option>`).join('')}</select>
+                </div>
+            </div>
+            <div class="swap-rate" id="swapRate"></div>
+            <button class="btn btn-primary btn-block" onclick="doSwap()">Swap</button>
+        </div>
+
+        <div class="sec-label">CLAWS Staking</div>
+        <div class="stake-card">
+            <div class="stake-row"><span class="stake-label">Staked</span><span class="stake-val">${fmtBal(staking.staked,0)} CLAWS</span></div>
+            <div class="stake-row"><span class="stake-label">Earned</span><span class="stake-val">${fmtBal(staking.earned,2)} CLAWS</span></div>
+            <div class="stake-actions">
+                <button class="btn btn-primary btn-sm" onclick="sendMessage('I want to stake CLAWS')">Stake</button>
+                <button class="btn btn-outline btn-sm" onclick="sendMessage('I want to unstake CLAWS')">Unstake</button>
+                <button class="btn btn-seafoam btn-sm" onclick="sendMessage('Claim my staking rewards')">Claim</button>
+            </div>
+        </div>
+
+        <div class="sec-label">Lending Protocols</div>
+        <div class="proto-grid">${LENDING_PROTOS.map(p=>`<div class="proto-card" onclick="sendMessage('Tell me about lending on ${p.name}')"><div class="proto-icon">${p.icon}</div><div class="proto-info"><div class="proto-name">${p.name}</div><div class="proto-detail">${p.detail}</div></div><div class="proto-apy">${p.apy}</div></div>`).join('')}</div>
+
+        <div class="sec-label">Strategies</div>
+        <div class="strat-grid">${STRAT_CARDS.map(s=>`<div class="strat-card" data-tip="${esc(s.tip)}" onclick="sendMessage('Tell me about the ${s.name.toLowerCase()} DeFi strategy')"><div class="strat-hdr"><span class="strat-name">${s.name}</span><span class="strat-apy">${s.apy}</span></div><div class="strat-risk">${[1,2,3].map(i=>`<div class="strat-dot${i<=s.risk?' on':''}"></div>`).join('')}</div><div class="strat-desc">${s.desc}</div></div>`).join('')}</div>
+    `;
+}
+
+// Swap helpers
+let quoteTimeout;
+function getQuote(){
+    clearTimeout(quoteTimeout);
+    quoteTimeout=setTimeout(async()=>{
+        const amt=$('swapAmt')?.value;
+        if(!amt||isNaN(amt)||Number(amt)<=0){
+            if($('swapOut'))$('swapOut').value='';
+            if($('swapRate'))$('swapRate').textContent='';
+            return;
+        }
+        const from=TOKENS[S.swapFrom],to=TOKENS[S.swapTo];
+        if(from.sym===to.sym)return;
+        try{
+            const amtIn=BigInt(Math.floor(Number(amt)*10**from.dec));
+            // Try fee tiers
+            for(const fee of[3000,500,10000]){
+                try{
+                    const iface=new ethers.Interface(['function quoteExactInputSingle((address,address,uint256,uint24,uint160)) returns (uint256,uint160,uint32,uint256)']);
+                    const data=iface.encodeFunctionData('quoteExactInputSingle',[[from.addr,to.addr,amtIn.toString(),fee,0]]);
+                    const result=await rpcCall('eth_call',[{to:CONTRACTS.QUOTER,data},'latest']);
+                    if(result&&result!=='0x'){
+                        const decoded=ethers.AbiCoder.defaultAbiCoder().decode(['uint256','uint160','uint32','uint256'],result);
+                        const outAmt=Number(decoded[0])/10**to.dec;
+                        if($('swapOut'))$('swapOut').value=outAmt.toFixed(to.dec<=6?2:6);
+                        if($('swapRate'))$('swapRate').textContent=`1 ${from.sym} ≈ ${(outAmt/Number(amt)).toFixed(to.dec<=6?2:4)} ${to.sym}`;
+                        return;
+                    }
+                }catch{}
+            }
+            if($('swapRate'))$('swapRate').textContent='No liquidity found';
+        }catch(e){
+            console.error('Quote error:',e);
+        }
+    },400);
+}
+
+function flipSwap(){
+    const tmp=S.swapFrom;
+    S.swapFrom=S.swapTo;
+    S.swapTo=tmp;
+    if($('swapFrom'))$('swapFrom').selectedIndex=S.swapFrom;
+    if($('swapTo'))$('swapTo').selectedIndex=S.swapTo;
+    const amtEl=$('swapAmt'),outEl=$('swapOut');
+    if(amtEl&&outEl){
+        amtEl.value=outEl.value;
+        outEl.value='';
+    }
+    getQuote();
+}
+
+function setMaxSwap(){
+    if(!S.balances)return;
+    const from=TOKENS[S.swapFrom];
+    let bal=0;
+    if(from.sym==='ETH')bal=S.balances.eth?.balance||0;
+    else if(from.sym==='USDC')bal=S.balances.usdc?.balance||0;
+    else if(from.sym==='CLAWS')bal=S.balances.claws?.balance||0;
+    if(from.sym==='ETH')bal=Math.max(0,bal-0.001); // Keep gas
+    if($('swapAmt'))$('swapAmt').value=bal.toString();
+    getQuote();
+}
+
+async function doSwap(){
+    const amt=$('swapAmt')?.value;
+    if(!amt||Number(amt)<=0){toast('Enter an amount');return;}
+    const from=TOKENS[S.swapFrom],to=TOKENS[S.swapTo];
+    sendMessage(`Swap ${amt} ${from.sym} for ${to.sym}`);
+}
+
+// ═══ COUNCIL ═══
+async function sendCouncil(src){
+    const descEl=$('councilDesc'+cap(src));
+    const contactEl=$('councilContact'+cap(src));
+    const desc=descEl?.value?.trim();
+    const contact=contactEl?.value?.trim();
+    if(!desc){toast('Please describe what you need');return;}
+
+    try{
+        const res=await fetch(API.hire,{
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({description:desc,contact:contact||''})
+        });
+        const data=await res.json();
+        $('councilForm'+cap(src)).classList.add('hidden');
+        $('councilSuccess'+cap(src)).classList.remove('hidden');
+        if(data.id){
+            S.councilReqId=data.id;
+            pollCouncil(data.id);
+        }
+    }catch(e){
+        toast('Failed to send. Try again.');
+        console.error(e);
+    }
+}
+
+function resetCouncilForm(src){
+    $('councilForm'+cap(src)).classList.remove('hidden');
+    $('councilSuccess'+cap(src)).classList.add('hidden');
+    const descEl=$('councilDesc'+cap(src));
+    const contactEl=$('councilContact'+cap(src));
+    if(descEl)descEl.value='';
+    if(contactEl)contactEl.value='';
+}
+
+function pollCouncil(id){
+    const interval=setInterval(async()=>{
+        try{
+            const res=await fetch(API.council+'?id='+id);
+            const data=await res.json();
+            if(data.reply){
+                clearInterval(interval);
+                addBotMsg('Council replied: '+data.reply);
+                toast('Council responded!');
+            }
+        }catch{clearInterval(interval);}
+    },10000);
+    // Stop after 5 minutes
+    setTimeout(()=>clearInterval(interval),300000);
+}
+
+// ═══ TRANSACTION EXECUTION ═══
+async function executeTx(txData){
+    if(!window.ethereum){toast('No wallet available');return;}
+    try{
+        await switchToBase();
+        const tx=txData.tx||txData;
+        const hash=await window.ethereum.request({method:'eth_sendTransaction',params:[tx]});
+        addBotMsg(`Transaction sent! Hash: \`${hash}\`\n\nWaiting for confirmation...`);
+        // Poll for receipt
+        const checkReceipt=setInterval(async()=>{
+            try{
+                const receipt=await rpcCall('eth_getTransactionReceipt',[hash]);
+                if(receipt){
+                    clearInterval(checkReceipt);
+                    const success=receipt.status==='0x1';
+                    addBotMsg(success?'Transaction confirmed! ✓':'Transaction failed. Check the details on BaseScan.');
+                }
+            }catch{}
+        },3000);
+        setTimeout(()=>clearInterval(checkReceipt),120000);
+    }catch(e){
+        if(e.code===4001)addBotMsg('Transaction cancelled.');
+        else addBotMsg('Transaction failed: '+(e.message||'Unknown error'));
+    }
+}
+
+// ═══ KEY BINDINGS ═══
+function bindKeys(){
+    $('simpleInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendSimple();}});
+    $('advInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendAdv();}});
+    $('advInput')?.addEventListener('input',function(){this.style.height='auto';this.style.height=Math.min(this.scrollHeight,140)+'px';});
+    $('mobInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMobile();}});
+}
+
+// ═══ DASH & COUNCIL NAV ═══
+function councilJump(target){
+    if(target==='form'){
+        const ta=$('councilDescAdv');
+        if(ta){ta.scrollIntoView({behavior:'smooth',block:'center'});ta.focus();}
+    }
+}
+
+// ═══ IDEAS TICKER ═══
+const BUILD_IDEAS=[
+    '"Build me a portfolio tracker with live prices"',
+    '"Create a staking dashboard for my token"',
+    '"Make a landing page for my NFT collection"',
+    '"Build a leaderboard that reads from on-chain data"',
+    '"Design a token-gated members area"',
+    '"Create a voting tool for my DAO"',
+    '"Build an analytics dashboard with charts"',
+    '"Make a minting page for my NFT drop"',
+    '"Create a multi-wallet airdrop tool"',
+    '"Build a DeFi yield comparison page"',
+    '"Design a community hub with chat"',
+    '"Create a payment page that accepts CLAWS"',
+    '"Build a game with a leaderboard"',
+    '"Make a countdown page for my token launch"',
+    '"Create a revenue splitting dashboard"',
+];
+let ideaIdx=0,ideaTimer=null;
+function startIdeasTicker(){
+    const el=$('ideasTicker');
+    if(!el)return;
+    function show(){
+        el.innerHTML=`<div class="idea-phrase">${BUILD_IDEAS[ideaIdx]}</div>`;
+        ideaIdx=(ideaIdx+1)%BUILD_IDEAS.length;
+    }
+    show();
+    ideaTimer=setInterval(show,1800);
+}
+function stopIdeasTicker(){if(ideaTimer){clearInterval(ideaTimer);ideaTimer=null;}}
+
+// ═══ MOBILE ═══
+function checkMobile(){
+    const mob=window.innerWidth<=768;
+    // Advanced mode mobile adjustments
+    if(S.mode==='advanced'&&mob){
+        $('mobileBar')?.classList.remove('hidden');
+    }else{
+        $('mobileBar')?.classList.add('hidden');
+        $('mobileCtx')?.classList.add('hidden');
+        $('mobileCtx')?.classList.remove('on');
+    }
+}
+
+function toggleMobileCtx(){
+    const overlay=$('mobileCtx');
+    if(overlay.classList.contains('on')){
+        overlay.classList.remove('on');
+        overlay.classList.add('hidden');
+    }else{
+        overlay.classList.remove('hidden');
+        overlay.classList.add('on');
+        // Clone active context panel content into mobile overlay
+        const active=document.querySelector('.ctx-panel.on');
+        if(active)$('mobCtxContent').innerHTML=active.innerHTML;
+    }
+}
+
+// ═══ BOOT ═══
+init();
+</script>
+</body>
+</html>

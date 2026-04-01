@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>BudgetBot</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        html{font-size:22px}
+        html,body{font-family:'Inter',sans-serif;margin:0;padding:0;height:100%;-webkit-font-smoothing:antialiased;font-weight:600}
+
+        :root{
+            --ac:52,211,153;
+            --bg:#060d0a;--s1:rgba(10,14,12,0.9);--s2:rgba(14,28,22,0.7);
+            --border:rgba(var(--ac),0.1);--border-h:rgba(var(--ac),0.22);
+            --text:#f0f6f3;--t2:#d0e4da;--t3:#8aac9c;--t4:#5c8070;
+            --accent:rgb(var(--ac));--accent-d:rgba(var(--ac),0.08);
+            --gold:rgb(var(--ac));--gold-d:rgba(var(--ac),0.08);
+            --glow:rgba(var(--ac),0.12);--card-bg:rgba(10,22,18,0.6);
+            --green:rgb(var(--ac));--red:#f87171;--cyan:#2dd4bf;
+        }
+        body{background:var(--bg);color:var(--text)}
+        body::before{content:'';position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#060d0a 0%,#0a1f16 25%,#0d1a14 50%,#061210 75%,#060d0a 100%);background-size:400% 400%;animation:bgGrad 20s ease infinite;z-index:-1;pointer-events:none}
+        @keyframes bgGrad{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        @keyframes fadeUp{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:translateY(0)}}
+        @keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
+        @keyframes shimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.5}}
+        @keyframes ringFill{0%{stroke-dashoffset:251.2}100%{stroke-dashoffset:var(--ring-offset,251.2)}}
+        @keyframes dotFloat{0%,100%{transform:translateY(0) scale(1);opacity:0.4}50%{transform:translateY(-15px) scale(1.3);opacity:0.7}}
+
+        /* Floating sparkle shapes */
+        .sparkles{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;overflow:hidden}
+        .sparkle{position:absolute;opacity:0.045;animation:dotFloat 6s ease-in-out infinite;user-select:none;filter:brightness(0) invert(1)}
+
+        #app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;z-index:1}
+
+        /* Header */
+        .hdr{display:flex;align-items:center;padding:1rem 1.2rem;gap:0.6rem;border-bottom:1px solid var(--border);flex-shrink:0;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);background:var(--card-bg)}
+        .hdr-logo{font-weight:800;font-size:1.3rem;letter-spacing:0.1em;background:linear-gradient(135deg,#e8f2ee,var(--accent),var(--accent),#e8f2ee);background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 4s ease infinite}
+        .bot-svg{fill:var(--accent);color:var(--accent)}
+        .hdr-bot-logo{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,rgba(var(--ac),0.1),rgba(var(--ac),0.06));border:1px solid rgba(var(--ac),0.18);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 0 12px rgba(var(--ac),0.08);padding:5px}
+        .hdr-bot-logo .bot-svg{width:22px;height:22px;opacity:0.85}
+        .hdr-sub{font-size:0.45rem;color:var(--t4);font-weight:600;text-transform:uppercase;letter-spacing:0.14em}
+        .hdr-r{margin-left:auto;display:flex;gap:0.3rem}
+
+        /* Nav */
+        .nav{display:flex;padding:0.3rem 0.4rem;gap:0.2rem;border-bottom:1px solid var(--border);background:var(--card-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);overflow-x:auto;flex-shrink:0}
+        .nav::-webkit-scrollbar{display:none}
+        .nav-btn{padding:0.55rem 0.85rem;font-size:0.52rem;font-weight:800;color:var(--t4);background:none;border:none;border-radius:10px;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all 0.25s;text-transform:uppercase;letter-spacing:0.1em}
+        .nav-btn:hover{color:var(--text);background:var(--accent-d)}
+        .nav-btn.active{color:#0a0a0a;background:linear-gradient(135deg,var(--accent),var(--accent));box-shadow:0 2px 12px rgba(var(--ac),0.3)}
+
+        .sec{display:none;flex:1;flex-direction:column;overflow:hidden;min-height:0}
+        .sec.active{display:flex}
+        .scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0.8rem 1rem;flex:1;min-height:0}
+
+        .sec-head{font-size:0.55rem;font-weight:800;color:var(--accent);margin:1.6rem 0 0.7rem;text-transform:uppercase;letter-spacing:0.18em;padding-bottom:0.4rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.4rem}
+        .sec-head:first-child{margin-top:0}
+        .sec-head-icon{font-size:0.7rem}
+
+        /* Buttons */
+        .btn{padding:0.5rem 1rem;border:none;border-radius:10px;font-family:inherit;font-weight:800;font-size:0.56rem;cursor:pointer;transition:all 0.25s;display:inline-flex;align-items:center;justify-content:center;gap:0.3rem;text-transform:uppercase;letter-spacing:0.1em}
+        .btn-p{background:linear-gradient(135deg,var(--accent),var(--accent));color:#0a0a0a;position:relative;overflow:hidden}
+        .btn-p::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(135deg,transparent,rgba(255,255,255,0.15),transparent);animation:shimmer 3s ease infinite}
+        .btn-p:hover{box-shadow:0 4px 20px rgba(var(--ac),0.35);transform:translateY(-2px)}
+        .btn-g{background:linear-gradient(135deg,var(--accent),var(--accent));color:#0a0a0a}.btn-g:hover{box-shadow:0 4px 20px rgba(var(--ac),0.35);transform:translateY(-2px)}
+        .btn-o{background:var(--card-bg);color:var(--t2);border:1px solid var(--border);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}.btn-o:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 14px var(--glow)}
+        .btn-d{background:none;color:#f87171;border:1px solid rgba(248,113,113,0.3);border-radius:10px}.btn-d:hover{background:rgba(248,113,113,0.08);border-color:#f87171}
+        .btn-sm{padding:0.35rem 0.7rem;font-size:0.45rem}
+        .btn-pay{background:linear-gradient(135deg,#2dd4bf,#14b8a6);color:#0a0a0a;border-radius:10px;border:none;position:relative;overflow:hidden;font-weight:800}.btn-pay::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(135deg,transparent,rgba(255,255,255,0.1),transparent);animation:shimmer 3s ease infinite}.btn-pay:hover{box-shadow:0 4px 16px rgba(45,212,191,0.3);transform:translateY(-2px)}
+        .btn-add{background:linear-gradient(135deg,var(--accent),var(--accent));color:#0a0a0a;border-radius:10px;font-weight:800;letter-spacing:0.08em;position:relative;overflow:hidden}
+        .btn-add::after{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(135deg,transparent,rgba(255,255,255,0.15),transparent);animation:shimmer 3s ease infinite}
+        .btn-add:hover{box-shadow:0 4px 20px rgba(var(--ac),0.4);transform:translateY(-2px)}
+
+        /* Form */
+        .fg{margin-bottom:0.8rem}
+        .fl{display:block;font-size:0.5rem;font-weight:900;color:var(--accent);margin-bottom:0.3rem;text-transform:uppercase;letter-spacing:0.16em}
+        .fi{width:100%;padding:0.6rem 0.75rem;background:var(--card-bg);border:1px solid var(--border);color:var(--text);font-family:inherit;font-size:0.78rem;font-weight:600;border-radius:10px;outline:none;transition:all 0.25s;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+        .fi:focus{border-color:var(--accent);box-shadow:0 0 16px var(--glow),0 0 4px rgba(var(--ac),0.15) inset}
+        .fi::placeholder{color:var(--t4);font-weight:300}
+        select.fi{appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2334d399' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.75rem center}
+        textarea.fi{resize:vertical;min-height:60px}
+        .fr{display:flex;gap:0.8rem}.fr>.fg{flex:1}
+
+        /* ═══ HERO DASHBOARD ═══ */
+        .hero{position:relative;background:linear-gradient(135deg,rgba(var(--ac),0.06),rgba(10,22,18,0.4));border:1px solid var(--border);border-radius:16px;padding:1.2rem;margin-bottom:1rem;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);overflow:hidden;animation:fadeUp 0.5s ease both}
+        .hero::before{content:'';position:absolute;top:-1px;left:-1px;right:-1px;bottom:-1px;border-radius:16px;background:linear-gradient(135deg,rgba(var(--ac),0.15),transparent,rgba(var(--ac),0.08));z-index:0;pointer-events:none}
+        .hero-inner{position:relative;z-index:1}
+        .hero-month{font-size:0.5rem;font-weight:900;text-transform:uppercase;letter-spacing:0.16em;color:var(--accent);margin-bottom:0.8rem}
+        .hero-row{display:flex;align-items:center;gap:1rem}
+        .hero-ring{position:relative;width:90px;height:90px;flex-shrink:0}
+        .hero-ring svg{transform:rotate(-90deg)}
+        .hero-ring-bg{fill:none;stroke:rgba(var(--ac),0.08);stroke-width:6}
+        .hero-ring-fill{fill:none;stroke:url(#ringGrad);stroke-width:6;stroke-linecap:round;stroke-dasharray:251.2;stroke-dashoffset:251.2;animation:ringFill 1.2s ease 0.3s forwards}
+        .hero-ring-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+        .hero-ring-pct{font-size:1.2rem;font-weight:800;color:var(--accent);letter-spacing:-0.02em;line-height:1}
+        .hero-ring-label{font-size:0.32rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--t4);margin-top:0.1rem}
+        .hero-stats{flex:1;display:flex;flex-direction:column;gap:0.4rem}
+        .hero-stat{display:flex;justify-content:space-between;align-items:center;padding:0.35rem 0.5rem;background:rgba(var(--ac),0.04);border-radius:8px;border:1px solid rgba(var(--ac),0.06)}
+        .hero-stat-left{display:flex;align-items:center;gap:0.35rem}
+        .hero-stat-icon{font-size:0.75rem;width:24px;text-align:center}
+        .hero-stat-label{font-size:0.46rem;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:0.08em}
+        .hero-stat-val{font-size:0.78rem;font-weight:800;letter-spacing:0.02em}
+        .hero-stat-val.gold{color:var(--accent)}
+        .hero-stat-val.green{color:#4ade80}
+        .hero-stat-val.red{color:#f87171}
+        .hero-stat-val.white{color:var(--text)}
+
+        /* ═══ BILL CARD ═══ */
+        .bill-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:0.7rem 0.85rem;margin-bottom:0.45rem;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;gap:0.55rem;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:fadeUp 0.3s ease both;position:relative;overflow:hidden}
+        .bill-card::before{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;border-radius:14px 0 0 14px}
+        .bill-card:hover{border-color:rgba(var(--ac),0.2);box-shadow:0 6px 24px rgba(0,0,0,0.15),0 0 12px var(--glow);transform:translateY(-2px)}
+        .bill-card.overdue{border-color:rgba(248,113,113,0.25)}
+        .bill-card.overdue::after{content:'';position:absolute;top:0;right:0;width:40px;height:40px;background:radial-gradient(circle at top right,rgba(248,113,113,0.12),transparent 70%);pointer-events:none}
+        .bill-cat-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0;position:relative;z-index:1}
+        .bill-info{flex:1;min-width:0;position:relative;z-index:1}
+        .bill-name{font-size:0.76rem;font-weight:800;letter-spacing:0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .bill-meta{font-size:0.46rem;color:var(--t3);display:flex;gap:0.4rem;align-items:center;margin-top:0.12rem;font-weight:700}
+        .bill-right{text-align:right;flex-shrink:0;position:relative;z-index:1}
+        .bill-amount{font-size:0.88rem;font-weight:800;color:var(--accent);letter-spacing:0.02em}
+        .bill-status{font-size:0.4rem;font-weight:900;text-transform:uppercase;letter-spacing:0.1em;padding:0.12rem 0.4rem;border-radius:6px;display:inline-block;margin-top:0.1rem}
+        .bill-status.paid{background:rgba(74,222,128,0.1);color:#4ade80;border:1px solid rgba(74,222,128,0.15)}
+        .bill-status.unpaid{background:rgba(var(--ac),0.06);color:var(--accent);border:1px solid rgba(var(--ac),0.12)}
+        .bill-status.overdue{background:rgba(248,113,113,0.08);color:#f87171;border:1px solid rgba(248,113,113,0.15);animation:pulse 2s ease infinite}
+        .bill-status.partial{background:rgba(251,191,36,0.08);color:#fbbf24;border:1px solid rgba(251,191,36,0.15)}
+        .bill-days{font-size:0.42rem;color:var(--t3);font-weight:700;margin-top:0.08rem}
+
+        /* Filter bar */
+        .filter-bar{display:flex;gap:0.25rem;margin-bottom:0.6rem;flex-wrap:wrap}
+        .filter-pill{padding:0.32rem 0.65rem;border-radius:10px;font-size:0.46rem;font-weight:800;font-family:inherit;cursor:pointer;border:1px solid var(--border);background:var(--card-bg);color:var(--t4);transition:all 0.25s;text-transform:uppercase;letter-spacing:0.08em;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+        .filter-pill:hover{border-color:var(--accent);color:var(--text)}
+        .filter-pill.on{border-color:transparent;background:linear-gradient(135deg,var(--accent),var(--accent));color:#0a0a0a;box-shadow:0 2px 10px rgba(var(--ac),0.25)}
+
+        /* Category bar chart */
+        .cat-bars{margin-top:0.5rem;background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:0.8rem;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:fadeUp 0.5s 0.2s ease both}
+        .cat-bar-row{display:flex;align-items:center;gap:0.4rem;margin-bottom:0.4rem}
+        .cat-bar-row:last-child{margin-bottom:0}
+        .cat-bar-icon{font-size:0.6rem;width:20px;text-align:center;flex-shrink:0}
+        .cat-bar-label{font-size:0.4rem;font-weight:700;color:var(--t3);width:45px;text-transform:uppercase;letter-spacing:0.04em;flex-shrink:0}
+        .cat-bar-track{flex:1;height:10px;background:rgba(var(--ac),0.04);border-radius:5px;overflow:hidden}
+        .cat-bar-fill{height:100%;border-radius:5px;transition:width 0.8s cubic-bezier(.23,1,.32,1);position:relative}
+        .cat-bar-fill::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15));border-radius:5px}
+        .cat-bar-amt{font-size:0.42rem;font-weight:500;color:var(--t4);width:55px;text-align:right;letter-spacing:0.02em}
+
+        /* Month nav */
+        .month-nav{display:flex;align-items:center;justify-content:center;gap:1rem;margin-bottom:0.8rem;animation:fadeUp 0.4s ease both}
+        .month-arrow{width:34px;height:34px;border:1px solid var(--border);background:var(--card-bg);color:var(--t3);font-size:0.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.25s;border-radius:10px;font-family:inherit;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+        .month-arrow:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 12px var(--glow);transform:scale(1.05)}
+        .month-label{font-size:0.7rem;font-weight:200;letter-spacing:0.08em;min-width:140px;text-align:center;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+        /* Payment history item */
+        .pay-item{display:flex;align-items:center;gap:0.5rem;padding:0.6rem 0.6rem;margin-bottom:0.3rem;background:var(--card-bg);border:1px solid var(--border);border-radius:12px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);animation:fadeUp 0.3s ease both;transition:all 0.2s}
+        .pay-item:hover{border-color:rgba(var(--ac),0.15);transform:translateY(-1px)}
+        .pay-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:0.75rem;flex-shrink:0}
+        .pay-info{flex:1;min-width:0}
+        .pay-name{font-size:0.6rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .pay-date{font-size:0.4rem;color:var(--t4);margin-top:0.05rem;font-weight:500;letter-spacing:0.04em}
+        .pay-amount{font-size:0.72rem;font-weight:800;color:#4ade80;letter-spacing:0.02em}
+
+        /* Stat cards for history */
+        .stat-grid{display:grid;gap:0.5rem;margin-bottom:1rem;animation:fadeUp 0.4s ease both}
+        .stat-card{background:var(--card-bg);border:1px solid var(--border);border-radius:14px;padding:0.8rem;text-align:center;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:all 0.25s;position:relative;overflow:hidden}
+        .stat-card::before{content:'';position:absolute;top:-1px;left:-1px;right:-1px;bottom:-1px;border-radius:14px;background:linear-gradient(135deg,rgba(var(--ac),0.08),transparent,rgba(var(--ac),0.04));pointer-events:none}
+        .stat-card:hover{border-color:rgba(var(--ac),0.2);box-shadow:0 0 20px var(--glow)}
+        .stat-label{font-size:0.44rem;font-weight:900;color:var(--t3);text-transform:uppercase;letter-spacing:0.14em;margin-bottom:0.2rem;position:relative}
+        .stat-val{font-size:1.15rem;font-weight:800;letter-spacing:0.02em;position:relative}
+        .stat-val.gold{background:linear-gradient(135deg,var(--accent),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .stat-val.green{color:#4ade80}
+
+        /* Toggle switch */
+        .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.7rem;background:var(--card-bg);border:1px solid var(--border);border-radius:10px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+        .toggle-label{font-size:0.58rem;font-weight:500;color:var(--t2)}
+        .toggle-switch{position:relative;width:38px;height:22px;cursor:pointer}
+        .toggle-switch input{opacity:0;width:0;height:0}
+        .toggle-track{position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(var(--ac),0.06);border-radius:11px;transition:all 0.25s;border:1px solid var(--border)}
+        .toggle-knob{position:absolute;top:2px;left:2px;width:16px;height:16px;background:var(--t3);border-radius:50%;transition:all 0.25s}
+        .toggle-switch input:checked+.toggle-track{background:rgba(var(--ac),0.15);border-color:var(--accent);box-shadow:0 0 10px var(--glow)}
+        .toggle-switch input:checked+.toggle-track .toggle-knob{left:18px;background:var(--accent);box-shadow:0 0 6px rgba(var(--ac),0.4)}
+
+        /* Modal */
+        .modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(6,6,11,0.85);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);z-index:50;display:none;align-items:center;justify-content:center;padding:1rem}
+        .modal-bg.open{display:flex}
+        .modal{background:var(--s1);border:1px solid var(--border);border-radius:18px;padding:1.5rem;width:100%;max-width:400px;position:relative;max-height:90vh;overflow-y:auto;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:0 16px 50px rgba(0,0,0,0.5),0 0 20px var(--glow)}
+        .modal-x{position:absolute;top:0.8rem;right:0.8rem;background:var(--card-bg);border:1px solid var(--border);color:var(--t3);width:30px;height:30px;border-radius:10px;font-size:0.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;transition:all 0.25s}
+        .modal-x:hover{border-color:var(--accent);color:var(--accent);box-shadow:0 0 12px var(--glow);transform:rotate(90deg)}
+        .modal-title{font-size:0.85rem;font-weight:800;margin-bottom:0.8rem;letter-spacing:0.08em;color:var(--accent)}
+        .modal-detail-row{font-size:0.6rem;color:var(--t2);margin-bottom:0.3rem;display:flex;gap:0.3rem;align-items:baseline;padding:0.25rem 0;font-weight:600}
+        .modal-detail-row strong{color:var(--text);font-weight:800;font-size:0.46rem;text-transform:uppercase;letter-spacing:0.08em;min-width:55px}
+        .modal-amount{font-size:1.6rem;font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:0.8rem;letter-spacing:-0.02em}
+
+        /* Empty state */
+        .empty{text-align:center;padding:3rem 1rem;color:var(--t4);animation:fadeUp 0.5s ease both}
+        .empty-ico{font-size:2.8rem;opacity:0.12;margin-bottom:0.6rem}
+        .empty-title{font-size:0.76rem;font-weight:700;margin-bottom:0.3rem;letter-spacing:0.06em;color:var(--t3)}
+        .empty-desc{font-size:0.5rem;color:var(--t4);line-height:1.6}
+        .empty-cta{margin-top:1rem}
+
+        /* Overdue banner */
+        .overdue-banner{background:linear-gradient(135deg,rgba(248,113,113,0.08),rgba(248,113,113,0.03));border:1px solid rgba(248,113,113,0.15);border-radius:12px;padding:0.5rem 0.7rem;margin-bottom:0.6rem;display:flex;align-items:center;gap:0.4rem;animation:fadeUp 0.3s ease both}
+        .overdue-banner-icon{font-size:0.85rem;animation:pulse 2s ease infinite}
+        .overdue-banner-text{font-size:0.48rem;font-weight:600;color:#f87171;text-transform:uppercase;letter-spacing:0.08em}
+        .overdue-banner-count{margin-left:auto;font-size:0.65rem;font-weight:200;color:#f87171}
+
+        /* Welcome Screen */
+        .welcome-screen{position:fixed;top:0;left:0;right:0;bottom:0;z-index:999;background:#060d0a;display:flex;align-items:center;justify-content:center;transition:opacity 0.6s ease,visibility 0.6s ease}
+        .welcome-screen.hide{opacity:0;visibility:hidden;pointer-events:none}
+        .welcome-inner{text-align:center;animation:fadeUp 0.8s ease both}
+        .welcome-bot-logo{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,rgba(var(--ac),0.1),rgba(45,212,191,0.06));border:2px solid rgba(var(--ac),0.18);display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;box-shadow:0 0 30px rgba(var(--ac),0.1);animation:fadeUp 0.6s ease both;padding:14px}
+        .welcome-bot-logo .bot-svg{width:46px;height:46px;opacity:0.8}
+        .welcome-logo{font-size:2.8rem;font-weight:800;letter-spacing:0.12em;background:linear-gradient(135deg,var(--accent),var(--cyan),var(--accent));background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s ease infinite;margin-bottom:0.5rem}
+        .welcome-tagline{font-size:0.7rem;font-weight:700;color:var(--t2);letter-spacing:0.14em;text-transform:uppercase;margin-bottom:0.3rem}
+        .welcome-by{font-size:0.48rem;font-weight:600;color:var(--accent);letter-spacing:0.1em;margin-bottom:2rem;opacity:0.8}
+        .welcome-loader{width:160px;height:3px;background:rgba(var(--ac),0.1);border-radius:3px;margin:0 auto 1.2rem;overflow:hidden}
+        .welcome-loader-bar{width:0%;height:100%;background:linear-gradient(90deg,var(--accent),var(--cyan));border-radius:3px;transition:width 3s linear}
+        .welcome-loader-bar.go{width:100%}
+        .welcome-skip{font-size:0.4rem;color:var(--t4);text-transform:uppercase;letter-spacing:0.12em;cursor:pointer;transition:color 0.2s}
+        .welcome-skip:hover{color:var(--accent)}
+
+        /* Wallet Button */
+        .btn-wallet{background:var(--card-bg);color:var(--accent);border:1px solid var(--border);font-size:0.4rem!important;letter-spacing:0.06em;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .btn-wallet:hover{border-color:var(--accent);box-shadow:0 0 14px var(--glow)}
+        .btn-wallet.connected{border-color:rgba(var(--ac),0.3);background:rgba(var(--ac),0.08)}
+
+        /* Toast */
+        #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(50px);background:linear-gradient(135deg,var(--accent),var(--accent));color:#0a0a0a;padding:0.55rem 1.4rem;border-radius:14px;font-size:0.48rem;font-weight:800;border:none;opacity:0;transition:all 0.35s cubic-bezier(.23,1,.32,1);z-index:200;pointer-events:none;letter-spacing:0.08em;text-transform:uppercase;box-shadow:0 6px 24px rgba(var(--ac),0.3)}
+        #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+        /* Footer */
+        .app-footer{text-align:center;padding:1rem 0.5rem;font-size:0.45rem;color:var(--t4);letter-spacing:0.1em;border-top:1px solid var(--border);margin-top:auto;flex-shrink:0;text-transform:uppercase}
+        .app-footer a{color:var(--accent);text-decoration:none;font-weight:700}
+
+        ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(var(--ac),0.2);border-radius:4px}
+
+        /* Theme Picker */
+        .theme-toggle{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--card-bg);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:0.8rem;transition:all 0.2s;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);flex-shrink:0}
+        .theme-toggle:hover{border-color:var(--accent);box-shadow:0 0 10px rgba(var(--ac),0.15)}
+        .theme-bar{display:none;padding:0.4rem 1rem;border-bottom:1px solid var(--border);background:var(--card-bg);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);align-items:center;gap:0.5rem;justify-content:center;animation:fadeIn 0.2s ease}
+        .theme-bar.open{display:flex}
+        .theme-bar-label{font-size:0.38rem;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:0.12em;white-space:nowrap}
+        .theme-swatch{width:24px;height:24px;border-radius:6px;border:2px solid transparent;cursor:pointer;transition:all 0.15s;flex-shrink:0}
+        .theme-swatch:hover{transform:scale(1.15);box-shadow:0 0 8px rgba(255,255,255,0.15)}
+        .theme-swatch.active{border-color:#fff;box-shadow:0 0 10px rgba(255,255,255,0.25);transform:scale(1.1)}
+
+        /* ═══ RESPONSIVE ═══ */
+        @media(pointer:coarse){
+            .nav-btn{padding:0.75rem 0.7rem;min-height:44px}
+            .btn{min-height:40px;padding:0.6rem 1rem}
+            .btn-sm{min-height:36px;padding:0.45rem 0.8rem}
+            .fi{padding:0.7rem;font-size:0.85rem}
+            .bill-card{padding:0.8rem 0.9rem}
+            .modal-x{width:38px;height:38px;font-size:1.1rem}
+            .month-arrow{width:42px;height:42px}
+            .filter-pill{min-height:34px}
+        }
+        @media(max-width:520px){
+            .hdr{padding:0.7rem 0.8rem;gap:0.4rem}
+            .hdr-logo{font-size:1rem}
+            .hdr-sub{font-size:0.38rem}
+            .nav{scrollbar-width:none}
+            .nav-btn{flex:1;padding:0.65rem 0.4rem;font-size:0.4rem;text-align:center}
+            .scroll{padding:0.6rem 0.8rem}
+            .hero-ring{width:78px;height:78px}
+            .hero-ring-pct{font-size:0.95rem}
+            .modal-bg{padding:0;align-items:flex-end}
+            .modal{max-width:100%;max-height:85vh;border-radius:18px 18px 0 0;padding:1.2rem}
+            #toast{bottom:1rem;font-size:0.42rem;padding:0.45rem 1rem}
+            .fr{gap:0.5rem}
+            .cat-bar-label{width:38px;font-size:0.36rem}
+        }
+        @media(max-width:375px){
+            .hdr-sub{display:none}
+            .nav-btn{font-size:0.36rem;padding:0.6rem 0.3rem}
+            .fr{flex-direction:column;gap:0}
+            .hero{padding:0.9rem}
+            .hero-ring{width:68px;height:68px}
+            .hero-ring-pct{font-size:0.8rem}
+            .hero-stat{padding:0.25rem 0.4rem}
+            .hero-stat-val{font-size:0.62rem}
+        }
+        @supports(padding:env(safe-area-inset-bottom)){
+            #app{padding-bottom:env(safe-area-inset-bottom)}
+            #toast{bottom:calc(1rem + env(safe-area-inset-bottom))}
+        }
+        @media(max-width:520px){
+            input[type="text"],input[type="email"],input[type="tel"],input[type="number"],input[type="date"],input.fi,select.fi,textarea.fi{font-size:16px}
+        }
+    </style>
+</head>
+<body>
+
+<!-- Floating sparkle dots -->
+<div class="sparkles" id="sparkles"></div>
+
+<!-- ═══ WELCOME SCREEN ═══ -->
+<div class="welcome-screen" id="welcomeScreen">
+    <div class="welcome-inner">
+        <div class="welcome-bot-logo"><svg class="bot-svg" viewBox="0 0 36 36"><line x1="18" y1="2" x2="18" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="18" cy="2" r="2" fill="currentColor"/><rect x="5" y="9" width="26" height="22" rx="6" fill="currentColor"/><circle cx="13" cy="19" r="3" fill="#060d0a"/><circle cx="23" cy="19" r="3" fill="#060d0a"/><rect x="12" y="26" width="12" height="2.5" rx="1.2" fill="#060d0a"/></svg></div>
+        <div class="welcome-logo">BudgetBot</div>
+        <div class="welcome-tagline">Smart Bill Tracking</div>
+        <div class="welcome-by">Brought to you by @itsEvilDuck</div>
+        <div class="welcome-loader"><div class="welcome-loader-bar" id="welcomeBar"></div></div>
+        <div class="welcome-skip" onclick="dismissWelcome()">Tap to skip</div>
+    </div>
+</div>
+
+<div id="app" style="display:none">
+    <div class="hdr">
+        <div class="hdr-bot-logo"><svg class="bot-svg" viewBox="0 0 36 36"><line x1="18" y1="2" x2="18" y2="7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="18" cy="2" r="2" fill="currentColor"/><rect x="5" y="9" width="26" height="22" rx="6" fill="currentColor"/><circle cx="13" cy="19" r="3" fill="#060d0a"/><circle cx="23" cy="19" r="3" fill="#060d0a"/><rect x="12" y="26" width="12" height="2.5" rx="1.2" fill="#060d0a"/></svg></div>
+        <div>
+            <div class="hdr-logo">BudgetBot</div>
+            <div class="hdr-sub">Smart Bill Tracking &mdash; Brought to you by @itsEvilDuck</div>
+        </div>
+        <div class="hdr-r">
+            <button class="theme-toggle" onclick="toggleThemeBar()" title="Change Theme">&#127912;</button>
+            <button class="btn btn-wallet btn-sm" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
+            <button class="btn btn-add btn-sm" onclick="go('add');startNew()" title="Add Bill">+ New Bill</button>
+        </div>
+    </div>
+    <div class="theme-bar" id="themeBar">
+        <div class="theme-bar-label">Theme</div>
+        <div class="theme-swatch active" style="background:#34d399" onclick="setTheme(0)" title="Emerald"></div>
+        <div class="theme-swatch" style="background:#3b82f6" onclick="setTheme(1)" title="Blue"></div>
+        <div class="theme-swatch" style="background:#8b5cf6" onclick="setTheme(2)" title="Purple"></div>
+        <div class="theme-swatch" style="background:#f43f5e" onclick="setTheme(3)" title="Rose"></div>
+        <div class="theme-swatch" style="background:#f97316" onclick="setTheme(4)" title="Orange"></div>
+        <div class="theme-swatch" style="background:#eab308" onclick="setTheme(5)" title="Gold"></div>
+        <div class="theme-swatch" style="background:#06b6d4" onclick="setTheme(6)" title="Cyan"></div>
+        <div class="theme-swatch" style="background:#ec4899" onclick="setTheme(7)" title="Pink"></div>
+        <div class="theme-swatch" style="background:#14b8a6" onclick="setTheme(8)" title="Teal"></div>
+        <div class="theme-swatch" style="background:#a855f7" onclick="setTheme(9)" title="Violet"></div>
+    </div>
+    <div class="nav">
+        <button class="nav-btn active" onclick="go('dashboard')">Dashboard</button>
+        <button class="nav-btn" onclick="go('bills')">Bills</button>
+        <button class="nav-btn" onclick="go('add')">Add / Edit</button>
+        <button class="nav-btn" onclick="go('income')">Income</button>
+        <button class="nav-btn" onclick="go('history')">History</button>
+    </div>
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <div class="sec active" id="sec-dashboard"><div class="scroll">
+        <!-- Hero card with progress ring -->
+        <div class="hero">
+            <svg width="0" height="0"><defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="var(--accent)"/><stop offset="100%" stop-color="var(--accent)"/></linearGradient></defs></svg>
+            <div class="hero-inner">
+                <div class="hero-month" id="heroMonth">March 2026</div>
+                <div class="hero-row">
+                    <div class="hero-ring">
+                        <svg width="100%" height="100%" viewBox="0 0 90 90">
+                            <circle class="hero-ring-bg" cx="45" cy="45" r="40"/>
+                            <circle class="hero-ring-fill" id="heroRing" cx="45" cy="45" r="40"/>
+                        </svg>
+                        <div class="hero-ring-center">
+                            <div class="hero-ring-pct" id="heroPct">0%</div>
+                            <div class="hero-ring-label">Paid</div>
+                        </div>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <div class="hero-stat-left"><div class="hero-stat-icon">&#128176;</div><div class="hero-stat-label">Due</div></div>
+                            <div class="hero-stat-val gold" id="statDue">$0.00</div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="hero-stat-left"><div class="hero-stat-icon">&#9989;</div><div class="hero-stat-label">Paid</div></div>
+                            <div class="hero-stat-val green" id="statPaid">$0.00</div>
+                        </div>
+                        <div class="hero-stat">
+                            <div class="hero-stat-left"><div class="hero-stat-icon">&#9200;</div><div class="hero-stat-label">Left</div></div>
+                            <div class="hero-stat-val red" id="statRemain">$0.00</div>
+                        </div>
+                        <div class="hero-stat" id="statPastDueRow" style="display:none;border-color:rgba(248,113,113,0.15)">
+                            <div class="hero-stat-left"><div class="hero-stat-icon">&#128680;</div><div class="hero-stat-label">Past Due</div></div>
+                            <div class="hero-stat-val red" id="statPastDue">$0.00</div>
+                        </div>
+                        <div class="hero-stat" id="statLateFeeRow" style="display:none;border-color:rgba(251,146,60,0.15)">
+                            <div class="hero-stat-left"><div class="hero-stat-icon">&#9888;</div><div class="hero-stat-label">Late Fees</div></div>
+                            <div class="hero-stat-val" id="statLateFees" style="color:#fb923c">$0.00</div>
+                        </div>
+                        <div class="hero-stat" id="statIncomeRow" style="display:none;border-color:rgba(74,222,128,0.15)">
+                            <div class="hero-stat-left"><div class="hero-stat-icon">&#128178;</div><div class="hero-stat-label">Income</div></div>
+                            <div class="hero-stat-val green" id="statIncome">$0.00</div>
+                        </div>
+                        <div class="hero-stat" id="statNetRow" style="display:none">
+                            <div class="hero-stat-left"><div class="hero-stat-icon">&#128200;</div><div class="hero-stat-label">Net</div></div>
+                            <div class="hero-stat-val" id="statNet">$0.00</div>
+                        </div>
+                        <div class="hero-stat" id="statHoldingsRow" style="display:none;border-color:rgba(74,222,128,0.2)">
+                            <div class="hero-stat-left"><div class="hero-stat-icon">&#127974;</div><div class="hero-stat-label">Holdings</div></div>
+                            <div class="hero-stat-val green" id="statHoldings">$0.00</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="syncBanner" style="display:none;background:rgba(var(--ac),0.06);border:1px solid rgba(var(--ac),0.15);border-radius:12px;padding:0.6rem 0.8rem;margin-bottom:0.6rem;display:none;align-items:center;gap:0.5rem;animation:fadeUp 0.3s ease both;cursor:pointer" onclick="connectWallet()">
+            <div style="font-size:0.9rem">&#128274;</div>
+            <div style="flex:1">
+                <div style="font-size:0.5rem;font-weight:800;color:var(--text)">Connect Wallet to Sync</div>
+                <div style="font-size:0.4rem;font-weight:600;color:var(--t3);margin-top:0.1rem">Your bills will sync across all your devices</div>
+            </div>
+            <div style="font-size:0.4rem;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em">Connect</div>
+        </div>
+
+        <div id="overdueSection" style="display:none">
+            <div class="overdue-banner" id="overdueBanner">
+                <div class="overdue-banner-icon">&#9888;</div>
+                <div class="overdue-banner-text">Overdue Bills</div>
+                <div class="overdue-banner-count" id="overdueCount">0</div>
+            </div>
+            <div id="pastDueAlert" style="display:none;margin-top:0.4rem;margin-bottom:0.4rem;animation:fadeUp 0.3s ease both">
+                <button onclick="showPastDueBills()" style="width:100%;padding:0.6rem 0.8rem;background:linear-gradient(135deg,rgba(251,146,60,0.1),rgba(248,113,113,0.08));border:1px solid rgba(251,146,60,0.25);border-radius:12px;cursor:pointer;display:flex;align-items:center;gap:0.5rem;font-family:inherit;text-align:left;transition:all 0.2s">
+                    <div style="font-size:0.9rem;animation:pulse 2s ease infinite">&#128680;</div>
+                    <div style="flex:1">
+                        <div style="font-size:0.5rem;font-weight:900;color:#fb923c">Past Due — Needs Attention</div>
+                        <div style="font-size:0.4rem;font-weight:600;color:var(--t3);margin-top:0.1rem"><span id="pastDueAlertCount">0</span> with outstanding balances</div>
+                    </div>
+                    <div style="font-size:0.5rem;font-weight:800;color:#fb923c">View &rarr;</div>
+                </button>
+            </div>
+            <div id="overdueList"></div>
+        </div>
+
+        <div class="sec-head"><span class="sec-head-icon">&#128197;</span> Upcoming</div>
+        <div id="upcomingList"></div>
+        <div class="empty" id="upcomingEmpty" style="display:none">
+            <div class="empty-ico">&#128203;</div>
+            <div class="empty-title">No upcoming bills</div>
+            <div class="empty-desc">Tap "+ New Bill" to start tracking your bills</div>
+            <div class="empty-cta"><button class="btn btn-add btn-sm" onclick="go('add');startNew()">+ Add Your First Bill</button></div>
+        </div>
+
+        <div class="sec-head"><span class="sec-head-icon">&#128202;</span> Spending by Category</div>
+        <div class="cat-bars" id="catBars"></div>
+    </div></div>
+
+    <!-- ═══ BILLS LIST ═══ -->
+    <div class="sec" id="sec-bills"><div class="scroll">
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-pill on" data-status="all" onclick="setFilter('all')">All</button>
+            <button class="filter-pill" data-status="unpaid" onclick="setFilter('unpaid')">Unpaid</button>
+            <button class="filter-pill" data-status="paid" onclick="setFilter('paid')">Paid</button>
+            <button class="filter-pill" data-status="overdue" onclick="setFilter('overdue')">Overdue</button>
+        </div>
+        <div class="fg">
+            <select class="fi" id="catFilter" onchange="renderBills()" style="font-size:0.6rem">
+                <option value="all">All Categories</option>
+            </select>
+        </div>
+        <div id="billsList"></div>
+        <div class="empty" id="billsEmpty" style="display:none">
+            <div class="empty-ico">&#128196;</div>
+            <div class="empty-title">No bills match your filters</div>
+            <div class="empty-desc">Try changing your filter or add a new bill</div>
+        </div>
+    </div></div>
+
+    <!-- ═══ ADD / EDIT ═══ -->
+    <div class="sec" id="sec-add"><div class="scroll">
+        <div class="sec-head" id="addTitle" style="margin-top:0"><span class="sec-head-icon">&#128221;</span> Add New Bill</div>
+        <div class="fg"><label class="fl">Bill Name</label><input class="fi" id="f-name" placeholder="e.g. Netflix, Rent, Electric..." maxlength="60"></div>
+        <div class="fr">
+            <div class="fg"><label class="fl">Amount ($)</label><input class="fi" id="f-amount" type="number" step="0.01" min="0" placeholder="0.00"></div>
+            <div class="fg"><label class="fl">Due Date</label><input class="fi" id="f-due" type="date"></div>
+        </div>
+        <div class="fr">
+            <div class="fg"><label class="fl">Category</label>
+                <select class="fi" id="f-cat">
+                    <option value="rent">&#127968; Rent / Mortgage</option>
+                    <option value="utilities">&#9889; Utilities</option>
+                    <option value="internet">&#127760; Internet</option>
+                    <option value="phone">&#128241; Phone</option>
+                    <option value="insurance">&#128737; Insurance</option>
+                    <option value="subscriptions">&#9733; Subscriptions</option>
+                    <option value="car">&#128663; Car</option>
+                    <option value="creditcard">&#128179; Credit Card</option>
+                    <option value="loan">&#127974; Loan</option>
+                    <option value="other">&#128230; Other</option>
+                </select>
+            </div>
+            <div class="fg"><label class="fl">Recurrence</label>
+                <select class="fi" id="f-recur">
+                    <option value="monthly">Monthly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="yearly">Yearly</option>
+                    <option value="one-time">One-time</option>
+                </select>
+            </div>
+        </div>
+        <div class="fg"><label class="fl">Payment Frequency</label>
+            <select class="fi" id="f-payfreq">
+                <option value="monthly">Monthly — full amount</option>
+                <option value="biweekly">Biweekly — ½ amount</option>
+                <option value="weekly">Weekly — ¼ amount</option>
+            </select>
+            <div class="pay-freq-preview" id="payFreqPreview" style="margin-top:0.35rem;font-size:0.5rem;color:var(--accent);font-weight:700;display:none"></div>
+        </div>
+        <div class="fg"><label class="fl">Past Due Amount ($)</label>
+            <input class="fi" id="f-pastdue" type="number" step="0.01" min="0" placeholder="0.00">
+            <div style="margin-top:0.25rem;font-size:0.4rem;color:var(--t4);font-weight:600">Overdue balance from previous months (30+ days old)</div>
+        </div>
+        <div class="fg"><label class="fl">Late Payment Fee ($)</label>
+            <input class="fi" id="f-latefee" type="number" step="0.01" min="0" placeholder="0.00">
+            <div style="margin-top:0.25rem;font-size:0.4rem;color:var(--t4);font-weight:600">Fee charged if payment is late</div>
+        </div>
+        <div class="fg"><label class="fl">Notes</label><textarea class="fi" id="f-notes" placeholder="Optional notes..." maxlength="200"></textarea></div>
+        <div class="toggle-row" style="margin-bottom:0.8rem">
+            <span class="toggle-label">&#9889; Auto-pay enabled</span>
+            <label class="toggle-switch"><input type="checkbox" id="f-autopay"><div class="toggle-track"><div class="toggle-knob"></div></div></label>
+        </div>
+        <div style="display:flex;gap:0.4rem;padding-top:0.8rem;border-top:1px solid var(--border)">
+            <button class="btn btn-p" style="flex:1" onclick="saveBill()">Save Bill</button>
+            <button class="btn btn-o btn-sm" onclick="startNew()">Clear</button>
+        </div>
+        <button class="btn btn-d btn-sm" id="deleteBtn" style="width:100%;margin-top:0.5rem;display:none" onclick="deleteBill()">Delete Bill</button>
+    </div></div>
+
+    <!-- ═══ INCOME ═══ -->
+    <div class="sec" id="sec-income"><div class="scroll">
+        <div class="sec-head" style="margin-top:0"><span class="sec-head-icon">&#128178;</span> Income Tracker</div>
+        <div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-bottom:0.8rem">
+            <div class="stat-card"><div class="stat-label">Monthly Income</div><div class="stat-val green" id="incomeTotal">$0.00</div></div>
+            <div class="stat-card"><div class="stat-label">Net (Income - Bills)</div><div class="stat-val" id="incomeNet" style="color:var(--accent)">$0.00</div></div>
+            <div class="stat-card"><div class="stat-label">Received</div><div class="stat-val green" id="incomeReceived">$0.00</div></div>
+            <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-val" id="incomePending" style="color:var(--accent)">$0.00</div></div>
+        </div>
+
+        <div class="sec-head"><span class="sec-head-icon">&#10010;</span> Add Income Source</div>
+        <div class="fg"><label class="fl">Source Name</label><input class="fi" id="fi-name" placeholder="e.g. Salary, Freelance, Side Hustle..." maxlength="60"></div>
+        <div class="fr">
+            <div class="fg"><label class="fl">Amount ($)</label><input class="fi" id="fi-amount" type="number" step="0.01" min="0" placeholder="0.00"></div>
+            <div class="fg"><label class="fl">Frequency</label>
+                <select class="fi" id="fi-freq">
+                    <option value="monthly">Monthly</option>
+                    <option value="biweekly">Biweekly</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="yearly">Yearly</option>
+                    <option value="one-time">One-time</option>
+                </select>
+            </div>
+        </div>
+        <div class="fr">
+            <div class="fg"><label class="fl">Category</label>
+                <select class="fi" id="fi-cat">
+                    <option value="salary">&#128188; Salary / Wages</option>
+                    <option value="freelance">&#128187; Freelance</option>
+                    <option value="business">&#127970; Business</option>
+                    <option value="investments">&#128200; Investments</option>
+                    <option value="rental">&#127968; Rental</option>
+                    <option value="sidehustle">&#9889; Side Hustle</option>
+                    <option value="gifts">&#127873; Gifts</option>
+                    <option value="other">&#128230; Other</option>
+                </select>
+            </div>
+            <div class="fg"><label class="fl">Pay Date</label><input class="fi" id="fi-date" type="date"></div>
+        </div>
+        <div class="fg"><label class="fl">Notes</label><textarea class="fi" id="fi-notes" placeholder="Optional notes..." maxlength="200"></textarea></div>
+        <div style="display:flex;gap:0.4rem;padding-top:0.8rem;border-top:1px solid var(--border)">
+            <button class="btn btn-p" style="flex:1" onclick="saveIncome()">Save Income</button>
+            <button class="btn btn-o btn-sm" onclick="clearIncomeForm()">Clear</button>
+        </div>
+        <button class="btn btn-d btn-sm" id="deleteIncomeBtn" style="width:100%;margin-top:0.5rem;display:none" onclick="deleteIncome()">Delete Income</button>
+
+        <div class="sec-head" style="margin-top:1.2rem"><span class="sec-head-icon">&#128176;</span> Income Sources</div>
+        <div class="filter-bar" id="incomeFilterBar" style="margin-bottom:0.6rem">
+            <button class="filter-pill on" data-if="all" onclick="setIncomeFilter('all')">All</button>
+            <button class="filter-pill" data-if="received" onclick="setIncomeFilter('received')">Received</button>
+            <button class="filter-pill" data-if="pending" onclick="setIncomeFilter('pending')">Pending</button>
+        </div>
+        <div id="incomeList"></div>
+        <div class="empty" id="incomeEmpty" style="display:none">
+            <div class="empty-ico">&#128178;</div>
+            <div class="empty-title">No income sources yet</div>
+            <div class="empty-desc">Add your income sources to track your full budget</div>
+        </div>
+    </div></div>
+
+    <!-- ═══ HISTORY ═══ -->
+    <div class="sec" id="sec-history"><div class="scroll">
+        <div class="month-nav">
+            <button class="month-arrow" onclick="shiftMonth(-1)">&#9664;</button>
+            <div class="month-label" id="monthLabel">March 2026</div>
+            <button class="month-arrow" onclick="shiftMonth(1)">&#9654;</button>
+        </div>
+        <div class="stat-grid" style="grid-template-columns:1fr 1fr;margin-bottom:0.8rem">
+            <div class="stat-card"><div class="stat-label">Payments</div><div class="stat-val gold" id="histCount">0</div></div>
+            <div class="stat-card"><div class="stat-label">Total Spent</div><div class="stat-val green" id="histTotal">$0</div></div>
+        </div>
+        <div id="historyList"></div>
+        <div class="empty" id="historyEmpty" style="display:none">
+            <div class="empty-ico">&#128181;</div>
+            <div class="empty-title">No payments this month</div>
+            <div class="empty-desc">When you mark bills as paid, they'll show up here</div>
+        </div>
+    </div></div>
+
+    <div class="app-footer">Made on <a href="https://inclawbate.com" target="_blank" rel="noopener">Inclawbate.com</a></div>
+</div>
+
+<!-- Bill Detail Modal -->
+<div class="modal-bg" id="billModal" onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="modal">
+        <button class="modal-x" onclick="document.getElementById('billModal').classList.remove('open')">&times;</button>
+        <div id="billModalContent"></div>
+    </div>
+</div>
+
+<!-- Wallet Modal -->
+<div class="modal-bg" id="walletModal" onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="modal" style="text-align:center;max-width:360px">
+        <button class="modal-x" onclick="document.getElementById('walletModal').classList.remove('open')">&times;</button>
+        <div style="font-size:1.4rem;margin-bottom:0.5rem">&#128274;</div>
+        <div class="modal-title" style="margin-bottom:0.3rem">Connect Wallet</div>
+        <div id="walletModalStatus" style="font-size:0.48rem;color:var(--t3);font-weight:600;margin-bottom:1rem">Detecting wallets...</div>
+        <div id="walletProviders" style="display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1rem"></div>
+        <div id="walletManualSection">
+            <div style="font-size:0.4rem;color:var(--t4);font-weight:700;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.5rem;padding-top:0.5rem;border-top:1px solid var(--border)">Or paste your wallet address</div>
+            <input class="fi" id="walletAddrInput" placeholder="0x..." maxlength="42" style="text-align:center;font-size:0.65rem;letter-spacing:0.04em">
+            <div style="margin-top:0.4rem">
+                <button class="btn btn-p btn-sm" style="width:100%" onclick="submitManualWallet()">Connect Address</button>
+            </div>
+            <div id="walletAddrError" style="font-size:0.4rem;color:#f87171;font-weight:700;margin-top:0.3rem;display:none"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div class="modal-bg" id="confirmModal" onclick="if(event.target===this)closeConfirm()">
+    <div class="modal" style="text-align:center;max-width:320px">
+        <div class="modal-title" id="confirmMsg">Are you sure?</div>
+        <div style="display:flex;gap:0.4rem;justify-content:center;margin-top:1rem">
+            <button class="btn btn-d btn-sm" id="confirmYes">Confirm</button>
+            <button class="btn btn-o btn-sm" onclick="closeConfirm()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Payday Prompt Modal -->
+<div class="modal-bg" id="paydayModal" onclick="if(event.target===this)this.classList.remove('open')">
+    <div class="modal" style="text-align:center;max-width:360px">
+        <button class="modal-x" onclick="document.getElementById('paydayModal').classList.remove('open')">&times;</button>
+        <div style="font-size:2rem;margin-bottom:0.5rem">&#128176;</div>
+        <div class="modal-title" style="margin-bottom:0.3rem">Payday!</div>
+        <div id="paydayPromptContent"></div>
+    </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// SPARKLE DOTS
+// ═══════════════════════════════════════════
+(function(){
+    var el=document.getElementById('sparkles');
+    var shapes=['\uD83E\uDD9E','\uD83E\uDD86'];// lobster, duck
+    for(var i=0;i<16;i++){
+        var dot=document.createElement('div');
+        dot.className='sparkle';
+        dot.textContent=shapes[i%2];
+        dot.style.left=Math.random()*100+'%';
+        dot.style.top=Math.random()*100+'%';
+        dot.style.animationDelay=(Math.random()*6)+'s';
+        dot.style.animationDuration=(5+Math.random()*5)+'s';
+        dot.style.fontSize=(7+Math.random()*5)+'px';
+        dot.style.transform='rotate('+(Math.random()*360)+'deg)';
+        el.appendChild(dot);
+    }
+})();
+
+// ═══════════════════════════════════════════
+// WELCOME SCREEN
+// ═══════════════════════════════════════════
+function dismissWelcome(){
+    var ws=document.getElementById('welcomeScreen');
+    ws.classList.add('hide');
+    document.getElementById('app').style.display='';
+    setTimeout(function(){ws.remove()},700);
+}
+(function(){
+    var bar=document.getElementById('welcomeBar');
+    requestAnimationFrame(function(){requestAnimationFrame(function(){bar.classList.add('go')})});
+    setTimeout(dismissWelcome,3000);
+})();
+
+// ═══════════════════════════════════════════
+// WALLET CONNECTION
+// ═══════════════════════════════════════════
+var connectedWallet=null;
+
+function getStorageKey(){
+    return connectedWallet?'budgetbot_'+connectedWallet.toLowerCase():'budgetbot_data';
+}
+
+function truncAddr(addr){
+    return addr.slice(0,6)+'...'+addr.slice(-4);
+}
+
+function connectWallet(){
+    var modal=document.getElementById('walletModal');
+    var statusEl=document.getElementById('walletModalStatus');
+    var providersEl=document.getElementById('walletProviders');
+    var errorEl=document.getElementById('walletAddrError');
+    var manualSection=document.getElementById('walletManualSection');
+    errorEl.style.display='none';
+    document.getElementById('walletAddrInput').value='';
+    providersEl.innerHTML='';
+    manualSection.style.display='block';
+    modal.classList.add('open');
+
+    // Detect available providers
+    var providers=[];
+
+    // Check Inclawbate cookie first
+    var cookieWallet=getWalletFromCookie();
+    if(cookieWallet){
+        providers.push({name:'Inclawbate Account',icon:'\uD83C\uDF10',type:'cookie',wallet:cookieWallet});
+    }
+
+    // EIP-6963: multi-wallet discovery
+    if(window.ethereum){
+        // Check if it's a multi-provider proxy
+        if(window.ethereum.providers&&window.ethereum.providers.length){
+            window.ethereum.providers.forEach(function(p){
+                var name='Wallet';
+                if(p.isMetaMask) name='MetaMask';
+                else if(p.isCoinbaseWallet) name='Coinbase Wallet';
+                else if(p.isRabby) name='Rabby';
+                else if(p.isTrust) name='Trust Wallet';
+                else if(p.isBraveWallet) name='Brave Wallet';
+                else if(p.isPhantom) name='Phantom';
+                providers.push({name:name,icon:'\uD83E\uDD8A',type:'eip1193',provider:p});
+            });
+        }else{
+            var name='Browser Wallet';
+            var p=window.ethereum;
+            if(p.isMetaMask) name='MetaMask';
+            else if(p.isCoinbaseWallet) name='Coinbase Wallet';
+            else if(p.isRabby) name='Rabby';
+            else if(p.isTrust) name='Trust Wallet';
+            else if(p.isBraveWallet) name='Brave Wallet';
+            else if(p.isPhantom) name='Phantom';
+            providers.push({name:name,icon:'\uD83E\uDD8A',type:'eip1193',provider:p});
+        }
+    } else if(window.web3&&window.web3.currentProvider){
+        providers.push({name:'Web3 Wallet',icon:'\uD83E\uDD8A',type:'eip1193',provider:window.web3.currentProvider});
+    }
+
+    if(providers.length){
+        statusEl.textContent=providers.length+' wallet'+(providers.length>1?'s':'')+' detected';
+        providers.forEach(function(w){
+            var btn=document.createElement('button');
+            btn.className='btn btn-o';
+            btn.style.cssText='width:100%;justify-content:flex-start;gap:0.5rem;font-size:0.52rem';
+            btn.innerHTML=w.icon+' '+w.name+(w.type==='cookie'?' <span style="font-size:0.38rem;opacity:0.6">('+truncAddr(w.wallet)+')</span>':'');
+            btn.onclick=function(){connectProvider(w)};
+            providersEl.appendChild(btn);
+        });
+    }else{
+        statusEl.textContent='No wallets detected — paste your address below';
+    }
+}
+
+async function connectProvider(w){
+    var modal=document.getElementById('walletModal');
+    if(w.type==='cookie'){
+        setWallet(w.wallet);
+        modal.classList.remove('open');
+        toast('Connected via Inclawbate');
+        return;
+    }
+    try{
+        var accounts=await w.provider.request({method:'eth_requestAccounts'});
+        if(accounts&&accounts.length){
+            setWallet(accounts[0]);
+            modal.classList.remove('open');
+            toast('Wallet connected');
+            if(w.provider.on){
+                w.provider.on('accountsChanged',function(accs){
+                    if(accs.length){setWallet(accs[0]);toast('Wallet switched')}
+                    else{disconnectWallet()}
+                });
+            }
+        }
+    }catch(e){
+        if(e.code===4001){toast('Connection rejected')}
+        else{toast('Connection failed')}
+    }
+}
+
+function submitManualWallet(){
+    var input=document.getElementById('walletAddrInput');
+    var errorEl=document.getElementById('walletAddrError');
+    var addr=input.value.trim();
+    if(!addr){
+        errorEl.textContent='Please enter a wallet address';
+        errorEl.style.display='block';
+        return;
+    }
+    if(!/^0x[a-fA-F0-9]{40}$/.test(addr)){
+        errorEl.textContent='Invalid address — must be 0x followed by 40 hex characters';
+        errorEl.style.display='block';
+        return;
+    }
+    errorEl.style.display='none';
+    setWallet(addr);
+    document.getElementById('walletModal').classList.remove('open');
+    toast('Wallet linked');
+}
+
+function getWalletFromCookie(){
+    try{
+        var match=document.cookie.match(/inclawbate_token=([^;]+)/);
+        if(!match)return null;
+        var payload=JSON.parse(atob(decodeURIComponent(match[1]).split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+        return payload.wallet_address||null;
+    }catch(e){return null}
+}
+
+function setWallet(addr){
+    connectedWallet=addr;
+    localStorage.setItem('budgetbot_wallet',addr);
+    var btn=document.getElementById('walletBtn');
+    btn.textContent=truncAddr(addr);
+    btn.classList.add('connected');
+    btn.title=addr;
+    btn.onclick=function(){showWalletMenu()};
+    // Reload data for this wallet
+    load();
+    cloudLoadRetries=0;
+    cloudSaveRetries=0;
+    cloudLoad();
+    renderAll();
+    // Also try again after a delay in case AppDB is still loading
+    setTimeout(function(){
+        cloudLoadRetries=0;
+        cloudLoad();
+    }, 3000);
+}
+
+function disconnectWallet(){
+    connectedWallet=null;
+    localStorage.removeItem('budgetbot_wallet');
+    var btn=document.getElementById('walletBtn');
+    btn.textContent='Connect Wallet';
+    btn.classList.remove('connected');
+    btn.title='';
+    btn.onclick=function(){connectWallet()};
+    bills=[];payments=[];incomes=[];renderAll();
+    toast('Wallet disconnected');
+}
+
+function showWalletMenu(){
+    var modal=document.getElementById('walletModal');
+    var statusEl=document.getElementById('walletModalStatus');
+    var providersEl=document.getElementById('walletProviders');
+    var errorEl=document.getElementById('walletAddrError');
+    var manualSection=document.getElementById('walletManualSection');
+    errorEl.style.display='none';
+    document.getElementById('walletAddrInput').value='';
+    providersEl.innerHTML='';
+    manualSection.style.display='none';
+
+    statusEl.innerHTML='Connected as <span style="color:var(--accent);font-weight:800">'+truncAddr(connectedWallet)+'</span>';
+
+    var dcBtn=document.createElement('button');
+    dcBtn.className='btn btn-d';
+    dcBtn.style.cssText='width:100%;font-size:0.52rem';
+    dcBtn.textContent='Disconnect Wallet';
+    dcBtn.onclick=function(){
+        modal.classList.remove('open');
+        disconnectWallet();
+    };
+    providersEl.appendChild(dcBtn);
+
+    var copyBtn=document.createElement('button');
+    copyBtn.className='btn btn-o btn-sm';
+    copyBtn.style.cssText='width:100%;margin-top:0.2rem;font-size:0.44rem';
+    copyBtn.textContent='Copy Full Address';
+    copyBtn.onclick=function(){
+        navigator.clipboard.writeText(connectedWallet).then(function(){toast('Address copied')});
+    };
+    providersEl.appendChild(copyBtn);
+
+    modal.classList.add('open');
+}
+
+// Auto-reconnect saved wallet on load
+function autoReconnectWallet(){
+    var saved=localStorage.getItem('budgetbot_wallet');
+    if(saved){
+        connectedWallet=saved;
+        var btn=document.getElementById('walletBtn');
+        btn.textContent=truncAddr(saved);
+        btn.classList.add('connected');
+        btn.title=saved;
+        btn.onclick=function(){showWalletMenu()};
+        // Reload data scoped to this wallet
+        load();
+        cloudLoadRetries=0;
+        cloudLoad();
+    }
+    // Also try Inclawbate cookie
+    if(!connectedWallet){
+        var cw=getWalletFromCookie();
+        if(cw)setWallet(cw);
+    }
+}
+
+// ═══════════════════════════════════════════
+// CATEGORIES
+// ═══════════════════════════════════════════
+var CATEGORIES = {
+    rent:{label:'Rent',color:'#c9a96e',icon:'&#127968;'},
+    utilities:{label:'Utilities',color:'#4ecdc4',icon:'&#9889;'},
+    internet:{label:'Internet',color:'#5b9bd5',icon:'&#127760;'},
+    phone:{label:'Phone',color:'#9b59b6',icon:'&#128241;'},
+    insurance:{label:'Insurance',color:'#3498db',icon:'&#128737;'},
+    subscriptions:{label:'Subs',color:'#e74c3c',icon:'&#9733;'},
+    car:{label:'Car',color:'#f39c12',icon:'&#128663;'},
+    creditcard:{label:'Card',color:'#e67e22',icon:'&#128179;'},
+    loan:{label:'Loan',color:'#1abc9c',icon:'&#127974;'},
+    other:{label:'Other',color:'#6b7a94',icon:'&#128230;'}
+};
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+var bills = [];
+var payments = [];
+var incomes = [];
+var editingId = null;
+var editingIncomeId = null;
+var statusFilter = 'all';
+var historyDate = new Date();
+var confirmCb = null;
+
+// ═══════════════════════════════════════════
+// PERSISTENCE
+// ═══════════════════════════════════════════
+function save() {
+    var key=getStorageKey();
+    try {
+        localStorage.setItem(key, JSON.stringify({
+            bills: bills, payments: payments, incomes: incomes, lastModified: Date.now()
+        }));
+    } catch(e) {}
+    cloudSave();
+}
+function load() {
+    var key=getStorageKey();
+    try {
+        var d = JSON.parse(localStorage.getItem(key));
+        if(d) { bills = d.bills || []; payments = d.payments || []; incomes = d.incomes || []; }
+    } catch(e) {}
+}
+var cloudSaveRetries=0;
+async function cloudSave() {
+    if(!window.AppDB) {
+        // Retry saving when AppDB becomes available
+        cloudSaveRetries++;
+        if(cloudSaveRetries<15){
+            setTimeout(cloudSave, 2000);
+        }
+        return;
+    }
+    cloudSaveRetries=0;
+    var key='budgetbot_cloud'+(connectedWallet?'_'+connectedWallet.toLowerCase():'');
+    try {
+        await window.AppDB.set(key, { bills:bills, payments:payments, incomes:incomes, lastModified:Date.now() });
+    } catch(e) {
+        // Retry once on failure
+        setTimeout(cloudSave, 3000);
+    }
+}
+var cloudLoadRetries=0;
+async function cloudLoad() {
+    if(!window.AppDB) {
+        cloudLoadRetries++;
+        if(cloudLoadRetries<15){
+            setTimeout(cloudLoad, 1500);
+        }
+        return;
+    }
+    cloudLoadRetries=0;
+    var key='budgetbot_cloud'+(connectedWallet?'_'+connectedWallet.toLowerCase():'');
+    var lsKey=getStorageKey();
+    try {
+        var d = await window.AppDB.get(key);
+        if(d && d.bills && (!bills.length || d.lastModified > (JSON.parse(localStorage.getItem(lsKey)||'{}').lastModified||0))) {
+            bills = d.bills; payments = d.payments || []; incomes = d.incomes || [];
+            // Save to localStorage so it persists locally too
+            try{
+                localStorage.setItem(lsKey, JSON.stringify({
+                    bills:bills, payments:payments, incomes:incomes, lastModified:d.lastModified
+                }));
+            }catch(e){}
+            renderAll();
+            toast('Data synced from cloud');
+        }
+    } catch(e) {
+        // Retry on failure
+        setTimeout(function(){ cloudLoadRetries=0; cloudLoad(); }, 3000);
+    }
+}
+function genId() {
+    return typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():'b_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+}
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function go(name) {
+    document.querySelectorAll('.sec').forEach(function(s){ s.classList.remove('active'); });
+    document.querySelectorAll('.nav-btn').forEach(function(b){ b.classList.remove('active'); });
+    document.getElementById('sec-'+name).classList.add('active');
+    var tabs={dashboard:0,bills:1,add:2,income:3,history:4};
+    document.querySelectorAll('.nav-btn')[tabs[name]].classList.add('active');
+    if(name==='dashboard') renderDashboard();
+    if(name==='bills') renderBills();
+    if(name==='income') renderIncome();
+    if(name==='history') renderHistory();
+}
+
+// ═══════════════════════════════════════════
+// UTILITY
+// ═══════════════════════════════════════════
+function fmt(n){return '$'+Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}
+function fmtDate(iso){
+    if(!iso)return'';var d=new Date(iso+'T00:00:00');
+    var m=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return m[d.getMonth()]+' '+d.getDate()+', '+d.getFullYear();
+}
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function daysUntil(iso){return Math.round((new Date(iso+'T00:00:00').getTime()-new Date(today()+'T00:00:00').getTime())/86400000)}
+
+function getBillStatus(b){
+    // Sum all payments (regular + extra) for this bill in the current cycle
+    var cyclePaid=0;
+    var hasRegular=false;
+    payments.forEach(function(p){
+        if(p.billId===b.id&&isPaymentCurrentCycle(b,p)){
+            cyclePaid+=Number(p.amount);
+            if(!p.extra)hasRegular=true;
+        }
+    });
+    // Paid if: regular payment exists OR total payments >= bill payment amount
+    var payAmt=getPaymentAmount(b);
+    if(hasRegular||cyclePaid>=payAmt)return'paid';
+    if(daysUntil(b.dueDate)<0)return'overdue';
+    // Partial if some extra payments made but not enough
+    if(cyclePaid>0)return'partial';
+    return'unpaid';
+}
+function getCyclePaid(b){
+    var total=0;
+    payments.forEach(function(p){
+        if(p.billId===b.id&&isPaymentCurrentCycle(b,p))total+=Number(p.amount);
+    });
+    return total;
+}
+function isPaymentCurrentCycle(bill,payment){
+    var pd=new Date(payment.paidDate+'T00:00:00'),dd=new Date(bill.dueDate+'T00:00:00');
+    if(bill.recurrence==='one-time')return true;
+    if(bill.recurrence==='monthly')return pd.getMonth()===dd.getMonth()&&pd.getFullYear()===dd.getFullYear();
+    if(bill.recurrence==='weekly')return Math.abs(pd.getTime()-dd.getTime())<7*86400000;
+    if(bill.recurrence==='yearly')return pd.getFullYear()===dd.getFullYear();
+    return false;
+}
+function getNextDueDate(bill){
+    var d=new Date(bill.dueDate+'T00:00:00');
+    switch(bill.recurrence){
+        case'weekly':d.setDate(d.getDate()+7);break;
+        case'monthly':d.setMonth(d.getMonth()+1);break;
+        case'yearly':d.setFullYear(d.getFullYear()+1);break;
+        default:return null;
+    }
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function getPrevDueDate(bill){
+    var d=new Date(bill.dueDate+'T00:00:00');
+    switch(bill.recurrence){
+        case'weekly':d.setDate(d.getDate()-7);break;
+        case'monthly':d.setMonth(d.getMonth()-1);break;
+        case'yearly':d.setFullYear(d.getFullYear()-1);break;
+        default:return null;
+    }
+    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function getPaymentAmount(b){
+    var freq=b.payFrequency||'monthly';
+    if(freq==='weekly')return Number(b.amount)/4;
+    if(freq==='biweekly')return Number(b.amount)/2;
+    return Number(b.amount);
+}
+function getPayFreqLabel(freq){
+    if(freq==='weekly')return'/wk';if(freq==='biweekly')return'/2wk';return'/mo';
+}
+function getPayFreqFull(freq){
+    if(freq==='weekly')return'Weekly';if(freq==='biweekly')return'Biweekly';return'Monthly';
+}
+function getPaymentsPerMonth(freq){
+    if(freq==='weekly')return 4;if(freq==='biweekly')return 2;return 1;
+}
+function catColor(cat){return(CATEGORIES[cat]||CATEGORIES.other).color}
+function catLabel(cat){return(CATEGORIES[cat]||CATEGORIES.other).label}
+function catIcon(cat){return(CATEGORIES[cat]||CATEGORIES.other).icon}
+function esc(s){var d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+function toast(msg){
+    var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');
+    clearTimeout(t._to);t._to=setTimeout(function(){t.classList.remove('show')},2200);
+}
+
+// ═══════════════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════════════
+function renderDashboard(){
+    // Show sync banner if no wallet connected
+    var sb=document.getElementById('syncBanner');
+    if(sb)sb.style.display=connectedWallet?'none':'flex';
+
+    var now=new Date(),month=now.getMonth(),year=now.getFullYear();
+    var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('heroMonth').textContent=months[month]+' '+year;
+
+    var totalDue=0,totalPaid=0;
+    bills.forEach(function(b){var bd=new Date(b.dueDate+'T00:00:00');if(bd.getMonth()===month&&bd.getFullYear()===year)totalDue+=Number(b.amount)});
+    payments.forEach(function(p){var pd=new Date(p.paidDate+'T00:00:00');if(pd.getMonth()===month&&pd.getFullYear()===year)totalPaid+=Number(p.amount)});
+
+    var totalPastDue=0,totalLateFees=0;
+    bills.forEach(function(b){
+        if(Number(b.pastDue||0)>0)totalPastDue+=Number(b.pastDue);
+        if(b.lateFee&&b.lateFee>0&&getBillStatus(b)==='overdue')totalLateFees+=Number(b.lateFee);
+    });
+
+    document.getElementById('statDue').textContent=fmt(totalDue);
+    document.getElementById('statPaid').textContent=fmt(totalPaid);
+    document.getElementById('statRemain').textContent=fmt(Math.max(0,totalDue-totalPaid));
+    document.getElementById('statPastDue').textContent=fmt(totalPastDue);
+    document.getElementById('statPastDueRow').style.display=totalPastDue>0?'flex':'none';
+    document.getElementById('statLateFees').textContent=fmt(totalLateFees);
+    document.getElementById('statLateFeeRow').style.display=totalLateFees>0?'flex':'none';
+
+    var totalIncome=0;
+    incomes.forEach(function(inc){totalIncome+=getMonthlyIncome(inc)});
+    document.getElementById('statIncome').textContent=fmt(totalIncome);
+    document.getElementById('statIncomeRow').style.display=incomes.length>0?'flex':'none';
+    var net=totalIncome-totalDue;
+    document.getElementById('statNet').textContent=(net>=0?'+':'')+fmt(net);
+    document.getElementById('statNet').style.color=net>=0?'#4ade80':'#f87171';
+    document.getElementById('statNetRow').style.display=incomes.length>0?'flex':'none';
+
+    // Current Holdings — total received income minus paid bills
+    var totalHoldings=0;
+    incomes.forEach(function(inc){if(inc.received)totalHoldings+=Number(inc.amount)});
+    totalHoldings=totalHoldings-totalPaid;
+    document.getElementById('statHoldings').textContent=fmt(Math.max(0,totalHoldings));
+    document.getElementById('statHoldingsRow').style.display=incomes.some(function(i){return !!i.received})?'flex':'none';
+
+    // Progress ring
+    var pct=totalDue>0?Math.min(100,Math.round(totalPaid/totalDue*100)):0;
+    document.getElementById('heroPct').textContent=pct+'%';
+    var ring=document.getElementById('heroRing');
+    var offset=251.2-(251.2*pct/100);
+    ring.style.setProperty('--ring-offset',offset);
+    ring.style.strokeDashoffset=offset;
+
+    // Clean up past due — ensure paid bills have pastDue zeroed
+    bills.forEach(function(b){
+        var s=getBillStatus(b);
+        if(s==='paid'&&b.pastDue&&Number(b.pastDue)>0){b.pastDue=0}
+    });
+
+    // Overdue
+    var overdue=bills.filter(function(b){return getBillStatus(b)==='overdue'});
+    var pastDueBills2=bills.filter(function(b){return Number(b.pastDue||0)>0});
+    var os=document.getElementById('overdueSection');
+    if(overdue.length||pastDueBills2.length){
+        os.style.display='block';
+        if(overdue.length){
+            document.getElementById('overdueBanner').style.display='flex';
+            document.getElementById('overdueCount').textContent=overdue.length+' bill'+(overdue.length>1?'s':'');
+            document.getElementById('overdueList').innerHTML=overdue.map(function(b){return billCardHTML(b)}).join('');
+        }else{
+            document.getElementById('overdueBanner').style.display='none';
+            document.getElementById('overdueList').innerHTML='';
+        }
+        var pdAlert2=document.getElementById('pastDueAlert');
+        if(pastDueBills2.length){
+            pdAlert2.style.display='block';
+            document.getElementById('pastDueAlertCount').textContent=pastDueBills2.length+' bill'+(pastDueBills2.length>1?'s':'');
+        }else{
+            pdAlert2.style.display='none';
+        }
+    }else{os.style.display='none'}
+
+    // Upcoming
+    var upcoming=bills.filter(function(b){var s=getBillStatus(b);return (s==='unpaid'||s==='partial')&&daysUntil(b.dueDate)>=0}).sort(function(a,b){return daysUntil(a.dueDate)-daysUntil(b.dueDate)});
+    var ul=document.getElementById('upcomingList'),ue=document.getElementById('upcomingEmpty');
+    if(upcoming.length){ul.innerHTML=upcoming.map(function(b){return billCardHTML(b)}).join('');ue.style.display='none'}
+    else if(!overdue.length){ul.innerHTML='';ue.style.display='block'}
+    else{ul.innerHTML='';ue.style.display='none'}
+
+    renderCatBars(month,year);
+
+    // Payday check
+    if(!paydayChecked&&!sessionStorage.getItem('budgetbot_payday_'+today())){
+        paydayChecked=true;
+        checkPayday();
+    }
+}
+
+function showPastDueBills(){
+    var pastDueBills=bills.filter(function(b){return Number(b.pastDue||0)>0}).sort(function(a,b){return Number(b.pastDue)-Number(a.pastDue)});
+    if(!pastDueBills.length){toast('No past due bills');return}
+    var total=0;pastDueBills.forEach(function(b){total+=Number(b.pastDue)});
+    var html='<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.8rem">'+
+        '<div style="font-size:1.2rem">&#128680;</div>'+
+        '<div><div class="modal-title" style="margin-bottom:0.1rem;color:#fb923c">Past Due Bills</div>'+
+        '<div style="font-size:0.44rem;color:var(--t3);font-weight:700">'+pastDueBills.length+' bill'+(pastDueBills.length>1?'s':'')+' &bull; '+fmt(total)+' total outstanding</div></div></div>';
+    pastDueBills.forEach(function(b){
+        var status=getBillStatus(b);
+        var days=daysUntil(b.dueDate);
+        var daysText=status==='paid'?'Paid':days===0?'Due today':days<0?Math.abs(days)+'d overdue':days+'d left';
+        html+='<div style="background:var(--card-bg);border:1px solid rgba(251,146,60,0.15);border-radius:12px;padding:0.6rem 0.7rem;margin-bottom:0.4rem;display:flex;align-items:center;gap:0.5rem;cursor:pointer" onclick="document.getElementById(\'billModal\').classList.remove(\'open\');openBillModal(\''+b.id+'\')">'+
+            '<div style="width:34px;height:34px;border-radius:10px;background:'+catColor(b.category)+'18;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">'+catIcon(b.category)+'</div>'+
+            '<div style="flex:1;min-width:0">'+
+                '<div style="font-size:0.65rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(b.name)+'</div>'+
+                '<div style="font-size:0.42rem;color:var(--t3);font-weight:700;margin-top:0.1rem">'+daysText+' &bull; '+fmt(b.amount)+'/mo</div>'+
+            '</div>'+
+            '<div style="text-align:right;flex-shrink:0">'+
+                '<div style="font-size:0.72rem;font-weight:900;color:#fb923c">'+fmt(b.pastDue)+'</div>'+
+                '<div style="font-size:0.36rem;font-weight:800;color:#f87171;text-transform:uppercase;letter-spacing:0.08em">past due</div>'+
+                (b.lateFee&&b.lateFee>0?'<div style="font-size:0.36rem;font-weight:700;color:#fb923c;margin-top:0.05rem">+'+fmt(b.lateFee)+' fee</div>':'')+
+            '</div></div>';
+    });
+    document.getElementById('billModalContent').innerHTML=html;
+    document.getElementById('billModal').classList.add('open');
+}
+
+function renderCatBars(month,year){
+    var totals={};
+    payments.forEach(function(p){
+        var pd=new Date(p.paidDate+'T00:00:00');
+        if(pd.getMonth()===month&&pd.getFullYear()===year){
+            // Use bill's current category if it still exists
+            var bill=bills.find(function(b){return b.id===p.billId});
+            var cat=bill?bill.category:p.category;
+            totals[cat]=(totals[cat]||0)+Number(p.amount);
+        }
+    });
+    var max=0;Object.keys(totals).forEach(function(k){if(totals[k]>max)max=totals[k]});
+    var el=document.getElementById('catBars');
+    if(!Object.keys(totals).length){
+        el.innerHTML='<div style="font-size:0.48rem;color:var(--t4);text-align:center;padding:0.8rem">No spending data yet this month</div>';
+        return;
+    }
+    el.innerHTML=Object.keys(totals).sort(function(a,b){return totals[b]-totals[a]}).map(function(cat){
+        var pct=max>0?(totals[cat]/max*100):0;
+        return '<div class="cat-bar-row">'+
+            '<div class="cat-bar-icon">'+catIcon(cat)+'</div>'+
+            '<div class="cat-bar-label">'+catLabel(cat)+'</div>'+
+            '<div class="cat-bar-track"><div class="cat-bar-fill" style="width:'+pct+'%;background:linear-gradient(90deg,'+catColor(cat)+','+catColor(cat)+'aa)"></div></div>'+
+            '<div class="cat-bar-amt">'+fmt(totals[cat])+'</div></div>';
+    }).join('');
+}
+
+// ═══════════════════════════════════════════
+// BILL CARD HTML
+// ═══════════════════════════════════════════
+function billCardHTML(b){
+    var status=getBillStatus(b),days=daysUntil(b.dueDate);
+    var daysText=status==='paid'?'Paid':status==='partial'?'Partial':days===0?'Due today':days===1?'Tomorrow':days<0?Math.abs(days)+'d overdue':days+'d left';
+    var recurLabel=b.recurrence==='one-time'?'':'<span style="opacity:0.6">&#8635; '+b.recurrence+'</span>';
+    var freq=b.payFrequency||'monthly';
+    var payAmt=getPaymentAmount(b);
+    var freqInfo=freq!=='monthly'?'<div style="font-size:0.4rem;color:var(--accent);font-weight:700">'+fmt(payAmt)+getPayFreqLabel(freq)+'</div>':'';
+    var pastDueInfo=(b.pastDue&&b.pastDue>0)?'<div style="font-size:0.38rem;color:#f87171;font-weight:800">+'+fmt(b.pastDue)+' past due</div>':'';
+    var lateFeeInfo=(b.lateFee&&b.lateFee>0&&status==='overdue')?'<div style="font-size:0.38rem;color:#fb923c;font-weight:800">+'+fmt(b.lateFee)+' late fee</div>':'';
+    var cyclePaid=getCyclePaid(b);
+    var partialInfo=(status==='partial')?'<div style="font-size:0.38rem;color:#fbbf24;font-weight:800">'+fmt(cyclePaid)+'/'+fmt(payAmt)+' paid</div>':'';
+    return '<div class="bill-card'+(status==='overdue'?' overdue':'')+'" style="--cat-color:'+catColor(b.category)+'" onclick="openBillModal(\''+b.id+'\')">'+
+        '<div style="position:absolute;top:0;left:0;bottom:0;width:4px;background:'+catColor(b.category)+';border-radius:14px 0 0 14px"></div>'+
+        '<div class="bill-cat-icon" style="background:'+catColor(b.category)+'18">'+catIcon(b.category)+'</div>'+
+        '<div class="bill-info">'+
+            '<div class="bill-name">'+esc(b.name)+'</div>'+
+            '<div class="bill-meta"><span>'+fmtDate(b.dueDate)+'</span>'+recurLabel+'</div>'+
+        '</div>'+
+        '<div class="bill-right">'+
+            '<div class="bill-amount">'+fmt(b.amount)+'</div>'+
+            freqInfo+
+            partialInfo+
+            pastDueInfo+
+            lateFeeInfo+
+            '<div class="bill-status '+status+'">'+status+'</div>'+
+            '<div class="bill-days">'+daysText+'</div>'+
+        '</div>'+
+        '</div>';
+}
+
+// ═══════════════════════════════════════════
+// BILLS LIST
+// ═══════════════════════════════════════════
+function setFilter(status){
+    statusFilter=status;
+    document.querySelectorAll('.filter-pill').forEach(function(p){p.classList.toggle('on',p.dataset.status===status)});
+    renderBills();
+}
+function renderBills(){
+    var catF=document.getElementById('catFilter').value;
+    var filtered=bills.filter(function(b){
+        if(catF!=='all'&&b.category!==catF)return false;
+        if(statusFilter==='all')return true;
+        return getBillStatus(b)===statusFilter;
+    }).sort(function(a,b){return new Date(a.dueDate+'T00:00:00').getTime()-new Date(b.dueDate+'T00:00:00').getTime()});
+    var el=document.getElementById('billsList'),empty=document.getElementById('billsEmpty');
+    if(filtered.length){el.innerHTML=filtered.map(function(b){return billCardHTML(b)}).join('');empty.style.display='none'}
+    else{el.innerHTML='';empty.style.display='block'}
+}
+
+// ═══════════════════════════════════════════
+// ADD / EDIT BILL
+// ═══════════════════════════════════════════
+function startNew(){
+    editingId=null;
+    document.getElementById('addTitle').innerHTML='<span class="sec-head-icon">&#128221;</span> Add New Bill';
+    document.getElementById('deleteBtn').style.display='none';
+    document.getElementById('f-name').value='';
+    document.getElementById('f-amount').value='';
+    document.getElementById('f-due').value='';
+    document.getElementById('f-cat').value='rent';
+    document.getElementById('f-recur').value='monthly';
+    document.getElementById('f-payfreq').value='monthly';
+    document.getElementById('f-pastdue').value='';
+    document.getElementById('f-latefee').value='';
+    document.getElementById('f-notes').value='';
+    document.getElementById('f-autopay').checked=false;
+    updatePayFreqPreview();
+}
+function editBill(id){
+    var b=bills.find(function(x){return x.id===id});if(!b)return;
+    editingId=id;
+    document.getElementById('addTitle').innerHTML='<span class="sec-head-icon">&#9998;</span> Edit Bill';
+    document.getElementById('deleteBtn').style.display='block';
+    document.getElementById('f-name').value=b.name;
+    document.getElementById('f-amount').value=b.amount;
+    document.getElementById('f-due').value=b.dueDate;
+    document.getElementById('f-cat').value=b.category;
+    document.getElementById('f-recur').value=b.recurrence;
+    document.getElementById('f-payfreq').value=b.payFrequency||'monthly';
+    document.getElementById('f-pastdue').value=b.pastDue||'';
+    document.getElementById('f-latefee').value=b.lateFee||'';
+    document.getElementById('f-notes').value=b.notes||'';
+    document.getElementById('f-autopay').checked=!!b.autoPay;
+    updatePayFreqPreview();
+    go('add');
+}
+function saveBill(){
+    var name=document.getElementById('f-name').value.trim();
+    var amount=parseFloat(document.getElementById('f-amount').value);
+    var due=document.getElementById('f-due').value;
+    if(!name){toast('Enter a bill name');return}
+    if(!amount||amount<=0){toast('Enter a valid amount');return}
+    if(!due){toast('Pick a due date');return}
+    if(editingId){
+        var b=bills.find(function(x){return x.id===editingId});
+        var pastDue=parseFloat(document.getElementById('f-pastdue').value)||0;
+        var lateFee=parseFloat(document.getElementById('f-latefee').value)||0;
+        var newCat=document.getElementById('f-cat').value;
+        var newName=name;
+        if(b){
+            var oldCat=b.category;
+            var oldName=b.name;
+            b.name=newName;b.amount=amount;b.dueDate=due;b.category=newCat;b.recurrence=document.getElementById('f-recur').value;b.payFrequency=document.getElementById('f-payfreq').value;b.pastDue=pastDue;b.lateFee=lateFee;b.notes=document.getElementById('f-notes').value.trim();b.autoPay=document.getElementById('f-autopay').checked;
+            // Update all past payments for this bill to reflect new category/name
+            if(oldCat!==newCat||oldName!==newName){
+                payments.forEach(function(p){
+                    if(p.billId===b.id){
+                        p.category=newCat;
+                        p.billName=newName;
+                    }
+                });
+            }
+        }
+        toast('Bill updated');
+    }else{
+        bills.push({id:genId(),name:name,amount:amount,dueDate:due,category:document.getElementById('f-cat').value,recurrence:document.getElementById('f-recur').value,payFrequency:document.getElementById('f-payfreq').value,pastDue:parseFloat(document.getElementById('f-pastdue').value)||0,lateFee:parseFloat(document.getElementById('f-latefee').value)||0,notes:document.getElementById('f-notes').value.trim(),autoPay:document.getElementById('f-autopay').checked,createdAt:new Date().toISOString()});
+        toast('Bill added');
+    }
+    save();startNew();go('bills');
+}
+function deleteBill(){
+    if(!editingId)return;
+    openConfirm('Delete this bill?',function(){
+        bills=bills.filter(function(b){return b.id!==editingId});
+        save();startNew();go('bills');toast('Bill deleted');
+    });
+}
+function deleteBillFromModal(id){
+    if(!id)return;
+    document.getElementById('billModal').classList.remove('open');
+    openConfirm('Delete this bill and all its payments?',function(){
+        bills=bills.filter(function(b){return b.id!==id});
+        payments=payments.filter(function(p){return p.billId!==id});
+        save();renderAll();toast('Bill deleted');
+    });
+}
+
+// ═══════════════════════════════════════════
+// MARK PAID
+// ═══════════════════════════════════════════
+function showPayInput(id){
+    var area=document.getElementById('payCustomArea');
+    if(area.style.display==='block'){area.style.display='none';return}
+    area.style.display='block';
+    document.getElementById('customPayInput').focus();
+}
+function confirmPay(id){
+    var input=document.getElementById('customPayInput');
+    var amt=parseFloat(input.value);
+    if(!amt||amt<=0){toast('Enter a valid amount');return}
+    var dateInput=document.getElementById('customPayDate');
+    var paidDate=dateInput&&dateInput.value?dateInput.value:today();
+    markPaid(id,amt,paidDate);
+}
+function markPaid(id,customAmount,paidDate){
+    var b=bills.find(function(x){return x.id===id});if(!b)return;
+    var payAmt=customAmount||getPaymentAmount(b);
+    var pd=paidDate||today();
+    payments.push({id:genId(),billId:b.id,billName:b.name,amount:payAmt,paidDate:pd,category:b.category,payFrequency:b.payFrequency||'monthly'});
+    // Regular payment clears past due entirely
+    b.pastDue=0;
+    if(b.recurrence!=='one-time'){var next=getNextDueDate(b);if(next)b.dueDate=next}
+    save();toast(b.name+' paid '+fmt(payAmt));
+    document.getElementById('billModal').classList.remove('open');renderAll();
+}
+function showExtraPayInput(id){
+    var area=document.getElementById('extraPayArea');
+    if(area.style.display==='block'){area.style.display='none';return}
+    area.style.display='block';
+    document.getElementById('extraPayInput').focus();
+}
+function confirmExtraPay(id){
+    var input=document.getElementById('extraPayInput');
+    var amt=parseFloat(input.value);
+    if(!amt||amt<=0){toast('Enter a valid amount');return}
+    var dateInput=document.getElementById('extraPayDate');
+    var pd=dateInput&&dateInput.value?dateInput.value:today();
+    var b=bills.find(function(x){return x.id===id});if(!b)return;
+    payments.push({id:genId(),billId:b.id,billName:b.name,amount:amt,paidDate:pd,category:b.category,payFrequency:b.payFrequency||'monthly',extra:true});
+    // Reduce past due balance if exists
+    if(b.pastDue&&b.pastDue>0){
+        b.pastDue=Math.max(0,Number(b.pastDue)-amt);
+    }
+    save();toast('Extra '+fmt(amt)+' applied to '+b.name);
+    document.getElementById('billModal').classList.remove('open');renderAll();
+}
+
+// ═══════════════════════════════════════════
+// BILL DETAIL MODAL
+// ═══════════════════════════════════════════
+function openBillModal(id){
+    var b=bills.find(function(x){return x.id===id});if(!b)return;
+    var status=getBillStatus(b),days=daysUntil(b.dueDate);
+    var defaultPayAmt=getPaymentAmount(b)+(status==='overdue'&&b.lateFee?Number(b.lateFee):0);
+    var cyclePaid=getCyclePaid(b);
+    var daysText=status==='paid'?'Paid this cycle':status==='partial'?fmt(cyclePaid)+'/'+fmt(getPaymentAmount(b))+' paid':days===0?'Due today':days<0?Math.abs(days)+' days overdue':days+' days left';
+    var html='<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.6rem">'+
+        '<div style="width:42px;height:42px;border-radius:12px;background:'+catColor(b.category)+'18;display:flex;align-items:center;justify-content:center;font-size:1.2rem">'+catIcon(b.category)+'</div>'+
+        '<div><div class="modal-title" style="margin-bottom:0.1rem">'+esc(b.name)+'</div>'+
+        '<div style="display:flex;gap:0.4rem;align-items:center"><div class="bill-status '+status+'" style="font-size:0.4rem">'+status+'</div>'+
+        '<span style="font-size:0.45rem;color:var(--t3)">'+daysText+'</span></div></div></div>'+
+        '<div class="modal-amount">'+fmt(b.amount)+'<span style="font-size:0.45rem;color:var(--t3);font-weight:500">/mo total</span></div>'+
+        ((b.payFrequency&&b.payFrequency!=='monthly')?'<div style="text-align:center;font-size:0.7rem;font-weight:800;color:var(--accent);margin:-0.3rem 0 0.6rem">'+fmt(getPaymentAmount(b))+' <span style="font-size:0.45rem;font-weight:600">'+getPayFreqFull(b.payFrequency)+' payment</span></div>':'')+
+        '<div class="modal-detail-row"><strong>Due</strong><span>'+fmtDate(b.dueDate)+'</span></div>'+
+        '<div class="modal-detail-row"><strong>Category</strong><span>'+catLabel(b.category)+'</span></div>'+
+        '<div class="modal-detail-row"><strong>Repeats</strong><span>'+b.recurrence+'</span></div>'+
+        '<div class="modal-detail-row"><strong>Pay Frequency</strong><span>'+getPayFreqFull(b.payFrequency||'monthly')+'</span></div>'+
+        (b.pastDue&&b.pastDue>0?'<div class="modal-detail-row"><strong>Past Due</strong><span style="color:#f87171;font-weight:800">'+fmt(b.pastDue)+'</span></div>':'')+
+        (b.lateFee&&b.lateFee>0?'<div class="modal-detail-row"><strong>Late Fee</strong><span style="color:#fb923c;font-weight:800">'+fmt(b.lateFee)+(status==='overdue'?' (applied)':'')+'</span></div>':'')+
+        (b.notes?'<div class="modal-detail-row"><strong>Notes</strong><span>'+esc(b.notes)+'</span></div>':'')+
+        (b.autoPay?'<div style="font-size:0.45rem;color:#4ade80;margin-top:0.4rem;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;display:flex;align-items:center;gap:0.3rem">&#9889; Auto-pay on</div>':'')+
+        '<div style="display:flex;gap:0.3rem;margin-top:1.2rem;padding-top:0.8rem;border-top:1px solid var(--border)">'+
+        (status!=='paid'?'<button class="btn btn-pay btn-sm" style="flex:1" onclick="showPayInput(\''+b.id+'\')">&#10003; Pay '+fmt(defaultPayAmt)+(status==='overdue'&&b.lateFee?' (incl. fee)':'')+'</button>':'')+
+        '<button class="btn btn-o btn-sm" style="flex:1" onclick="showExtraPayInput(\''+b.id+'\')">&#128176; Extra Payment</button>'+
+        '<button class="btn btn-o btn-sm" style="flex:1" onclick="document.getElementById(\'billModal\').classList.remove(\'open\');editBill(\''+b.id+'\')">&#9998; Edit</button></div>'+
+        (status!=='paid'?'<div id="payCustomArea" style="display:none;margin-top:0.6rem;padding:0.6rem;background:rgba(var(--ac),0.04);border:1px solid var(--border);border-radius:12px;animation:fadeUp 0.2s ease">'+
+            '<div style="font-size:0.44rem;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem">Payment Amount</div>'+
+            '<input class="fi" id="customPayInput" type="number" step="0.01" min="0" value="'+defaultPayAmt.toFixed(2)+'" style="text-align:center;font-size:0.8rem;font-weight:800;margin-bottom:0.4rem">'+
+            '<div style="font-size:0.44rem;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem">Paid Date</div>'+
+            '<input class="fi" id="customPayDate" type="date" value="'+today()+'" style="text-align:center;font-size:0.7rem;font-weight:700;margin-bottom:0.4rem">'+
+            '<div style="display:flex;gap:0.3rem">'+
+                '<button class="btn btn-pay btn-sm" style="flex:1" onclick="confirmPay(\''+b.id+'\')">&#10003; Confirm Payment</button>'+
+                '<button class="btn btn-o btn-sm" onclick="document.getElementById(\'payCustomArea\').style.display=\'none\'">Cancel</button>'+
+            '</div>'+
+        '</div>':'')+
+        '<div id="extraPayArea" style="display:none;margin-top:0.6rem;padding:0.6rem;background:rgba(var(--ac),0.04);border:1px solid rgba(var(--ac),0.15);border-radius:12px;animation:fadeUp 0.2s ease">'+
+            '<div style="font-size:0.44rem;font-weight:800;color:var(--accent);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem">&#128176; Extra Payment Amount</div>'+
+            '<div style="font-size:0.38rem;color:var(--t3);margin-bottom:0.4rem">This adds an additional payment without marking the bill as paid. Great for paying extra towards a balance.</div>'+
+            '<input class="fi" id="extraPayInput" type="number" step="0.01" min="0" placeholder="0.00" style="text-align:center;font-size:0.8rem;font-weight:800;margin-bottom:0.4rem">'+
+            '<div style="font-size:0.44rem;font-weight:800;color:var(--t3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:0.3rem">Paid Date</div>'+
+            '<input class="fi" id="extraPayDate" type="date" value="'+today()+'" style="text-align:center;font-size:0.7rem;font-weight:700;margin-bottom:0.4rem">'+
+            '<div style="display:flex;gap:0.3rem">'+
+                '<button class="btn btn-pay btn-sm" style="flex:1" onclick="confirmExtraPay(\''+b.id+'\')">&#10003; Apply Extra Payment</button>'+
+                '<button class="btn btn-o btn-sm" onclick="document.getElementById(\'extraPayArea\').style.display=\'none\'">Cancel</button>'+
+            '</div>'+
+        '</div>'+
+        '<button class="btn btn-d btn-sm" style="width:100%;margin-top:0.6rem" onclick="deleteBillFromModal(\''+b.id+'\')">&#128465; Delete Bill</button>';
+    document.getElementById('billModalContent').innerHTML=html;
+    document.getElementById('billModal').classList.add('open');
+}
+
+// ═══════════════════════════════════════════
+// CONFIRM MODAL
+// ═══════════════════════════════════════════
+function openConfirm(msg,cb){
+    document.getElementById('confirmMsg').textContent=msg;confirmCb=cb;
+    document.getElementById('confirmYes').onclick=function(){closeConfirm();if(confirmCb)confirmCb()};
+    document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirmModal').classList.remove('open');confirmCb=null}
+
+// ═══════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════
+function shiftMonth(dir){historyDate.setMonth(historyDate.getMonth()+dir);renderHistory()}
+function renderHistory(){
+    var m=historyDate.getMonth(),y=historyDate.getFullYear();
+    var months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('monthLabel').textContent=months[m]+' '+y;
+    var mp=payments.filter(function(p){var pd=new Date(p.paidDate+'T00:00:00');return pd.getMonth()===m&&pd.getFullYear()===y}).sort(function(a,b){return new Date(b.paidDate+'T00:00:00').getTime()-new Date(a.paidDate+'T00:00:00').getTime()});
+    var total=0;mp.forEach(function(p){total+=Number(p.amount)});
+    document.getElementById('histCount').textContent=mp.length;
+    document.getElementById('histTotal').textContent=fmt(total);
+    var el=document.getElementById('historyList'),empty=document.getElementById('historyEmpty');
+    if(mp.length){
+        el.innerHTML=mp.map(function(p){
+            // Use bill's current category if it still exists, otherwise fall back to payment's stored category
+            var bill=bills.find(function(b){return b.id===p.billId});
+            var cat=bill?bill.category:p.category;
+            var name=bill?bill.name:p.billName;
+            return '<div class="pay-item">'+
+                '<div class="pay-icon" style="background:'+catColor(cat)+'18">'+catIcon(cat)+'</div>'+
+                '<div class="pay-info"><div class="pay-name">'+esc(name)+(p.extra?' <span style="font-size:0.35rem;color:var(--accent);font-weight:700">(extra)</span>':'')+'</div><div class="pay-date">'+fmtDate(p.paidDate)+'</div></div>'+
+                '<div class="pay-amount">-'+fmt(p.amount)+'</div>'+
+                '<button class="btn btn-d btn-xs" style="margin-left:0.3rem;flex-shrink:0" onclick="event.stopPropagation();deletePayment(\''+p.id+'\')" title="Delete">&times;</button></div>';
+        }).join('');empty.style.display='none';
+    }else{el.innerHTML='';empty.style.display='block'}
+}
+
+function deletePayment(payId){
+    var p=payments.find(function(x){return x.id===payId});
+    if(!p)return;
+    if(!confirm('Delete payment of '+fmt(p.amount)+' for '+p.billName+'?'))return;
+    var b=bills.find(function(x){return x.id===p.billId});
+    if(b){
+        // Roll back due date if this was a regular (non-extra) payment on a recurring bill
+        if(!p.extra&&b.recurrence!=='one-time'){
+            var prev=getPrevDueDate(b);
+            if(prev)b.dueDate=prev;
+        }
+        // Restore past due balance since payment is being removed
+        b.pastDue=(Number(b.pastDue)||0)+Number(p.amount);
+    }
+    payments=payments.filter(function(x){return x.id!==payId});
+    save();toast('Payment deleted');renderAll();
+}
+
+// ═══════════════════════════════════════════
+// PAY FREQUENCY PREVIEW
+// ═══════════════════════════════════════════
+function updatePayFreqPreview(){
+    var amt=parseFloat(document.getElementById('f-amount').value)||0;
+    var freq=document.getElementById('f-payfreq').value;
+    var preview=document.getElementById('payFreqPreview');
+    if(amt>0&&freq!=='monthly'){
+        var payAmt=freq==='weekly'?amt/4:amt/2;
+        preview.textContent=fmt(payAmt)+' per '+getPayFreqFull(freq).toLowerCase()+' payment ('+fmt(amt)+' total/mo)';
+        preview.style.display='block';
+    }else{preview.style.display='none'}
+}
+
+// ═══════════════════════════════════════════
+// INCOME
+// ═══════════════════════════════════════════
+var INCOME_CATS={salary:{icon:'\uD83D\uDCBC',label:'Salary / Wages',color:'#22c55e'},freelance:{icon:'\uD83D\uDCBB',label:'Freelance',color:'#3b82f6'},business:{icon:'\uD83C\uDFF2',label:'Business',color:'#8b5cf6'},investments:{icon:'\uD83D\uDCC8',label:'Investments',color:'#f59e0b'},rental:{icon:'\uD83C\uDFE0',label:'Rental',color:'#ec4899'},sidehustle:{icon:'\u26A1',label:'Side Hustle',color:'#06b6d4'},gifts:{icon:'\uD83C\uDF81',label:'Gifts',color:'#f472b6'},other:{icon:'\uD83D\uDCE6',label:'Other',color:'#94a3b8'}};
+var incomeFilter='all';
+var paydayChecked=false;
+
+function getMonthlyIncome(inc){
+    var amt=Number(inc.amount);
+    if(inc.frequency==='weekly')return amt*4;
+    if(inc.frequency==='biweekly')return amt*2;
+    if(inc.frequency==='yearly')return amt/12;
+    if(inc.frequency==='one-time')return 0;
+    return amt;
+}
+
+function clearIncomeForm(){
+    editingIncomeId=null;
+    document.getElementById('fi-name').value='';
+    document.getElementById('fi-amount').value='';
+    document.getElementById('fi-freq').value='monthly';
+    document.getElementById('fi-cat').value='salary';
+    document.getElementById('fi-date').value='';
+    document.getElementById('fi-notes').value='';
+    document.getElementById('deleteIncomeBtn').style.display='none';
+}
+
+function saveIncome(){
+    var name=document.getElementById('fi-name').value.trim();
+    var amount=parseFloat(document.getElementById('fi-amount').value);
+    if(!name){toast('Enter a source name');return}
+    if(!amount||amount<=0){toast('Enter a valid amount');return}
+    var data={name:name,amount:amount,frequency:document.getElementById('fi-freq').value,category:document.getElementById('fi-cat').value,payDate:document.getElementById('fi-date').value,notes:document.getElementById('fi-notes').value.trim()};
+    if(editingIncomeId){
+        var inc=incomes.find(function(x){return x.id===editingIncomeId});
+        if(inc){data.received=inc.received||false;Object.assign(inc,data)}
+        toast('Income updated');
+    }else{
+        data.id=genId();data.createdAt=new Date().toISOString();data.received=false;
+        incomes.push(data);
+        toast('Income added');
+    }
+    save();clearIncomeForm();renderIncome();
+}
+
+function editIncome(id){
+    var inc=incomes.find(function(x){return x.id===id});if(!inc)return;
+    editingIncomeId=id;
+    document.getElementById('fi-name').value=inc.name;
+    document.getElementById('fi-amount').value=inc.amount;
+    document.getElementById('fi-freq').value=inc.frequency;
+    document.getElementById('fi-cat').value=inc.category;
+    document.getElementById('fi-date').value=inc.payDate||'';
+    document.getElementById('fi-notes').value=inc.notes||'';
+    document.getElementById('deleteIncomeBtn').style.display='block';
+    go('income');
+    document.getElementById('fi-name').scrollIntoView({behavior:'smooth',block:'center'});
+}
+
+function deleteIncome(){
+    if(!editingIncomeId)return;
+    openConfirm('Delete this income source?',function(){
+        incomes=incomes.filter(function(i){return i.id!==editingIncomeId});
+        save();clearIncomeForm();renderIncome();toast('Income deleted');
+    });
+}
+
+function markIncomeReceived(id,evt){
+    if(evt)evt.stopPropagation();
+    var inc=incomes.find(function(x){return x.id===id});if(!inc)return;
+    inc.received=!inc.received;
+    save();renderIncome();renderDashboard();
+    toast(inc.received?inc.name+' marked received':inc.name+' marked pending');
+}
+
+function setIncomeFilter(f){
+    incomeFilter=f;
+    document.querySelectorAll('#incomeFilterBar .filter-pill').forEach(function(p){p.classList.toggle('on',p.dataset.if===f)});
+    renderIncome();
+}
+
+function incomeCardHTML(inc){
+    var cat=INCOME_CATS[inc.category]||INCOME_CATS.other;
+    var monthly=getMonthlyIncome(inc);
+    var freqLabel=inc.frequency==='one-time'?'One-time':inc.frequency==='weekly'?'/wk':inc.frequency==='biweekly'?'/2wk':inc.frequency==='yearly'?'/yr':'/mo';
+    var received=!!inc.received;
+    var statusBadge=received?
+        '<div class="bill-status paid" style="font-size:0.36rem">Received</div>':
+        '<div class="bill-status unpaid" style="font-size:0.36rem">Pending</div>';
+    var rcvBtn=received?
+        '<button class="btn btn-o btn-sm" style="font-size:0.34rem;padding:0.2rem 0.4rem;min-height:auto" onclick="markIncomeReceived(\''+inc.id+'\',event)">Undo</button>':
+        '<button class="btn btn-pay btn-sm" style="font-size:0.34rem;padding:0.2rem 0.4rem;min-height:auto" onclick="markIncomeReceived(\''+inc.id+'\',event)">Mark Received</button>';
+    return '<div class="bill-card" style="--cat-color:'+cat.color+';cursor:pointer" onclick="editIncome(\''+inc.id+'\')">'+
+        '<div style="position:absolute;top:0;left:0;bottom:0;width:4px;background:'+cat.color+';border-radius:14px 0 0 14px"></div>'+
+        '<div class="bill-cat-icon" style="background:'+cat.color+'18">'+cat.icon+'</div>'+
+        '<div class="bill-info">'+
+            '<div class="bill-name">'+esc(inc.name)+'</div>'+
+            '<div class="bill-meta"><span>'+cat.label+'</span>'+(inc.payDate?'<span>'+fmtDate(inc.payDate)+'</span>':'')+'</div>'+
+        '</div>'+
+        '<div class="bill-right">'+
+            '<div class="bill-amount" style="color:#4ade80">+'+fmt(inc.amount)+'</div>'+
+            '<div style="font-size:0.4rem;color:var(--t3);font-weight:700">'+freqLabel+'</div>'+
+            (monthly>0&&inc.frequency!=='monthly'?'<div style="font-size:0.38rem;color:var(--accent);font-weight:700">'+fmt(monthly)+'/mo</div>':'')+
+            statusBadge+
+            rcvBtn+
+        '</div></div>';
+}
+
+function renderIncome(){
+    var totalMonthly=0;
+    incomes.forEach(function(inc){totalMonthly+=getMonthlyIncome(inc)});
+    var totalBillsMonthly=0;
+    bills.forEach(function(b){totalBillsMonthly+=Number(b.amount)});
+    var net=totalMonthly-totalBillsMonthly;
+
+    document.getElementById('incomeTotal').textContent=fmt(totalMonthly);
+    var netEl=document.getElementById('incomeNet');
+    netEl.textContent=(net>=0?'+':'')+fmt(net);
+    netEl.style.color=net>=0?'#4ade80':'#f87171';
+
+    var totalReceived=0,totalPending=0;
+    incomes.forEach(function(inc){
+        if(inc.received)totalReceived+=Number(inc.amount);
+        else totalPending+=Number(inc.amount);
+    });
+    document.getElementById('incomeReceived').textContent=fmt(totalReceived);
+    document.getElementById('incomePending').textContent=fmt(totalPending);
+
+    var filtered=incomes.filter(function(inc){
+        if(incomeFilter==='received')return !!inc.received;
+        if(incomeFilter==='pending')return !inc.received;
+        return true;
+    });
+    var list=document.getElementById('incomeList'),empty=document.getElementById('incomeEmpty');
+    if(filtered.length){
+        list.innerHTML=filtered.map(function(inc){return incomeCardHTML(inc)}).join('');
+        empty.style.display='none';
+    }else{
+        list.innerHTML='';empty.style.display='block';
+    }
+}
+
+// ═══════════════════════════════════════════
+// PAYDAY CHECK
+// ═══════════════════════════════════════════
+function checkPayday(){
+    var todayStr=today();
+    var todayDay=new Date().getDate();
+    var due=incomes.filter(function(inc){
+        if(inc.received)return false;
+        if(!inc.payDate)return false;
+        var pd=new Date(inc.payDate+'T00:00:00');
+        // Exact date match or same day of month for recurring
+        if(inc.frequency==='one-time')return inc.payDate===todayStr;
+        return pd.getDate()===todayDay;
+    });
+    if(!due.length)return;
+    var html='';
+    due.forEach(function(inc){
+        var cat=INCOME_CATS[inc.category]||INCOME_CATS.other;
+        html+='<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:0.7rem;margin-bottom:0.5rem;text-align:left">'+
+            '<div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem">'+
+                '<div style="width:34px;height:34px;border-radius:10px;background:'+cat.color+'18;display:flex;align-items:center;justify-content:center;font-size:0.9rem;flex-shrink:0">'+cat.icon+'</div>'+
+                '<div style="flex:1"><div style="font-size:0.6rem;font-weight:800">'+esc(inc.name)+'</div>'+
+                '<div style="font-size:0.42rem;color:var(--t3);font-weight:700">'+cat.label+'</div></div>'+
+                '<div style="font-size:0.8rem;font-weight:800;color:#4ade80">+'+fmt(inc.amount)+'</div>'+
+            '</div>'+
+            '<div style="font-size:0.52rem;font-weight:800;color:var(--t2);margin-bottom:0.5rem">Have you been paid?</div>'+
+            '<div style="display:flex;gap:0.3rem">'+
+                '<button class="btn btn-pay btn-sm" style="flex:1" onclick="paydayConfirm(\''+inc.id+'\',true)">Yes, Received</button>'+
+                '<button class="btn btn-o btn-sm" style="flex:1" onclick="paydayConfirm(\''+inc.id+'\',false)">Not Yet</button>'+
+            '</div>'+
+        '</div>';
+    });
+    document.getElementById('paydayPromptContent').innerHTML=html;
+    document.getElementById('paydayModal').classList.add('open');
+}
+
+function paydayConfirm(id,received){
+    var inc=incomes.find(function(x){return x.id===id});
+    if(inc&&received){
+        inc.received=true;
+        save();
+        toast(inc.name+' marked received');
+    }
+    // Remove this item from the prompt
+    var remaining=document.querySelectorAll('#paydayPromptContent > div');
+    var found=false;
+    remaining.forEach(function(el){
+        var btns=el.querySelectorAll('button');
+        btns.forEach(function(btn){
+            if(btn.onclick&&btn.onclick.toString().indexOf(id)!==-1)found=true;
+        });
+    });
+    // Re-render the prompt without this income
+    var pendingDue=incomes.filter(function(i){
+        if(i.received)return false;
+        if(!i.payDate)return false;
+        if(i.id===id)return false;
+        var pd=new Date(i.payDate+'T00:00:00');
+        if(i.frequency==='one-time')return i.payDate===today();
+        return pd.getDate()===new Date().getDate();
+    });
+    if(!pendingDue.length){
+        document.getElementById('paydayModal').classList.remove('open');
+        sessionStorage.setItem('budgetbot_payday_'+today(),'1');
+        paydayChecked=true;
+        renderDashboard();
+    }else{
+        // Rebuild prompt with remaining items
+        checkPayday();
+    }
+}
+
+// ═══════════════════════════════════════════
+// RENDER ALL
+// ═══════════════════════════════════════════
+function renderAll(){
+    var a=document.querySelector('.sec.active');
+    if(a){if(a.id==='sec-dashboard')renderDashboard();else if(a.id==='sec-bills')renderBills();else if(a.id==='sec-income')renderIncome();else if(a.id==='sec-history')renderHistory()}
+}
+
+// ═══════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════
+var THEMES=[
+    {name:'Emerald',ac:'52,211,153',text:'#f2faf6',bg:'#060d0a',bgGrad:'#060d0a,#0a1f16,#0d1a14,#061210,#060d0a',cardBg:'rgba(10,22,18,0.6)',t2:'#d6f0e4',t3:'#8ccaae',t4:'#6aaa8a'},
+    {name:'Blue',ac:'59,130,246',text:'#f0f4fc',bg:'#060a14',bgGrad:'#060a14,#0a1630,#0d1a2e,#061428,#060a14',cardBg:'rgba(10,18,30,0.6)',t2:'#ccdcf4',t3:'#88aee0',t4:'#6890c4'},
+    {name:'Purple',ac:'139,92,246',text:'#f4f0fc',bg:'#0a0614',bgGrad:'#0a0614,#160a2e,#1a0d30,#120628,#0a0614',cardBg:'rgba(16,10,28,0.6)',t2:'#dcd0f4',t3:'#aa8ee0',t4:'#8a6ec4'},
+    {name:'Rose',ac:'244,63,94',text:'#fcf0f2',bg:'#140608',bgGrad:'#140608,#2e0a14,#300d18,#280610,#140608',cardBg:'rgba(28,10,14,0.6)',t2:'#f4ccd4',t3:'#e08898',t4:'#c46878'},
+    {name:'Orange',ac:'249,115,22',text:'#fcf4ee',bg:'#140a06',bgGrad:'#140a06,#2e1a0a,#301e0d,#281406,#140a06',cardBg:'rgba(28,16,10,0.6)',t2:'#f4dcc8',t3:'#e0a878',t4:'#c4885a'},
+    {name:'Gold',ac:'234,179,8',text:'#faf6ec',bg:'#141006',bgGrad:'#141006,#2e250a,#302a0d,#281e06,#141006',cardBg:'rgba(28,22,10,0.6)',t2:'#f0e4c0',t3:'#d4bc6a',t4:'#b8a050'},
+    {name:'Cyan',ac:'6,182,212',text:'#eef8fa',bg:'#06100e',bgGrad:'#06100e,#0a2e28,#0d3030,#062826,#06100e',cardBg:'rgba(10,22,20,0.6)',t2:'#c4f0ea',t3:'#78d0c6',t4:'#5ab4aa'},
+    {name:'Pink',ac:'236,72,153',text:'#fcf0f6',bg:'#14060e',bgGrad:'#14060e,#2e0a20,#300d24,#28061c,#14060e',cardBg:'rgba(28,10,20,0.6)',t2:'#f4c8e0',t3:'#e088b8',t4:'#c4689a'},
+    {name:'Teal',ac:'20,184,166',text:'#f0faf8',bg:'#060d0c',bgGrad:'#060d0c,#0a2420,#0d2a26,#061e1c,#060d0c',cardBg:'rgba(10,22,20,0.6)',t2:'#c8f0e8',t3:'#78c8bc',t4:'#5aaca0'},
+    {name:'Violet',ac:'168,85,247',text:'#f6f0fc',bg:'#0c0614',bgGrad:'#0c0614,#1a0a30,#200d34,#16062c,#0c0614',cardBg:'rgba(18,10,30,0.6)',t2:'#deccf4',t3:'#b08ce0',t4:'#906cc4'}
+];
+var currentTheme=0;
+
+function toggleThemeBar(){
+    document.getElementById('themeBar').classList.toggle('open');
+}
+
+function setTheme(idx){
+    currentTheme=idx;
+    var t=THEMES[idx];
+    var r=document.documentElement.style;
+    r.setProperty('--ac',t.ac);
+    r.setProperty('--text',t.text);
+    r.setProperty('--bg',t.bg);
+    r.setProperty('--card-bg',t.cardBg);
+    r.setProperty('--t2',t.t2);
+    r.setProperty('--t3',t.t3);
+    r.setProperty('--t4',t.t4);
+    document.body.style.background=t.bg;
+    document.querySelector('body').style.setProperty('--bg-grad',t.bgGrad);
+    // Update body::before gradient dynamically
+    var style=document.getElementById('dynamicBgStyle');
+    if(!style){style=document.createElement('style');style.id='dynamicBgStyle';document.head.appendChild(style)}
+    var colors=t.bgGrad.split(',');
+    style.textContent='body::before{background:linear-gradient(135deg,'+colors[0]+' 0%,'+colors[1]+' 25%,'+colors[2]+' 50%,'+colors[3]+' 75%,'+colors[4]+' 100%) !important;background-size:400% 400% !important;animation:bgGrad 20s ease infinite !important}';
+
+    // Update swatch active states
+    document.querySelectorAll('.theme-swatch').forEach(function(s,i){s.classList.toggle('active',i===idx)});
+
+    // Save theme preference
+    try{localStorage.setItem('budgetbot_theme',idx)}catch(e){}
+}
+
+function loadTheme(){
+    try{
+        var saved=localStorage.getItem('budgetbot_theme');
+        if(saved!==null)setTheme(parseInt(saved));
+    }catch(e){}
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+(function(){
+    function setVH(){document.getElementById('app').style.minHeight=window.innerHeight+'px'}
+    setVH();window.addEventListener('resize',setVH);
+    var cf=document.getElementById('catFilter');
+    Object.keys(CATEGORIES).forEach(function(k){var o=document.createElement('option');o.value=k;o.textContent=CATEGORIES[k].icon+' '+CATEGORIES[k].label;cf.appendChild(o)});
+    loadTheme();
+    autoReconnectWallet();
+    load();cloudLoad();
+    document.getElementById('f-due').value=today();
+    document.getElementById('fi-date').value=today();
+    document.getElementById('f-payfreq').addEventListener('change',updatePayFreqPreview);
+    document.getElementById('f-amount').addEventListener('input',updatePayFreqPreview);
+    renderDashboard();
+
+    // Background sync every 30s to keep data fresh across devices
+    setInterval(function(){
+        if(connectedWallet && window.AppDB){
+            cloudLoadRetries=0;
+            cloudLoad();
+        }
+    }, 30000);
+})();
+</script>
+</body>
+</html>

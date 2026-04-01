@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoBuy — Autonomous Token Buyer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.min.js"></script>
+    <style>
+        :root {
+            --bg-deep: #08090c;
+            --bg-base: #0b0c10;
+            --bg-surface: #111318;
+            --bg-elevated: #16181f;
+            --bg-hover: #1a1c24;
+            --border: rgba(255,255,255,0.05);
+            --border-subtle: rgba(255,255,255,0.07);
+            --border-active: rgba(197,171,116,0.25);
+            --gold: #c5ab74;
+            --gold-light: #dcc99a;
+            --gold-dim: #8b7a52;
+            --gold-ultra: #e8d5a3;
+            --gold-bg: rgba(197,171,116,0.06);
+            --green: #5cb98a;
+            --green-bg: rgba(92,185,138,0.08);
+            --red: #c97373;
+            --red-bg: rgba(201,115,115,0.08);
+            --blue: #7ba4cc;
+            --blue-bg: rgba(123,164,204,0.08);
+            --text-primary: #e8e6e1;
+            --text-secondary: #9a968e;
+            --text-muted: #5c5950;
+            --text-faint: #2e2d2a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .app-shell { position: relative; }
+
+        /* ── Header ── */
+        .header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 28px;
+            background: var(--bg-base);
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 14px; }
+        .logo svg { width: 34px; height: 34px; }
+        .logo-text {
+            font-family: 'DM Serif Display', serif;
+            font-size: 21px; font-weight: 400; letter-spacing: 0.5px;
+            color: var(--text-primary);
+        }
+        .logo-text span { color: var(--gold); }
+
+        .wallet-btn {
+            background: transparent;
+            color: var(--gold); border: 1px solid var(--border-active);
+            border-radius: 6px;
+            padding: 10px 20px; font-family: 'Inter', sans-serif; font-weight: 600;
+            font-size: 12px; cursor: pointer;
+            transition: all 0.2s ease;
+            letter-spacing: 0.8px; text-transform: uppercase;
+        }
+        .wallet-btn:hover {
+            background: var(--gold-bg);
+            border-color: var(--gold-dim);
+        }
+        .wallet-btn.connected {
+            background: var(--bg-surface);
+            border-color: var(--border-subtle);
+            color: var(--text-secondary);
+        }
+        .wallet-btn .dot {
+            display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+            background: var(--green); margin-right: 8px;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── Status Bar ── */
+        .status-bar {
+            display: flex; align-items: center; gap: 16px;
+            padding: 11px 28px;
+            background: var(--bg-base);
+            border-bottom: 1px solid var(--border);
+            font-size: 10px; color: var(--text-muted);
+            overflow-x: auto; white-space: nowrap;
+            letter-spacing: 1.2px; font-weight: 600; text-transform: uppercase;
+        }
+        .status-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .status-chip::before {
+            content: ''; display: inline-block; width: 4px; height: 4px;
+            border-radius: 1px; background: var(--text-faint);
+        }
+        .status-chip.active { color: var(--green); }
+        .status-chip.active::before { background: var(--green); }
+        .status-chip.warn { color: var(--gold); }
+        .status-chip.warn::before { background: var(--gold); }
+
+        /* ── Tabs ── */
+        .tabs {
+            display: flex;
+            padding: 0 28px;
+            background: var(--bg-base);
+            border-bottom: 1px solid var(--border);
+        }
+        .tab {
+            padding: 16px 0; margin-right: 32px;
+            font-weight: 600; font-size: 11px; color: var(--text-muted);
+            cursor: pointer; border-bottom: 1px solid transparent;
+            transition: all 0.2s; letter-spacing: 1.2px; text-transform: uppercase;
+        }
+        .tab:last-child { margin-right: 0; }
+        .tab:hover { color: var(--text-secondary); }
+        .tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+
+        /* ── Panels ── */
+        .panel { display: none; padding: 28px; position: relative; }
+        .panel.active { display: block; animation: fadeIn 0.25s ease; }
+
+        /* ── Form Elements ── */
+        .form-group { margin-bottom: 22px; }
+        .form-label {
+            display: block; font-size: 10px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1.8px;
+            color: var(--text-muted); margin-bottom: 10px;
+        }
+        .form-select, .form-input {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 6px; padding: 13px 16px;
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 500;
+            outline: none;
+            transition: all 0.2s ease;
+            -webkit-appearance: none; appearance: none;
+        }
+        .form-select:hover, .form-input:hover { border-color: var(--border-subtle); }
+        .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5' fill='%235c5950'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 16px center;
+            padding-right: 40px; cursor: pointer;
+        }
+        .form-select:focus, .form-input:focus {
+            border-color: var(--gold-dim);
+            box-shadow: 0 0 0 2px var(--gold-bg);
+        }
+        .form-input::placeholder { color: var(--text-faint); font-weight: 400; }
+        .form-row { display: flex; gap: 12px; }
+        .form-row .form-group { flex: 1; }
+
+        .ca-input { display: none; margin-top: 10px; }
+        .ca-input.show { display: block; animation: fadeIn 0.2s ease; }
+        .ca-input .form-input { font-size: 11px; font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; letter-spacing: 0.5px; color: var(--text-secondary); }
+
+        .token-info {
+            display: none; margin-top: 8px; padding: 10px 14px;
+            background: var(--bg-elevated); border-radius: 4px; font-size: 11px;
+            border-left: 2px solid var(--gold-dim);
+        }
+        .token-info.show { display: flex; align-items: center; gap: 8px; animation: fadeIn 0.2s ease; }
+        .token-info .symbol { font-weight: 700; color: var(--gold); letter-spacing: 0.5px; }
+
+        /* ── Create Button ── */
+        .create-btn {
+            width: 100%; padding: 15px; border: 1px solid var(--gold-dim);
+            border-radius: 6px;
+            background: transparent;
+            color: var(--gold); font-family: 'Inter', sans-serif; font-weight: 700;
+            font-size: 11px; cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 16px; letter-spacing: 2px; text-transform: uppercase;
+        }
+        .create-btn:hover {
+            background: var(--gold-bg);
+            border-color: var(--gold);
+            color: var(--gold-light);
+        }
+        .create-btn:active { transform: scale(0.995); }
+        .create-btn:disabled {
+            opacity: 0.25; cursor: not-allowed; border-color: var(--text-faint);
+            color: var(--text-muted);
+        }
+
+        /* ── Strategy Cards ── */
+        .strat-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border); border-radius: 8px;
+            padding: 22px; margin-bottom: 12px; position: relative;
+            transition: all 0.2s ease;
+            animation: fadeIn 0.3s ease;
+        }
+        .strat-card:hover { border-color: var(--border-subtle); }
+        .strat-card.active-strat {
+            border-color: var(--border-active);
+        }
+        .strat-card.paused { opacity: 0.45; }
+        .strat-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .strat-pair {
+            font-family: 'DM Serif Display', serif;
+            font-weight: 400; font-size: 18px; letter-spacing: 0.3px;
+        }
+        .strat-pair .arrow { color: var(--gold-dim); margin: 0 10px; font-family: 'Inter', sans-serif; font-size: 12px; }
+        .strat-badge {
+            font-size: 9px; font-weight: 700; text-transform: uppercase;
+            padding: 4px 10px; border-radius: 3px; letter-spacing: 1.5px;
+        }
+        .strat-badge.running { background: var(--green-bg); color: var(--green); }
+        .strat-badge.paused-badge { background: rgba(197,171,116,0.08); color: var(--gold); }
+        .strat-badge.stopped { background: var(--red-bg); color: var(--red); }
+        .strat-details { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .strat-detail {
+            background: var(--bg-elevated); border-radius: 4px; padding: 7px 12px;
+            font-size: 10px; color: var(--text-secondary); font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        .strat-detail strong { color: var(--text-primary); font-weight: 700; }
+        .strat-actions { display: flex; gap: 10px; }
+        .strat-action {
+            flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 4px;
+            background: transparent; color: var(--text-muted); font-family: 'Inter', sans-serif;
+            font-weight: 700; font-size: 10px; cursor: pointer;
+            transition: all 0.2s; letter-spacing: 1.5px; text-transform: uppercase;
+        }
+        .strat-action:hover { background: var(--bg-hover); color: var(--text-secondary); }
+        .strat-action.danger { color: var(--red); }
+        .strat-action.danger:hover { background: var(--red-bg); }
+        .strat-action.toggle { color: var(--gold); }
+        .strat-action.toggle:hover { background: var(--gold-bg); }
+
+        .strat-progress {
+            margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border);
+            font-size: 10px; color: var(--text-muted); font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+        .strat-progress .next-fire { color: var(--gold); font-weight: 700; }
+
+        /* ── Trade Log ── */
+        .log-entry {
+            display: flex; align-items: center; gap: 16px;
+            padding: 18px 0; border-bottom: 1px solid var(--border);
+            font-size: 13px; animation: fadeIn 0.2s ease;
+        }
+        .log-icon {
+            width: 34px; height: 34px; border-radius: 4px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; flex-shrink: 0; font-weight: 600;
+        }
+        .log-icon.success { background: var(--green-bg); color: var(--green); }
+        .log-icon.fail { background: var(--red-bg); color: var(--red); }
+        .log-icon.info { background: var(--blue-bg); color: var(--blue); }
+        .log-body { flex: 1; min-width: 0; }
+        .log-title { font-weight: 600; font-size: 12px; letter-spacing: 0.2px; }
+        .log-sub { font-size: 10px; color: var(--text-muted); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; letter-spacing: 0.2px; }
+        .log-time { font-size: 9px; color: var(--text-faint); white-space: nowrap; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        .empty-state {
+            text-align: center; padding: 80px 24px;
+        }
+        .empty-state .icon { font-size: 32px; margin-bottom: 20px; opacity: 0.15; filter: grayscale(1); }
+        .empty-state .title {
+            font-family: 'DM Serif Display', serif;
+            font-size: 16px; font-weight: 400; color: var(--text-muted); margin-bottom: 8px;
+        }
+        .empty-state div:last-child { font-size: 11px; color: var(--text-faint); font-weight: 500; letter-spacing: 0.3px; }
+
+        /* ── Slippage / Advanced ── */
+        .advanced-toggle {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 10px; color: var(--text-muted); cursor: pointer;
+            margin-bottom: 16px; font-weight: 600;
+            letter-spacing: 1.5px; text-transform: uppercase;
+            transition: color 0.2s;
+        }
+        .advanced-toggle:hover { color: var(--text-secondary); }
+        .advanced-toggle .chevron { transition: transform 0.2s ease; font-size: 8px; }
+        .advanced-toggle.open .chevron { transform: rotate(90deg); }
+        .advanced-panel { display: none; margin-bottom: 20px; }
+        .advanced-panel.show { display: block; animation: fadeIn 0.2s ease; }
+        .slippage-row { display: flex; gap: 8px; }
+        .slip-btn {
+            flex: 1; padding: 10px; border: 1px solid var(--border); border-radius: 4px;
+            background: transparent; color: var(--text-muted); font-family: 'Inter', sans-serif;
+            font-weight: 600; font-size: 11px; cursor: pointer;
+            transition: all 0.2s; letter-spacing: 0.5px;
+        }
+        .slip-btn:hover { border-color: var(--border-subtle); color: var(--text-secondary); }
+        .slip-btn.active {
+            border-color: var(--gold-dim); color: var(--gold);
+            background: var(--gold-bg);
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--bg-elevated); border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 14px 28px; font-size: 12px; font-weight: 600;
+            z-index: 1000; transition: all 0.3s ease;
+            white-space: nowrap; letter-spacing: 0.3px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.success { border-left: 2px solid var(--green); }
+        .toast.error { border-left: 2px solid var(--red); }
+
+        /* ── Scrollbar ── */
+        ::-webkit-scrollbar { width: 2px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.04); border-radius: 1px; }
+
+        .form-select option { background: var(--bg-elevated); color: var(--text-primary); }
+
+        /* ── Responsive ── */
+        @media (min-width: 600px) {
+            body { display: flex; justify-content: center; }
+            .app-shell {
+                width: 100%; max-width: 500px; min-height: 100vh;
+                border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+                background: var(--bg-base);
+            }
+        }
+        @media (max-width: 599px) {
+            .app-shell { background: var(--bg-base); }
+        }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <svg viewBox="0 0 34 34" fill="none">
+                <circle cx="14" cy="11" r="6" fill="#c5ab74" opacity="0.9"/>
+                <ellipse cx="17" cy="22" rx="12" ry="8" fill="#c5ab74" opacity="0.9"/>
+                <ellipse cx="12" cy="11.5" r="1" fill="#0b0c10"/>
+                <path d="M18 9.5c1-0.5 3-0.3 3.5 0.8" stroke="#c5ab74" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                <path d="M8 13c-1.5 0.5-2.5 0-2.8-0.5" stroke="#8b7a52" stroke-width="1" stroke-linecap="round" fill="none"/>
+                <ellipse cx="8.5" cy="12.5" rx="3" ry="1.5" fill="#8b7a52" transform="rotate(-10 8.5 12.5)"/>
+            </svg>
+            <div>
+                <span class="logo-text">Auto<span>Buy</span></span>
+                <div style="font-size:8px;color:#5c5950;letter-spacing:1.5px;font-weight:500;margin-top:-1px;">BROUGHT TO YOU BY @itsEvilDuck</div>
+            </div>
+        </div>
+        <button class="wallet-btn" id="walletBtn" onclick="connectWallet()">Connect Wallet</button>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="status-bar" id="statusBar">
+        <div class="status-chip"><span>Base Chain</span></div>
+        <div class="status-chip" id="stratCount">0 strategies</div>
+        <div class="status-chip" id="engineStatus">Engine: idle</div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+        <div class="tab active" data-tab="create" onclick="switchTab('create')">New Strategy</div>
+        <div class="tab" data-tab="strategies" onclick="switchTab('strategies')">Active <span id="activeBadge"></span></div>
+        <div class="tab" data-tab="log" onclick="switchTab('log')">Trade Log</div>
+    </div>
+
+    <!-- Create Strategy Panel -->
+    <div class="panel active" id="panel-create">
+
+        <div class="form-group">
+            <label class="form-label">Spend Token (what you pay with)</label>
+            <select class="form-select" id="spendToken" onchange="onTokenSelect('spend')">
+                <option value="ETH">ETH (Native)</option>
+                <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
+                <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
+                <option value="0x4200000000000000000000000000000000000006">WETH</option>
+                <option value="0x7ca47B141639B893C6782823C0b219f872056379">CLAWS</option>
+                <option value="0xB0b6e0E9da530f68D713cC03a813B506205aC808">INCLAWNCH</option>
+                <option value="custom">Custom Token (paste CA)</option>
+            </select>
+            <div class="ca-input" id="spendCA">
+                <input class="form-input" id="spendCAInput" placeholder="0x... token contract address" oninput="resolveCustomToken('spend')">
+                <div class="token-info" id="spendTokenInfo"><span class="symbol"></span><span class="name"></span></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Buy Token (what you receive)</label>
+            <select class="form-select" id="buyToken" onchange="onTokenSelect('buy')">
+                <option value="">-- Select Token --</option>
+                <option value="ETH">ETH (Native)</option>
+                <option value="0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913">USDC</option>
+                <option value="0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb">DAI</option>
+                <option value="0x4200000000000000000000000000000000000006">WETH</option>
+                <option value="0x7ca47B141639B893C6782823C0b219f872056379">CLAWS</option>
+                <option value="0xB0b6e0E9da530f68D713cC03a813B506205aC808">INCLAWNCH</option>
+                <option value="custom">Custom Token (paste CA)</option>
+            </select>
+            <div class="ca-input" id="buyCA">
+                <input class="form-input" id="buyCAInput" placeholder="0x... token contract address" oninput="resolveCustomToken('buy')">
+                <div class="token-info" id="buyTokenInfo"><span class="symbol"></span><span class="name"></span></div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Amount Per Trade (in spend token)</label>
+            <input class="form-input" id="tradeAmount" type="number" placeholder="0.01" step="any" min="0">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Trigger Type</label>
+            <select class="form-select" id="triggerType" onchange="onTriggerChange()">
+                <option value="timed">Timed Interval (DCA)</option>
+                <option value="volume">Volume % Change</option>
+                <option value="marketcap">Market Cap % Change</option>
+            </select>
+        </div>
+
+        <!-- Timed params -->
+        <div class="form-group trigger-params" id="params-timed">
+            <label class="form-label">Buy Every</label>
+            <select class="form-select" id="timedInterval" onchange="onTimedSelect()">
+                <option value="60">1 Minute</option>
+                <option value="300">5 Minutes</option>
+                <option value="900">15 Minutes</option>
+                <option value="3600" selected>1 Hour</option>
+                <option value="14400">4 Hours</option>
+                <option value="86400">1 Day</option>
+                <option value="604800">1 Week</option>
+                <option value="custom">Custom...</option>
+            </select>
+            <div class="ca-input" id="customTimedDiv">
+                <div class="form-row" style="margin-top:8px">
+                    <div class="form-group">
+                        <input class="form-input" id="customTimedVal" type="number" placeholder="30" min="1" value="30">
+                    </div>
+                    <div class="form-group">
+                        <select class="form-select" id="customTimedUnit">
+                            <option value="1">Seconds</option>
+                            <option value="60" selected>Minutes</option>
+                            <option value="3600">Hours</option>
+                            <option value="86400">Days</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Volume params -->
+        <div class="form-group trigger-params" id="params-volume" style="display:none">
+            <label class="form-label">Buy when 24h volume changes by (%)</label>
+            <div class="form-row">
+                <div class="form-group">
+                    <select class="form-select" id="volumeDir">
+                        <option value="up">Increases by</option>
+                        <option value="down">Decreases by</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input class="form-input" id="volumePercent" type="number" placeholder="20" min="1" value="20">
+                </div>
+            </div>
+            <label class="form-label" style="margin-top:12px">Auto-Stop Cap (% change from start — 0 = disabled)</label>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" style="font-size:10px;color:#22c55e">Stop if UP by %</label>
+                    <input class="form-input" id="volumeCapUp" type="number" placeholder="0" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-size:10px;color:#ef4444">Stop if DOWN by %</label>
+                    <input class="form-input" id="volumeCapDown" type="number" placeholder="0" min="0" value="0">
+                </div>
+            </div>
+            <div style="font-size:11px;color:#64748b;margin-top:4px">Checks every 60 seconds against rolling baseline. Auto-stop disables the strategy when volume moves beyond the cap from its starting point.</div>
+        </div>
+
+        <!-- Market cap params -->
+        <div class="form-group trigger-params" id="params-marketcap" style="display:none">
+            <label class="form-label">Buy when market cap changes by (%)</label>
+            <div class="form-row">
+                <div class="form-group">
+                    <select class="form-select" id="mcapDir">
+                        <option value="down">Drops by</option>
+                        <option value="up">Increases by</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <input class="form-input" id="mcapPercent" type="number" placeholder="10" min="1" value="10">
+                </div>
+            </div>
+            <label class="form-label" style="margin-top:12px">Auto-Stop Cap (% change from start — 0 = disabled)</label>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" style="font-size:10px;color:#22c55e">Stop if UP by %</label>
+                    <input class="form-input" id="mcapCapUp" type="number" placeholder="0" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-size:10px;color:#ef4444">Stop if DOWN by %</label>
+                    <input class="form-input" id="mcapCapDown" type="number" placeholder="0" min="0" value="0">
+                </div>
+            </div>
+            <div style="font-size:11px;color:#64748b;margin-top:4px">Checks every 60 seconds against rolling baseline. Auto-stop disables the strategy when market cap moves beyond the cap from its starting point.</div>
+        </div>
+
+        <!-- Advanced -->
+        <div class="advanced-toggle" id="advToggle" onclick="toggleAdvanced()">
+            <span class="chevron">&#9654;</span> Advanced Settings
+        </div>
+        <div class="advanced-panel" id="advPanel">
+            <div class="form-group">
+                <label class="form-label">Slippage Tolerance</label>
+                <div class="slippage-row">
+                    <button class="slip-btn" data-slip="0.5" onclick="setSlippage(this)">0.5%</button>
+                    <button class="slip-btn active" data-slip="1" onclick="setSlippage(this)">1%</button>
+                    <button class="slip-btn" data-slip="3" onclick="setSlippage(this)">3%</button>
+                    <button class="slip-btn" data-slip="5" onclick="setSlippage(this)">5%</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Max Total Trades (0 = unlimited)</label>
+                <input class="form-input" id="maxTrades" type="number" placeholder="0" min="0" value="0">
+            </div>
+        </div>
+
+        <button class="create-btn" id="createBtn" onclick="createStrategy()" disabled>Connect Wallet to Start</button>
+    </div>
+
+    <!-- Active Strategies Panel -->
+    <div class="panel" id="panel-strategies">
+        <div id="stratList"></div>
+        <div class="empty-state" id="emptyStrats">
+            <div class="icon">&#128203;</div>
+            <div class="title">No strategies yet</div>
+            <div>Create your first autonomous buy strategy</div>
+        </div>
+    </div>
+
+    <!-- Trade Log Panel -->
+    <div class="panel" id="panel-log">
+        <div id="logList"></div>
+        <div class="empty-state" id="emptyLog">
+            <div class="icon">&#128196;</div>
+            <div class="title">No trades yet</div>
+            <div>Trades will appear here as they execute</div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONSTANTS
+// ============================================================
+const BASE_CHAIN_ID = '0x2105';
+const BASE_CHAIN_ID_DEC = 8453;
+const BASE_RPC = 'https://mainnet.base.org';
+const WETH = '0x4200000000000000000000000000000000000006';
+const UNISWAP_ROUTER = '0x2626664c2603336E57B271c5C0b26F421741e481';
+const UNISWAP_QUOTER = '0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a';
+const FEE_TIERS = [500, 3000, 10000];
+const STORAGE_KEY = 'autobuy_strategies';
+const LOG_KEY = 'autobuy_log';
+
+const ROUTER_ABI = [
+    'function exactInputSingle((address tokenIn, address tokenOut, uint24 fee, address recipient, uint256 amountIn, uint256 amountOutMinimum, uint160 sqrtPriceLimitX96)) external payable returns (uint256 amountOut)',
+    'function multicall(uint256 deadline, bytes[] calldata data) external payable returns (bytes[] memory)',
+    'function unwrapWETH9(uint256 amountMinimum, address recipient) external payable'
+];
+
+const ERC20_ABI = [
+    'function approve(address spender, uint256 amount) external returns (bool)',
+    'function allowance(address owner, address spender) external view returns (uint256)',
+    'function balanceOf(address account) external view returns (uint256)',
+    'function decimals() external view returns (uint8)',
+    'function symbol() external view returns (string)',
+    'function name() external view returns (string)'
+];
+
+const QUOTER_ABI = [
+    'function quoteExactInputSingle((address tokenIn, address tokenOut, uint256 amountIn, uint24 fee, uint160 sqrtPriceLimitX96)) external returns (uint256 amountOut, uint160 sqrtPriceX96After, uint32 initializedTicksCrossed, uint256 gasEstimate)'
+];
+
+const KNOWN_TOKENS = {
+    'ETH': { symbol: 'ETH', name: 'Ethereum', decimals: 18, address: 'ETH' },
+    '0x4200000000000000000000000000000000000006': { symbol: 'WETH', name: 'Wrapped Ether', decimals: 18 },
+    '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913': { symbol: 'USDC', name: 'USD Coin', decimals: 6 },
+    '0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb': { symbol: 'DAI', name: 'Dai', decimals: 18 },
+    '0x7ca47B141639B893C6782823C0b219f872056379': { symbol: 'CLAWS', name: 'Claws', decimals: 18 },
+    '0xB0b6e0E9da530f68D713cC03a813B506205aC808': { symbol: 'INCLAWNCH', name: 'Inclawnch', decimals: 18 },
+};
+
+// ============================================================
+// STATE
+// ============================================================
+let provider = null;
+let signer = null;
+let userAddress = null;
+let strategies = [];
+let tradeLog = [];
+let slippage = 1; // percent
+let engineInterval = null;
+let resolveTimers = {};
+
+// ============================================================
+// WALLET CONNECTION
+// ============================================================
+
+// EIP-6963: Collect wallet providers announced via events (works in iframes)
+const eip6963Providers = [];
+if (typeof window.addEventListener === 'function') {
+    window.addEventListener('eip6963:announceProvider', (event) => {
+        if (event.detail?.provider) eip6963Providers.push(event.detail.provider);
+    });
+    window.dispatchEvent(new Event('eip6963:requestProvider'));
+}
+
+function getWalletProvider() {
+    // 1. EIP-6963 providers (best for iframe support)
+    if (eip6963Providers.length > 0) return eip6963Providers[0];
+    // 2. Standard window.ethereum
+    if (window.ethereum?.providers?.length) return window.ethereum.providers[0];
+    if (window.ethereum) return window.ethereum;
+    // 3. Specific wallet globals
+    if (window.coinbaseWalletExtension) return window.coinbaseWalletExtension;
+    if (window.braveEthereum) return window.braveEthereum;
+    if (window.trustwallet) return window.trustwallet;
+    if (window.phantom?.ethereum) return window.phantom.ethereum;
+    // 4. Try parent window (iframe on inclawbate.com)
+    try {
+        if (window.parent && window.parent !== window) {
+            if (window.parent.ethereum?.providers?.length) return window.parent.ethereum.providers[0];
+            if (window.parent.ethereum) return window.parent.ethereum;
+        }
+    } catch (e) { /* cross-origin, ignore */ }
+    return null;
+}
+
+function setWalletConnected(address) {
+    userAddress = address;
+    const btn = document.getElementById('walletBtn');
+    btn.className = 'wallet-btn connected';
+    btn.innerHTML = `<span class="dot"></span>${address.slice(0,6)}...${address.slice(-4)}`;
+    document.getElementById('createBtn').disabled = false;
+    document.getElementById('createBtn').textContent = 'Create Strategy';
+}
+
+async function connectWallet() {
+    const wp = getWalletProvider();
+    if (!wp) {
+        showToast('No wallet detected. Open this page directly in your wallet browser, or install MetaMask / Coinbase Wallet.', 'error');
+        return;
+    }
+    try {
+        const accounts = await wp.request({ method: 'eth_requestAccounts' });
+        if (!accounts || accounts.length === 0) {
+            showToast('No accounts returned. Please approve the connection in your wallet.', 'error');
+            return;
+        }
+
+        // Switch to Base
+        try {
+            await wp.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: BASE_CHAIN_ID }] });
+        } catch (err) {
+            if (err.code === 4902) {
+                await wp.request({ method: 'wallet_addEthereumChain', params: [{
+                    chainId: BASE_CHAIN_ID, chainName: 'Base',
+                    nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                    rpcUrls: [BASE_RPC], blockExplorerUrls: ['https://basescan.org']
+                }] });
+            } else if (err.code !== 4001) { // 4001 = user rejected, don't throw
+                throw err;
+            }
+        }
+
+        provider = new ethers.BrowserProvider(wp);
+        signer = await provider.getSigner();
+        userAddress = await signer.getAddress();
+
+        setWalletConnected(userAddress);
+        showToast('Wallet connected on Base', 'success');
+        startEngine();
+    } catch (err) {
+        console.error('Wallet connect error:', err);
+        // If wallet connect fails but we can read address from cookie (inclawbate.com), show read-only
+        const cookieWallet = getWalletFromCookie();
+        if (cookieWallet) {
+            userAddress = cookieWallet;
+            setWalletConnected(cookieWallet);
+            showToast('Read-only: wallet detected from login. Open in wallet browser for full access.', 'error');
+        } else {
+            showToast('Connection failed: ' + (err.shortMessage || err.message || err), 'error');
+        }
+    }
+}
+
+// Read wallet from Inclawbate login cookie as fallback
+function getWalletFromCookie() {
+    try {
+        const match = document.cookie.match(/inclawbate_token=([^;]+)/);
+        if (!match) return null;
+        const payload = JSON.parse(atob(decodeURIComponent(match[1]).split('.')[1].replace(/-/g,'+').replace(/_/g,'/')));
+        return payload.wallet_address || null;
+    } catch { return null; }
+}
+
+// ============================================================
+// TOKEN RESOLUTION
+// ============================================================
+function onTokenSelect(side) {
+    const sel = document.getElementById(side + 'Token');
+    const caDiv = document.getElementById(side + 'CA');
+    if (sel.value === 'custom') {
+        caDiv.classList.add('show');
+    } else {
+        caDiv.classList.remove('show');
+    }
+}
+
+async function resolveTokenByAddress(addr) {
+    const key = addr.toLowerCase();
+    if (KNOWN_TOKENS[key]) return KNOWN_TOKENS[key];
+    try {
+        const rpc = new ethers.JsonRpcProvider(BASE_RPC);
+        const token = new ethers.Contract(addr, ERC20_ABI, rpc);
+        const results = await Promise.allSettled([
+            token.symbol(), token.name(), token.decimals()
+        ]);
+        const symbol = results[0].status === 'fulfilled' ? results[0].value : 'UNKNOWN';
+        const name = results[1].status === 'fulfilled' ? results[1].value : 'Unknown Token';
+        const decimals = results[2].status === 'fulfilled' ? Number(results[2].value) : 18;
+        const entry = { symbol, name, decimals, address: addr };
+        KNOWN_TOKENS[key] = entry;
+        return entry;
+    } catch (e) {
+        return null;
+    }
+}
+
+async function resolveCustomToken(side) {
+    const input = document.getElementById(side + 'CAInput');
+    const info = document.getElementById(side + 'TokenInfo');
+    const addr = input.value.trim();
+
+    clearTimeout(resolveTimers[side]);
+    info.classList.remove('show');
+
+    if (!addr || !addr.startsWith('0x') || addr.length < 42) return;
+    // Normalize — some addresses get pasted with extra whitespace
+    const cleanAddr = addr.slice(0, 42);
+
+    resolveTimers[side] = setTimeout(async () => {
+        info.querySelector('.symbol').textContent = 'Loading...';
+        info.querySelector('.name').textContent = '';
+        info.classList.add('show');
+
+        const resolved = await resolveTokenByAddress(cleanAddr);
+        if (resolved) {
+            info.querySelector('.symbol').textContent = resolved.symbol;
+            info.querySelector('.name').textContent = `— ${resolved.name} (${resolved.decimals} decimals)`;
+        } else {
+            info.querySelector('.symbol').textContent = 'Error';
+            info.querySelector('.name').textContent = '— Could not resolve token on Base';
+        }
+    }, 300);
+}
+
+async function getSelectedToken(side) {
+    const sel = document.getElementById(side + 'Token');
+    if (sel.value === 'custom') {
+        const addr = document.getElementById(side + 'CAInput').value.trim().slice(0, 42);
+        if (!addr || addr.length < 42 || !addr.startsWith('0x')) return null;
+        const cached = KNOWN_TOKENS[addr.toLowerCase()];
+        if (cached) return { address: addr, symbol: cached.symbol, name: cached.name, decimals: cached.decimals };
+        // Not cached yet — resolve now
+        const resolved = await resolveTokenByAddress(addr);
+        if (resolved) return { address: addr, symbol: resolved.symbol, name: resolved.name, decimals: resolved.decimals };
+        return null;
+    }
+    if (sel.value === '' || sel.value === 'ETH') {
+        if (sel.value === '') return null;
+        return { address: 'ETH', symbol: 'ETH', name: 'Ethereum', decimals: 18 };
+    }
+    const known = KNOWN_TOKENS[sel.value];
+    if (known) return { address: sel.value, symbol: known.symbol, name: known.name, decimals: known.decimals };
+    return null;
+}
+
+// ============================================================
+// TRIGGER UI
+// ============================================================
+function onTriggerChange() {
+    const type = document.getElementById('triggerType').value;
+    document.querySelectorAll('.trigger-params').forEach(el => el.style.display = 'none');
+    document.getElementById('params-' + type).style.display = '';
+}
+
+function onTimedSelect() {
+    const sel = document.getElementById('timedInterval');
+    document.getElementById('customTimedDiv').classList.toggle('show', sel.value === 'custom');
+}
+
+function toggleAdvanced() {
+    const toggle = document.getElementById('advToggle');
+    const panel = document.getElementById('advPanel');
+    toggle.classList.toggle('open');
+    panel.classList.toggle('show');
+}
+
+function setSlippage(btn) {
+    document.querySelectorAll('.slip-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    slippage = parseFloat(btn.dataset.slip);
+}
+
+// ============================================================
+// TABS
+// ============================================================
+function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === tab));
+    document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+}
+
+// ============================================================
+// STRATEGIES CRUD
+// ============================================================
+async function createStrategy() {
+    if (!userAddress) { showToast('Connect wallet first', 'error'); return; }
+
+    const createBtn = document.getElementById('createBtn');
+    createBtn.disabled = true;
+    createBtn.textContent = 'RESOLVING TOKENS...';
+
+    const spendToken = await getSelectedToken('spend');
+    const buyToken = await getSelectedToken('buy');
+    const amount = parseFloat(document.getElementById('tradeAmount').value);
+    const triggerType = document.getElementById('triggerType').value;
+
+    function resetBtn() { createBtn.disabled = false; createBtn.textContent = 'CREATE STRATEGY'; }
+    if (!spendToken) { showToast('Select a valid spend token', 'error'); resetBtn(); return; }
+    if (!buyToken) { showToast('Select a valid buy token', 'error'); resetBtn(); return; }
+    if (!amount || amount <= 0) { showToast('Enter a valid trade amount', 'error'); resetBtn(); return; }
+    if (spendToken.address === buyToken.address || (spendToken.address === 'ETH' && buyToken.address === WETH) || (spendToken.address === WETH && buyToken.address === 'ETH')) {
+        showToast('Spend and buy tokens must be different', 'error'); resetBtn(); return;
+    }
+
+    let triggerParams = {};
+    if (triggerType === 'timed') {
+        const timedSel = document.getElementById('timedInterval').value;
+        if (timedSel === 'custom') {
+            const val = parseFloat(document.getElementById('customTimedVal').value) || 30;
+            const unit = parseInt(document.getElementById('customTimedUnit').value) || 60;
+            triggerParams.intervalSec = Math.max(10, Math.round(val * unit));
+        } else {
+            triggerParams.intervalSec = parseInt(timedSel);
+        }
+    } else if (triggerType === 'volume') {
+        triggerParams.direction = document.getElementById('volumeDir').value;
+        triggerParams.percent = parseFloat(document.getElementById('volumePercent').value) || 20;
+        triggerParams.capUp = parseFloat(document.getElementById('volumeCapUp').value) || 0;
+        triggerParams.capDown = parseFloat(document.getElementById('volumeCapDown').value) || 0;
+    } else if (triggerType === 'marketcap') {
+        triggerParams.direction = document.getElementById('mcapDir').value;
+        triggerParams.percent = parseFloat(document.getElementById('mcapPercent').value) || 10;
+        triggerParams.capUp = parseFloat(document.getElementById('mcapCapUp').value) || 0;
+        triggerParams.capDown = parseFloat(document.getElementById('mcapCapDown').value) || 0;
+    }
+
+    const strat = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        wallet: userAddress,
+        spendToken,
+        buyToken,
+        amount,
+        triggerType,
+        triggerParams,
+        slippage,
+        maxTrades: parseInt(document.getElementById('maxTrades').value) || 0,
+        tradeCount: 0,
+        enabled: true,
+        createdAt: Date.now(),
+        lastExecutedAt: null,
+        lastCheckAt: null,
+        baselineVolume: null,
+        baselineMarketCap: null,
+        startVolume: null,
+        startMarketCap: null,
+    };
+
+    strategies.push(strat);
+    saveStrategies();
+    renderStrategies();
+    updateStatusBar();
+    resetBtn();
+    showToast('Strategy created! Auto-buying is active.', 'success');
+    switchTab('strategies');
+
+    // Fetch baseline for volume/marketcap triggers
+    if (triggerType === 'volume' || triggerType === 'marketcap') {
+        fetchMarketData(strat);
+    }
+}
+
+function toggleStrategy(id) {
+    const strat = strategies.find(s => s.id === id);
+    if (!strat) return;
+    strat.enabled = !strat.enabled;
+    if (strat.enabled) {
+        strat.lastCheckAt = Date.now();
+        if (strat.triggerType !== 'timed') fetchMarketData(strat);
+    }
+    saveStrategies();
+    renderStrategies();
+    updateStatusBar();
+    showToast(strat.enabled ? 'Strategy resumed' : 'Strategy paused', 'success');
+}
+
+function deleteStrategy(id) {
+    strategies = strategies.filter(s => s.id !== id);
+    saveStrategies();
+    renderStrategies();
+    updateStatusBar();
+    showToast('Strategy deleted', 'success');
+}
+
+// ============================================================
+// RENDER STRATEGIES
+// ============================================================
+function renderStrategies() {
+    const list = document.getElementById('stratList');
+    const empty = document.getElementById('emptyStrats');
+
+    if (strategies.length === 0) {
+        list.innerHTML = '';
+        empty.style.display = '';
+        return;
+    }
+    empty.style.display = 'none';
+
+    list.innerHTML = strategies.map(s => {
+        const triggerLabel = getTriggerLabel(s);
+        const statusClass = s.enabled ? 'active-strat' : 'paused';
+        const badgeClass = s.enabled ? 'running' : 'paused-badge';
+        const badgeText = s.enabled ? 'RUNNING' : 'PAUSED';
+        const nextFire = s.enabled ? getNextFireLabel(s) : 'Paused';
+        const maxInfo = s.maxTrades > 0 ? `<div class="strat-detail"><strong>${s.tradeCount}</strong> / ${s.maxTrades} trades</div>` : '';
+        let capInfo = '';
+        if (s.triggerParams.capUp > 0 || s.triggerParams.capDown > 0) {
+            const parts = [];
+            if (s.triggerParams.capUp > 0) parts.push(`<span style="color:#22c55e">+${s.triggerParams.capUp}%</span>`);
+            if (s.triggerParams.capDown > 0) parts.push(`<span style="color:#ef4444">-${s.triggerParams.capDown}%</span>`);
+            capInfo = `<div class="strat-detail">Stop cap: ${parts.join(' / ')}</div>`;
+        }
+
+        return `
+        <div class="strat-card ${statusClass}">
+            <div class="strat-top">
+                <div class="strat-pair">${s.spendToken.symbol} <span class="arrow">&#8594;</span> ${s.buyToken.symbol}</div>
+                <span class="strat-badge ${badgeClass}">${badgeText}</span>
+            </div>
+            <div class="strat-details">
+                <div class="strat-detail"><strong>${s.amount}</strong> ${s.spendToken.symbol} per trade</div>
+                <div class="strat-detail"><strong>${triggerLabel}</strong></div>
+                <div class="strat-detail">Slippage: <strong>${s.slippage}%</strong></div>
+                ${maxInfo}
+                ${capInfo}
+            </div>
+            <div class="strat-progress">Next: <span class="next-fire">${nextFire}</span></div>
+            <div class="strat-actions">
+                <button class="strat-action toggle" onclick="toggleStrategy('${s.id}')">${s.enabled ? 'Pause' : 'Resume'}</button>
+                <button class="strat-action danger" onclick="deleteStrategy('${s.id}')">Delete</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function getTriggerLabel(s) {
+    if (s.triggerType === 'timed') {
+        const sec = s.triggerParams.intervalSec;
+        if (sec < 60) return `Every ${sec}s`;
+        if (sec < 3600) return `Every ${sec/60}m`;
+        if (sec < 86400) return `Every ${sec/3600}h`;
+        return `Every ${sec/86400}d`;
+    }
+    if (s.triggerType === 'volume') {
+        return `Vol ${s.triggerParams.direction === 'up' ? '+' : '-'}${s.triggerParams.percent}%`;
+    }
+    return `MCap ${s.triggerParams.direction === 'up' ? '+' : '-'}${s.triggerParams.percent}%`;
+}
+
+function getNextFireLabel(s) {
+    if (s.triggerType === 'timed') {
+        const last = s.lastExecutedAt || s.createdAt;
+        const next = last + s.triggerParams.intervalSec * 1000;
+        const diff = next - Date.now();
+        if (diff <= 0) return 'Imminent...';
+        if (diff < 60000) return Math.ceil(diff/1000) + 's';
+        if (diff < 3600000) return Math.ceil(diff/60000) + 'm';
+        return Math.round(diff/3600000 * 10) / 10 + 'h';
+    }
+    return 'Monitoring...';
+}
+
+// ============================================================
+// TRADE LOG
+// ============================================================
+function addLogEntry(type, title, detail, txHash) {
+    const entry = { type, title, detail, txHash, time: Date.now() };
+    tradeLog.unshift(entry);
+    if (tradeLog.length > 200) tradeLog.length = 200;
+    saveLog();
+    renderLog();
+}
+
+function renderLog() {
+    const list = document.getElementById('logList');
+    const empty = document.getElementById('emptyLog');
+
+    if (tradeLog.length === 0) {
+        list.innerHTML = '';
+        empty.style.display = '';
+        return;
+    }
+    empty.style.display = 'none';
+
+    list.innerHTML = tradeLog.slice(0, 50).map(e => {
+        const iconClass = e.type === 'success' ? 'success' : e.type === 'error' ? 'fail' : 'info';
+        const icon = e.type === 'success' ? '&#10003;' : e.type === 'error' ? '&#10007;' : '&#9432;';
+        const time = formatTime(e.time);
+        const txLink = e.txHash ? `<br><a href="https://basescan.org/tx/${e.txHash}" target="_blank" style="color:#3b82f6;text-decoration:none;font-size:10px">View on BaseScan</a>` : '';
+        return `
+        <div class="log-entry">
+            <div class="log-icon ${iconClass}">${icon}</div>
+            <div class="log-body">
+                <div class="log-title">${e.title}</div>
+                <div class="log-sub">${e.detail}${txLink}</div>
+            </div>
+            <div class="log-time">${time}</div>
+        </div>`;
+    }).join('');
+}
+
+function formatTime(ts) {
+    const d = new Date(ts);
+    const now = new Date();
+    const diff = now - d;
+    if (diff < 60000) return 'Just now';
+    if (diff < 3600000) return Math.floor(diff/60000) + 'm ago';
+    if (diff < 86400000) return Math.floor(diff/3600000) + 'h ago';
+    return d.toLocaleDateString();
+}
+
+// ============================================================
+// MARKET DATA (DexScreener)
+// ============================================================
+async function fetchMarketData(strat) {
+    const addr = strat.buyToken.address === 'ETH' ? WETH : strat.buyToken.address;
+    try {
+        const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${addr}`);
+        const data = await res.json();
+        if (!data.pairs || data.pairs.length === 0) return;
+
+        // Find the best Base pair
+        const basePairs = data.pairs.filter(p => p.chainId === 'base');
+        if (basePairs.length === 0) return;
+
+        const pair = basePairs[0];
+        if (strat.baselineVolume === null) strat.baselineVolume = pair.volume?.h24 || 0;
+        if (strat.baselineMarketCap === null) strat.baselineMarketCap = pair.fdv || 0;
+        if (strat.startVolume === null) strat.startVolume = pair.volume?.h24 || 0;
+        if (strat.startMarketCap === null) strat.startMarketCap = pair.fdv || 0;
+
+        strat._currentVolume = pair.volume?.h24 || 0;
+        strat._currentMcap = pair.fdv || 0;
+        strat._priceUsd = parseFloat(pair.priceUsd) || 0;
+    } catch (e) {
+        console.warn('Market data fetch error:', e);
+    }
+}
+
+// ============================================================
+// SWAP EXECUTION
+// ============================================================
+async function executeSwap(strat) {
+    if (!signer || !userAddress) {
+        addLogEntry('error', 'Swap failed', 'Wallet not connected');
+        return false;
+    }
+
+    const spendAddr = strat.spendToken.address === 'ETH' ? WETH : strat.spendToken.address;
+    const buyAddr = strat.buyToken.address === 'ETH' ? WETH : strat.buyToken.address;
+    const isETHIn = strat.spendToken.address === 'ETH';
+    const isETHOut = strat.buyToken.address === 'ETH';
+    const amountIn = ethers.parseUnits(strat.amount.toString(), strat.spendToken.decimals);
+
+    try {
+        // Get quote and find best fee tier
+        const rpc = new ethers.JsonRpcProvider(BASE_RPC);
+        const quoter = new ethers.Contract(UNISWAP_QUOTER, QUOTER_ABI, rpc);
+        let bestFee = null;
+        let bestQuote = 0n;
+
+        for (const fee of FEE_TIERS) {
+            try {
+                const result = await quoter.quoteExactInputSingle.staticCall({
+                    tokenIn: spendAddr,
+                    tokenOut: buyAddr,
+                    amountIn,
+                    fee,
+                    sqrtPriceLimitX96: 0
+                });
+                const amtOut = result[0];
+                if (amtOut > bestQuote) {
+                    bestQuote = amtOut;
+                    bestFee = fee;
+                }
+            } catch (e) { /* no pool at this fee tier */ }
+        }
+
+        if (!bestFee) {
+            addLogEntry('error', 'No liquidity', `No pool found for ${strat.spendToken.symbol} → ${strat.buyToken.symbol}`);
+            return false;
+        }
+
+        // Slippage
+        const minOut = bestQuote * BigInt(Math.floor((100 - strat.slippage) * 100)) / 10000n;
+
+        // Approval for ERC20 input
+        if (!isETHIn) {
+            const token = new ethers.Contract(spendAddr, ERC20_ABI, signer);
+            const allowance = await token.allowance(userAddress, UNISWAP_ROUTER);
+            if (allowance < amountIn) {
+                addLogEntry('info', 'Approving token', `Approving ${strat.spendToken.symbol} for router...`);
+                const approveTx = await token.approve(UNISWAP_ROUTER, ethers.MaxUint256);
+                await approveTx.wait();
+            }
+        }
+
+        const router = new ethers.Contract(UNISWAP_ROUTER, ROUTER_ABI, signer);
+        let tx;
+
+        if (isETHOut) {
+            // Token/ETH -> WETH via swap, then unwrap
+            const swapData = router.interface.encodeFunctionData('exactInputSingle', [{
+                tokenIn: spendAddr,
+                tokenOut: WETH,
+                fee: bestFee,
+                recipient: UNISWAP_ROUTER,
+                amountIn,
+                amountOutMinimum: minOut,
+                sqrtPriceLimitX96: 0
+            }]);
+            const unwrapData = router.interface.encodeFunctionData('unwrapWETH9', [minOut, userAddress]);
+            const deadline = BigInt(Math.floor(Date.now() / 1000) + 300);
+            tx = await router.multicall(deadline, [swapData, unwrapData], isETHIn ? { value: amountIn } : {});
+        } else {
+            // Direct swap
+            tx = await router.exactInputSingle({
+                tokenIn: spendAddr,
+                tokenOut: buyAddr,
+                fee: bestFee,
+                recipient: userAddress,
+                amountIn,
+                amountOutMinimum: minOut,
+                sqrtPriceLimitX96: 0
+            }, isETHIn ? { value: amountIn } : {});
+        }
+
+        const receipt = await tx.wait();
+        const outFormatted = ethers.formatUnits(bestQuote, strat.buyToken.decimals);
+
+        addLogEntry('success',
+            `Bought ${strat.buyToken.symbol}`,
+            `${strat.amount} ${strat.spendToken.symbol} → ~${parseFloat(outFormatted).toFixed(6)} ${strat.buyToken.symbol}`,
+            receipt.hash
+        );
+        return true;
+
+    } catch (err) {
+        console.error('Swap error:', err);
+        const msg = err.reason || err.message || 'Unknown error';
+        addLogEntry('error', 'Swap failed', msg.slice(0, 100));
+        return false;
+    }
+}
+
+// ============================================================
+// ENGINE — Checks strategies and fires trades
+// ============================================================
+function startEngine() {
+    if (engineInterval) return;
+    engineInterval = setInterval(engineTick, 10000); // every 10s
+    engineTick();
+    document.getElementById('engineStatus').textContent = 'Engine: running';
+    document.getElementById('engineStatus').classList.add('active');
+}
+
+function stopEngine() {
+    if (engineInterval) { clearInterval(engineInterval); engineInterval = null; }
+    document.getElementById('engineStatus').textContent = 'Engine: idle';
+    document.getElementById('engineStatus').classList.remove('active');
+}
+
+async function engineTick() {
+    const now = Date.now();
+    let needsRender = false;
+
+    for (const strat of strategies) {
+        if (!strat.enabled) continue;
+        if (strat.maxTrades > 0 && strat.tradeCount >= strat.maxTrades) {
+            strat.enabled = false;
+            addLogEntry('info', 'Strategy complete', `${strat.spendToken.symbol} → ${strat.buyToken.symbol}: max trades reached`);
+            needsRender = true;
+            continue;
+        }
+
+        let shouldFire = false;
+
+        if (strat.triggerType === 'timed') {
+            const last = strat.lastExecutedAt || strat.createdAt;
+            if (now - last >= strat.triggerParams.intervalSec * 1000) {
+                shouldFire = true;
+            }
+        } else if (strat.triggerType === 'volume' || strat.triggerType === 'marketcap') {
+            // Fetch market data every 60s
+            if (!strat.lastCheckAt || now - strat.lastCheckAt >= 60000) {
+                await fetchMarketData(strat);
+                strat.lastCheckAt = now;
+
+                // Auto-stop cap check (compares against starting value, not rolling baseline)
+                let cappedOut = false;
+                if (strat.triggerType === 'volume' && strat.startVolume > 0 && strat._currentVolume) {
+                    const pctFromStart = ((strat._currentVolume - strat.startVolume) / strat.startVolume) * 100;
+                    if (strat.triggerParams.capUp > 0 && pctFromStart >= strat.triggerParams.capUp) {
+                        strat.enabled = false;
+                        addLogEntry('info', 'Auto-stopped (cap UP)', `${strat.spendToken.symbol} → ${strat.buyToken.symbol}: volume rose ${pctFromStart.toFixed(1)}% (cap: ${strat.triggerParams.capUp}%)`);
+                        cappedOut = true; needsRender = true;
+                    }
+                    if (!cappedOut && strat.triggerParams.capDown > 0 && pctFromStart <= -strat.triggerParams.capDown) {
+                        strat.enabled = false;
+                        addLogEntry('info', 'Auto-stopped (cap DOWN)', `${strat.spendToken.symbol} → ${strat.buyToken.symbol}: volume fell ${Math.abs(pctFromStart).toFixed(1)}% (cap: ${strat.triggerParams.capDown}%)`);
+                        cappedOut = true; needsRender = true;
+                    }
+                }
+                if (strat.triggerType === 'marketcap' && strat.startMarketCap > 0 && strat._currentMcap) {
+                    const pctFromStart = ((strat._currentMcap - strat.startMarketCap) / strat.startMarketCap) * 100;
+                    if (strat.triggerParams.capUp > 0 && pctFromStart >= strat.triggerParams.capUp) {
+                        strat.enabled = false;
+                        addLogEntry('info', 'Auto-stopped (cap UP)', `${strat.spendToken.symbol} → ${strat.buyToken.symbol}: mcap rose ${pctFromStart.toFixed(1)}% (cap: ${strat.triggerParams.capUp}%)`);
+                        cappedOut = true; needsRender = true;
+                    }
+                    if (!cappedOut && strat.triggerParams.capDown > 0 && pctFromStart <= -strat.triggerParams.capDown) {
+                        strat.enabled = false;
+                        addLogEntry('info', 'Auto-stopped (cap DOWN)', `${strat.spendToken.symbol} → ${strat.buyToken.symbol}: mcap fell ${Math.abs(pctFromStart).toFixed(1)}% (cap: ${strat.triggerParams.capDown}%)`);
+                        cappedOut = true; needsRender = true;
+                    }
+                }
+                if (cappedOut) { saveStrategies(); continue; }
+
+                // Trigger check (against rolling baseline)
+                if (strat.triggerType === 'volume' && strat.baselineVolume > 0 && strat._currentVolume) {
+                    const pctChange = ((strat._currentVolume - strat.baselineVolume) / strat.baselineVolume) * 100;
+                    const threshold = strat.triggerParams.percent;
+                    if (strat.triggerParams.direction === 'up' && pctChange >= threshold) shouldFire = true;
+                    if (strat.triggerParams.direction === 'down' && pctChange <= -threshold) shouldFire = true;
+                }
+
+                if (strat.triggerType === 'marketcap' && strat.baselineMarketCap > 0 && strat._currentMcap) {
+                    const pctChange = ((strat._currentMcap - strat.baselineMarketCap) / strat.baselineMarketCap) * 100;
+                    const threshold = strat.triggerParams.percent;
+                    if (strat.triggerParams.direction === 'up' && pctChange >= threshold) shouldFire = true;
+                    if (strat.triggerParams.direction === 'down' && pctChange <= -threshold) shouldFire = true;
+                }
+            }
+        }
+
+        if (shouldFire) {
+            addLogEntry('info', 'Executing trade', `${strat.amount} ${strat.spendToken.symbol} → ${strat.buyToken.symbol}`);
+            const success = await executeSwap(strat);
+            if (success) {
+                strat.tradeCount++;
+                strat.lastExecutedAt = now;
+                // Reset baseline for volume/mcap triggers after successful trade
+                if (strat.triggerType === 'volume') strat.baselineVolume = strat._currentVolume;
+                if (strat.triggerType === 'marketcap') strat.baselineMarketCap = strat._currentMcap;
+            }
+            needsRender = true;
+            saveStrategies();
+        }
+    }
+
+    if (needsRender) renderStrategies();
+    // Update next-fire labels
+    document.querySelectorAll('.next-fire').forEach((el, i) => {
+        if (strategies[i]) el.textContent = strategies[i].enabled ? getNextFireLabel(strategies[i]) : 'Paused';
+    });
+}
+
+// ============================================================
+// PERSISTENCE
+// ============================================================
+function saveStrategies() {
+    // Strip runtime-only fields before saving
+    const toSave = strategies.map(s => {
+        const copy = { ...s };
+        delete copy._currentVolume;
+        delete copy._currentMcap;
+        delete copy._priceUsd;
+        return copy;
+    });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+
+    // Also save to AppDB if available
+    if (window.AppDB) {
+        try { window.AppDB.set('autobuy_strategies', toSave); } catch(e) {}
+    }
+}
+
+function loadStrategies() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            strategies = JSON.parse(raw);
+            return;
+        }
+    } catch (e) {}
+    strategies = [];
+}
+
+function saveLog() {
+    try { localStorage.setItem(LOG_KEY, JSON.stringify(tradeLog)); } catch(e) {}
+}
+
+function loadLog() {
+    try {
+        const raw = localStorage.getItem(LOG_KEY);
+        if (raw) tradeLog = JSON.parse(raw);
+    } catch(e) { tradeLog = []; }
+}
+
+// ============================================================
+// STATUS BAR
+// ============================================================
+function updateStatusBar() {
+    const active = strategies.filter(s => s.enabled).length;
+    document.getElementById('stratCount').textContent = `${strategies.length} strateg${strategies.length === 1 ? 'y' : 'ies'}`;
+    document.getElementById('activeBadge').textContent = active > 0 ? `(${active})` : '';
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(msg, type = '') {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.className = 'toast show' + (type ? ' ' + type : '');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadStrategies();
+loadLog();
+renderStrategies();
+renderLog();
+updateStatusBar();
+
+// Auto-reconnect wallet if previously connected
+(async function autoReconnect() {
+    // Wait a moment for EIP-6963 providers to announce
+    await new Promise(r => setTimeout(r, 300));
+    const wp = getWalletProvider();
+    if (wp) {
+        try {
+            const accounts = await wp.request({ method: 'eth_accounts' });
+            if (accounts && accounts.length > 0) {
+                provider = new ethers.BrowserProvider(wp);
+                signer = await provider.getSigner();
+                userAddress = await signer.getAddress();
+                setWalletConnected(userAddress);
+                startEngine();
+                return;
+            }
+        } catch(e) {}
+    }
+    // Fallback: try Inclawbate cookie wallet
+    const cookieWallet = getWalletFromCookie();
+    if (cookieWallet) {
+        userAddress = cookieWallet;
+        setWalletConnected(cookieWallet);
+    }
+})();
+
+// Periodically update UI while on strategies tab
+setInterval(() => {
+    if (document.querySelector('.tab[data-tab="strategies"]').classList.contains('active')) {
+        document.querySelectorAll('.next-fire').forEach((el, i) => {
+            if (strategies[i]) el.textContent = strategies[i].enabled ? getNextFireLabel(strategies[i]) : 'Paused';
+        });
+    }
+}, 1000);
+</script>
+</body>
+</html>

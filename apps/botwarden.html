@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BotWarden</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%2304060a'/><rect x='2' y='2' width='28' height='28' rx='5' fill='none' stroke='%23c9a96e' stroke-width='1.5'/><text x='16' y='22' text-anchor='middle' font-family='monospace' font-weight='bold' font-size='14' fill='%23c9a96e'>BW</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -147,9 +148,12 @@
 
         /* HERO */
         .hero{display:grid;grid-template-columns:repeat(4,1fr) auto;gap:1px;background:var(--b2);border-radius:10px;overflow:hidden;margin-bottom:1rem;position:relative}
-        .biz-man{background:var(--s1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:0.5rem 0.6rem;grid-row:1/3;grid-column:5;position:relative;min-width:90px}
-        .biz-svg{width:80px;height:100px}
-        .biz-label{font-family:var(--mono);font-size:8px;color:var(--gold);opacity:.85;white-space:nowrap}
+        .hero-refresh{position:absolute;bottom:6px;right:8px;z-index:5;background:rgba(10,12,20,0.7);border:1px solid var(--b2);color:var(--t4);font-size:0.65rem;width:24px;height:24px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;backdrop-filter:blur(4px)}
+        .hero-refresh:hover{color:var(--gold);border-color:var(--gold-m);background:rgba(201,169,110,0.08)}
+        .hero-refresh.spinning{animation:spin 0.8s linear}
+        .biz-man{background:var(--s1);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:0.6rem 0.8rem;grid-row:1/3;grid-column:5;position:relative;min-width:180px}
+        .biz-svg{width:190px;height:175px}
+        .biz-label{font-family:var(--mono);font-size:11px;color:var(--gold);opacity:.85;white-space:nowrap}
         .hc{background:var(--s1);padding:0.85rem 1rem;display:flex;flex-direction:column;gap:0.25rem}
         .hc-top{display:flex;align-items:center;justify-content:space-between}
         .hc-lbl{font-size:0.52rem;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:0.06em}
@@ -232,7 +236,7 @@
         .city-bar{flex:1;height:4px;background:var(--b1);border-radius:2px;overflow:hidden}
         .city-fill{height:100%;border-radius:2px}
         .city-val{font-family:var(--mono);font-size:0.5rem;min-width:60px;text-align:right}
-        .term{background:#030407;border:1px solid var(--b1);border-radius:6px;padding:0.5rem 0.7rem;max-height:280px;overflow-y:scroll;font-family:var(--mono);font-size:0.48rem;line-height:1.65}
+        .term{background:#030407;border:1px solid var(--b1);border-radius:6px;padding:0.5rem 0.7rem;max-height:280px;overflow-y:scroll;overscroll-behavior:contain;font-family:var(--mono);font-size:0.48rem;line-height:1.65}
         .ll{white-space:pre-wrap;word-break:break-all;color:rgba(34,197,94,0.38);max-width:100%;overflow:hidden;text-overflow:ellipsis}
         .ll.e{color:var(--red)}.ll.w{color:var(--amb)}
         .empty{text-align:center;padding:1.5rem 1rem;color:var(--t4);font-size:0.7rem;font-weight:500}
@@ -273,6 +277,12 @@
         .adm-stat-lbl{font-size:0.4rem;color:var(--t4);text-transform:uppercase;letter-spacing:0.05em;margin-top:0.15rem}
         .adm-stats-row{display:flex;gap:0.8rem;flex-wrap:wrap;margin-bottom:1.2rem}
         .adm-empty{text-align:center;color:var(--t4);font-size:0.5rem;padding:2rem}
+        /* NEW TRADE ALERT */
+        .trade-alert{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(10,12,20,0.95);border:3px solid var(--gold);border-radius:12px;padding:4.8rem 10rem;z-index:9999;text-align:center;animation:tradeFlash 3s ease;cursor:pointer}
+        @keyframes tradeFlash{0%{opacity:0;transform:translate(-50%,-50%) scale(0.8);border-color:var(--gold)}5%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}10%{transform:translate(-50%,-50%) scale(1);border-color:#ef4444}15%{border-color:var(--gold)}20%{border-color:#fff}25%{border-color:#ef4444}30%{border-color:var(--gold)}35%{border-color:#fff}40%{border-color:#ef4444}45%{border-color:var(--gold)}50%{border-color:#fff}55%{border-color:#ef4444}60%{border-color:var(--gold)}65%{border-color:#fff}70%{border-color:#ef4444}75%{border-color:var(--gold)}85%{opacity:1;border-color:var(--gold)}100%{opacity:0;transform:translate(-50%,-50%) scale(0.95)}}
+        .trade-alert-title{font-size:2.8rem;font-weight:800;color:var(--gold);letter-spacing:0.05em;margin-bottom:1.2rem}
+        .trade-alert-market{font-size:2rem;color:var(--t1);font-weight:600;margin-bottom:0.6rem;max-width:600px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .trade-alert-detail{font-size:1.76rem;color:var(--t3);font-family:var(--mono)}
         /* UPGRADE POPUP */
         .upgrade-pop{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--s1);border:1px solid rgba(201,169,110,0.15);border-radius:12px;padding:1.2rem 1.5rem;max-width:340px;z-index:8000;box-shadow:0 8px 40px rgba(0,0,0,0.5);animation:slideUp 0.4s ease}
         @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
@@ -374,8 +384,96 @@
         .gate-text{font-size:0.55rem;font-weight:600;color:var(--gold)}
         .pay-status{text-align:center;font-family:var(--mono);font-size:0.55rem;margin-top:0.5rem;min-height:1rem}
 
+        /* SKELETON LOADING */
+        .skel{background:linear-gradient(90deg,var(--s2) 25%,var(--b2) 50%,var(--s2) 75%);background-size:200% 100%;animation:skelShimmer 1.5s infinite;border-radius:4px}
+        @keyframes skelShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+        .skel-line{height:12px;margin-bottom:8px;border-radius:3px}
+        .skel-block{height:60px;border-radius:6px;margin-bottom:6px}
+        /* RECONNECT BANNER */
+        .reconn-bar{position:fixed;top:0;left:0;right:0;background:rgba(239,68,68,0.15);border-bottom:1px solid var(--red);padding:6px 0;text-align:center;font-family:var(--mono);font-size:0.5rem;color:var(--red);z-index:9998;display:none}
+        .reconn-bar.show{display:block}
+        .reconn-bar .reconn-spin{display:inline-block;animation:spin 1s linear infinite;margin-right:4px}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        /* LIGHT MODE */
+        html.light{--bg:#f4f5f7;--s1:#fff;--s2:#f0f1f3;--b1:rgba(0,0,0,0.06);--b2:rgba(0,0,0,0.08);--t1:#1a1a2e;--t2:#4a4a5e;--t3:#7a7a8e;--t4:#9a9aae}
+        html.light body::before{background-image:radial-gradient(rgba(0,0,0,0.04) 1px,transparent 1px)}
+        html.light .top{background:rgba(244,245,247,0.9)}
+        html.light .term{background:#1a1a2e;color:#e0e0e0}
+        .theme-btn{background:none;border:1px solid var(--b2);color:var(--t4);font-size:0.7rem;padding:2px 6px;border-radius:4px;cursor:pointer;font-family:var(--mono);line-height:1}
+        .theme-btn:hover{color:var(--t2);border-color:var(--t4)}
+        /* ALERTS CONFIG */
+        .alert-row{display:flex;align-items:center;gap:0.5rem;padding:0.35rem 0;border-bottom:1px solid var(--b1)}
+        .alert-row label{font-size:0.46rem;color:var(--t2);flex:1}
+        .alert-row input[type=number]{width:60px;background:var(--s2);border:1px solid var(--b1);color:var(--t1);padding:3px 6px;border-radius:4px;font-family:var(--mono);font-size:0.44rem}
+        .alert-row .usr-toggle{flex-shrink:0}
+        /* TRADE NOTES */
+        .note-btn{background:none;border:none;color:var(--t4);cursor:pointer;font-size:0.5rem;padding:2px 4px}
+        .note-btn:hover{color:var(--gold)}
+        .note-modal{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--s1);border:1px solid var(--b2);border-radius:12px;padding:1.5rem;width:90%;max-width:400px;z-index:9998}
+        .note-modal textarea{width:100%;height:80px;background:var(--s2);border:1px solid var(--b1);color:var(--t1);padding:0.5rem;border-radius:6px;font-family:var(--sans);font-size:0.48rem;resize:vertical}
+        .note-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9997}
+        /* SHARED DASH */
+        .share-link{display:flex;gap:0.4rem;align-items:center;margin-top:0.4rem}
+        .share-link input{flex:1;background:var(--s2);border:1px solid var(--b1);color:var(--t1);padding:4px 8px;border-radius:4px;font-family:var(--mono);font-size:0.42rem}
+        .share-link button{background:var(--gold);color:#000;border:none;padding:4px 10px;border-radius:4px;font-size:0.42rem;font-weight:700;cursor:pointer}
+        /* API DOCS */
+        .api-endpoint{background:var(--s2);border:1px solid var(--b1);border-radius:6px;padding:0.5rem 0.7rem;margin-bottom:0.4rem;font-family:var(--mono);font-size:0.42rem;color:var(--t2)}
+        .api-endpoint .api-method{color:var(--grn);font-weight:700;margin-right:0.3rem}
+        .api-endpoint .api-desc{color:var(--t4);font-size:0.38rem;display:block;margin-top:2px}
+        /* EQUITY PERIOD TOGGLE */
+        .eq-toggle{display:flex;gap:2px;margin-left:auto}
+        .eq-toggle button{background:var(--s2);border:1px solid var(--b1);color:var(--t4);font-family:var(--mono);font-size:0.38rem;padding:2px 6px;border-radius:3px;cursor:pointer}
+        .eq-toggle button.on{background:var(--gold-d);color:var(--gold);border-color:rgba(201,169,110,0.2)}
+
         @media(max-width:900px){.hero{grid-template-columns:repeat(2,1fr)}.hero .biz-man{grid-column:1/-1;grid-row:auto}.risk-bar{grid-template-columns:repeat(2,1fr)}.tier-grid{grid-template-columns:1fr}}
         @media(max-width:640px){.ct{padding:.8rem .6rem 3rem}.top{padding:0 .7rem}.hc-val{font-size:1rem}.hc{padding:.75rem .8rem}.brand-s,.clk{display:none}.cd-l{display:none}}
+
+        /* Analytics Panel */
+        .analytics-card{background:var(--s1);border:1px solid var(--b2);border-radius:12px;padding:1.2rem;max-width:920px;width:95vw;max-height:85vh;overflow-y:auto;position:relative}
+        .analytics-title{font-size:0.8rem;font-weight:800;color:var(--blue);margin-bottom:0.15rem}
+        .analytics-sub{font-size:0.42rem;color:var(--t3);margin-bottom:0.7rem}
+        .ana-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:0.5rem;margin-bottom:0.8rem}
+        .ana-card{background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:0.55rem 0.65rem}
+        .ana-card-val{font-size:0.7rem;font-weight:800;color:var(--t1);font-family:var(--mono)}
+        .ana-card-lbl{font-size:0.33rem;color:var(--t3);text-transform:uppercase;letter-spacing:0.5px;margin-top:0.1rem}
+        .dot-live{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--grn);margin-right:4px;animation:pulse-live 1.5s infinite}
+        @keyframes pulse-live{0%,100%{opacity:1}50%{opacity:0.3}}
+        .ana-user-row{display:flex;align-items:center;justify-content:space-between;padding:0.28rem 0.5rem;border-bottom:1px solid var(--b1);font-size:0.4rem}
+        .ana-user-wallet{font-family:var(--mono);color:var(--t2)}
+        .ana-bar-wrap{display:flex;align-items:flex-end;gap:2px;height:70px;padding:0.3rem 0}
+        .ana-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+        .ana-bar-fill{width:100%;border-radius:2px;min-width:4px}
+        .ana-bar-lbl{font-size:0.26rem;color:var(--t4);white-space:nowrap}
+        .ana-section-hd{font-size:0.4rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.35rem}
+
+        /* Bug Report */
+        .bug-fab{position:fixed;bottom:1rem;left:1rem;width:34px;height:34px;border-radius:50%;background:var(--s2);border:1px solid var(--b2);color:var(--t3);font-size:0.8rem;cursor:pointer;z-index:100;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+        .bug-fab:hover{background:var(--gold);color:#000;border-color:var(--gold)}
+        .bug-modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:9000}
+        .bug-modal{position:fixed;bottom:3.2rem;left:1rem;width:300px;background:var(--s1);border:1px solid var(--b2);border-radius:10px;padding:0.75rem;z-index:9001;box-shadow:0 8px 32px rgba(0,0,0,0.4)}
+        .bug-modal-title{font-size:0.55rem;font-weight:700;color:var(--t1);margin-bottom:0.4rem}
+        .bug-sev{display:flex;gap:0.3rem;margin-bottom:0.4rem}
+        .bug-sev button{flex:1;padding:0.22rem;border:1px solid var(--b2);border-radius:5px;background:var(--s2);color:var(--t3);font-size:0.35rem;font-weight:600;cursor:pointer;transition:all 0.15s}
+        .bug-sev button.on[data-sev="low"]{border-color:var(--grn);color:var(--grn);background:rgba(34,197,94,0.08)}
+        .bug-sev button.on[data-sev="medium"]{border-color:var(--amb);color:var(--amb);background:rgba(245,158,11,0.08)}
+        .bug-sev button.on[data-sev="high"]{border-color:var(--red);color:var(--red);background:rgba(239,68,68,0.08)}
+        .bug-textarea{width:100%;min-height:65px;background:var(--s2);border:1px solid var(--b1);border-radius:5px;color:var(--t1);font-family:var(--sans);font-size:0.38rem;padding:0.35rem;resize:vertical}
+        .bug-textarea:focus{outline:none;border-color:var(--gold)}
+        .bug-submit{width:100%;margin-top:0.35rem;padding:0.38rem;background:var(--gold);color:#000;border:none;border-radius:5px;font-weight:700;font-size:0.38rem;cursor:pointer}
+        .bug-submit:disabled{opacity:0.4}
+        .bug-msg{font-size:0.36rem;margin-top:0.25rem;min-height:0.4rem}
+        .bug-item{background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:0.5rem;margin-bottom:0.4rem}
+        .bug-item-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:0.2rem}
+        .bug-item-sev{font-size:0.32rem;font-weight:700;text-transform:uppercase;padding:2px 6px;border-radius:3px}
+        .bug-item-sev.high{background:rgba(239,68,68,0.12);color:var(--red)}
+        .bug-item-sev.medium{background:rgba(245,158,11,0.12);color:var(--amb)}
+        .bug-item-sev.low{background:rgba(34,197,94,0.12);color:var(--grn)}
+        .bug-item-wallet{font-family:var(--mono);font-size:0.36rem;color:var(--t4)}
+        .bug-item-desc{font-size:0.4rem;color:var(--t2);margin:0.2rem 0;line-height:1.45;white-space:pre-wrap}
+        .bug-item-actions{display:flex;align-items:center;gap:0.3rem;margin-top:0.3rem}
+        .bug-item-actions select{background:var(--s1);border:1px solid var(--b1);color:var(--t2);font-size:0.34rem;padding:2px 4px;border-radius:3px}
+        .bug-item-actions input{flex:1;background:var(--s1);border:1px solid var(--b1);color:var(--t1);font-size:0.34rem;padding:2px 6px;border-radius:3px;font-family:var(--sans)}
+        .bug-item-actions button{background:var(--gold);color:#000;border:none;padding:2px 8px;border-radius:3px;font-size:0.32rem;font-weight:700;cursor:pointer}
     </style>
 </head>
 <body>
@@ -499,11 +597,13 @@
             <div class="step-desc">Paste the full URL from ngrok (e.g. https://abc123.ngrok-free.app) or a direct IP:port.</div>
             <div style="margin-bottom:0.5rem">
                 <input type="text" class="setup-input" id="botNickname" placeholder="Bot nickname (e.g. Weather Alpha)" style="width:100%;margin-bottom:0.5rem" maxlength="24" />
+                <input type="password" class="setup-input" id="botToken" placeholder="Bot auth token (from server setup)" style="width:100%;font-size:0.48rem" maxlength="64" autocomplete="off" />
             </div>
             <div class="input-group">
                 <input type="text" class="setup-input" id="serverIp" placeholder="https://abc123.ngrok-free.app" style="flex:2" />
                 <button class="connect-btn" id="connectBtn" onclick="tryConnect()">Connect</button>
             </div>
+            <label class="auto-login-row" id="autoLoginRow" style="display:none;margin-top:0.5rem"><input type="checkbox" id="autoLoginChk" onchange="toggleAutoLogin()"><span class="auto-login-lbl">Auto-connect on launch</span></label>
         </div>
 
         <div class="setup-status" id="setupStatus"></div>
@@ -511,7 +611,6 @@
         <div class="saved-servers" id="savedServers" style="display:none">
             <div class="saved-label">Saved Servers</div>
             <div id="savedList"></div>
-            <label class="auto-login-row" id="autoLoginRow" style="display:none"><input type="checkbox" id="autoLoginChk" onchange="toggleAutoLogin()"><span class="auto-login-lbl">Auto-connect on launch</span></label>
         </div>
 
         <div class="setup-footer">Secured by <a href="#">BotWarden</a> on Base</div>
@@ -520,9 +619,11 @@
 
 <!-- DASHBOARD -->
 <div id="dash">
+    <div class="reconn-bar" id="reconnBar"><span class="reconn-spin">&#8635;</span>Connection lost — reconnecting...</div>
     <div class="top"><div class="top-in">
-        <div class="brand"><div class="logo-dash">BW</div><span class="brand-t">BotWarden</span></div>
+        <div class="brand" id="brandTap"><div class="logo-dash">BW</div><span class="brand-t">BotWarden</span></div>
         <div class="top-r">
+            <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark mode">&#9789;</button>
             <div class="bot-switch" id="botSwitch">
                 <button class="bot-switch-btn" id="botSwitchBtn" onclick="toggleBotMenu()"><span class="srv-ip" id="srvIp"></span><span class="bot-arrow">&#9662;</span></button>
                 <div class="bot-menu" id="botMenu"></div>
@@ -535,16 +636,17 @@
             <button class="sync-btn" id="syncBtn" onclick="refreshSub()" title="Refresh subscription status">&#8635;</button>
             <button class="usr-btn" onclick="showUserDash()">Settings</button>
             <button class="admin-btn" id="adminBtn" onclick="showAdmin()">ADMIN</button>
+            <button class="admin-btn" id="analyticsBtn" onclick="showAnalytics()" style="display:none">ANALYTICS</button>
             <button class="disc-btn" onclick="disconnect()">Disconnect</button>
         </div>
     </div></div>
     <div class="scanl"></div>
     <div class="ct">
-        <div class="hero" id="heroGrid" data-panel="hero"></div>
+        <div style="position:relative"><button class="hero-refresh" id="heroRefreshBtn" onclick="manualRefresh()" title="Refresh stats now">&#8635;</button><div class="hero" id="heroGrid" data-panel="hero"></div></div>
         <div class="risk-bar" id="riskBar" data-panel="risk"></div>
         <div class="row r-main">
             <div class="pn" data-gate="pro" data-panel="strategy"><div class="pn-h"><span class="pn-t">Strategy Breakdown</span></div><div id="stratBox" style="display:flex;flex-direction:column;gap:1px;background:var(--b1)"></div></div>
-            <div class="pn" data-gate="pro" data-panel="equity"><div class="pn-h"><span class="pn-t">Equity Curve</span><span class="pn-badge" id="perfCt">--</span></div><div class="pn-b"><div class="ch"><canvas id="eqChart"></canvas></div></div></div>
+            <div class="pn" data-gate="pro" data-panel="equity"><div class="pn-h"><span class="pn-t">Equity Curve</span><div class="eq-toggle" id="eqToggle"><button class="on" data-eq="all">All</button><button data-eq="7d">7D</button><button data-eq="30d">30D</button></div><span class="pn-badge" id="perfCt">--</span></div><div class="pn-b"><div class="ch"><canvas id="eqChart"></canvas></div></div></div>
         </div>
         <div class="row r-3">
             <div class="pn" data-gate="pro" data-panel="posmap"><div class="pn-h"><span class="pn-t">Position Map</span></div><div class="pn-b" id="tmBox"><div class="empty">No open positions</div></div></div>
@@ -572,6 +674,18 @@
             <div class="tc" id="tab-cyc"><div class="scr" id="cycArea"></div></div>
         </div>
         <div class="pn" data-panel="syslog" style="margin-top:1rem"><div class="pn-h"><span class="pn-t">System Log</span><span class="pn-badge" id="logCt">--</span></div><div class="pn-b"><div class="term" id="logBox"></div></div></div>
+    </div>
+</div>
+
+<!-- TRADE NOTE MODAL -->
+<div class="note-modal-bg" id="noteModalBg" style="display:none" onclick="closeNoteModal()"></div>
+<div class="note-modal" id="noteModal" style="display:none">
+    <div style="font-size:0.6rem;font-weight:700;color:var(--t1);margin-bottom:0.5rem">Trade Note</div>
+    <div style="font-size:0.42rem;color:var(--t3);margin-bottom:0.4rem" id="noteTradeLabel"></div>
+    <textarea id="noteText" placeholder="Add your notes about this trade..."></textarea>
+    <div style="display:flex;gap:0.4rem;margin-top:0.5rem;justify-content:flex-end">
+        <button onclick="closeNoteModal()" style="background:var(--s2);border:1px solid var(--b1);color:var(--t3);padding:4px 12px;border-radius:4px;font-size:0.42rem;cursor:pointer">Cancel</button>
+        <button onclick="saveTradeNote()" style="background:var(--gold);color:#000;border:none;padding:4px 12px;border-radius:4px;font-size:0.42rem;font-weight:700;cursor:pointer">Save</button>
     </div>
 </div>
 
@@ -629,6 +743,36 @@
     </div>
 </div>
 
+<!-- ANALYTICS PANEL -->
+<div class="overlay" id="analyticsModal">
+    <div class="analytics-card">
+        <button class="pricing-close" onclick="hideAnalytics()">&times;</button>
+        <div class="analytics-title">Analytics</div>
+        <div class="analytics-sub">Real-time user activity, page analytics, and bug reports</div>
+        <div class="admin-tabs" id="analyticsTabs">
+            <button class="admin-tab on" data-anatab="overview">Overview</button>
+            <button class="admin-tab" data-anatab="bugs">Bug Reports</button>
+        </div>
+        <div class="admin-section on" id="anatab-overview"><div class="adm-empty">Loading...</div></div>
+        <div class="admin-section" id="anatab-bugs"><div class="adm-empty">Loading...</div></div>
+    </div>
+</div>
+
+<!-- BUG REPORT -->
+<button class="bug-fab" id="bugFab" onclick="toggleBugReport()" title="Report a bug" style="display:none">&#128027;</button>
+<div class="bug-modal-bg" id="bugBg" style="display:none" onclick="closeBugReport()"></div>
+<div class="bug-modal" id="bugModal" style="display:none">
+    <div class="bug-modal-title">Report a Bug</div>
+    <div class="bug-sev" id="bugSev">
+        <button data-sev="low" onclick="selectBugSev('low')">Low</button>
+        <button data-sev="medium" class="on" onclick="selectBugSev('medium')">Medium</button>
+        <button data-sev="high" onclick="selectBugSev('high')">High</button>
+    </div>
+    <textarea class="bug-textarea" id="bugDesc" placeholder="Describe the issue... (what happened, what you expected, steps to reproduce)" maxlength="2000"></textarea>
+    <button class="bug-submit" id="bugSubmitBtn" onclick="submitBugReport()">Submit Report</button>
+    <div class="bug-msg" id="bugMsg"></div>
+</div>
+
 <!-- USER DASHBOARD -->
 <div class="overlay" id="userDashModal">
     <div class="usr-card">
@@ -649,12 +793,46 @@
             <div class="usr-section-title">Dashboard Layout <span style="font-size:0.38rem;color:var(--t4);font-weight:400;text-transform:none;letter-spacing:0">(Pro & Team only)</span></div>
             <div id="udPanelToggles"></div>
         </div>
+        <div class="usr-section">
+            <div class="usr-section-title">Alerts <span style="font-size:0.38rem;color:var(--t4);font-weight:400;text-transform:none;letter-spacing:0">(Pro & Team only)</span></div>
+            <div class="alert-row"><label>Trade sound alert</label><button class="usr-toggle" id="alertSound" onclick="toggleAlertSetting('sound')"></button></div>
+            <div class="alert-row"><label>Browser notifications</label><button class="usr-toggle" id="alertNotif" onclick="toggleAlertSetting('notif')"></button></div>
+            <div class="alert-row"><label>Max drawdown alert (%)</label><input type="number" id="alertDD" min="1" max="50" value="15" onchange="saveAlertSettings()"></div>
+            <div class="alert-row"><label>Min bankroll alert ($)</label><input type="number" id="alertBankroll" min="0" step="10" value="0" onchange="saveAlertSettings()"></div>
+        </div>
+        <div class="usr-section" id="udShareSection" style="display:none">
+            <div class="usr-section-title">Shared Dashboard <span style="font-size:0.38rem;color:var(--t4);font-weight:400;text-transform:none;letter-spacing:0">(Team only)</span></div>
+            <div style="font-size:0.44rem;color:var(--t3);margin-bottom:0.4rem">Share a read-only link to your dashboard with teammates.</div>
+            <div class="share-link"><input id="shareUrl" readonly><button onclick="copyShareLink()">Copy</button></div>
+        </div>
+        <div class="usr-section" id="udTeamSection" style="display:none">
+            <div class="usr-section-title">Team Members <span style="font-size:0.38rem;color:var(--t4);font-weight:400;text-transform:none;letter-spacing:0">(Team only)</span></div>
+            <div style="font-size:0.44rem;color:var(--t3);margin-bottom:0.4rem">Add wallet addresses to grant dashboard access.</div>
+            <div id="teamList"></div>
+            <div style="display:flex;gap:0.4rem;margin-top:0.4rem"><input id="teamWalletInput" placeholder="0x..." style="flex:1;background:var(--s2);border:1px solid var(--b1);color:var(--t1);padding:4px 8px;border-radius:4px;font-family:var(--mono);font-size:0.42rem"><button onclick="addTeamMember()" style="background:var(--gold);color:#000;border:none;padding:4px 10px;border-radius:4px;font-size:0.42rem;font-weight:700;cursor:pointer">Add</button></div>
+        </div>
+        <div class="usr-section" id="udApiSection" style="display:none">
+            <div class="usr-section-title">API Access <span style="font-size:0.38rem;color:var(--t4);font-weight:400;text-transform:none;letter-spacing:0">(Team only)</span></div>
+            <div style="font-size:0.44rem;color:var(--t3);margin-bottom:0.6rem">Use these endpoints to integrate BotWarden data into your own tools.</div>
+            <div class="api-endpoint"><span class="api-method">GET</span>/api/stats<span class="api-desc">Bankroll, P&L, win rate, risk limits</span></div>
+            <div class="api-endpoint"><span class="api-method">GET</span>/api/trades?limit=60<span class="api-desc">Trade history</span></div>
+            <div class="api-endpoint"><span class="api-method">GET</span>/api/open<span class="api-desc">Open positions</span></div>
+            <div class="api-endpoint"><span class="api-method">GET</span>/api/performance?limit=300<span class="api-desc">Equity curve data points</span></div>
+            <div class="api-endpoint"><span class="api-method">GET</span>/api/cycles?limit=30<span class="api-desc">Scan cycle history</span></div>
+            <div class="api-endpoint"><span class="api-method">GET</span>/api/cities<span class="api-desc">Weather city breakdown</span></div>
+            <div class="api-endpoint"><span class="api-method">GET</span>/api/strategies<span class="api-desc">Per-strategy stats</span></div>
+            <div class="api-endpoint"><span class="api-method">GET</span>/api/sports<span class="api-desc">Sports market tracking</span></div>
+            <div class="api-endpoint"><span class="api-method">GET</span>/api/export/csv<span class="api-desc">Download trade history as CSV</span></div>
+            <div style="font-size:0.4rem;color:var(--t4);margin-top:0.5rem">Base URL: <span style="color:var(--gold);font-family:var(--mono)" id="apiBaseUrl">—</span></div>
+        </div>
     </div>
 </div>
 
 <script>
 // ===== SUBSCRIPTION SYSTEM =====
 const CREATOR_WALLET='0xeE05e2D2087cCa978089E1A7Bb562Fd7E2bC698F';
+const ANALYTICS_WALLET='0x18b18E245122f4bDA5F2ee4F25c702E05C241D49';
+const NGROK_BEACON='https://jsonblob.com/api/jsonBlob/019d35f3-9092-70e5-bab1-65a98b385cdf';
 const USDC_ADDR='0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const CLAWS_ADDR='0x7ca47B141639B893C6782823C0b219f872056379';
 const BASE_RPC='https://mainnet.base.org';
@@ -665,12 +843,12 @@ const TIERS={
 };
 const TOKEN_DISC={CLAWS:0.10,ETH:0.05,USDC:0};
 const DEFAULT_PROMOS={
-    '$ADM1N':{discountPct:99.9,maxUses:null,usedCount:0,expiresAt:null},
-    '$T3ST3R':{discountPct:100,maxUses:null,usedCount:0,expiresAt:null},
     LAUNCH20:{discountPct:20,maxUses:100,usedCount:0,expiresAt:null},
     EARLYBIRD:{discountPct:15,maxUses:50,usedCount:0,expiresAt:null},
     POLY10:{discountPct:10,maxUses:null,usedCount:0,expiresAt:null}
 };
+function getBotToken(){const s=JSON.parse(localStorage.getItem('botwarden_servers')||'[]');const sv=s.find(x=>x.url===BASE);return sv&&sv.token?'?token='+encodeURIComponent(sv.token):''}
+function isValidBeaconUrl(u){return /^https:\/\/[a-z0-9][-a-z0-9]*\.ngrok(-free)?\.app\/?$/i.test(u)}
 
 let currentTier='free',selectedToken='CLAWS',promoDiscount=0,promoCode='',userWallet=null,subData=null;
 
@@ -684,26 +862,43 @@ async function waitForSDK(name,ms){
     return new Promise(r=>{const t=setInterval(()=>{if(window[name]){clearInterval(t);r(true)}},50);setTimeout(()=>{clearInterval(t);r(false)},ms||3000)});
 }
 
-// Subscription persistence
+// Subscription persistence — triple-layer: AppDB user-scoped → AppDB global (by wallet) → IndexedDB → localStorage
 function loadSubLocal(){
     try{const ls=JSON.parse(localStorage.getItem('bw_sub_local'));
         if(ls&&ls.tier&&ls.expiresAt&&new Date(ls.expiresAt)>new Date()){currentTier=ls.tier;subData=ls;return true}
     }catch(e){}
     return false;
 }
+// IndexedDB persistence (survives history clear)
+function idbSet(key,val){
+    return new Promise(r=>{try{const req=indexedDB.open('bw_store',1);
+    req.onupgradeneeded=e=>{e.target.result.createObjectStore('kv')};
+    req.onsuccess=e=>{const db=e.target.result;const tx=db.transaction('kv','readwrite');tx.objectStore('kv').put(val,key);tx.oncomplete=()=>{db.close();r(true)};tx.onerror=()=>{db.close();r(false)}};
+    req.onerror=()=>r(false)}catch(e){r(false)}});
+}
+function idbGet(key){
+    return new Promise(r=>{try{const req=indexedDB.open('bw_store',1);
+    req.onupgradeneeded=e=>{e.target.result.createObjectStore('kv')};
+    req.onsuccess=e=>{const db=e.target.result;const tx=db.transaction('kv','readonly');const g=tx.objectStore('kv').get(key);g.onsuccess=()=>{db.close();r(g.result||null)};g.onerror=()=>{db.close();r(null)}};
+    req.onerror=()=>r(null)}catch(e){r(null)}});
+}
+
 async function loadSub(){
     userWallet=getWallet();
     const hasDB=await waitForSDK('AppDB',3000);
-    if(!hasDB){
-        if(!loadSubLocal())currentTier='free';
-        updateSubBadge();applyTierGating();return;
-    }
-    try{
-        subData=await window.AppDB.get('bw_sub');
-        if(subData&&subData.tier&&subData.expiresAt){
-            if(new Date(subData.expiresAt)>new Date()){currentTier=subData.tier}
-            else{
-                // Check referral credits before downgrading
+
+    // 1. Try AppDB user-scoped (cloud, primary)
+    if(hasDB){
+        try{
+            subData=await window.AppDB.get('bw_sub');
+            if(subData&&subData.tier&&subData.expiresAt&&new Date(subData.expiresAt)>new Date()){
+                currentTier=subData.tier;
+                _persistSubEverywhere(subData);
+                updateSubBadge();applyTierGating();
+                _checkRefUrl();return;
+            }
+            // Expired — check referral credits
+            if(subData&&subData.tier&&subData.expiresAt){
                 const cred=userWallet?await loadRefCredits():null;
                 if(cred&&cred.earnedMonths>cred.usedMonths){
                     subData.expiresAt=new Date(Date.now()+30*86400000).toISOString();
@@ -711,17 +906,76 @@ async function loadSub(){
                     await window.AppDB.set('bw_sub',subData);
                     await window.AppDB.setGlobal('bw_ref_'+userWallet.toLowerCase(),cred);
                     currentTier=subData.tier;
-                }else{currentTier='free'}
+                    _persistSubEverywhere(subData);
+                    updateSubBadge();applyTierGating();
+                    _checkRefUrl();return;
+                }
             }
-        }else{
-            // AppDB empty — check localStorage fallback
-            if(!loadSubLocal())currentTier='free';
-        }
-    }catch(e){
-        if(!loadSubLocal())currentTier='free';
+        }catch(e){}
     }
+
+    // 2. Try AppDB global by wallet (survives user-scoped wipe)
+    if(hasDB&&userWallet){
+        try{
+            const gSub=await window.AppDB.getGlobal('bw_sub_'+userWallet.toLowerCase());
+            if(gSub&&gSub.tier&&gSub.expiresAt&&new Date(gSub.expiresAt)>new Date()){
+                subData=gSub;currentTier=gSub.tier;
+                _persistSubEverywhere(subData);
+                updateSubBadge();applyTierGating();
+                _checkRefUrl();return;
+            }
+        }catch(e){}
+        // 2b. Scan global sub log as last cloud resort
+        try{
+            const slog=await window.AppDB.getGlobal('bw_sub_log')||[];
+            const mine=slog.filter(s=>s.wallet&&s.wallet.toLowerCase()===userWallet.toLowerCase());
+            if(mine.length){
+                const latest=mine[0];
+                const expiry=new Date(new Date(latest.ts).getTime()+30*86400000);
+                if(expiry>new Date()){
+                    subData={tier:latest.tier,expiresAt:expiry.toISOString(),paymentToken:latest.token,txHash:latest.txHash,paidAmountUSD:latest.paidUSD,subscribedAt:latest.ts,renewCount:1,promoApplied:latest.promo,referralCode:''};
+                    currentTier=latest.tier;
+                    _persistSubEverywhere(subData);
+                    updateSubBadge();applyTierGating();
+                    _checkRefUrl();return;
+                }
+            }
+        }catch(e){}
+    }
+
+    // 3. Try IndexedDB (survives history clear)
+    try{
+        const iSub=await idbGet('bw_sub');
+        if(iSub&&iSub.tier&&iSub.expiresAt&&new Date(iSub.expiresAt)>new Date()){
+            subData=iSub;currentTier=iSub.tier;
+            _persistSubEverywhere(subData);
+            updateSubBadge();applyTierGating();
+            _checkRefUrl();return;
+        }
+    }catch(e){}
+
+    // 4. Try localStorage (fastest, cleared with site data)
+    if(loadSubLocal()){
+        _persistSubEverywhere(subData);
+        updateSubBadge();applyTierGating();
+        _checkRefUrl();return;
+    }
+
+    // Nothing found
+    currentTier='free';
     updateSubBadge();applyTierGating();
-    // Check URL for referral code
+    _checkRefUrl();
+}
+
+function _persistSubEverywhere(sd){
+    localStorage.setItem('bw_sub_local',JSON.stringify(sd));
+    idbSet('bw_sub',sd);
+    if(window.AppDB){
+        try{window.AppDB.set('bw_sub',sd)}catch(e){}
+        if(userWallet){try{window.AppDB.setGlobal('bw_sub_'+userWallet.toLowerCase(),sd)}catch(e){}}
+    }
+}
+function _checkRefUrl(){
     const urlRef=new URLSearchParams(window.location.search).get('ref');
     if(urlRef)localStorage.setItem('bw_pending_ref',urlRef);
 }
@@ -758,9 +1012,7 @@ async function saveSub(tier,token,txHash,paidUSD){
     const arOn=localStorage.getItem('bw_auto_renew')==='true';
     subData={tier,expiresAt:new Date(Date.now()+30*86400000).toISOString(),paymentToken:token,txHash,paidAmountUSD:paidUSD,subscribedAt:new Date().toISOString(),renewCount:(subData?.renewCount||0)+1,promoApplied:promoCode||null,referralCode:refCode,autoRenew:arOn,cancelled:false};
     currentTier=tier;updateSubBadge();applyTierGating();
-    // Also persist to localStorage as fallback
-    localStorage.setItem('bw_sub_local',JSON.stringify(subData));
-    if(window.AppDB){try{await window.AppDB.set('bw_sub',subData)}catch(e){}}
+    _persistSubEverywhere(subData);
     // Register referral code
     if(refCode&&userWallet){
         try{
@@ -813,6 +1065,9 @@ function gateCheck(feat,el){
 
 // Pricing UI
 function showPricing(){
+    promoDiscount=0;promoCode='';
+    const pi=document.getElementById('promoInput');if(pi)pi.value='';
+    const pm=document.getElementById('promoMsg');if(pm)pm.textContent='';
     renderTiers();loadRefSection();
     document.getElementById('pricingModal').classList.add('show');
 }
@@ -926,7 +1181,7 @@ async function subscribeTier(tier){
     if(usdPrice<=0){
         st.className='pay-status';st.style.color='var(--grn)';
         st.textContent='Promo applied! Activating '+tier.toUpperCase()+'...';
-        await finalizeSub(tier,0,'PROMO_'+promoCode);
+        await finalizeSub(tier,0,'PROMO_'+promoCode+'_'+Date.now()+'_'+Math.random().toString(36).slice(2,8));
         return;
     }
 
@@ -1096,7 +1351,7 @@ async function verifyTxHash(tier,usdPrice){
             try{
                 const usedHashes=await window.AppDB.getGlobal('bw_used_txhashes')||[];
                 if(usedHashes.includes(hash.toLowerCase())){vm.style.color='var(--red)';vm.textContent='This transaction has already been used for a subscription.';return}
-            }catch(e){}
+            }catch(e){console.warn('tx hash check:',e)}
         }
 
         vm.style.color='var(--grn)';vm.textContent='Verified! '+tokenUsed+' payment confirmed on Base.';
@@ -1113,21 +1368,22 @@ async function finalizeSub(tier,usdPrice,txHash){
         try{
             const used=await window.AppDB.getGlobal('bw_used_txhashes')||[];
             used.push(txHash.toLowerCase());
+            if(used.length>500)used.splice(0,used.length-500);
             await window.AppDB.setGlobal('bw_used_txhashes',used);
-        }catch(e){}
+        }catch(e){console.warn('finalizeSub txhash:',e)}
     }
     // Increment promo usage + log it
     if(promoCode&&window.AppDB){
         try{
             const gp=await window.AppDB.getGlobal('bw_promo_codes')||{};
             if(gp[promoCode]){gp[promoCode].usedCount=(gp[promoCode].usedCount||0)+1;await window.AppDB.setGlobal('bw_promo_codes',gp)}
-        }catch(e){}
+        }catch(e){console.warn('finalizeSub promo:',e)}
         try{
             const log=await window.AppDB.getGlobal('bw_promo_log')||[];
             log.unshift({code:promoCode,wallet:userWallet||'unknown',tier,paidUSD:usdPrice,txHash,token:selectedToken,discountPct:promoDiscount,ts:new Date().toISOString()});
             if(log.length>500)log.length=500;
             await window.AppDB.setGlobal('bw_promo_log',log);
-        }catch(e){}
+        }catch(e){console.warn('finalizeSub promo log:',e)}
     }
     // Log all subscriptions (even without promo)
     if(window.AppDB){
@@ -1136,7 +1392,7 @@ async function finalizeSub(tier,usdPrice,txHash){
             slog.unshift({wallet:userWallet||'unknown',tier,paidUSD:usdPrice,txHash,token:selectedToken,promo:promoCode||null,ts:new Date().toISOString()});
             if(slog.length>500)slog.length=500;
             await window.AppDB.setGlobal('bw_sub_log',slog);
-        }catch(e){}
+        }catch(e){console.warn('finalizeSub sub log:',e)}
     }
     await saveSub(tier,selectedToken,txHash,usdPrice);
     if(st){st.innerHTML='<div style="color:var(--grn);font-size:0.65rem;font-weight:700">'+tier.toUpperCase()+' activated! Enjoy BotWarden.</div>'}
@@ -1148,6 +1404,9 @@ loadSub().then(()=>{
     // Show admin button if creator wallet
     if(userWallet&&userWallet.toLowerCase()===CREATOR_WALLET.toLowerCase()){
         const ab=document.getElementById('adminBtn');if(ab)ab.style.display='inline-block';
+    }
+    if(!userWallet||userWallet.toLowerCase()===ANALYTICS_WALLET.toLowerCase()){
+        const anb=document.getElementById('analyticsBtn');if(anb)anb.style.display='inline-block';
     }
     // Apply panel visibility prefs
     applyPanelVisibility();
@@ -1164,31 +1423,10 @@ async function refreshSub(){
     btn.classList.add('spinning');
     const prev=currentTier;
     try{
-        // 1. Try normal load (AppDB user-scoped + localStorage)
         await loadSub();
-        if(currentTier!=='free'){btn.classList.remove('spinning');if(currentTier!==prev)notify('Subscription restored: '+currentTier.toUpperCase());return}
-        // 2. If still free, scan the global sub log for this wallet
-        if(window.AppDB&&userWallet){
-            const slog=await window.AppDB.getGlobal('bw_sub_log')||[];
-            const mine=slog.filter(s=>s.wallet&&s.wallet.toLowerCase()===userWallet.toLowerCase());
-            if(mine.length){
-                const latest=mine[0];// already sorted newest-first
-                const expiry=new Date(new Date(latest.ts).getTime()+30*86400000);
-                if(expiry>new Date()){
-                    // Reinstate from log
-                    currentTier=latest.tier;
-                    subData={tier:latest.tier,expiresAt:expiry.toISOString(),paymentToken:latest.token,txHash:latest.txHash,paidAmountUSD:latest.paidUSD,subscribedAt:latest.ts,renewCount:1,promoApplied:latest.promo,referralCode:''};
-                    updateSubBadge();applyTierGating();
-                    localStorage.setItem('bw_sub_local',JSON.stringify(subData));
-                    try{await window.AppDB.set('bw_sub',subData)}catch(e){}
-                    btn.classList.remove('spinning');
-                    notify('Subscription restored from payment history: '+currentTier.toUpperCase());
-                    return;
-                }
-            }
-        }
         btn.classList.remove('spinning');
-        notify('No active subscription found');
+        if(currentTier!=='free'&&currentTier!==prev)notify('Subscription restored: '+currentTier.toUpperCase());
+        else if(currentTier==='free')notify('No active subscription found');
     }catch(e){
         btn.classList.remove('spinning');
         notify('Refresh failed: '+(e.message||'unknown error'));
@@ -1202,8 +1440,7 @@ function notify(msg){
 }
 
 // ===== ADMIN PANEL =====
-const ADMIN_WALLET=CREATOR_WALLET.toLowerCase();
-function isAdmin(){return userWallet&&userWallet.toLowerCase()===ADMIN_WALLET}
+function isAdmin(){return userWallet&&userWallet.toLowerCase()===CREATOR_WALLET.toLowerCase()}
 
 function showAdmin(){
     if(!isAdmin())return;
@@ -1259,7 +1496,7 @@ function renderPromoLog(log){
         const dateStr=dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'})+' '+dt.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
         const wallet=l.wallet&&l.wallet!=='unknown'?l.wallet.slice(0,6)+'...'+l.wallet.slice(-4):'—';
         const tx=l.txHash?l.txHash.slice(0,10)+'...':'—';
-        html+='<tr><td>'+dateStr+'</td><td class="adm-code">'+E(l.code)+'</td><td>'+l.discountPct+'%</td><td><span class="adm-tier '+(l.tier||'')+'">'+E(l.tier||'—')+'</span></td><td>$'+(l.paidUSD||0).toFixed(2)+'</td><td>'+E(l.token||'—')+'</td><td class="adm-wallet" title="'+(l.wallet||'')+'">'+wallet+'</td><td style="font-size:0.36rem" title="'+(l.txHash||'')+'">'+tx+'</td></tr>';
+        html+='<tr><td>'+dateStr+'</td><td class="adm-code">'+E(l.code)+'</td><td>'+l.discountPct+'%</td><td><span class="adm-tier '+(l.tier||'')+'">'+E(l.tier||'—')+'</span></td><td>$'+(l.paidUSD||0).toFixed(2)+'</td><td>'+E(l.token||'—')+'</td><td class="adm-wallet" title="'+E(l.wallet||'')+'">'+wallet+'</td><td style="font-size:0.36rem" title="'+E(l.txHash||'')+'">'+tx+'</td></tr>';
     });
     html+='</table>';
     el.innerHTML=html;
@@ -1300,7 +1537,7 @@ function renderSubLog(log){
         const dateStr=dt.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'2-digit'})+' '+dt.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
         const wallet=l.wallet&&l.wallet!=='unknown'?l.wallet.slice(0,6)+'...'+l.wallet.slice(-4):'—';
         const tx=l.txHash?l.txHash.slice(0,10)+'...':'—';
-        html+='<tr><td>'+dateStr+'</td><td><span class="adm-tier '+(l.tier||'')+'">'+E(l.tier||'—')+'</span></td><td>$'+(l.paidUSD||0).toFixed(2)+'</td><td>'+E(l.token||'—')+'</td><td>'+(l.promo?'<span class="adm-code">'+E(l.promo)+'</span>':'—')+'</td><td class="adm-wallet" title="'+(l.wallet||'')+'">'+wallet+'</td><td style="font-size:0.36rem" title="'+(l.txHash||'')+'">'+tx+'</td></tr>';
+        html+='<tr><td>'+dateStr+'</td><td><span class="adm-tier '+(l.tier||'')+'">'+E(l.tier||'—')+'</span></td><td>$'+(l.paidUSD||0).toFixed(2)+'</td><td>'+E(l.token||'—')+'</td><td>'+(l.promo?'<span class="adm-code">'+E(l.promo)+'</span>':'—')+'</td><td class="adm-wallet" title="'+E(l.wallet||'')+'">'+wallet+'</td><td style="font-size:0.36rem" title="'+E(l.txHash||'')+'">'+tx+'</td></tr>';
     });
     html+='</table>';
     el.innerHTML=html;
@@ -1315,6 +1552,16 @@ const PANEL_LABELS={hero:'Hero Stats',risk:'Risk Gauges',strategy:'Strategy Brea
 function showUserDash(){
     document.getElementById('userDashModal').classList.add('show');
     renderUserDash();
+    loadAlertSettings();
+    const isTeam=currentTier==='team';
+    document.getElementById('udShareSection').style.display=isTeam?'':'none';
+    document.getElementById('udTeamSection').style.display=isTeam?'':'none';
+    document.getElementById('udApiSection').style.display=isTeam?'':'none';
+    if(isTeam&&BASE){
+        document.getElementById('shareUrl').value=window.location.origin+window.location.pathname+'?viewer=true';
+        document.getElementById('apiBaseUrl').textContent=BASE;
+    }
+    loadTeamMembers();
 }
 function hideUserDash(){document.getElementById('userDashModal').classList.remove('show')}
 document.getElementById('userDashModal').addEventListener('click',e=>{if(e.target.id==='userDashModal')hideUserDash()});
@@ -1362,17 +1609,15 @@ function toggleAutoRenew(){
     localStorage.setItem('bw_auto_renew',on?'true':'false');
     if(on&&subData){
         subData.autoRenew=true;
-        localStorage.setItem('bw_sub_local',JSON.stringify(subData));
-        if(window.AppDB)try{window.AppDB.set('bw_sub',subData)}catch(e){}
+        _persistSubEverywhere(subData);
     }
 }
 
 function cancelSub(){
     if(!confirm('Cancel your '+currentTier.toUpperCase()+' subscription? You will revert to Free at the end of the billing period.'))return;
     localStorage.removeItem('bw_auto_renew');
-    if(subData){subData.autoRenew=false;subData.cancelled=true;localStorage.setItem('bw_sub_local',JSON.stringify(subData));
-        if(window.AppDB)try{window.AppDB.set('bw_sub',subData)}catch(e){}}
-    notify('Subscription will not renew. Active until '+new Date(subData.expiresAt).toLocaleDateString());
+    if(subData){subData.autoRenew=false;subData.cancelled=true;_persistSubEverywhere(subData)}
+    notify('Subscription will not renew.'+(subData&&subData.expiresAt?' Active until '+new Date(subData.expiresAt).toLocaleDateString():''));
     renderUserDash();
 }
 
@@ -1444,10 +1689,11 @@ function checkAutoRenew(){
         const pop=document.createElement('div');pop.className='upgrade-pop';pop.id='renewPop';
         pop.innerHTML='<button class="upgrade-pop-close" onclick="document.getElementById(\'renewPop\').remove()">&times;</button>'
             +'<div class="upgrade-pop-title">Subscription Expired</div>'
-            +'<div class="upgrade-pop-desc">Your '+tier.toUpperCase()+' plan has expired. Auto-renew is enabled — click below to renew for another month.</div>'
-            +'<button class="upgrade-pop-btn" onclick="document.getElementById(\'renewPop\').remove();selectedToken=\''+token+'\';subscribeTier(\''+tier+'\')">Renew '+tier.toUpperCase()+' — '+token+'</button>'
+            +'<div class="upgrade-pop-desc">Your '+E(tier.toUpperCase())+' plan has expired. Auto-renew is enabled — click below to renew for another month.</div>'
+            +'<button class="upgrade-pop-btn" id="renewBtn">Renew '+E(tier.toUpperCase())+' — '+E(token)+'</button>'
             +'<button class="upgrade-pop-skip" onclick="document.getElementById(\'renewPop\').remove()">Not now</button>';
         document.body.appendChild(pop);
+        document.getElementById('renewBtn').addEventListener('click',function(){document.getElementById('renewPop').remove();selectedToken=token;subscribeTier(tier)});
     },1500);
 }
 
@@ -1465,11 +1711,8 @@ function getCmd(key){
     return CMD[key]||'';
 }
 function doCopy(txt,el){
-    const ta=document.createElement('textarea');
-    ta.value=txt;ta.style.cssText='position:fixed;left:-9999px;opacity:0';
-    document.body.appendChild(ta);ta.select();
-    try{document.execCommand('copy')}catch(e){}
-    document.body.removeChild(ta);
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).catch(()=>{})}
+    else{const ta=document.createElement('textarea');ta.value=txt;ta.style.cssText='position:fixed;left:-9999px;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta)}
     if(el){const o=el.textContent;el.textContent='Copied!';el.style.color='var(--grn)';setTimeout(()=>{el.textContent=o;el.style.color=''},1200)}
 }
 // Delegate all copy-btn clicks
@@ -1612,20 +1855,27 @@ function loadSaved(){
     if(!s.length){el.style.display='none';return}
     el.style.display='block';
     list.innerHTML=s.map((sv,i)=>{
-        const display=sv.nick?'<span class="saved-ip" style="color:var(--t1);font-weight:600">'+sv.nick+'</span><span style="font-family:var(--mono);font-size:0.48rem;color:var(--t4);margin-left:0.4rem">'+sv.label+'</span>':'<span class="saved-ip">'+sv.label+'</span>';
-        return '<div class="saved-item" onclick="quickConnect(\''+sv.url.replace(/'/g,"\\'")+'\',\''+((sv.nick||'').replace(/'/g,"\\'"))+'\')">'+display+'<span class="saved-rm" onclick="event.stopPropagation();removeSaved('+i+')">remove</span></div>';
+        const display=sv.nick?'<span class="saved-ip" style="color:var(--t1);font-weight:600">'+E(sv.nick)+'</span><span style="font-family:var(--mono);font-size:0.48rem;color:var(--t4);margin-left:0.4rem">'+E(sv.label)+'</span>':'<span class="saved-ip">'+E(sv.label)+'</span>';
+        return '<div class="saved-item" data-idx="'+i+'">'+display+'<span class="saved-rm" data-rm="'+i+'">remove</span></div>';
     }).join('');
 }
-function saveSrv(url,label,nick){
+document.getElementById('savedList').addEventListener('click',function(e){
+    const rm=e.target.closest('[data-rm]');
+    if(rm){e.stopPropagation();removeSaved(+rm.dataset.rm);return}
+    const item=e.target.closest('[data-idx]');
+    if(item){const s=JSON.parse(localStorage.getItem('botwarden_servers')||'[]');const sv=s[+item.dataset.idx];if(sv)quickConnect(sv.url,sv.nick||'')}
+});
+function saveSrv(url,label,nick,token){
     const s=JSON.parse(localStorage.getItem('botwarden_servers')||'[]');
     const maxBots=TIERS[currentTier]?TIERS[currentTier].maxBots:1;
     const existing=s.find(x=>x.url===url);
     if(existing){
         if(nick)existing.nick=nick;
+        if(token)existing.token=token;
         localStorage.setItem('botwarden_servers',JSON.stringify(s));
     }else{
-        if(s.length>=maxBots){showPricing();return}
-        s.unshift({url,label,nick:nick||''});if(s.length>5)s.pop();localStorage.setItem('botwarden_servers',JSON.stringify(s));
+        if(s.length>=maxBots){notify('Bot limit reached — upgrade for more');showPricing();return}
+        s.unshift({url,label,nick:nick||'',token:token||''});if(s.length>20)s.pop();localStorage.setItem('botwarden_servers',JSON.stringify(s));
     }
     // Update auto-login if enabled
     const alChk=document.getElementById('autoLoginChk');
@@ -1638,12 +1888,15 @@ function removeSaved(i){
 function quickConnect(url,nick){
     document.getElementById('serverIp').value=url;
     if(document.getElementById('botNickname'))document.getElementById('botNickname').value=nick||'';
+    const s=JSON.parse(localStorage.getItem('botwarden_servers')||'[]');
+    const sv=s.find(x=>x.url===url);
+    if(sv&&sv.token&&document.getElementById('botToken'))document.getElementById('botToken').value=sv.token;
     tryConnect();
 }
 
 function parseUrl(raw){
-    // Strip ngrok forwarding line noise: "Forwarding  https://... -> http://..."
     raw=raw.trim().replace(/^Forwarding\s+/i,'').replace(/\s*->\s*.*$/,'').replace(/\/+$/,'');
+    if(/^(javascript|data|blob|file):/i.test(raw))return '';
     // Full URL like https://abc123.ngrok-free.app
     if(raw.startsWith('http://') || raw.startsWith('https://'))return raw;
     // Just a domain like abc123.ngrok-free.app
@@ -1677,14 +1930,44 @@ async function tryConnect(){
         if(d.error){st.className='setup-status err';st.textContent='Connected but database error: '+d.error;btn.disabled=false;btn.textContent='Connect';return}
         st.className='setup-status ok';st.textContent='Connected!';
         const nick=(document.getElementById('botNickname')||{}).value.trim();
-        saveSrv(BASE,label,nick);
+        const tok=(document.getElementById('botToken')||{}).value.trim();
+        saveSrv(BASE,label,nick,tok);
+        api('/api/start-bot'+getBotToken()).catch(()=>{});
         setTimeout(()=>{
             document.getElementById('setupScreen').classList.add('hidden');
             document.getElementById('dash').classList.add('active');
             document.getElementById('srvIp').textContent=nick||label;
+            document.getElementById('bugFab').style.display='';
             startDashboard();
         },500);
     }catch(e){
+        // Auto-discover ngrok URL from beacon
+        st.className='setup-status';st.textContent='Saved URL stale — checking for updated ngrok URL...';
+        try{
+            const beacon=await fetch(NGROK_BEACON).then(r=>r.json());
+            if(beacon.url&&beacon.url!==BASE&&isValidBeaconUrl(beacon.url)){
+                st.textContent='Found new URL, reconnecting...';
+                document.getElementById('serverIp').value=beacon.url;
+                BASE=beacon.url;
+                const r2=await api('/api/stats',{signal:AbortSignal.timeout(8000)});
+                if(r2.ok){
+                    const label2=BASE.replace(/^https?:\/\//,'');
+                    const nick2=(document.getElementById('botNickname')||{}).value.trim();
+                    const tok2=(document.getElementById('botToken')||{}).value.trim();
+                    st.className='setup-status ok';st.textContent='Reconnected via updated URL!';
+                    saveSrv(BASE,label2,nick2,tok2);
+                    api('/api/start-bot'+getBotToken()).catch(()=>{});
+                    setTimeout(()=>{
+                        document.getElementById('setupScreen').classList.add('hidden');
+                        document.getElementById('dash').classList.add('active');
+                        document.getElementById('srvIp').textContent=nick2||label2;
+                        document.getElementById('bugFab').style.display='';
+                        startDashboard();
+                    },500);
+                    return;
+                }
+            }
+        }catch(e2){}
         st.className='setup-status err';
         if(e.name==='TimeoutError'||e.message.includes('timeout'))st.textContent='Connection timed out. Is the dashboard running and ngrok active?';
         else if(e.message.includes('Failed to fetch')||e.message.includes('NetworkError'))st.textContent='Cannot reach server. Check the URL and make sure ngrok is running.';
@@ -1694,11 +1977,13 @@ async function tryConnect(){
 }
 
 function disconnect(){
+    if(!confirm('Disconnect from this bot?'))return;
     clearInterval(refreshTimer);
     document.getElementById('setupScreen').classList.remove('hidden');
     document.getElementById('dash').classList.remove('active');
+    document.getElementById('bugFab').style.display='none';
     document.querySelector('.bot-switch')?.classList.remove('open');
-    eC=null;oC=null;pC=null;lastTC=0;nextMs=null;
+    if(eC){eC.destroy();eC=null}if(oC){oC.destroy();oC=null}if(pC){pC.destroy();pC=null}lastTC=0;nextMs=null;
 }
 
 // Bot switcher
@@ -1710,22 +1995,28 @@ function toggleBotMenu(){
 function renderBotMenu(){
     const s=JSON.parse(localStorage.getItem('botwarden_servers')||'[]');
     const menu=document.getElementById('botMenu');
-    let html=s.map(sv=>{
+    let html=s.map((sv,i)=>{
         const isActive=sv.url===BASE;
-        const display=sv.nick?'<span class="bot-menu-ip" style="color:var(--t1);font-weight:600">'+sv.nick+'</span><span style="font-family:var(--mono);font-size:0.42rem;color:var(--t4);margin-left:0.3rem">'+sv.label+'</span>':'<span class="bot-menu-ip">'+sv.label+'</span>';
-        return '<div class="bot-menu-item'+(isActive?' active':'')+'" onclick="switchBot(\''+sv.url.replace(/'/g,"\\'")+'\',\''+(sv.nick||sv.label).replace(/'/g,"\\'")+'\')">'+
+        const display=sv.nick?'<span class="bot-menu-ip" style="color:var(--t1);font-weight:600">'+E(sv.nick)+'</span><span style="font-family:var(--mono);font-size:0.42rem;color:var(--t4);margin-left:0.3rem">'+E(sv.label)+'</span>':'<span class="bot-menu-ip">'+E(sv.label)+'</span>';
+        return '<div class="bot-menu-item'+(isActive?' active':'')+'" data-bot="'+i+'">'+
             display+(isActive?'<span class="bot-menu-dot"></span>':'')+
             '</div>';
     }).join('');
-    html+='<div class="bot-menu-add" onclick="addNewBot()">+ Add Bot</div>';
+    html+='<div class="bot-menu-add" data-bot="add">+ Add Bot</div>';
     menu.innerHTML=html;
 }
+document.getElementById('botMenu').addEventListener('click',function(e){
+    const item=e.target.closest('[data-bot]');if(!item)return;
+    if(item.dataset.bot==='add'){addNewBot();return}
+    const s=JSON.parse(localStorage.getItem('botwarden_servers')||'[]');
+    const sv=s[+item.dataset.bot];if(sv)switchBot(sv.url,sv.nick||sv.label);
+});
 function switchBot(url,displayName){
     document.querySelector('.bot-switch').classList.remove('open');
     if(url===BASE)return;
     // Reset charts and state
     clearInterval(refreshTimer);
-    eC=null;oC=null;pC=null;lastTC=0;nextMs=null;bizActive=false;
+    if(eC){eC.destroy();eC=null}if(oC){oC.destroy();oC=null}if(pC){pC.destroy();pC=null}lastTC=0;nextMs=null;bizActive=false;
     // Destroy old chart canvases and recreate
     ['eqChart','outChart','pnlChart'].forEach(id=>{
         const c=document.getElementById(id);
@@ -1743,10 +2034,9 @@ function addNewBot(){
     const bb=document.getElementById('setupBack');if(bb)bb.style.display='block';
 }
 function closeSetup(){
-    // Return to dashboard with last connected bot
     document.getElementById('setupScreen').classList.add('hidden');
     document.getElementById('dash').classList.add('active');
-    document.getElementById('setupBack').style.display='none';
+    const bb=document.getElementById('setupBack');if(bb)bb.style.display='none';
 }
 // Close popups when clicking outside
 document.addEventListener('click',function(e){
@@ -1776,10 +2066,12 @@ if(autoS.length){
         const sv=autoS.find(x=>x.url===autoUrl)||autoS[0];
         document.getElementById('serverIp').value=sv.url;
         if(sv.nick&&document.getElementById('botNickname'))document.getElementById('botNickname').value=sv.nick;
+        if(sv.token&&document.getElementById('botToken'))document.getElementById('botToken').value=sv.token;
         setTimeout(()=>tryConnect(),300);
     }else if(autoS.length===1){
         document.getElementById('serverIp').value=autoS[0].url;
         if(autoS[0].nick&&document.getElementById('botNickname'))document.getElementById('botNickname').value=autoS[0].nick;
+        if(autoS[0].token&&document.getElementById('botToken'))document.getElementById('botToken').value=autoS[0].token;
     }
 }
 
@@ -1794,6 +2086,10 @@ function startDashboard(){
     // Tabs
     document.getElementById('tabBar').addEventListener('click',e=>{const b=e.target.closest('.tab');if(!b)return;if(b.classList.contains('tab-lock')){showPricing();return}document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on','tab-lock-on'));document.querySelectorAll('.tc').forEach(x=>x.classList.remove('on'));b.classList.add('on');document.getElementById('tab-'+b.dataset.tab).classList.add('on')});
 
+    // Skeleton loading
+    document.getElementById('heroGrid').innerHTML=Array(8).fill('<div class="hc"><div class="skel skel-line" style="width:40%"></div><div class="skel skel-block"></div><div class="skel skel-line" style="width:60%"></div></div>').join('');
+    // Instant hero stats on launch
+    Promise.all([api('/api/stats').then(r=>r.json()),api('/api/sparkline').then(r=>r.json())]).then(([s,spk])=>{renderHero(s,spk);lastTC=s.total_trades}).catch(()=>{});
     refresh();
     refreshTimer=setInterval(refresh,12000);
 }
@@ -1803,11 +2099,16 @@ function $(n,d){if(n==null||isNaN(n))return'\u2014';const v=+n;return(v<0?'-':''
 function P(n){if(n==null||isNaN(n))return'\u2014';return(+n*100).toFixed(1)+'%'}
 function vc(n){return +n>=0?'up':'dn'}
 function sg(n){return +n>=0?'+':''}
-function E(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function E(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function T(t){if(!t)return'\u2014';const d=new Date(t);return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})+' '+d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}
 function lbl(t){if(t.strategy==='mean_reversion')return E((t.market_question||t.city||'').substring(0,32))+(((t.market_question||t.city||'').length>32)?'...':'');return E(t.city||'')}
 function stPill(t){return t.strategy==='mean_reversion'?'<span class="pill p-mr">MR</span>':'<span class="pill p-wx">WX</span>'}
 function spark(data,color,w,h){if(!data||data.length<2)return'';const mn=Math.min(...data),mx=Math.max(...data),rng=mx-mn||1;const pts=data.map((v,i)=>`${(i/(data.length-1)*w).toFixed(1)},${(h-(v-mn)/rng*h).toFixed(1)}`).join(' ');return `<svg width="${w}" height="${h}" class="spark"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`}
+function manualRefresh(){
+    const btn=document.getElementById('heroRefreshBtn');
+    btn.classList.add('spinning');
+    refresh().finally(()=>setTimeout(()=>btn.classList.remove('spinning'),300));
+}
 function exportCSV(){if(!gateCheck('csv'))return;window.open(BASE+'/api/export/csv','_blank')}
 
 // Chart config
@@ -1815,7 +2116,9 @@ const ttCfg={backgroundColor:'rgba(6,8,14,0.94)',borderColor:'rgba(255,255,255,0
 const gridC='rgba(255,255,255,0.018)';
 const tkF={family:'JetBrains Mono',size:9,weight:'500'};
 
+let failCount=0,lastPerf=[],_refreshing=false;
 async function refresh(){
+if(_refreshing)return;_refreshing=true;
 try{
 const[stats,trades,open,perf,cycles,cities,log,strats,spk,sports]=await Promise.all([
 api('/api/stats').then(r=>r.json()),api('/api/trades?limit=60').then(r=>r.json()),
@@ -1823,8 +2126,11 @@ api('/api/open').then(r=>r.json()),api('/api/performance?limit=300').then(r=>r.j
 api('/api/cycles?limit=30').then(r=>r.json()),api('/api/cities').then(r=>r.json()),
 api('/api/log?lines=100').then(r=>r.json()),api('/api/strategies').then(r=>r.json()),
 api('/api/sparkline').then(r=>r.json()),api('/api/sports').then(r=>r.json()).catch(()=>null)]);
+failCount=0;document.getElementById('reconnBar').classList.remove('show');
+lastPerf=perf;
 renderHero(stats,spk);renderRisk(stats.risk);renderStrats(strats);
-renderEquity(perf);renderOutcome(stats);renderPnl(perf);
+const eqPeriod=(document.querySelector('#eqToggle .on')||{}).dataset;
+renderEquity(filterPerf(perf,eqPeriod?.eq||'all'));renderOutcome(stats);renderPnl(perf);
 renderTreemap(open);renderCities(cities);
 renderPos(open);renderHist(trades);renderCyc(cycles);renderLastCyc(cycles[0]);renderLog(log);
 if(sports)renderSports(sports);
@@ -1835,8 +2141,51 @@ if(stats.live_runs>0){b.className='badge badge-live';b.textContent='LIVE'}else{b
 document.getElementById('statusTxt').textContent='live';
 document.getElementById('perfCt').textContent=perf.length+' pts';
 document.getElementById('logCt').textContent=log.length+' lines';
+// Page title
+const pnl=stats.total_pnl;document.title='BotWarden · '+$(stats.bankroll,2)+(pnl>=0?' ▲':' ▼')+$(Math.abs(pnl),2);
+// Sharpe & max drawdown
+calcAdvancedRisk(perf,stats);
+// Trade alerts
+if(lastTC>0&&stats.total_trades>lastTC){const nc=Math.min(stats.total_trades-lastTC,trades.length);trades.slice(0,nc).forEach(t=>showTradeAlert(t))}
 lastTC=stats.total_trades;
-}catch(e){document.getElementById('statusTxt').textContent='err';console.error(e)}}
+// Configurable alerts check
+checkAlerts(stats);
+}catch(e){
+failCount++;document.getElementById('statusTxt').textContent='err';console.error(e);
+if(failCount>=2)document.getElementById('reconnBar').classList.add('show');
+if(failCount===3){
+    fetch(NGROK_BEACON).then(r=>r.json()).then(b=>{
+        if(b.url&&b.url!==BASE&&isValidBeaconUrl(b.url)){
+            console.log('Beacon: new URL '+b.url);
+            const oldBase=BASE;BASE=b.url;
+            const label=BASE.replace(/^https?:\/\//,'');
+            document.getElementById('srvIp').textContent=label;
+            const s=JSON.parse(localStorage.getItem('botwarden_servers')||'[]');
+            const sv=s.find(x=>x.url===oldBase);
+            if(sv){sv.url=BASE;localStorage.setItem('botwarden_servers',JSON.stringify(s))}
+            failCount=0;refresh();
+        }
+    }).catch(()=>{});
+}
+if(failCount>=4&&failCount<=6){api('/api/start-bot'+getBotToken()).catch(()=>{})}
+}finally{_refreshing=false}}
+
+function showTradeAlert(t){
+const el=document.createElement('div');el.className='trade-alert';
+const mkt=t.market_question||t.city||'Unknown';
+const price=t.entry_price||t.buy_price||0;
+const size=t.size_usd||0;
+const strat=t.strategy==='mean_reversion'?'Mean Reversion':t.strategy==='weather'?'Weather':t.strategy==='sports'?'Sports':t.strategy||'Trade';
+el.innerHTML='<div class="trade-alert-title">NEW TRADE</div><div class="trade-alert-market">'+E(mkt)+'</div><div class="trade-alert-detail">'+strat+' · $'+size.toFixed(2)+' @ '+price.toFixed(3)+'</div>';
+document.body.appendChild(el);
+// Sound + notification
+const als=JSON.parse(localStorage.getItem('bw_alerts')||'{}');
+if(als.sound!==false)playTradeSound();
+if(als.notif)sendTradeNotification(t);
+const rm=()=>el.remove();
+el.addEventListener('click',rm);
+setTimeout(rm,3100);
+}
 
 // Hero
 function renderHero(s,spk){
@@ -1930,9 +2279,10 @@ return '<tr><td>'+stPill(p)+'</td><td>'+lbl(p)+'</td><td>'+$(p.entry_price||p.bu
 function renderHist(trades){
 const el=document.getElementById('histArea');
 if(!trades.length){el.innerHTML='<div class="empty">No trade history</div>';return}
-el.innerHTML='<table><tr><th>Strategy</th><th>Market</th><th>Entry</th><th>Size</th><th>P&L</th><th>Date</th></tr>'+trades.map(t=>{
-const pnl=t.pnl||0;
-return '<tr><td>'+stPill(t)+'</td><td>'+lbl(t)+'</td><td>'+$(t.entry_price||t.buy_price,4)+'</td><td>'+$(t.size_usd,4)+'</td><td style="color:'+(pnl>=0?'var(--grn)':'var(--red)')+'">'+sg(pnl)+$(pnl,4)+'</td><td>'+T(t.closed_at||t.opened_at||t.timestamp)+'</td></tr>'}).join('')+'</table>'}
+const notes=JSON.parse(localStorage.getItem('bw_trade_notes')||'{}');
+el.innerHTML='<table><tr><th>Strategy</th><th>Market</th><th>Entry</th><th>Size</th><th>P&L</th><th>Date</th><th></th></tr>'+trades.map((t,i)=>{
+const pnl=t.pnl||0;const tid=t.id||t.trade_id||('t'+i);const hasNote=notes[tid];
+return '<tr><td>'+stPill(t)+'</td><td>'+lbl(t)+'</td><td>'+$(t.entry_price||t.buy_price,4)+'</td><td>'+$(t.size_usd,4)+'</td><td style="color:'+(pnl>=0?'var(--grn)':'var(--red)')+'">'+sg(pnl)+$(pnl,4)+'</td><td>'+T(t.closed_at||t.opened_at||t.timestamp)+'</td><td><button class="note-btn" data-note-id="'+E(tid)+'" data-note-label="'+E(t.market_question||t.city||'Trade')+'" title="'+(hasNote?'Edit note':'Add note')+'">'+(hasNote?'\u270E':'\u270E')+'</button></td></tr>'}).join('')+'</table>'}
 function renderCyc(cycles){
 const el=document.getElementById('cycArea');
 if(!cycles.length){el.innerHTML='<div class="empty">No cycles</div>';return}
@@ -2003,13 +2353,192 @@ const el=document.getElementById('logBox');
 el.innerHTML=log.map(l=>{const c=l.includes('ERROR')?'e':l.includes('WARN')?'w':'';return '<div class="ll'+c+'">'+E(localizeLogTime(l))+'</div>'}).join('');
 el.scrollTop=el.scrollHeight}
 
-// Block wheel/touch scroll on log — scrollbar and text selection only
-document.addEventListener('wheel',function(e){
-    if(e.target.closest('#logBox'))e.preventDefault();
-},{passive:false,capture:true});
-document.addEventListener('touchmove',function(e){
-    if(e.target.closest('#logBox'))e.preventDefault();
-},{passive:false,capture:true});
+
+// ===== THEME TOGGLE =====
+function toggleTheme(){
+    const light=document.documentElement.classList.toggle('light');
+    localStorage.setItem('bw_theme',light?'light':'dark');
+    document.getElementById('themeBtn').textContent=light?'\u2600':'\u263D';
+}
+(function(){const t=localStorage.getItem('bw_theme');if(t==='light'){document.documentElement.classList.add('light');document.getElementById('themeBtn').textContent='\u2600'}})();
+
+// ===== SOUND ALERT =====
+function playTradeSound(){
+    try{const ctx=new(window.AudioContext||window.webkitAudioContext)();const o=ctx.createOscillator();const g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=880;o.type='sine';g.gain.setValueAtTime(0.3,ctx.currentTime);g.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.3);o.start(ctx.currentTime);o.stop(ctx.currentTime+0.3);
+    const o2=ctx.createOscillator();const g2=ctx.createGain();o2.connect(g2);g2.connect(ctx.destination);o2.frequency.value=1320;o2.type='sine';g2.gain.setValueAtTime(0.2,ctx.currentTime+0.15);g2.gain.exponentialRampToValueAtTime(0.01,ctx.currentTime+0.45);o2.start(ctx.currentTime+0.15);o2.stop(ctx.currentTime+0.45)}catch(e){}
+}
+
+// ===== BROWSER NOTIFICATIONS =====
+function sendTradeNotification(t){
+    if(Notification.permission!=='granted')return;
+    const mkt=t.market_question||t.city||'Unknown';
+    new Notification('BotWarden — New Trade',{body:mkt+'\n'+(t.strategy||'')+' · $'+(t.size_usd||0).toFixed(2),icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="6" fill="%2304060a"/><text x="16" y="22" text-anchor="middle" font-family="monospace" font-weight="bold" font-size="14" fill="%23c9a96e">BW</text></svg>'});
+}
+
+// ===== ALERT SETTINGS =====
+function loadAlertSettings(){
+    const s=JSON.parse(localStorage.getItem('bw_alerts')||'{"sound":true,"notif":false,"dd":15,"bankroll":0}');
+    const snd=document.getElementById('alertSound');if(snd)snd.classList.toggle('on',s.sound);
+    const ntf=document.getElementById('alertNotif');if(ntf)ntf.classList.toggle('on',s.notif);
+    const dd=document.getElementById('alertDD');if(dd)dd.value=s.dd||15;
+    const br=document.getElementById('alertBankroll');if(br)br.value=s.bankroll||0;
+    return s;
+}
+function toggleAlertSetting(key){
+    const s=JSON.parse(localStorage.getItem('bw_alerts')||'{"sound":true,"notif":false,"dd":15,"bankroll":0}');
+    s[key]=!s[key];
+    if(key==='notif'&&s.notif&&Notification.permission==='default')Notification.requestPermission();
+    localStorage.setItem('bw_alerts',JSON.stringify(s));
+    loadAlertSettings();
+}
+function saveAlertSettings(){
+    const s=JSON.parse(localStorage.getItem('bw_alerts')||'{"sound":true,"notif":false,"dd":15,"bankroll":0}');
+    s.dd=+(document.getElementById('alertDD')||{}).value||15;
+    s.bankroll=+(document.getElementById('alertBankroll')||{}).value||0;
+    localStorage.setItem('bw_alerts',JSON.stringify(s));
+}
+function checkAlerts(stats){
+    const s=JSON.parse(localStorage.getItem('bw_alerts')||'{}');
+    if(s.dd&&stats.drawdown&&Math.abs(stats.drawdown)*100>=s.dd){
+        if(!window._ddAlerted){window._ddAlerted=true;if(s.notif&&Notification.permission==='granted')new Notification('BotWarden Alert',{body:'Drawdown at '+(Math.abs(stats.drawdown)*100).toFixed(1)+'% — exceeds your '+s.dd+'% threshold'})}
+    }else{window._ddAlerted=false}
+    if(s.bankroll&&s.bankroll>0&&stats.bankroll<s.bankroll){
+        if(!window._brAlerted){window._brAlerted=true;if(s.notif&&Notification.permission==='granted')new Notification('BotWarden Alert',{body:'Bankroll at $'+stats.bankroll.toFixed(2)+' — below your $'+s.bankroll+' threshold'})}
+    }else{window._brAlerted=false}
+}
+
+// ===== SHARPE & MAX DRAWDOWN =====
+function calcAdvancedRisk(perf,stats){
+    if(perf.length<3)return;
+    const data=[...perf].reverse();
+    // Aggregate to daily returns (group by date, use last bankroll per day)
+    const daily={};
+    data.forEach(p=>{const d=new Date(p.timestamp).toISOString().slice(0,10);daily[d]=p.bankroll});
+    const days=Object.keys(daily).sort();
+    if(days.length<3){return}// Need at least 3 days
+    const dailyReturns=[];
+    for(let i=1;i<days.length;i++){
+        const prev=daily[days[i-1]]||1;
+        const cur=daily[days[i]];
+        if(prev>0)dailyReturns.push((cur-prev)/prev);
+    }
+    if(dailyReturns.length<2)return;
+    // Sharpe (annualized from daily returns using sqrt(252))
+    const avgR=dailyReturns.reduce((a,b)=>a+b,0)/dailyReturns.length;
+    const stdR=Math.sqrt(dailyReturns.reduce((a,b)=>a+(b-avgR)**2,0)/(dailyReturns.length-1));
+    const sharpe=stdR>0.0001?(avgR/stdR)*Math.sqrt(252):0;
+    // Max drawdown
+    let peak=0,maxDD=0;
+    data.forEach(p=>{if(p.bankroll>peak)peak=p.bankroll;const dd=(peak-p.bankroll)/peak;if(dd>maxDD)maxDD=dd});
+    const bar=document.getElementById('riskBar');
+    if(!bar)return;
+    const existing=bar.querySelector('.adv-risk');
+    const sharpeDisplay=days.length<7?'N/A ('+days.length+'d)':sharpe.toFixed(2);
+    const sharpePct=days.length<7?0:Math.min(Math.abs(sharpe)/3*100,100);
+    const sharpeColor=days.length<7?'var(--t4)':sharpe>=1?'var(--grn)':sharpe>=0.5?'var(--amb)':'var(--red)';
+    const html='<div class="adv-risk" style="display:flex;gap:1px;margin-top:1px">'+rg('Sharpe Ratio',sharpe<0?1:0,1,'Risk-adjusted return (annualized from daily returns, sqrt(252)). Above 1.0 is good, above 2.0 is excellent. Needs 7+ days for reliable reading').replace('0.0% / 100%',sharpeDisplay).replace('width:0%','width:'+sharpePct+'%;background:'+sharpeColor)+rg('Max Drawdown',maxDD,1,'Largest peak-to-trough decline in bankroll').replace((Math.abs(maxDD)*100).toFixed(1)+'% / 100%',(maxDD*100).toFixed(1)+'%')+'</div>';
+    if(existing)existing.outerHTML=html;
+    else bar.insertAdjacentHTML('beforeend',html);
+}
+
+// ===== EQUITY PERIOD FILTER =====
+function filterPerf(perf,period){
+    if(period==='all')return perf;
+    const now=Date.now();
+    const ms=period==='7d'?7*86400000:30*86400000;
+    return perf.filter(p=>now-new Date(p.timestamp).getTime()<=ms);
+}
+document.getElementById('eqToggle').addEventListener('click',e=>{
+    const btn=e.target.closest('button');if(!btn)return;
+    document.querySelectorAll('#eqToggle button').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    if(lastPerf.length){renderEquity(filterPerf(lastPerf,btn.dataset.eq))}
+});
+
+// ===== TRADE NOTES =====
+let _noteTradeId=null;
+function openNoteModal(tradeId,label){
+    _noteTradeId=tradeId;
+    document.getElementById('noteTradeLabel').textContent=label||'';
+    const notes=JSON.parse(localStorage.getItem('bw_trade_notes')||'{}');
+    document.getElementById('noteText').value=notes[tradeId]||'';
+    document.getElementById('noteModal').style.display='';
+    document.getElementById('noteModalBg').style.display='';
+}
+function closeNoteModal(){
+    document.getElementById('noteModal').style.display='none';
+    document.getElementById('noteModalBg').style.display='none';
+}
+function saveTradeNote(){
+    const notes=JSON.parse(localStorage.getItem('bw_trade_notes')||'{}');
+    const txt=document.getElementById('noteText').value.trim();
+    if(txt)notes[_noteTradeId]=txt;else delete notes[_noteTradeId];
+    localStorage.setItem('bw_trade_notes',JSON.stringify(notes));
+    if(window.AppDB)window.AppDB.set('bw_trade_notes',notes).catch(e=>console.warn('AppDB note sync:',e));
+    closeNoteModal();
+}
+
+// ===== KEYBOARD SHORTCUTS =====
+document.addEventListener('keydown',e=>{
+    if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA'||e.target.tagName==='SELECT')return;
+    const dash=document.getElementById('dash');if(!dash||!dash.classList.contains('active'))return;
+    if(e.key==='r'||e.key==='R'){e.preventDefault();refresh()}
+    if(e.key==='s'||e.key==='S'){e.preventDefault();showUserDash()}
+    if(e.key==='a'||e.key==='A'){e.preventDefault();if(isAnalyticsAdmin())showAnalytics()}
+    if(e.key==='1'){e.preventDefault();clickTab('pos')}
+    if(e.key==='2'){e.preventDefault();clickTab('hist')}
+    if(e.key==='3'){e.preventDefault();clickTab('sports')}
+    if(e.key==='4'){e.preventDefault();clickTab('cyc')}
+});
+function clickTab(name){const b=document.querySelector('.tab[data-tab="'+name+'"]');if(b)b.click()}
+
+// ===== SHARED DASHBOARD =====
+function copyShareLink(){
+    const inp=document.getElementById('shareUrl');
+    inp.select();navigator.clipboard.writeText(inp.value).catch(()=>{});
+    inp.style.borderColor='var(--gold)';setTimeout(()=>inp.style.borderColor='',1000);
+}
+
+// ===== TEAM MANAGEMENT =====
+function loadTeamMembers(){
+    const members=JSON.parse(localStorage.getItem('bw_team_members')||'[]');
+    const el=document.getElementById('teamList');if(!el)return;
+    if(!members.length){el.innerHTML='<div style="font-size:0.42rem;color:var(--t4)">No team members added yet.</div>';return}
+    el.innerHTML=members.map((w,i)=>'<div style="display:flex;align-items:center;justify-content:space-between;padding:0.3rem 0;border-bottom:1px solid var(--b1)"><span style="font-family:var(--mono);font-size:0.42rem;color:var(--t2)">'+w.substring(0,6)+'...'+w.slice(-4)+'</span><button data-rm-team="'+i+'" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:0.5rem">&times;</button></div>').join('');
+}
+function addTeamMember(){
+    const inp=document.getElementById('teamWalletInput');
+    const addr=inp.value.trim();
+    if(!addr.match(/^0x[a-fA-F0-9]{40}$/)){inp.style.borderColor='var(--red)';setTimeout(()=>inp.style.borderColor='',1000);return}
+    const members=JSON.parse(localStorage.getItem('bw_team_members')||'[]');
+    if(!members.includes(addr.toLowerCase())){members.push(addr.toLowerCase());localStorage.setItem('bw_team_members',JSON.stringify(members));
+    if(window.AppDB)window.AppDB.set('bw_team_members',members).catch(e=>console.warn('AppDB team sync:',e))}
+    inp.value='';loadTeamMembers();
+}
+function removeTeamMember(i){
+    const members=JSON.parse(localStorage.getItem('bw_team_members')||'[]');
+    members.splice(i,1);localStorage.setItem('bw_team_members',JSON.stringify(members));
+    if(window.AppDB)window.AppDB.set('bw_team_members',members).catch(e=>console.warn('AppDB team sync:',e));
+    loadTeamMembers();
+}
+
+// ===== SETTINGS INIT =====
+// Event delegation for team member removal
+document.getElementById('teamList').addEventListener('click',function(e){
+    const btn=e.target.closest('[data-rm-team]');
+    if(btn)removeTeamMember(+btn.dataset.rmTeam);
+});
+// Event delegation for trade note buttons
+document.getElementById('histArea').addEventListener('click',function(e){
+    const btn=e.target.closest('[data-note-id]');
+    if(btn)openNoteModal(btn.dataset.noteId,btn.dataset.noteLabel);
+});
+// AppDB cloud sync: load notes and team members if not in localStorage
+(async function(){
+    if(!await waitForSDK('AppDB',3000))return;
+    try{const n=await window.AppDB.get('bw_trade_notes');if(n&&!localStorage.getItem('bw_trade_notes'))localStorage.setItem('bw_trade_notes',JSON.stringify(n))}catch(e){console.warn('AppDB notes load:',e)}
+    try{const m=await window.AppDB.get('bw_team_members');if(m&&!localStorage.getItem('bw_team_members'))localStorage.setItem('bw_team_members',JSON.stringify(m))}catch(e){console.warn('AppDB team load:',e)}
+})();
 
 // Tooltips
 (function(){
@@ -2034,6 +2563,229 @@ document.addEventListener('mouseout',function(e){
     if(el&&el===cur){tt.classList.remove('show');cur=null}
 });
 })();
+
+// ===== ANALYTICS & BUG REPORTS =====
+function isAnalyticsAdmin(){return !userWallet||userWallet.toLowerCase()===ANALYTICS_WALLET.toLowerCase()}
+
+// Secret 10-tap on "BotWarden" brand to reveal analytics
+(function(){
+    let taps=0,tapTimer=null;
+    document.getElementById('brandTap').addEventListener('click',function(){
+        taps++;
+        clearTimeout(tapTimer);
+        tapTimer=setTimeout(()=>{taps=0},2000);
+        if(taps>=10){
+            taps=0;
+            if(!isAnalyticsAdmin()){notify('Access denied');return}
+            showAnalytics();
+        }
+    });
+})();
+
+// --- Presence heartbeat ---
+let _presenceId='s_'+Math.random().toString(36).slice(2,10);
+let _heartbeatTimer=null;
+function startPresence(){
+    if(!window.AppDB)return;
+    async function beat(){
+        try{
+            const p=await window.AppDB.getGlobal('bw_presence')||{};
+            const now=Date.now();
+            Object.keys(p).forEach(k=>{if(now-p[k].ls>90000)delete p[k]});
+            p[_presenceId]={w:userWallet?userWallet.slice(0,6)+'...'+userWallet.slice(-4):'anon',wf:userWallet||'',t:currentTier,ls:now,ca:p[_presenceId]?.ca||now};
+            await window.AppDB.setGlobal('bw_presence',p);
+        }catch(e){}
+    }
+    beat();_heartbeatTimer=setInterval(beat,30000);
+    // Best-effort cleanup on unload — async won't always complete; 90s timeout handles stale entries
+    window.addEventListener('beforeunload',()=>{clearInterval(_heartbeatTimer)});
+}
+
+// --- Page view tracking ---
+async function trackPageView(){
+    if(!window.AppDB)return;
+    try{
+        const a=await window.AppDB.getGlobal('bw_analytics')||{tv:0,d:{},w:[]};
+        a.tv=(a.tv||0)+1;
+        const today=new Date().toISOString().slice(0,10);
+        a.d[today]=(a.d[today]||0)+1;
+        const cut=new Date(Date.now()-30*86400000).toISOString().slice(0,10);
+        Object.keys(a.d).forEach(k=>{if(k<cut)delete a.d[k]});
+        if(userWallet&&!(a.w||[]).includes(userWallet.toLowerCase())){
+            if(!a.w)a.w=[];a.w.push(userWallet.toLowerCase());if(a.w.length>1000)a.w=a.w.slice(-1000);
+        }
+        await window.AppDB.setGlobal('bw_analytics',a);
+    }catch(e){}
+}
+
+// --- Analytics panel ---
+function showAnalytics(){
+    if(!isAnalyticsAdmin())return;
+    document.getElementById('analyticsModal').classList.add('show');
+    renderAnalyticsOverview();
+}
+function hideAnalytics(){
+    document.getElementById('analyticsModal').classList.remove('show');
+    clearInterval(_anaTimer);
+}
+document.getElementById('analyticsModal').addEventListener('click',e=>{if(e.target.id==='analyticsModal')hideAnalytics()});
+document.getElementById('analyticsTabs').addEventListener('click',e=>{
+    const b=e.target.closest('.admin-tab');if(!b)return;
+    document.querySelectorAll('#analyticsTabs .admin-tab').forEach(t=>t.classList.remove('on'));
+    document.querySelectorAll('#analyticsModal .admin-section').forEach(s=>s.classList.remove('on'));
+    b.classList.add('on');
+    document.getElementById('anatab-'+b.dataset.anatab).classList.add('on');
+    if(b.dataset.anatab==='bugs')renderBugReportsAdmin();
+});
+
+let _anaTimer=null;
+function renderAnalyticsOverview(){
+    clearInterval(_anaTimer);
+    doRenderOverview();
+    _anaTimer=setInterval(doRenderOverview,10000);
+}
+
+async function doRenderOverview(){
+    const el=document.getElementById('anatab-overview');
+    if(!window.AppDB){el.innerHTML='<div class="adm-empty">AppDB required — open on inclawbate.com</div>';return}
+    try{
+        const [pres,ana]=await Promise.all([
+            window.AppDB.getGlobal('bw_presence').then(r=>r||{}),
+            window.AppDB.getGlobal('bw_analytics').then(r=>r||{tv:0,d:{},w:[]})
+        ]);
+        const now=Date.now();
+        const online=Object.values(pres).filter(u=>now-u.ls<90000);
+        const today=new Date().toISOString().slice(0,10);
+        const todayV=ana.d[today]||0;
+        let weekV=0;for(let i=0;i<7;i++){const d=new Date(Date.now()-i*86400000).toISOString().slice(0,10);weekV+=(ana.d[d]||0)}
+        const uniq=(ana.w||[]).length;
+
+        let h='<div class="ana-grid">';
+        h+='<div class="ana-card"><div class="ana-card-val"><span class="dot-live"></span>'+online.length+'</div><div class="ana-card-lbl">Online Now</div></div>';
+        h+='<div class="ana-card"><div class="ana-card-val">'+todayV+'</div><div class="ana-card-lbl">Views Today</div></div>';
+        h+='<div class="ana-card"><div class="ana-card-val">'+weekV+'</div><div class="ana-card-lbl">Views (7d)</div></div>';
+        h+='<div class="ana-card"><div class="ana-card-val">'+(ana.tv||0)+'</div><div class="ana-card-lbl">Total Views</div></div>';
+        h+='<div class="ana-card"><div class="ana-card-val">'+uniq+'</div><div class="ana-card-lbl">Unique Wallets</div></div>';
+        h+='</div>';
+
+        // Active users
+        if(online.length){
+            h+='<div class="ana-section-hd">Active Users</div>';
+            online.sort((a,b)=>b.ls-a.ls).forEach(u=>{
+                const dur=Math.floor((now-(u.ca||now))/60000);
+                const ds=dur<1?'<1m':dur<60?dur+'m':Math.floor(dur/60)+'h '+dur%60+'m';
+                h+='<div class="ana-user-row"><span class="ana-user-wallet">'+E(u.w)+'</span><span style="font-size:0.34rem;font-weight:700;text-transform:uppercase;color:'+(u.t==='pro'?'var(--gold)':u.t==='team'?'var(--grn)':'var(--t4)')+'">'+E(u.t)+'</span><span style="color:var(--t4);font-size:0.36rem">'+ds+'</span></div>';
+            });
+        }
+
+        // Daily views bar chart (14d)
+        h+='<div style="margin-top:0.8rem"><div class="ana-section-hd">Daily Views (14d)</div><div class="ana-bar-wrap">';
+        const days=[];for(let i=13;i>=0;i--){const d=new Date(Date.now()-i*86400000).toISOString().slice(0,10);days.push({d,c:ana.d[d]||0})}
+        const mx=Math.max(...days.map(x=>x.c),1);
+        days.forEach(x=>{
+            const ht=Math.max((x.c/mx)*55,2);
+            h+='<div class="ana-bar" title="'+x.d+': '+x.c+'"><div class="ana-bar-fill" style="height:'+ht+'px;background:'+(x.d===today?'var(--gold)':'var(--b2)')+'"></div><div class="ana-bar-lbl">'+x.d.slice(5)+'</div></div>';
+        });
+        h+='</div></div>';
+
+        // Tier breakdown of online users
+        if(online.length>1){
+            const tc={free:0,pro:0,team:0};online.forEach(u=>{if(tc[u.t]!==undefined)tc[u.t]++});
+            h+='<div style="margin-top:0.6rem;display:flex;gap:0.7rem">';
+            Object.entries(tc).forEach(([t,c])=>{if(c>0)h+='<span style="font-size:0.38rem;color:var(--t3)"><b style="color:var(--t1)">'+c+'</b> '+t.toUpperCase()+'</span>'});
+            h+='</div>';
+        }
+
+        el.innerHTML=h;
+    }catch(e){el.innerHTML='<div class="adm-empty">Error: '+E(e.message)+'</div>'}
+}
+
+// --- Bug reports admin ---
+async function renderBugReportsAdmin(){
+    const el=document.getElementById('anatab-bugs');
+    if(!window.AppDB){el.innerHTML='<div class="adm-empty">AppDB required</div>';return}
+    try{
+        const bugs=await window.AppDB.getGlobal('bw_bug_reports')||[];
+        if(!bugs.length){el.innerHTML='<div class="adm-empty">No bug reports submitted yet</div>';return}
+        const open=bugs.filter(b=>b.status!=='resolved'&&b.status!=='dismissed').length;
+        const hi=bugs.filter(b=>b.severity==='high'&&b.status!=='resolved'&&b.status!=='dismissed').length;
+        let h='<div class="ana-grid" style="margin-bottom:0.6rem">';
+        h+='<div class="ana-card"><div class="ana-card-val">'+bugs.length+'</div><div class="ana-card-lbl">Total</div></div>';
+        h+='<div class="ana-card"><div class="ana-card-val" style="color:var(--amb)">'+open+'</div><div class="ana-card-lbl">Open</div></div>';
+        h+='<div class="ana-card"><div class="ana-card-val" style="color:var(--red)">'+hi+'</div><div class="ana-card-lbl">High Priority</div></div>';
+        h+='</div>';
+        bugs.forEach((b,i)=>{
+            h+='<div class="bug-item"><div class="bug-item-head"><span class="bug-item-sev '+E(b.severity)+'">'+E(b.severity)+'</span><span style="font-size:0.36rem;color:var(--t4)">'+T(b.timestamp)+'</span></div>';
+            h+='<div class="bug-item-wallet">'+E(b.wallet||'anon')+(b.tier?' &middot; '+E(b.tier):'')+'</div>';
+            h+='<div class="bug-item-desc">'+E(b.description)+'</div>';
+            h+='<div class="bug-item-actions">';
+            h+='<select data-bidx="'+i+'">';
+            ['open','in_progress','resolved','dismissed'].forEach(s=>{h+='<option value="'+s+'"'+(b.status===s?' selected':'')+'>'+s.replace('_',' ')+'</option>'});
+            h+='</select>';
+            h+='<input type="text" placeholder="Admin note..." value="'+E(b.adminNote||'')+'" data-bnote="'+i+'" />';
+            h+='<button data-bsave="'+i+'">Save</button>';
+            h+='</div></div>';
+        });
+        el.innerHTML=h;
+    }catch(e){el.innerHTML='<div class="adm-empty">Error: '+E(e.message)+'</div>'}
+}
+document.getElementById('anatab-bugs').addEventListener('click',async function(e){
+    const saveBtn=e.target.closest('[data-bsave]');if(!saveBtn||!window.AppDB)return;
+    const idx=+saveBtn.dataset.bsave;
+    const sel=document.querySelector('[data-bidx="'+idx+'"]');
+    const note=document.querySelector('[data-bnote="'+idx+'"]');
+    try{
+        const bugs=await window.AppDB.getGlobal('bw_bug_reports')||[];
+        if(bugs[idx]){
+            if(sel)bugs[idx].status=sel.value;
+            if(note)bugs[idx].adminNote=note.value;
+            await window.AppDB.setGlobal('bw_bug_reports',bugs);
+            notify('Bug #'+(idx+1)+' updated');
+        }
+    }catch(e){console.warn('Bug update:',e)}
+});
+
+// --- Bug report submission (all users) ---
+let _bugSev='medium';
+function toggleBugReport(){
+    const m=document.getElementById('bugModal');const bg=document.getElementById('bugBg');
+    const show=m.style.display==='none';
+    m.style.display=show?'':'none';bg.style.display=show?'':'none';
+    if(show){document.getElementById('bugDesc').value='';document.getElementById('bugMsg').textContent='';selectBugSev('medium')}
+}
+function closeBugReport(){document.getElementById('bugModal').style.display='none';document.getElementById('bugBg').style.display='none'}
+function selectBugSev(sev){
+    _bugSev=sev;
+    document.querySelectorAll('#bugSev button').forEach(b=>b.classList.toggle('on',b.dataset.sev===sev));
+}
+async function submitBugReport(){
+    const desc=document.getElementById('bugDesc').value.trim();
+    const msg=document.getElementById('bugMsg');
+    const btn=document.getElementById('bugSubmitBtn');
+    if(!desc||desc.length<10){msg.style.color='var(--red)';msg.textContent='Describe the issue (min 10 chars)';return}
+    if(!window.AppDB){msg.style.color='var(--red)';msg.textContent='Requires inclawbate.com';return}
+    btn.disabled=true;msg.style.color='var(--t2)';msg.textContent='Submitting...';
+    try{
+        const bugs=await window.AppDB.getGlobal('bw_bug_reports')||[];
+        bugs.unshift({
+            id:'bug_'+Date.now()+'_'+Math.random().toString(36).slice(2,6),
+            wallet:userWallet?userWallet.slice(0,6)+'...'+userWallet.slice(-4):'anonymous',
+            description:desc,severity:_bugSev,status:'open',adminNote:'',
+            timestamp:new Date().toISOString(),
+            tier:currentTier,
+            ua:navigator.userAgent.slice(0,100)
+        });
+        if(bugs.length>200)bugs.length=200;
+        await window.AppDB.setGlobal('bw_bug_reports',bugs);
+        msg.style.color='var(--grn)';msg.textContent='Submitted! Thank you.';
+        document.getElementById('bugDesc').value='';
+        setTimeout(closeBugReport,1500);
+    }catch(e){msg.style.color='var(--red)';msg.textContent='Error: '+(e.message||'Failed')}
+    finally{btn.disabled=false}
+}
+
+// Start presence + analytics on SDK ready
+waitForSDK('AppDB',5000).then(ok=>{if(ok){startPresence();trackPageView()}});
 </script>
 </body>
 </html>
